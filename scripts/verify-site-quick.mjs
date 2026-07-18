@@ -1,5 +1,6 @@
 import AxeBuilder from "@axe-core/playwright";
 import { chromium } from "@playwright/test";
+import { readFile } from "node:fs/promises";
 import path from "node:path";
 
 import {
@@ -8,6 +9,7 @@ import {
   withProductionServer,
   writeJsonAtomic,
 } from "./lib/site-verification.mjs";
+import { publicContentProjectionSchema } from "./lib/public-content-schema.mjs";
 
 const viewports = [
   { height: 900, id: "desktop-1440x900", width: 1440 },
@@ -41,7 +43,50 @@ async function checkInternalLinks(page, localUrl) {
   return broken;
 }
 
-async function inspectViewport(browser, localUrl, viewport) {
+async function inspectRenderedProjection(page, projection) {
+  const renderedClaims = [];
+  const renderedItemIds = [];
+  const failures = [];
+
+  for (const item of projection.items) {
+    const locator = page.locator(`[data-content-id="${item.id}"]`);
+    if ((await locator.count()) === 0) {
+      failures.push({ itemId: item.id, reason: "missing-item" });
+      continue;
+    }
+
+    const text = (await locator.allTextContents()).join(" ").replace(/\s+/gu, " ");
+    const hrefs = await locator.evaluateAll((elements) =>
+      elements.flatMap((element) => [
+        ...(element.matches("a") ? [element.getAttribute("href")] : []),
+        ...Array.from(element.querySelectorAll("a"), (anchor) =>
+          anchor.getAttribute("href"),
+        ),
+      ]),
+    );
+    const fields = [
+      ["title", text.includes(item.title)],
+      ["summary", text.includes(item.summary)],
+      ...(item.url ? [["url", hrefs.includes(item.url)]] : []),
+    ];
+    const failedFields = fields
+      .filter(([, rendered]) => !rendered)
+      .map(([field]) => field);
+
+    if (failedFields.length > 0) {
+      failures.push({ fields: failedFields, itemId: item.id, reason: "missing-claim" });
+      continue;
+    }
+    renderedItemIds.push(item.id);
+    renderedClaims.push(
+      ...fields.map(([field]) => ({ field, itemId: item.id })),
+    );
+  }
+
+  return { failures, renderedClaims, renderedItemIds };
+}
+
+async function inspectViewport(browser, localUrl, projection, viewport) {
   const context = await browser.newContext({
     viewport: { height: viewport.height, width: viewport.width },
   });
@@ -125,6 +170,7 @@ async function inspectViewport(browser, localUrl, viewport) {
   }
 
   const brokenInternalLinks = await checkInternalLinks(page, localUrl);
+  const renderedProjection = await inspectRenderedProjection(page, projection);
   const accessibility = await new AxeBuilder({ page })
     .withTags(["wcag2a", "wcag2aa"])
     .analyze();
@@ -165,6 +211,7 @@ async function inspectViewport(browser, localUrl, viewport) {
     accessibilityViolations: accessibility.violations.length,
     brokenInternalLinks,
     consoleErrors,
+    contentRenderingFailures: renderedProjection.failures,
     criticalAccessibilityViolations: criticalViolations.length,
     failedRequests,
     failedResponses,
@@ -173,6 +220,8 @@ async function inspectViewport(browser, localUrl, viewport) {
     layout,
     landmarks,
     shellVersion,
+    renderedClaims: renderedProjection.renderedClaims,
+    renderedItemIds: renderedProjection.renderedItemIds,
   };
 }
 
@@ -180,13 +229,21 @@ async function main() {
   const runId = createRunId();
 
   try {
+    const projection = publicContentProjectionSchema.parse(
+      JSON.parse(
+        await readFile(
+          path.join(process.cwd(), "knowledge/public/content.json"),
+          "utf8",
+        ),
+      ),
+    );
     const results = await withProductionServer(async ({ localUrl }) => {
       const browser = await chromium.launch({ headless: true });
       try {
         const viewportResults = [];
         for (const viewport of viewports) {
           viewportResults.push(
-            await inspectViewport(browser, localUrl, viewport),
+            await inspectViewport(browser, localUrl, projection, viewport),
           );
         }
         return { localUrl, viewportResults };
@@ -198,6 +255,9 @@ async function main() {
       (totals, viewport) => ({
         brokenInternalLinks:
           totals.brokenInternalLinks + viewport.brokenInternalLinks.length,
+        contentRenderingFailures:
+          totals.contentRenderingFailures +
+          viewport.contentRenderingFailures.length,
         consoleErrors: totals.consoleErrors + viewport.consoleErrors.length,
         criticalAccessibilityViolations:
           totals.criticalAccessibilityViolations +
@@ -217,6 +277,7 @@ async function main() {
       }),
       {
         brokenInternalLinks: 0,
+        contentRenderingFailures: 0,
         consoleErrors: 0,
         criticalAccessibilityViolations: 0,
         failedRequests: 0,
@@ -233,6 +294,11 @@ async function main() {
       changedState: "desktop navigation, hero, approved content sections, and footer",
       adjacentState: "verified foundation runtime and public-content boundary",
       summary,
+      publicProjection: {
+        contentHash: projection.contentHash,
+        renderedClaims: results.viewportResults[0].renderedClaims,
+        renderedItemIds: results.viewportResults[0].renderedItemIds,
+      },
       viewports: results.viewportResults,
     };
     await writeJsonAtomic("quick.json", evidence);

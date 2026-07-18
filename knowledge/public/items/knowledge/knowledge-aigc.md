@@ -5,8 +5,9 @@ category: "knowledge"
 visibility: public
 review_status: approved
 source_id: "okf-index-catalog"
-source_sha256: "c0bf5db9509d4d1101a30284787f37c6f901da326e9d8ff9794efc4465610f2a"
-evidence_sha256: "54cac1e278bf50902369521749a441ded4ebc4aca451d7eb35676953cda5ee05"
+source_sha256: "750a30039ce1c2376746c595fb2f69bf1ba65af0fef3ad7d7f1734cc668d33ec"
+source_indexes: ["yuque/repositories/index.md","yuque/documents/49931046/index.md"]
+evidence_sha256: "5396d0bd92cd9eb9e11b6bff8294368c287c184b5750b9e1f6eaaf581d7e62f4"
 ---
 
 # AIGC

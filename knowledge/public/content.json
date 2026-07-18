@@ -12,19 +12,37 @@
         {
           "field": "title",
           "value": "陈远",
-          "evidenceSha256": "3fdf6ae8e332cea51242a71e24f2fb75fb6c3429cc4efbf2b30c5a748cc76143"
+          "evidenceSha256": "927bb198f25ebfb7963bab88b6ba8d430bd7297b14e280ea1c6529a7000843d7"
         },
         {
           "field": "summary",
           "value": "以个人知识、GitHub 项目与 Codex / Claude Code 实践为三条主线，持续沉淀 Agent 工程化能力。",
-          "evidenceSha256": "3fdf6ae8e332cea51242a71e24f2fb75fb6c3429cc4efbf2b30c5a748cc76143"
+          "evidenceSha256": "affdad1e536763721b9c041c4ddbc3374e7316eae7b042a643c38b17317b0fa1"
         }
       ],
       "provenance": [
         {
           "sourceId": "okf-index-catalog",
-          "sourceSha256": "c0bf5db9509d4d1101a30284787f37c6f901da326e9d8ff9794efc4465610f2a",
-          "evidenceSha256": "3fdf6ae8e332cea51242a71e24f2fb75fb6c3429cc4efbf2b30c5a748cc76143"
+          "sourceSha256": "137ff43dcbfd37683b7e5e2a011f5bf08660d0b7c3c5f97da91a5a67e4d09598",
+          "evidenceSha256": "927bb198f25ebfb7963bab88b6ba8d430bd7297b14e280ea1c6529a7000843d7",
+          "fields": [
+            "title"
+          ],
+          "indexPaths": [
+            "index.md"
+          ]
+        },
+        {
+          "sourceId": "okf-index-catalog",
+          "sourceSha256": "c6bb2805d23cd8e97997b9579a69e3c06b8e6f7492dee4204f16d1bce3f8a91a",
+          "evidenceSha256": "affdad1e536763721b9c041c4ddbc3374e7316eae7b042a643c38b17317b0fa1",
+          "fields": [
+            "summary"
+          ],
+          "indexPaths": [
+            "index.md",
+            "agent-history/index.md"
+          ]
         }
       ]
     },
@@ -38,19 +56,37 @@
         {
           "field": "title",
           "value": "GitHub 项目索引",
-          "evidenceSha256": "f8637694c16899e825aa36ed5084bb9bc175f2e12db31a499d9660ac2d89d399"
+          "evidenceSha256": "931cdc33d4c5ba3b733ea1ecef9ae0a97814354c3358e9433f4ceeddd17a98ca"
         },
         {
           "field": "summary",
           "value": "521 个稳定仓库 Concepts，覆盖 127 个自有仓库、18 个非 Fork 原始项目，以及持续维护的技术参考图谱。",
-          "evidenceSha256": "f8637694c16899e825aa36ed5084bb9bc175f2e12db31a499d9660ac2d89d399"
+          "evidenceSha256": "760b6e552c0379922a65b5045bf93874e71f514c26431a166cc8a3056fd80e09"
         }
       ],
       "provenance": [
         {
           "sourceId": "okf-index-catalog",
-          "sourceSha256": "c0bf5db9509d4d1101a30284787f37c6f901da326e9d8ff9794efc4465610f2a",
-          "evidenceSha256": "f8637694c16899e825aa36ed5084bb9bc175f2e12db31a499d9660ac2d89d399"
+          "sourceSha256": "7583ea6cd4d9b0bd7a52e6369923795d61a8ef3243f8dd3448cfe472012e8c12",
+          "evidenceSha256": "931cdc33d4c5ba3b733ea1ecef9ae0a97814354c3358e9433f4ceeddd17a98ca",
+          "fields": [
+            "title"
+          ],
+          "indexPaths": [
+            "github/index.md"
+          ]
+        },
+        {
+          "sourceId": "okf-index-catalog",
+          "sourceSha256": "13b132e8e70723aced33ac1ddbfa845397f0034ee74efa757fa64352eeae1846",
+          "evidenceSha256": "760b6e552c0379922a65b5045bf93874e71f514c26431a166cc8a3056fd80e09",
+          "fields": [
+            "summary"
+          ],
+          "indexPaths": [
+            "github/index.md",
+            "github/owned/index.md"
+          ]
         }
       ]
     },
@@ -65,24 +101,52 @@
         {
           "field": "title",
           "value": "mx-agent",
-          "evidenceSha256": "3c60470b652a4a05a7bef55af55e9eb6ddb258b14b5ae7b3efa2c4cd9e4df4e0"
+          "evidenceSha256": "66ef0dace32333ff75ba5db790e119322dd79ea9ef67992cca41d5fc3f98c81c"
         },
         {
           "field": "summary",
           "value": "基于 FastAPI 与 Agno 的企业级 AI 智能助手，覆盖 HR、IT 运维、财务、法务等领域的问答与业务办理。",
-          "evidenceSha256": "3c60470b652a4a05a7bef55af55e9eb6ddb258b14b5ae7b3efa2c4cd9e4df4e0"
+          "evidenceSha256": "4d654ef1a9f01d700232bf91ba2152d0cbae90d2b64ec4ad0cd32a64703188d8"
         },
         {
           "field": "url",
           "value": "https://github.com/defulat-coder/mx-agent",
-          "evidenceSha256": "3c60470b652a4a05a7bef55af55e9eb6ddb258b14b5ae7b3efa2c4cd9e4df4e0"
+          "evidenceSha256": "420f68536bdb3136425ad7ccb7682e6620ed81ec4cd2903476d099be38037422"
         }
       ],
       "provenance": [
         {
           "sourceId": "okf-index-catalog",
-          "sourceSha256": "c0bf5db9509d4d1101a30284787f37c6f901da326e9d8ff9794efc4465610f2a",
-          "evidenceSha256": "3c60470b652a4a05a7bef55af55e9eb6ddb258b14b5ae7b3efa2c4cd9e4df4e0"
+          "sourceSha256": "0c793de7583c4dde72f355bac18a0e3a056a795a4907e5c720ef7041757b0a2b",
+          "evidenceSha256": "66ef0dace32333ff75ba5db790e119322dd79ea9ef67992cca41d5fc3f98c81c",
+          "fields": [
+            "title"
+          ],
+          "indexPaths": [
+            "github/owned/index.md"
+          ]
+        },
+        {
+          "sourceId": "okf-index-catalog",
+          "sourceSha256": "0c793de7583c4dde72f355bac18a0e3a056a795a4907e5c720ef7041757b0a2b",
+          "evidenceSha256": "4d654ef1a9f01d700232bf91ba2152d0cbae90d2b64ec4ad0cd32a64703188d8",
+          "fields": [
+            "summary"
+          ],
+          "indexPaths": [
+            "github/owned/index.md"
+          ]
+        },
+        {
+          "sourceId": "okf-index-catalog",
+          "sourceSha256": "0c793de7583c4dde72f355bac18a0e3a056a795a4907e5c720ef7041757b0a2b",
+          "evidenceSha256": "420f68536bdb3136425ad7ccb7682e6620ed81ec4cd2903476d099be38037422",
+          "fields": [
+            "url"
+          ],
+          "indexPaths": [
+            "github/owned/index.md"
+          ]
         }
       ]
     },
@@ -97,24 +161,52 @@
         {
           "field": "title",
           "value": "health-pilot",
-          "evidenceSha256": "a1107f901d2f8bfe97b232184950f8cbeb7da494b6719f7c36c00762d55890a9"
+          "evidenceSha256": "53f2839303066c46ee4a5b9d0fc9e962a19f332c7028149e674b92d3196e72c9"
         },
         {
           "field": "summary",
           "value": "基于 Agno AgentOS 的 1v1 健康管理 AI 教练，探索多模态对话、长期记忆与主动提醒。",
-          "evidenceSha256": "a1107f901d2f8bfe97b232184950f8cbeb7da494b6719f7c36c00762d55890a9"
+          "evidenceSha256": "64ef89aeedd781b4f34ee39dd57bbd924a73ed5443c3562d432aad4902fb478d"
         },
         {
           "field": "url",
           "value": "https://github.com/defulat-coder/health-pilot",
-          "evidenceSha256": "a1107f901d2f8bfe97b232184950f8cbeb7da494b6719f7c36c00762d55890a9"
+          "evidenceSha256": "2a8be613e1642384e54e70c3bcf2451f8321c54e5abf99e6673c201a188588c0"
         }
       ],
       "provenance": [
         {
           "sourceId": "okf-index-catalog",
-          "sourceSha256": "c0bf5db9509d4d1101a30284787f37c6f901da326e9d8ff9794efc4465610f2a",
-          "evidenceSha256": "a1107f901d2f8bfe97b232184950f8cbeb7da494b6719f7c36c00762d55890a9"
+          "sourceSha256": "0c793de7583c4dde72f355bac18a0e3a056a795a4907e5c720ef7041757b0a2b",
+          "evidenceSha256": "53f2839303066c46ee4a5b9d0fc9e962a19f332c7028149e674b92d3196e72c9",
+          "fields": [
+            "title"
+          ],
+          "indexPaths": [
+            "github/owned/index.md"
+          ]
+        },
+        {
+          "sourceId": "okf-index-catalog",
+          "sourceSha256": "0c793de7583c4dde72f355bac18a0e3a056a795a4907e5c720ef7041757b0a2b",
+          "evidenceSha256": "64ef89aeedd781b4f34ee39dd57bbd924a73ed5443c3562d432aad4902fb478d",
+          "fields": [
+            "summary"
+          ],
+          "indexPaths": [
+            "github/owned/index.md"
+          ]
+        },
+        {
+          "sourceId": "okf-index-catalog",
+          "sourceSha256": "0c793de7583c4dde72f355bac18a0e3a056a795a4907e5c720ef7041757b0a2b",
+          "evidenceSha256": "2a8be613e1642384e54e70c3bcf2451f8321c54e5abf99e6673c201a188588c0",
+          "fields": [
+            "url"
+          ],
+          "indexPaths": [
+            "github/owned/index.md"
+          ]
         }
       ]
     },
@@ -129,24 +221,52 @@
         {
           "field": "title",
           "value": "ddd-hr",
-          "evidenceSha256": "a4257f25503dcf812f6384342abfdcc2e13a89c1040f5a4b63fa20b598ac1b8a"
+          "evidenceSha256": "331512cd9ed7da220facc1ef9a74cce369cf1d385f10ef32eea01ca7ae4c8838"
         },
         {
           "field": "summary",
           "value": "以 DDD 领域驱动设计构建 HR 业务，在真实业务模型中持续验证架构边界。",
-          "evidenceSha256": "a4257f25503dcf812f6384342abfdcc2e13a89c1040f5a4b63fa20b598ac1b8a"
+          "evidenceSha256": "d8d27262cdf5bb033f77ee228e2060372f3863b39c947aa51645abc163bf4b6f"
         },
         {
           "field": "url",
           "value": "https://github.com/defulat-coder/ddd-hr",
-          "evidenceSha256": "a4257f25503dcf812f6384342abfdcc2e13a89c1040f5a4b63fa20b598ac1b8a"
+          "evidenceSha256": "14b95cb78d3daa865e423b0a14d008de1b3a51d7ce28004261c77b55f62d1fcf"
         }
       ],
       "provenance": [
         {
           "sourceId": "okf-index-catalog",
-          "sourceSha256": "c0bf5db9509d4d1101a30284787f37c6f901da326e9d8ff9794efc4465610f2a",
-          "evidenceSha256": "a4257f25503dcf812f6384342abfdcc2e13a89c1040f5a4b63fa20b598ac1b8a"
+          "sourceSha256": "0c793de7583c4dde72f355bac18a0e3a056a795a4907e5c720ef7041757b0a2b",
+          "evidenceSha256": "331512cd9ed7da220facc1ef9a74cce369cf1d385f10ef32eea01ca7ae4c8838",
+          "fields": [
+            "title"
+          ],
+          "indexPaths": [
+            "github/owned/index.md"
+          ]
+        },
+        {
+          "sourceId": "okf-index-catalog",
+          "sourceSha256": "0c793de7583c4dde72f355bac18a0e3a056a795a4907e5c720ef7041757b0a2b",
+          "evidenceSha256": "d8d27262cdf5bb033f77ee228e2060372f3863b39c947aa51645abc163bf4b6f",
+          "fields": [
+            "summary"
+          ],
+          "indexPaths": [
+            "github/owned/index.md"
+          ]
+        },
+        {
+          "sourceId": "okf-index-catalog",
+          "sourceSha256": "0c793de7583c4dde72f355bac18a0e3a056a795a4907e5c720ef7041757b0a2b",
+          "evidenceSha256": "14b95cb78d3daa865e423b0a14d008de1b3a51d7ce28004261c77b55f62d1fcf",
+          "fields": [
+            "url"
+          ],
+          "indexPaths": [
+            "github/owned/index.md"
+          ]
         }
       ]
     },
@@ -161,24 +281,52 @@
         {
           "field": "title",
           "value": "agno-cookbook-cn",
-          "evidenceSha256": "4cbe748b3fd01e1d60d8acd8df8c44a1d2cc84c23eab86ae881220e341084bcc"
+          "evidenceSha256": "53a5a1ba6c4acfca6510fdc45204835ee7fe9d88ef49b278721dc87c53637734"
         },
         {
           "field": "summary",
           "value": "Agno Cookbook 中文版，把多智能体框架的实践资料整理为可持续维护的中文知识入口。",
-          "evidenceSha256": "4cbe748b3fd01e1d60d8acd8df8c44a1d2cc84c23eab86ae881220e341084bcc"
+          "evidenceSha256": "1e049b68dbe1f8e78b4deeaaa279ae9ceffb684fde9366f5058c7aabba63b0cd"
         },
         {
           "field": "url",
           "value": "https://github.com/defulat-coder/agno-cookbook-cn",
-          "evidenceSha256": "4cbe748b3fd01e1d60d8acd8df8c44a1d2cc84c23eab86ae881220e341084bcc"
+          "evidenceSha256": "56e51d7a8085a6b7c60547248ee2830e206ea076bd0e731975d7189278a622c4"
         }
       ],
       "provenance": [
         {
           "sourceId": "okf-index-catalog",
-          "sourceSha256": "c0bf5db9509d4d1101a30284787f37c6f901da326e9d8ff9794efc4465610f2a",
-          "evidenceSha256": "4cbe748b3fd01e1d60d8acd8df8c44a1d2cc84c23eab86ae881220e341084bcc"
+          "sourceSha256": "0c793de7583c4dde72f355bac18a0e3a056a795a4907e5c720ef7041757b0a2b",
+          "evidenceSha256": "53a5a1ba6c4acfca6510fdc45204835ee7fe9d88ef49b278721dc87c53637734",
+          "fields": [
+            "title"
+          ],
+          "indexPaths": [
+            "github/owned/index.md"
+          ]
+        },
+        {
+          "sourceId": "okf-index-catalog",
+          "sourceSha256": "0c793de7583c4dde72f355bac18a0e3a056a795a4907e5c720ef7041757b0a2b",
+          "evidenceSha256": "1e049b68dbe1f8e78b4deeaaa279ae9ceffb684fde9366f5058c7aabba63b0cd",
+          "fields": [
+            "summary"
+          ],
+          "indexPaths": [
+            "github/owned/index.md"
+          ]
+        },
+        {
+          "sourceId": "okf-index-catalog",
+          "sourceSha256": "0c793de7583c4dde72f355bac18a0e3a056a795a4907e5c720ef7041757b0a2b",
+          "evidenceSha256": "56e51d7a8085a6b7c60547248ee2830e206ea076bd0e731975d7189278a622c4",
+          "fields": [
+            "url"
+          ],
+          "indexPaths": [
+            "github/owned/index.md"
+          ]
         }
       ]
     },
@@ -192,19 +340,36 @@
         {
           "field": "title",
           "value": "个人知识索引",
-          "evidenceSha256": "92d7e4a070723298fdbbe14560119da879a56f7f578fda0563bd249c1afcdd9d"
+          "evidenceSha256": "7bec87aa83ec5a7ebccc68a5feb608de12c5e3dad03d43ad1519923252adabed"
         },
         {
           "field": "summary",
           "value": "15 个个人知识库汇集 1788 份文档与 1175 条小记，经过重复收敛与人工复核队列整理。",
-          "evidenceSha256": "92d7e4a070723298fdbbe14560119da879a56f7f578fda0563bd249c1afcdd9d"
+          "evidenceSha256": "fdeadf2556f42165c2ee03e18d32a0745acf3edb8e7cfe2ba783c29984b610a6"
         }
       ],
       "provenance": [
         {
           "sourceId": "okf-index-catalog",
-          "sourceSha256": "c0bf5db9509d4d1101a30284787f37c6f901da326e9d8ff9794efc4465610f2a",
-          "evidenceSha256": "92d7e4a070723298fdbbe14560119da879a56f7f578fda0563bd249c1afcdd9d"
+          "sourceSha256": "09600b96dcc935acd5b915c4e9a6ad02a9048a60ad81666227791b67aaa3aef1",
+          "evidenceSha256": "7bec87aa83ec5a7ebccc68a5feb608de12c5e3dad03d43ad1519923252adabed",
+          "fields": [
+            "title"
+          ],
+          "indexPaths": [
+            "yuque/index.md"
+          ]
+        },
+        {
+          "sourceId": "okf-index-catalog",
+          "sourceSha256": "09600b96dcc935acd5b915c4e9a6ad02a9048a60ad81666227791b67aaa3aef1",
+          "evidenceSha256": "fdeadf2556f42165c2ee03e18d32a0745acf3edb8e7cfe2ba783c29984b610a6",
+          "fields": [
+            "summary"
+          ],
+          "indexPaths": [
+            "yuque/index.md"
+          ]
         }
       ]
     },
@@ -218,19 +383,37 @@
         {
           "field": "title",
           "value": "AIGC",
-          "evidenceSha256": "54cac1e278bf50902369521749a441ded4ebc4aca451d7eb35676953cda5ee05"
+          "evidenceSha256": "5728fde359cc14038bb6ce70aa9abf399a28c15916d936b11db68de922807e8f"
         },
         {
           "field": "summary",
           "value": "从大模型、提示工程、RAG 到 Agent 框架：要么解决问题，要么成为问题的一部分。",
-          "evidenceSha256": "54cac1e278bf50902369521749a441ded4ebc4aca451d7eb35676953cda5ee05"
+          "evidenceSha256": "eacb8cca90c0eb5deb041c467b273bbc79f6f54eb6d2b456994c8dfb98bab879"
         }
       ],
       "provenance": [
         {
           "sourceId": "okf-index-catalog",
-          "sourceSha256": "c0bf5db9509d4d1101a30284787f37c6f901da326e9d8ff9794efc4465610f2a",
-          "evidenceSha256": "54cac1e278bf50902369521749a441ded4ebc4aca451d7eb35676953cda5ee05"
+          "sourceSha256": "750a30039ce1c2376746c595fb2f69bf1ba65af0fef3ad7d7f1734cc668d33ec",
+          "evidenceSha256": "5728fde359cc14038bb6ce70aa9abf399a28c15916d936b11db68de922807e8f",
+          "fields": [
+            "title"
+          ],
+          "indexPaths": [
+            "yuque/repositories/index.md"
+          ]
+        },
+        {
+          "sourceId": "okf-index-catalog",
+          "sourceSha256": "556f1f2d051c842864c8828f27d76d8d2e0a4f7c713d5c7fa0c05ffd247de66f",
+          "evidenceSha256": "eacb8cca90c0eb5deb041c467b273bbc79f6f54eb6d2b456994c8dfb98bab879",
+          "fields": [
+            "summary"
+          ],
+          "indexPaths": [
+            "yuque/repositories/index.md",
+            "yuque/documents/49931046/index.md"
+          ]
         }
       ]
     },
@@ -244,19 +427,37 @@
         {
           "field": "title",
           "value": "产品与业务",
-          "evidenceSha256": "5c06a415a62a3543a3a81d4cdba7c082d0ad3df41d71e72ed3eca471a276efd0"
+          "evidenceSha256": "058755321dbb29525ef22ac0ff6c6a86988ff31bbdf3095f7093523f99c9d97c"
         },
         {
           "field": "summary",
           "value": "围绕产品思考、业务设计、数据体系与企业场景形成长期知识沉淀。",
-          "evidenceSha256": "5c06a415a62a3543a3a81d4cdba7c082d0ad3df41d71e72ed3eca471a276efd0"
+          "evidenceSha256": "1298f880c18c1c8a244c1d9e54fb5c4e2acd2844c63565c1d33c0284a92bc2ae"
         }
       ],
       "provenance": [
         {
           "sourceId": "okf-index-catalog",
-          "sourceSha256": "c0bf5db9509d4d1101a30284787f37c6f901da326e9d8ff9794efc4465610f2a",
-          "evidenceSha256": "5c06a415a62a3543a3a81d4cdba7c082d0ad3df41d71e72ed3eca471a276efd0"
+          "sourceSha256": "750a30039ce1c2376746c595fb2f69bf1ba65af0fef3ad7d7f1734cc668d33ec",
+          "evidenceSha256": "058755321dbb29525ef22ac0ff6c6a86988ff31bbdf3095f7093523f99c9d97c",
+          "fields": [
+            "title"
+          ],
+          "indexPaths": [
+            "yuque/repositories/index.md"
+          ]
+        },
+        {
+          "sourceId": "okf-index-catalog",
+          "sourceSha256": "29afed6df5e1269604646431d215b679aa177acc977e94bcee770cd0638f58ca",
+          "evidenceSha256": "1298f880c18c1c8a244c1d9e54fb5c4e2acd2844c63565c1d33c0284a92bc2ae",
+          "fields": [
+            "summary"
+          ],
+          "indexPaths": [
+            "yuque/repositories/index.md",
+            "yuque/documents/1654518/index.md"
+          ]
         }
       ]
     },
@@ -270,19 +471,36 @@
         {
           "field": "title",
           "value": "工具与效率",
-          "evidenceSha256": "f737270f261aa850f5791b5c00b2088d67f5fe6ae5dce31714f574db33959dfe"
+          "evidenceSha256": "392dd2f66d9dd7b8072f731b6b221ba771caf69c6d1b472ce1b550e1e0e8c32d"
         },
         {
           "field": "summary",
           "value": "生产工具、开发环境与工程效率方法，沉淀为可复用的实践索引。",
-          "evidenceSha256": "f737270f261aa850f5791b5c00b2088d67f5fe6ae5dce31714f574db33959dfe"
+          "evidenceSha256": "921721e30b7018a57602a43f736095f52598c4e7b406194a1939fdc68e0796ee"
         }
       ],
       "provenance": [
         {
           "sourceId": "okf-index-catalog",
-          "sourceSha256": "c0bf5db9509d4d1101a30284787f37c6f901da326e9d8ff9794efc4465610f2a",
-          "evidenceSha256": "f737270f261aa850f5791b5c00b2088d67f5fe6ae5dce31714f574db33959dfe"
+          "sourceSha256": "750a30039ce1c2376746c595fb2f69bf1ba65af0fef3ad7d7f1734cc668d33ec",
+          "evidenceSha256": "392dd2f66d9dd7b8072f731b6b221ba771caf69c6d1b472ce1b550e1e0e8c32d",
+          "fields": [
+            "title"
+          ],
+          "indexPaths": [
+            "yuque/repositories/index.md"
+          ]
+        },
+        {
+          "sourceId": "okf-index-catalog",
+          "sourceSha256": "750a30039ce1c2376746c595fb2f69bf1ba65af0fef3ad7d7f1734cc668d33ec",
+          "evidenceSha256": "921721e30b7018a57602a43f736095f52598c4e7b406194a1939fdc68e0796ee",
+          "fields": [
+            "summary"
+          ],
+          "indexPaths": [
+            "yuque/repositories/index.md"
+          ]
         }
       ]
     },
@@ -296,19 +514,36 @@
         {
           "field": "title",
           "value": "持续学习",
-          "evidenceSha256": "fff98625fc70fe9868e806bff9a41235189744de53951250274fb7895e90a1fa"
+          "evidenceSha256": "f84525be73bb1abf347bb8fc99cb11e98b4ebda37aec572bb272915d5b36b364"
         },
         {
           "field": "summary",
           "value": "把技术阅读、源码研究与实验记录收敛为可回看、可继续生长的知识目录。",
-          "evidenceSha256": "fff98625fc70fe9868e806bff9a41235189744de53951250274fb7895e90a1fa"
+          "evidenceSha256": "4a0cdc0bee7ab1ce63f0e67756ab9c522f83cd04b2907aff0e002d65b493ddf2"
         }
       ],
       "provenance": [
         {
           "sourceId": "okf-index-catalog",
-          "sourceSha256": "c0bf5db9509d4d1101a30284787f37c6f901da326e9d8ff9794efc4465610f2a",
-          "evidenceSha256": "fff98625fc70fe9868e806bff9a41235189744de53951250274fb7895e90a1fa"
+          "sourceSha256": "750a30039ce1c2376746c595fb2f69bf1ba65af0fef3ad7d7f1734cc668d33ec",
+          "evidenceSha256": "f84525be73bb1abf347bb8fc99cb11e98b4ebda37aec572bb272915d5b36b364",
+          "fields": [
+            "title"
+          ],
+          "indexPaths": [
+            "yuque/repositories/index.md"
+          ]
+        },
+        {
+          "sourceId": "okf-index-catalog",
+          "sourceSha256": "750a30039ce1c2376746c595fb2f69bf1ba65af0fef3ad7d7f1734cc668d33ec",
+          "evidenceSha256": "4a0cdc0bee7ab1ce63f0e67756ab9c522f83cd04b2907aff0e002d65b493ddf2",
+          "fields": [
+            "summary"
+          ],
+          "indexPaths": [
+            "yuque/repositories/index.md"
+          ]
         }
       ]
     },
@@ -322,19 +557,36 @@
         {
           "field": "title",
           "value": "Agent 实践索引",
-          "evidenceSha256": "0fd4f6ffc4d519f47e02a6f79e655558b1cd310d7856d4ed021cc38bdfd30ebd"
+          "evidenceSha256": "e3146f5a9a5d41cf1c16240a0045b6067c605db257e7dd2d2e859f0c728a2f5a"
         },
         {
           "field": "summary",
           "value": "881 个 Codex / Claude Code 会话、142 份记忆与 55 个项目目录，构成持续迭代的工程实践轨迹。",
-          "evidenceSha256": "0fd4f6ffc4d519f47e02a6f79e655558b1cd310d7856d4ed021cc38bdfd30ebd"
+          "evidenceSha256": "ccc373beb7c17b124f94bfb336ac9e4c5eb83cdcf994da116feb7e3688af4a39"
         }
       ],
       "provenance": [
         {
           "sourceId": "okf-index-catalog",
-          "sourceSha256": "c0bf5db9509d4d1101a30284787f37c6f901da326e9d8ff9794efc4465610f2a",
-          "evidenceSha256": "0fd4f6ffc4d519f47e02a6f79e655558b1cd310d7856d4ed021cc38bdfd30ebd"
+          "sourceSha256": "a9dc1ca2364c2d941fa2688de3ee8df0c5171d41e27856d0912a7f081b5eef99",
+          "evidenceSha256": "e3146f5a9a5d41cf1c16240a0045b6067c605db257e7dd2d2e859f0c728a2f5a",
+          "fields": [
+            "title"
+          ],
+          "indexPaths": [
+            "agent-history/index.md"
+          ]
+        },
+        {
+          "sourceId": "okf-index-catalog",
+          "sourceSha256": "a9dc1ca2364c2d941fa2688de3ee8df0c5171d41e27856d0912a7f081b5eef99",
+          "evidenceSha256": "ccc373beb7c17b124f94bfb336ac9e4c5eb83cdcf994da116feb7e3688af4a39",
+          "fields": [
+            "summary"
+          ],
+          "indexPaths": [
+            "agent-history/index.md"
+          ]
         }
       ]
     },
@@ -348,19 +600,36 @@
         {
           "field": "title",
           "value": "super-agent-claude",
-          "evidenceSha256": "4544efbdb552d434377fcf86f7ba840db59088ba2ac040db75d9e858d1c9f283"
+          "evidenceSha256": "89f7a62e0ee05f054b82f5fe7b517db5b7e0c0ba8b2b2315d28b5d0cce20e167"
         },
         {
           "field": "summary",
           "value": "OKF 项目索引记录 246 个跨平台会话，是当前最密集的 Agent 平台与工作台实践。",
-          "evidenceSha256": "4544efbdb552d434377fcf86f7ba840db59088ba2ac040db75d9e858d1c9f283"
+          "evidenceSha256": "539eab94204ffc06928b70f5712e05d0e4fb5c9606017a86c1895fb2de77ad8f"
         }
       ],
       "provenance": [
         {
           "sourceId": "okf-index-catalog",
-          "sourceSha256": "c0bf5db9509d4d1101a30284787f37c6f901da326e9d8ff9794efc4465610f2a",
-          "evidenceSha256": "4544efbdb552d434377fcf86f7ba840db59088ba2ac040db75d9e858d1c9f283"
+          "sourceSha256": "7088867a4c5f076021ce8f8e0e3889ae54878f4fd13495863832311295c8b1ea",
+          "evidenceSha256": "89f7a62e0ee05f054b82f5fe7b517db5b7e0c0ba8b2b2315d28b5d0cce20e167",
+          "fields": [
+            "title"
+          ],
+          "indexPaths": [
+            "agent-history/projects/index.md"
+          ]
+        },
+        {
+          "sourceId": "okf-index-catalog",
+          "sourceSha256": "7088867a4c5f076021ce8f8e0e3889ae54878f4fd13495863832311295c8b1ea",
+          "evidenceSha256": "539eab94204ffc06928b70f5712e05d0e4fb5c9606017a86c1895fb2de77ad8f",
+          "fields": [
+            "summary"
+          ],
+          "indexPaths": [
+            "agent-history/projects/index.md"
+          ]
         }
       ]
     },
@@ -374,19 +643,36 @@
         {
           "field": "title",
           "value": "agent-template",
-          "evidenceSha256": "606d50acc684035a4e7ec5ef5845af3efa180c75b93f1bc0890607b085c5a60c"
+          "evidenceSha256": "73e119774c299d9a7b9afeb99583a018f7ea0b7f02d976107609beb747fd8d8e"
         },
         {
           "field": "summary",
           "value": "主项目索引记录 122 个跨平台会话，持续打磨 Agent 项目的工程基线与模板能力。",
-          "evidenceSha256": "606d50acc684035a4e7ec5ef5845af3efa180c75b93f1bc0890607b085c5a60c"
+          "evidenceSha256": "13a53062d0358ed8d824c55d6a300e98fa10a0397f34da92fcee97d5d4d5cbd9"
         }
       ],
       "provenance": [
         {
           "sourceId": "okf-index-catalog",
-          "sourceSha256": "c0bf5db9509d4d1101a30284787f37c6f901da326e9d8ff9794efc4465610f2a",
-          "evidenceSha256": "606d50acc684035a4e7ec5ef5845af3efa180c75b93f1bc0890607b085c5a60c"
+          "sourceSha256": "7088867a4c5f076021ce8f8e0e3889ae54878f4fd13495863832311295c8b1ea",
+          "evidenceSha256": "73e119774c299d9a7b9afeb99583a018f7ea0b7f02d976107609beb747fd8d8e",
+          "fields": [
+            "title"
+          ],
+          "indexPaths": [
+            "agent-history/projects/index.md"
+          ]
+        },
+        {
+          "sourceId": "okf-index-catalog",
+          "sourceSha256": "7088867a4c5f076021ce8f8e0e3889ae54878f4fd13495863832311295c8b1ea",
+          "evidenceSha256": "13a53062d0358ed8d824c55d6a300e98fa10a0397f34da92fcee97d5d4d5cbd9",
+          "fields": [
+            "summary"
+          ],
+          "indexPaths": [
+            "agent-history/projects/index.md"
+          ]
         }
       ]
     },
@@ -400,19 +686,36 @@
         {
           "field": "title",
           "value": "agent-try",
-          "evidenceSha256": "3a50f879f2a6cc37d3710db2ca74f3afa2f49fabab264f154998af97976113d6"
+          "evidenceSha256": "f00361dd70b1ae839feb208637e0528f52c3f1773ca72feeaac419947a239440"
         },
         {
           "field": "summary",
           "value": "项目索引记录 97 个跨平台会话，用于验证 Agent、OKF、检索与工具接入方案。",
-          "evidenceSha256": "3a50f879f2a6cc37d3710db2ca74f3afa2f49fabab264f154998af97976113d6"
+          "evidenceSha256": "6d054973e9a2f936329d365bc5625caa9d46bfd9456bac1898ec310520d4fb29"
         }
       ],
       "provenance": [
         {
           "sourceId": "okf-index-catalog",
-          "sourceSha256": "c0bf5db9509d4d1101a30284787f37c6f901da326e9d8ff9794efc4465610f2a",
-          "evidenceSha256": "3a50f879f2a6cc37d3710db2ca74f3afa2f49fabab264f154998af97976113d6"
+          "sourceSha256": "7088867a4c5f076021ce8f8e0e3889ae54878f4fd13495863832311295c8b1ea",
+          "evidenceSha256": "f00361dd70b1ae839feb208637e0528f52c3f1773ca72feeaac419947a239440",
+          "fields": [
+            "title"
+          ],
+          "indexPaths": [
+            "agent-history/projects/index.md"
+          ]
+        },
+        {
+          "sourceId": "okf-index-catalog",
+          "sourceSha256": "7088867a4c5f076021ce8f8e0e3889ae54878f4fd13495863832311295c8b1ea",
+          "evidenceSha256": "6d054973e9a2f936329d365bc5625caa9d46bfd9456bac1898ec310520d4fb29",
+          "fields": [
+            "summary"
+          ],
+          "indexPaths": [
+            "agent-history/projects/index.md"
+          ]
         }
       ]
     },
@@ -426,19 +729,37 @@
         {
           "field": "title",
           "value": "pilot",
-          "evidenceSha256": "5024f65568fd8a5a577e2e39886261b2a3ec519dcb7768eb78b127b7f98d0255"
+          "evidenceSha256": "a47adcd4e289abe7ff02d351f749fbeddfc8c5939309607472648332e5d43e51"
         },
         {
           "field": "summary",
           "value": "项目索引记录 77 个跨平台会话，覆盖全栈脚手架、业务建模、数据库与协作流程。",
-          "evidenceSha256": "5024f65568fd8a5a577e2e39886261b2a3ec519dcb7768eb78b127b7f98d0255"
+          "evidenceSha256": "69bee73aeb8d2ca9bc7f840819ed8aa351c0e53526cfe58c4db7dc5a5cc70a5c"
         }
       ],
       "provenance": [
         {
           "sourceId": "okf-index-catalog",
-          "sourceSha256": "c0bf5db9509d4d1101a30284787f37c6f901da326e9d8ff9794efc4465610f2a",
-          "evidenceSha256": "5024f65568fd8a5a577e2e39886261b2a3ec519dcb7768eb78b127b7f98d0255"
+          "sourceSha256": "7088867a4c5f076021ce8f8e0e3889ae54878f4fd13495863832311295c8b1ea",
+          "evidenceSha256": "a47adcd4e289abe7ff02d351f749fbeddfc8c5939309607472648332e5d43e51",
+          "fields": [
+            "title"
+          ],
+          "indexPaths": [
+            "agent-history/projects/index.md"
+          ]
+        },
+        {
+          "sourceId": "okf-index-catalog",
+          "sourceSha256": "64b479d3144d7d0228c4b5270c4bf41785c36c0123cc54374d7aa980f0d697a7",
+          "evidenceSha256": "69bee73aeb8d2ca9bc7f840819ed8aa351c0e53526cfe58c4db7dc5a5cc70a5c",
+          "fields": [
+            "summary"
+          ],
+          "indexPaths": [
+            "agent-history/projects/index.md",
+            "agent-history/projects/74b3b60d7e7fb3be/index.md"
+          ]
         }
       ]
     },
@@ -452,19 +773,36 @@
         {
           "field": "title",
           "value": "auto-coding",
-          "evidenceSha256": "09ae8bf2d8657ee953722f7f088f55331815b35fb7813599a9c2565edf93e105"
+          "evidenceSha256": "2a0fd8cb53e9460ab7c91b7eb025a161c4f48d5aacb70624446ad7b33d808238"
         },
         {
           "field": "summary",
           "value": "项目索引记录 53 个跨平台会话，聚焦自动化编码与开发工作流。",
-          "evidenceSha256": "09ae8bf2d8657ee953722f7f088f55331815b35fb7813599a9c2565edf93e105"
+          "evidenceSha256": "c04a2f2225748336c54b861b35fe4e85050d85840aa039ac867d75d61b6caa6a"
         }
       ],
       "provenance": [
         {
           "sourceId": "okf-index-catalog",
-          "sourceSha256": "c0bf5db9509d4d1101a30284787f37c6f901da326e9d8ff9794efc4465610f2a",
-          "evidenceSha256": "09ae8bf2d8657ee953722f7f088f55331815b35fb7813599a9c2565edf93e105"
+          "sourceSha256": "7088867a4c5f076021ce8f8e0e3889ae54878f4fd13495863832311295c8b1ea",
+          "evidenceSha256": "2a0fd8cb53e9460ab7c91b7eb025a161c4f48d5aacb70624446ad7b33d808238",
+          "fields": [
+            "title"
+          ],
+          "indexPaths": [
+            "agent-history/projects/index.md"
+          ]
+        },
+        {
+          "sourceId": "okf-index-catalog",
+          "sourceSha256": "7088867a4c5f076021ce8f8e0e3889ae54878f4fd13495863832311295c8b1ea",
+          "evidenceSha256": "c04a2f2225748336c54b861b35fe4e85050d85840aa039ac867d75d61b6caa6a",
+          "fields": [
+            "summary"
+          ],
+          "indexPaths": [
+            "agent-history/projects/index.md"
+          ]
         }
       ]
     },
@@ -478,22 +816,39 @@
         {
           "field": "title",
           "value": "health-pilot",
-          "evidenceSha256": "2c42e03d40065fcf85ac917eedbb6d61d654186ac9b9af4b8c919e2aa8d27398"
+          "evidenceSha256": "0df2bb86c5d898ff274b7cec6777d3deb81e853480f98d8198d9449349dfa769"
         },
         {
           "field": "summary",
           "value": "项目索引记录 36 个跨平台会话，连接原生端、后端服务与健康 Agent 场景。",
-          "evidenceSha256": "2c42e03d40065fcf85ac917eedbb6d61d654186ac9b9af4b8c919e2aa8d27398"
+          "evidenceSha256": "958740cb44fee4f0828bae81a3305219c0e4ac0c903c210ad08963b833c6c700"
         }
       ],
       "provenance": [
         {
           "sourceId": "okf-index-catalog",
-          "sourceSha256": "c0bf5db9509d4d1101a30284787f37c6f901da326e9d8ff9794efc4465610f2a",
-          "evidenceSha256": "2c42e03d40065fcf85ac917eedbb6d61d654186ac9b9af4b8c919e2aa8d27398"
+          "sourceSha256": "7088867a4c5f076021ce8f8e0e3889ae54878f4fd13495863832311295c8b1ea",
+          "evidenceSha256": "0df2bb86c5d898ff274b7cec6777d3deb81e853480f98d8198d9449349dfa769",
+          "fields": [
+            "title"
+          ],
+          "indexPaths": [
+            "agent-history/projects/index.md"
+          ]
+        },
+        {
+          "sourceId": "okf-index-catalog",
+          "sourceSha256": "7088867a4c5f076021ce8f8e0e3889ae54878f4fd13495863832311295c8b1ea",
+          "evidenceSha256": "958740cb44fee4f0828bae81a3305219c0e4ac0c903c210ad08963b833c6c700",
+          "fields": [
+            "summary"
+          ],
+          "indexPaths": [
+            "agent-history/projects/index.md"
+          ]
         }
       ]
     }
   ],
-  "contentHash": "1fb156b622afe8b4ec1242b1cedb37ecf6c947f95cd544171fe3157e652f72a0"
+  "contentHash": "806ca47bf534a0182137e1611fd6dc9309964c6be93c7bc3b3ab3f5b2189ea7f"
 }

@@ -47,6 +47,30 @@ describe("public content projection", () => {
     expect(Object.values(manifest.findings)).toEqual([0, 0, 0, 0]);
   });
 
+  it("binds every public claim to explicit OKF index files", async () => {
+    const { projection } = await buildPublicContentModel();
+
+    for (const item of projection.items) {
+      for (const claim of item.claims) {
+        const matchingProvenance = item.provenance.filter(
+          (entry) =>
+            entry.evidenceSha256 === claim.evidenceSha256 &&
+            entry.fields.includes(claim.field),
+        );
+
+        expect(matchingProvenance).not.toHaveLength(0);
+        for (const provenance of matchingProvenance) {
+          expect(provenance.indexPaths).not.toHaveLength(0);
+          expect(
+            provenance.indexPaths.every((indexPath) =>
+              indexPath.endsWith("index.md"),
+            ),
+          ).toBe(true);
+        }
+      }
+    }
+  });
+
   it("detects credentials, personal contact data, and private paths", () => {
     const scan = scanPublicValue({
       privatePath: "knowledge/private/example.md",
@@ -57,5 +81,14 @@ describe("public content projection", () => {
     expect(scan.privateReferenceFindings).not.toHaveLength(0);
     expect(scan.privacyFindings).not.toHaveLength(0);
     expect(scan.secretFindings).not.toHaveLength(0);
+  });
+
+  it("does not mistake provenance hashes for mainland identity numbers", () => {
+    const scan = scanPublicValue({
+      evidenceSha256:
+        "3a00e88ab66d5f2002d5de222874352744219497a11480c786430815773acc08",
+    });
+
+    expect(scan.privacyFindings).toHaveLength(0);
   });
 });

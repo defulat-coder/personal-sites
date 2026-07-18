@@ -15,7 +15,7 @@
     "test": "vitest run && node --test tests/*.test.mjs",
     "public-content:build": "node scripts/build-public-content.mjs",
     "public-content:verify": "node scripts/verify-public-content.mjs",
-    "verify:content": "pnpm public-content:verify && node scripts/verify-site-content.mjs",
+    "verify:content": "pnpm public-content:verify && pnpm verify:quick && node scripts/verify-site-content.mjs",
     "verify:quick": "node scripts/verify-site-quick.mjs",
     "verify:visual": "node scripts/verify-site-visual.mjs",
     "data:sync:yuque": "node scripts/yuque-sync.mjs",

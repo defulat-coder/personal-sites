@@ -127,29 +127,26 @@ async function main() {
   const publicVerification = JSON.parse(
     await readFile(path.join(evidenceDirectory, "public-content.json"), "utf8"),
   );
-  const applicationContents = await Promise.all(
-    applicationFiles.map((fileName) => readFile(fileName, "utf8")),
+  const quickVerification = JSON.parse(
+    await readFile(path.join(evidenceDirectory, "quick.json"), "utf8"),
   );
-  const renderedItemIds = projection.items
-    .filter((item) =>
-      applicationContents.some(
-        (contents) =>
-          contents.includes(`"${item.id}"`) || contents.includes(`'${item.id}'`),
-      ),
-    )
-    .map((item) => item.id);
-  const renderedItemIdSet = new Set(renderedItemIds);
-  const renderedClaims = projection.items.flatMap((item) =>
-    renderedItemIdSet.has(item.id)
-      ? item.claims.map((claim) => ({ itemId: item.id, field: claim.field }))
-      : [],
+  const renderedItemIds = quickVerification.publicProjection?.renderedItemIds ?? [];
+  const renderedClaims = quickVerification.publicProjection?.renderedClaims ?? [];
+  const renderedClaimKeys = new Set(
+    renderedClaims.map((claim) => `${claim.itemId}:${claim.field}`),
   );
   const expectedItemIds = projection.items.map((item) => item.id);
+  const expectedClaimKeys = projection.items.flatMap((item) =>
+    item.claims.map((claim) => `${item.id}:${claim.field}`),
+  );
   const projectionPass =
     publicVerification.result === "pass" &&
+    quickVerification.result === "pass" &&
+    quickVerification.publicProjection?.contentHash === projection.contentHash &&
     manifest.projectionHash === projection.contentHash &&
     manifest.silentDropCount === 0 &&
     expectedItemIds.every((itemId) => renderedItemIds.includes(itemId)) &&
+    expectedClaimKeys.every((claimKey) => renderedClaimKeys.has(claimKey)) &&
     Object.values(manifest.findings).every((count) => count === 0);
 
   const result =

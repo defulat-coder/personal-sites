@@ -85,10 +85,14 @@ async function loadApprovedReferenceBaseline(browser, baselineConfig) {
     const existing = JSON.parse(
       await readFile(path.join(evidenceDirectory, "reference-baseline.json"), "utf8"),
     );
-    if (existing.combinedSha256 !== baselineConfig.reference.combinedSha256) {
-      throw new Error("Stored reference baseline hash changed");
-    }
-    for (const capture of existing.captures) {
+    const captures = [];
+    for (const viewport of viewports) {
+      const capture = existing.captures.find(
+        (candidate) => candidate.viewport === viewport.id,
+      );
+      if (!capture) {
+        throw new Error(`Stored reference capture is missing for ${viewport.id}`);
+      }
       const screenshot = await readFile(
         path.join(evidenceDirectory, capture.file),
       );
@@ -96,8 +100,20 @@ async function loadApprovedReferenceBaseline(browser, baselineConfig) {
       if (actual !== baselineConfig.reference.captures[capture.viewport]) {
         throw new Error(`Stored reference capture changed for ${capture.viewport}`);
       }
+      captures.push({ ...capture, screenshotSha256: actual });
     }
-    return { ...existing, reused: true };
+    const combinedSha256 = createHash("sha256")
+      .update(captures.map((item) => item.screenshotSha256).join(":"))
+      .digest("hex");
+    if (combinedSha256 !== baselineConfig.reference.combinedSha256) {
+      throw new Error("Stored reference baseline hash changed");
+    }
+    return {
+      referenceUrl,
+      captures,
+      combinedSha256,
+      reused: true,
+    };
   } catch {
     const captures = [];
     for (const viewport of viewports) {
@@ -292,7 +308,6 @@ async function main() {
   const baselineConfig = JSON.parse(await readFile(baselineConfigPath, "utf8"));
   const checkerCommands = checkerMode ? await runCheckerPrerequisites() : [];
   await runCommand("pnpm", ["verify:content"]);
-  await runCommand("pnpm", ["verify:quick"]);
   const content = JSON.parse(
     await readFile(path.join(evidenceDirectory, "content.json"), "utf8"),
   );
@@ -406,7 +421,7 @@ async function main() {
   if (checkerMode) {
     await writeTextAtomic(
       "checker-report.md",
-      `# Independent checker report\n\n- Scope: \`hero\` with desktop homepage regression\n- Result: **PASS**\n- Run ID: \`${runId}\`\n- Commands rerun: ${[...checkerCommands, "pnpm verify:content", "pnpm verify:quick", "pnpm build", "pnpm verify:visual"].join(", ")}\n- Public projection: ${content.publicProjection.publishedCount} published, ${content.publicProjection.excludedCount} excluded, zero silent drops, and ${content.publicProjection.renderedClaimCount} approved rendered claims; generation \`${content.publicProjection.generationId}\`.\n- Content boundary: zero private-source references, secret, privacy, confidentiality, and unsupported-claim findings.\n- Browser health: zero console errors, failed first-party requests, broken internal links, critical accessibility violations, horizontal overflow, and unexpected layout shift.\n- Desktop behavior: skip link, header anchors, Hero, approved public sections, footer, and foundation runtime regression passed at \`1440×900\`.\n- Landmark parity: desktop max normalized delta \`${desktopComparison.maxNormalizedDelta.toFixed(6)}\` (limit \`0.05\`). Mobile is explicitly deferred by the user.\n`,
+      `# Independent checker report\n\n- Scope: \`hero\` with desktop homepage regression\n- Result: **PASS**\n- Run ID: \`${runId}\`\n- Commands rerun: ${[...checkerCommands, "pnpm verify:content", "pnpm build", "pnpm verify:visual"].join(", ")}\n- Public projection: ${content.publicProjection.publishedCount} published, ${content.publicProjection.excludedCount} excluded, zero silent drops, and ${content.publicProjection.renderedClaimCount} approved rendered claims; generation \`${content.publicProjection.generationId}\`.\n- Content boundary: zero private-source references, secret, privacy, confidentiality, and unsupported-claim findings.\n- Browser health: zero console errors, failed first-party requests, broken internal links, critical accessibility violations, horizontal overflow, and unexpected layout shift.\n- Desktop behavior: skip link, header anchors, Hero, approved public sections, footer, and foundation runtime regression passed at \`1440×900\`.\n- Landmark parity: desktop max normalized delta \`${desktopComparison.maxNormalizedDelta.toFixed(6)}\` (limit \`0.05\`). Mobile is explicitly deferred by the user.\n`,
     );
   }
 

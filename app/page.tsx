@@ -10,6 +10,7 @@ import {
   knowledgeContent,
   practiceContent,
   projectContent,
+  publicSiteContent,
 } from "@/lib/site-content";
 import { siteFoundation } from "@/lib/site-foundation";
 import { siteShell } from "@/lib/site-shell";
@@ -38,6 +39,7 @@ export default function HomePage() {
         <SiteHeader />
         <main
           data-foundation-version={siteFoundation.version}
+          data-public-content-hash={publicSiteContent.contentHash}
           data-site-foundation
           data-site-main
           id="site-main"
@@ -51,7 +53,9 @@ export default function HomePage() {
                   <br />
                   <strong>持续实践</strong>
                 </h1>
-                <p>with {identityContent.title} · OKF Index</p>
+                <p data-content-id={identityContent.id}>
+                  with {identityContent.title} · OKF Index
+                </p>
               </div>
               <div className="hero__media">
                 <Image
@@ -71,9 +75,12 @@ export default function HomePage() {
                 <span>直接驱动公开页面。</span>
               </h2>
               <div className="positioning__copy">
-                <p>{collectionContent.projects.summary}</p>
-                <p>{collectionContent.knowledge.summary}</p>
-                <p>{collectionContent.practice.summary}</p>
+                {Object.values(collectionContent).map((item) => (
+                  <p data-content-id={item.id} key={item.id}>
+                    <strong>{item.title}</strong>
+                    {item.summary}
+                  </p>
+                ))}
               </div>
             </section>
 
@@ -94,13 +101,23 @@ export default function HomePage() {
                 <span>长期积累的</span>
                 <strong>知识主题</strong>
               </h2>
-              <div className="knowledge-overview">
+              <div
+                className="knowledge-overview"
+                data-content-id={collectionContent.knowledge.id}
+              >
                 <span>OKF / YUQUE INDEX</span>
-                <p>{collectionContent.knowledge.summary}</p>
+                <p>
+                  <strong>{collectionContent.knowledge.title}</strong>
+                  {collectionContent.knowledge.summary}
+                </p>
               </div>
               <div className="knowledge-grid">
                 {knowledgeContent.map((item, index) => (
-                  <article className="knowledge-item" key={item.id}>
+                  <article
+                    className="knowledge-item"
+                    data-content-id={item.id}
+                    key={item.id}
+                  >
                     <span className="knowledge-item__index">
                       {String(index + 1).padStart(2, "0")}
                     </span>
@@ -121,7 +138,11 @@ export default function HomePage() {
               </h2>
               <div className="practice-grid">
                 {practiceContent.map((item, index) => (
-                  <article className="practice-card" key={item.id}>
+                  <article
+                    className="practice-card"
+                    data-content-id={item.id}
+                    key={item.id}
+                  >
                     <span className="practice-card__image">
                       <Image
                         alt=""
@@ -149,7 +170,7 @@ export default function HomePage() {
             <section className="public-cta" aria-labelledby="public-cta-title">
               <p className="public-cta__eyebrow">PUBLIC INDEX</p>
               <h2 id="public-cta-title">继续查看公开项目与知识沉淀。</h2>
-              <p>{identityContent.summary}</p>
+              <p data-content-id={identityContent.id}>{identityContent.summary}</p>
               <div className="public-cta__links">
                 <a
                   href={siteShell.externalLinks[0].href}
@@ -177,7 +198,7 @@ export default function HomePage() {
                   src="/images/avatar-source.png"
                 />
               </div>
-              <div className="about__copy">
+              <div className="about__copy" data-content-id={identityContent.id}>
                 <h2 id="about-title">你好，我是{identityContent.title}</h2>
                 <p>{identityContent.summary}</p>
                 <p>{collectionContent.projects.summary}</p>

@@ -18,6 +18,10 @@ export const exclusionReasonSchema = z.enum([
 
 const sha256Schema = z.string().regex(/^[a-f0-9]{64}$/u);
 const identifierSchema = z.string().regex(/^[a-z0-9]+(?:-[a-z0-9]+)*$/u);
+const indexPathSchema = z
+  .string()
+  .regex(/^(?:[a-z0-9._-]+\/)*index\.md$/u);
+const claimFieldSchema = z.enum(["title", "summary", "url"]);
 
 const sourceSelectionSchema = z.object({
   id: identifierSchema,
@@ -41,7 +45,15 @@ const publishedSelectionSchema = recordBaseSchema.extend({
   status: z.literal("published"),
   sortOrder: z.number().int().nonnegative(),
   output: outputSelectionSchema,
-  evidenceFragments: z.array(z.string().trim().min(1)).min(1),
+  evidence: z
+    .array(
+      z.object({
+        indexPath: indexPathSchema,
+        fields: z.array(claimFieldSchema).min(1),
+        fragments: z.array(z.string().trim().min(1)).min(1),
+      }),
+    )
+    .min(1),
 });
 
 const excludedSelectionSchema = recordBaseSchema.extend({
@@ -84,6 +96,30 @@ export const publicContentSelectionSchema = z
           message: `Unknown sourceId ${record.sourceId}`,
         });
       }
+      if (record.status === "published") {
+        const expectedFields = [
+          "title",
+          "summary",
+          ...(record.output.url ? ["url"] : []),
+        ];
+        const evidencedFields = new Set(
+          record.evidence.flatMap((entry) => entry.fields),
+        );
+        for (const field of expectedFields) {
+          if (!evidencedFields.has(field)) {
+            context.addIssue({
+              code: "custom",
+              message: `Missing ${field} evidence for ${record.id}`,
+            });
+          }
+        }
+        if (!record.output.url && evidencedFields.has("url")) {
+          context.addIssue({
+            code: "custom",
+            message: `Unexpected url evidence for ${record.id}`,
+          });
+        }
+      }
     }
     const publishedCategories = new Set(
       selection.records
@@ -104,10 +140,12 @@ const provenanceSchema = z.object({
   sourceId: identifierSchema,
   sourceSha256: sha256Schema,
   evidenceSha256: sha256Schema,
+  fields: z.array(claimFieldSchema).min(1),
+  indexPaths: z.array(indexPathSchema).min(1),
 });
 
 const publicClaimSchema = z.object({
-  field: z.enum(["title", "summary", "url"]),
+  field: claimFieldSchema,
   value: z.string().min(1),
   evidenceSha256: sha256Schema,
 });
@@ -145,6 +183,7 @@ const recordManifestSchema = z.object({
   sourceSha256: sha256Schema,
   status: z.enum(["published", "excluded"]),
   outputIds: z.array(identifierSchema),
+  indexPaths: z.array(indexPathSchema).optional(),
   evidenceSha256: sha256Schema.optional(),
   exclusionReason: exclusionReasonSchema.optional(),
 });

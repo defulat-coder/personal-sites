@@ -5,8 +5,9 @@ category: "knowledge"
 visibility: public
 review_status: approved
 source_id: "okf-index-catalog"
-source_sha256: "c0bf5db9509d4d1101a30284787f37c6f901da326e9d8ff9794efc4465610f2a"
-evidence_sha256: "f737270f261aa850f5791b5c00b2088d67f5fe6ae5dce31714f574db33959dfe"
+source_sha256: "750a30039ce1c2376746c595fb2f69bf1ba65af0fef3ad7d7f1734cc668d33ec"
+source_indexes: ["yuque/repositories/index.md"]
+evidence_sha256: "e73ee3ba78d49a6e9b5ed59793c6655632a809f96f9133291b6563c8060089e7"
 ---
 
 # 工具与效率

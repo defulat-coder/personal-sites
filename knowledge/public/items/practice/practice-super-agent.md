@@ -5,8 +5,9 @@ category: "practice"
 visibility: public
 review_status: approved
 source_id: "okf-index-catalog"
-source_sha256: "c0bf5db9509d4d1101a30284787f37c6f901da326e9d8ff9794efc4465610f2a"
-evidence_sha256: "4544efbdb552d434377fcf86f7ba840db59088ba2ac040db75d9e858d1c9f283"
+source_sha256: "7088867a4c5f076021ce8f8e0e3889ae54878f4fd13495863832311295c8b1ea"
+source_indexes: ["agent-history/projects/index.md"]
+evidence_sha256: "2a0cdfab1306687aac54f7dd2f1e71740285c6ff1b93f7739b8ae2f4336f6ad6"
 ---
 
 # super-agent-claude

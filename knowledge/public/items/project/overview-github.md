@@ -5,8 +5,9 @@ category: "project"
 visibility: public
 review_status: approved
 source_id: "okf-index-catalog"
-source_sha256: "c0bf5db9509d4d1101a30284787f37c6f901da326e9d8ff9794efc4465610f2a"
-evidence_sha256: "f8637694c16899e825aa36ed5084bb9bc175f2e12db31a499d9660ac2d89d399"
+source_sha256: "7583ea6cd4d9b0bd7a52e6369923795d61a8ef3243f8dd3448cfe472012e8c12"
+source_indexes: ["github/index.md","github/owned/index.md"]
+evidence_sha256: "584401bae00ee3212e9af6cea23233d37930e201efccfefef1a9a1dccd8ab22f"
 ---
 
 # GitHub 项目索引

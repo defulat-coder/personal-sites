@@ -51,7 +51,10 @@ function verifyClaimCoverage(projection) {
       assert(claim.value === item[field], `Claim value mismatch for ${item.id}`);
       assert(
         item.provenance.some(
-          (entry) => entry.evidenceSha256 === claim.evidenceSha256,
+          (entry) =>
+            entry.evidenceSha256 === claim.evidenceSha256 &&
+            entry.fields.includes(field) &&
+            entry.indexPaths.length > 0,
         ),
         `Claim evidence mismatch for ${item.id}`,
       );
@@ -86,6 +89,7 @@ function verifyAccounting(projection, manifest) {
     if (record.status === "published") {
       assert(record.outputIds.length === 1, `Published record ${record.id} is ambiguous`);
       assert(record.evidenceSha256, `Published record ${record.id} lacks evidence`);
+      assert(record.indexPaths?.length > 0, `Published record ${record.id} lacks index paths`);
       assert(!record.exclusionReason, `Published record ${record.id} has an exclusion reason`);
     } else {
       assert(record.outputIds.length === 0, `Excluded record ${record.id} has output`);

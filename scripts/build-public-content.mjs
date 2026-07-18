@@ -77,13 +77,17 @@ async function resolveSource(source) {
   const indexes = await Promise.all(
     files.map(async (file) => ({
       relative: path.relative(okfBundleRoot, file).split(path.sep).join("/"),
-      raw: await readFile(file, "utf8"),
+      content: await readFile(file, "utf8"),
     })),
   );
   return {
     indexFileCount: indexes.length,
-    raw: indexes
-      .map(({ relative, raw }) => `<!-- OKF INDEX ${relative} -->\n${raw.trim()}\n`)
+    indexes,
+    catalog: indexes
+      .map(
+        ({ content, relative }) =>
+          `<!-- OKF INDEX ${relative} -->\n${content.trim()}\n`,
+      )
       .join("\n"),
   };
 }
@@ -112,7 +116,10 @@ function findPatternMatches(value, patterns) {
 }
 
 export function scanPublicValue(value) {
-  const serialized = canonicalJson(value);
+  const serialized = canonicalJson(value).replace(
+    /\b[a-f0-9]{64}\b/gu,
+    "<sha256>",
+  );
   return {
     secretFindings: findPatternMatches(serialized, secretPatterns),
     privacyFindings: findPatternMatches(serialized, privacyPatterns),
@@ -136,27 +143,70 @@ async function loadSelection() {
 async function loadSources(selection) {
   const sources = new Map();
   for (const source of selection.sources) {
-    const { indexFileCount, raw } = await resolveSource(source);
+    const { catalog, indexFileCount, indexes } = await resolveSource(source);
     sources.set(source.id, {
       ...source,
       indexFileCount,
-      raw,
-      normalized: normalizeForEvidence(raw),
-      sha256: sha256(raw),
+      indexes: new Map(
+        indexes.map(({ content, relative }) => [
+          relative,
+          {
+            content,
+            normalized: normalizeForEvidence(content),
+            sha256: sha256(content),
+          },
+        ]),
+      ),
+      sha256: sha256(catalog),
     });
   }
   return sources;
 }
 
-function buildClaims(record, evidenceSha256) {
+function buildClaimEvidence(record, source) {
   const fields = ["title", "summary", "url"];
-  return fields
+  const claims = [];
+  const provenance = [];
+
+  for (const field of fields
     .filter((field) => record.output[field] !== undefined)
-    .map((field) => ({
+  ) {
+    const evidence = record.evidence.filter((entry) =>
+      entry.fields.includes(field),
+    );
+    const evidenceSha256 = sha256(
+      canonicalJson({
+        field,
+        evidence: evidence.map(({ fragments, indexPath }) => ({
+          fragments,
+          indexPath,
+        })),
+      }),
+    );
+    const indexPaths = [...new Set(evidence.map((entry) => entry.indexPath))];
+    const sourceSha256 = sha256(
+      canonicalJson(
+        indexPaths.map((indexPath) => ({
+          indexPath,
+          sha256: source.indexes.get(indexPath).sha256,
+        })),
+      ),
+    );
+    claims.push({
       field,
       value: record.output[field],
       evidenceSha256,
-    }));
+    });
+    provenance.push({
+      sourceId: record.sourceId,
+      sourceSha256,
+      evidenceSha256,
+      fields: [field],
+      indexPaths,
+    });
+  }
+
+  return { claims, provenance };
 }
 
 function buildCategoryCounts(records) {
@@ -202,25 +252,48 @@ export async function buildPublicContentModel() {
       continue;
     }
 
-    record.evidenceFragments.forEach((fragment, index) => {
-      if (!source.raw.includes(fragment) && !source.normalized.includes(fragment)) {
-        unsupportedClaims.push({ recordId: record.id, evidenceIndex: index });
+    record.evidence.forEach((evidence, evidenceIndex) => {
+      const index = source.indexes.get(evidence.indexPath);
+      if (!index) {
+        unsupportedClaims.push({
+          evidenceIndex,
+          indexPath: evidence.indexPath,
+          reason: "missing-index",
+          recordId: record.id,
+        });
+        return;
       }
+      evidence.fragments.forEach((fragment, fragmentIndex) => {
+        if (
+          !index.content.includes(fragment) &&
+          !index.normalized.includes(fragment)
+        ) {
+          unsupportedClaims.push({
+            evidenceIndex,
+            fragmentIndex,
+            indexPath: evidence.indexPath,
+            reason: "missing-fragment",
+            recordId: record.id,
+          });
+        }
+      });
     });
-    const evidenceSha256 = sha256(record.evidenceFragments.join("\n"));
+    const { claims, provenance } = buildClaimEvidence(record, source);
+    const evidenceSha256 = sha256(
+      canonicalJson(
+        claims.map((claim) => ({
+          evidenceSha256: claim.evidenceSha256,
+          field: claim.field,
+        })),
+      ),
+    );
     items.push({
       id: record.id,
       category: record.category,
       sortOrder: record.sortOrder,
       ...record.output,
-      claims: buildClaims(record, evidenceSha256),
-      provenance: [
-        {
-          sourceId: record.sourceId,
-          sourceSha256: source.sha256,
-          evidenceSha256,
-        },
-      ],
+      claims,
+      provenance,
     });
     manifestRecords.push({
       id: record.id,
@@ -229,6 +302,7 @@ export async function buildPublicContentModel() {
       sourceSha256: source.sha256,
       status: "published",
       outputIds: [record.id],
+      indexPaths: [...new Set(record.evidence.map((entry) => entry.indexPath))],
       evidenceSha256,
     });
   }
@@ -332,6 +406,9 @@ function quoteYaml(value) {
 
 function renderItem(item) {
   const provenance = item.provenance[0];
+  const indexPaths = [
+    ...new Set(item.provenance.flatMap((entry) => entry.indexPaths)),
+  ];
   const body = [
     "---",
     "type: PublicContent",
@@ -341,7 +418,10 @@ function renderItem(item) {
     "review_status: approved",
     `source_id: ${quoteYaml(provenance.sourceId)}`,
     `source_sha256: ${quoteYaml(provenance.sourceSha256)}`,
-    `evidence_sha256: ${quoteYaml(provenance.evidenceSha256)}`,
+    `source_indexes: ${quoteYaml(indexPaths)}`,
+    `evidence_sha256: ${quoteYaml(
+      sha256(canonicalJson(item.claims.map((claim) => claim.evidenceSha256))),
+    )}`,
     "---",
     "",
     `# ${item.title}`,

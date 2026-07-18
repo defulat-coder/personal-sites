@@ -1,6 +1,7 @@
 import { render, screen } from "@testing-library/react";
 import { describe, expect, it } from "vitest";
 
+import HomePage from "@/app/page";
 import { SiteHeader } from "@/components/site-header";
 import {
   collectionContent,
@@ -8,6 +9,7 @@ import {
   knowledgeContent,
   practiceContent,
   projectContent,
+  publicSiteContent,
 } from "@/lib/site-content";
 import { siteShell, siteShellSchema } from "@/lib/site-shell";
 
@@ -56,5 +58,34 @@ describe("desktop site shell", () => {
     ]);
     expect(knowledgeContent).toHaveLength(4);
     expect(practiceContent).toHaveLength(6);
+  });
+
+  it("renders every approved projection claim into the homepage", () => {
+    const { container } = render(<HomePage />);
+
+    expect(
+      container
+        .querySelector("[data-site-main]")
+        ?.getAttribute("data-public-content-hash"),
+    ).toBe(publicSiteContent.contentHash);
+    for (const item of publicSiteContent.items) {
+      const elements = Array.from(
+        container.querySelectorAll(`[data-content-id="${item.id}"]`),
+      );
+      const text = elements.map((element) => element.textContent).join(" ");
+      const hrefs = elements.flatMap((element) => [
+        ...(element.matches("a") ? [element.getAttribute("href")] : []),
+        ...Array.from(element.querySelectorAll("a"), (anchor) =>
+          anchor.getAttribute("href"),
+        ),
+      ]);
+
+      expect(elements.length).toBeGreaterThan(0);
+      expect(text).toContain(item.title);
+      expect(text).toContain(item.summary);
+      if (item.url) {
+        expect(hrefs).toContain(item.url);
+      }
+    }
   });
 });
