@@ -1,0 +1,53 @@
+{
+  "schemaVersion": "1.0.0",
+  "target": "desktop-homepage",
+  "reference": {
+    "combinedSha256": "eff37efb265afe1cba0d678719275df07cd358a42ac587414cc1fcdf61e7e0ec",
+    "captures": {
+      "desktop-1440x900": "c389f9274986118b9dd5ef8df48bf3b11e8518825449e5bd93c6f96b240f6929",
+      "mobile-390x844": "252fa1cb8bea9cf33a2712aacc2878d10f4d832eddf1ceeb8c3f88bdebbba630"
+    }
+  },
+  "localFoundation": {
+    "captures": {
+      "desktop-1440x900": "41ec5c2f2716ad25e30e7d483013eae3df1b08bf40fd73c5bb46488df5692767",
+      "mobile-390x844": "ddcc8208191aa9c98b88899170b7a743451ab7591119222acedd24c9826984b2"
+    }
+  },
+  "desktopLandmarks": {
+    "desktop-1440x900": {
+      "tolerance": 0.05,
+      "frame": {
+        "x": 0.08958333333333333,
+        "width": 0.8208333333333333
+      },
+      "header": {
+        "y": 0,
+        "height": 0.07
+      },
+      "main": {
+        "y": 0.07
+      },
+      "hero": {
+        "y": 0.07,
+        "height": 0.5170659722222222
+      },
+      "heroCopy": {
+        "x": 0.08958333333333333,
+        "width": 0.390869140625
+      },
+      "heroMedia": {
+        "x": 0.48045247395833335,
+        "width": 0.42996419270833336
+      },
+      "positioning": {
+        "y": 0.5870659722222222,
+        "height": 0.6844444444444444
+      },
+      "footer": {
+        "x": 0.08958333333333333,
+        "width": 0.8208333333333333
+      }
+    }
+  }
+}
