@@ -5,8 +5,9 @@ category: "knowledge"
 visibility: public
 review_status: approved
 source_id: "okf-index-catalog"
-source_sha256: "c0bf5db9509d4d1101a30284787f37c6f901da326e9d8ff9794efc4465610f2a"
-evidence_sha256: "fff98625fc70fe9868e806bff9a41235189744de53951250274fb7895e90a1fa"
+source_sha256: "750a30039ce1c2376746c595fb2f69bf1ba65af0fef3ad7d7f1734cc668d33ec"
+source_indexes: ["yuque/repositories/index.md"]
+evidence_sha256: "ecb78ba0818ff226a6bfcd5656a879136bddbc9079c485803c25fb509ad77d24"
 ---
 
 # 持续学习

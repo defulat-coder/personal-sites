@@ -5,8 +5,9 @@ category: "practice"
 visibility: public
 review_status: approved
 source_id: "okf-index-catalog"
-source_sha256: "c0bf5db9509d4d1101a30284787f37c6f901da326e9d8ff9794efc4465610f2a"
-evidence_sha256: "2c42e03d40065fcf85ac917eedbb6d61d654186ac9b9af4b8c919e2aa8d27398"
+source_sha256: "7088867a4c5f076021ce8f8e0e3889ae54878f4fd13495863832311295c8b1ea"
+source_indexes: ["agent-history/projects/index.md"]
+evidence_sha256: "a86a41724baa5fe6cdc75bb2cd70059303986b1760d969b14bdadcb94c87cdcb"
 ---
 
 # health-pilot

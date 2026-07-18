@@ -5,8 +5,9 @@ category: "practice"
 visibility: public
 review_status: approved
 source_id: "okf-index-catalog"
-source_sha256: "c0bf5db9509d4d1101a30284787f37c6f901da326e9d8ff9794efc4465610f2a"
-evidence_sha256: "5024f65568fd8a5a577e2e39886261b2a3ec519dcb7768eb78b127b7f98d0255"
+source_sha256: "7088867a4c5f076021ce8f8e0e3889ae54878f4fd13495863832311295c8b1ea"
+source_indexes: ["agent-history/projects/index.md","agent-history/projects/74b3b60d7e7fb3be/index.md"]
+evidence_sha256: "5cd432151babb9364f51c6e7ae0d147c6f734ab83187907ef8e82b0cece7265a"
 ---
 
 # pilot

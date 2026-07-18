@@ -5,8 +5,9 @@ category: "project"
 visibility: public
 review_status: approved
 source_id: "okf-index-catalog"
-source_sha256: "c0bf5db9509d4d1101a30284787f37c6f901da326e9d8ff9794efc4465610f2a"
-evidence_sha256: "3c60470b652a4a05a7bef55af55e9eb6ddb258b14b5ae7b3efa2c4cd9e4df4e0"
+source_sha256: "0c793de7583c4dde72f355bac18a0e3a056a795a4907e5c720ef7041757b0a2b"
+source_indexes: ["github/owned/index.md"]
+evidence_sha256: "f8d5cf080cb4acded1fc13f5cb4e0a91949d537166d52953ccc7dffe8f8723c8"
 ---
 
 # mx-agent

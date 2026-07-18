@@ -5,8 +5,9 @@ category: "practice"
 visibility: public
 review_status: approved
 source_id: "okf-index-catalog"
-source_sha256: "c0bf5db9509d4d1101a30284787f37c6f901da326e9d8ff9794efc4465610f2a"
-evidence_sha256: "0fd4f6ffc4d519f47e02a6f79e655558b1cd310d7856d4ed021cc38bdfd30ebd"
+source_sha256: "a9dc1ca2364c2d941fa2688de3ee8df0c5171d41e27856d0912a7f081b5eef99"
+source_indexes: ["agent-history/index.md"]
+evidence_sha256: "b1a34c9072b367408af0d780d3cda932bcdc2a21800f8983f691a1a77c8d74ff"
 ---
 
 # Agent 实践索引

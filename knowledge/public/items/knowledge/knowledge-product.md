@@ -5,8 +5,9 @@ category: "knowledge"
 visibility: public
 review_status: approved
 source_id: "okf-index-catalog"
-source_sha256: "c0bf5db9509d4d1101a30284787f37c6f901da326e9d8ff9794efc4465610f2a"
-evidence_sha256: "5c06a415a62a3543a3a81d4cdba7c082d0ad3df41d71e72ed3eca471a276efd0"
+source_sha256: "750a30039ce1c2376746c595fb2f69bf1ba65af0fef3ad7d7f1734cc668d33ec"
+source_indexes: ["yuque/repositories/index.md","yuque/documents/1654518/index.md"]
+evidence_sha256: "ecc736036ac50f244e700da533611f12eb4f88e63b362594314476aa1e3f8fb8"
 ---
 
 # 产品与业务

@@ -41,6 +41,7 @@ export function EditorialRow({ item }: EditorialRowProps) {
     return (
       <a
         className="editorial-row"
+        data-content-id={item.id}
         href={item.url}
         rel="noreferrer"
         target="_blank"
@@ -51,7 +52,11 @@ export function EditorialRow({ item }: EditorialRowProps) {
   }
 
   return (
-    <article className="editorial-row" data-editorial-row>
+    <article
+      className="editorial-row"
+      data-content-id={item.id}
+      data-editorial-row
+    >
       <RowContents item={item} />
     </article>
   );

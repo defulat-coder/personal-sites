@@ -5,8 +5,9 @@ category: "project"
 visibility: public
 review_status: approved
 source_id: "okf-index-catalog"
-source_sha256: "c0bf5db9509d4d1101a30284787f37c6f901da326e9d8ff9794efc4465610f2a"
-evidence_sha256: "4cbe748b3fd01e1d60d8acd8df8c44a1d2cc84c23eab86ae881220e341084bcc"
+source_sha256: "0c793de7583c4dde72f355bac18a0e3a056a795a4907e5c720ef7041757b0a2b"
+source_indexes: ["github/owned/index.md"]
+evidence_sha256: "64a8d23ec5b7da03a13ddbe1ba2dd3b6e5cb796e346f4c821da4d93ba331b99d"
 ---
 
 # agno-cookbook-cn
