@@ -1,0 +1,15 @@
+#!/bin/sh
+
+set -eu
+
+repo_root=$(git rev-parse --show-toplevel)
+
+while read -r _local_ref local_sha _remote_ref _remote_sha; do
+  case "$local_sha" in
+    *[!0]*) ;;
+    *) continue ;;
+  esac
+  node "$repo_root/scripts/verify-git-safety.mjs" \
+    --repo "$repo_root" \
+    --range "$local_sha"
+done
