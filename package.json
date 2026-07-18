@@ -12,6 +12,6 @@
     "data:finalize:yuque": "node scripts/yuque-finalize.mjs",
     "data:verify:yuque": "node scripts/verify-yuque.mjs",
     "data:build:okf": "node scripts/yuque-to-okf.mjs",
-    "data:verify:okf": "node scripts/verify-okf.mjs"
+    "data:verify:okf": "node scripts/verify-okf.mjs && node scripts/verify-okf-curation.mjs"
   }
 }
