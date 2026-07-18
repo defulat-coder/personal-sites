@@ -4,7 +4,7 @@
 
 **Final result: passed**
 
-Current OKF-index page verified at `1440×900` on run `2026-07-18T21-46-56-752Z`. Mobile implementation and acceptance remain explicitly deferred.
+Current OKF-index site verified at `1440×900` on run `2026-07-18T22-06-32-803Z`. Mobile implementation and acceptance remain explicitly deferred.
 
 ## Current comparison set
 
@@ -13,7 +13,8 @@ Current OKF-index page verified at `1440×900` on run `2026-07-18T21-46-56-752Z`
 - Reference capture: `var/verification/personal-site/latest/reference-desktop-1440x900.png`
 - Local capture: `var/verification/personal-site/latest/local-desktop-1440x900.png`
 - Reference baseline: `5ece031dd08fefeec9ee3424f4b947096bd6391197fc70a8195af6723c1f2cb3`
-- Local screenshot: `6ca547f38e8b9943cba0086e307b124b52cb264bfd35a0aab732d5fa15d2b99c`
+- Local homepage screenshot: `4e6e82cc6e86685e712ef6d50f5125e5568aaaf4445a923113e7d7e28d439b61`
+- Route captures: `quick-projects-full-desktop-1440x900.png`, `quick-knowledge-full-desktop-1440x900.png`, `quick-practice-full-desktop-1440x900.png`, and `quick-about-full-desktop-1440x900.png`
 
 ## Measured parity
 
@@ -32,6 +33,7 @@ Current OKF-index page verified at `1440×900` on run `2026-07-18T21-46-56-752Z`
 - All `127` OKF `index.md` files are included in the source catalog; no Raw file is read by the public generator.
 - The public projection contains `18` published items, `0` exclusions, `0` silent drops, and `40` field-level rendered claims.
 - Every claim is bound to explicit index-file paths and is checked in the production DOM by `data-content-id`.
+- `/projects`, `/knowledge`, `/practice`, and `/about` each render a dedicated page, matching active navigation state, verified metrics, and the corresponding indexed content set.
 - Privacy, confidentiality, secret, unsupported-claim, private-reference, console, request, link, critical accessibility, overflow, and layout-shift findings are all zero.
 
 ## Findings and corrections
@@ -46,6 +48,7 @@ No open P0 issues.
 - Content verification formerly inferred rendering from source-code IDs. It now verifies every approved field against the production DOM.
 - The reference baseline formerly mixed desktop and deferred mobile captures. It now contains only the approved desktop viewport and can reuse that exact capture deterministically.
 - The visual QA evidence was regenerated after the 18-item OKF-index page update.
+- The old hash-only header navigation was replaced by four real static routes. Each route is exercised through the production browser and captured as a full-page desktop screenshot.
 
 No open P1 issues.
 
@@ -63,6 +66,7 @@ No open P2 issues.
 ## Functional QA
 
 - All 14 rendered images load with non-zero intrinsic dimensions.
-- `#projects`, `#knowledge`, `#practice`, and `#about` resolve beneath the sticky header.
+- `/projects`, `/knowledge`, `/practice`, and `/about` return static pages with the expected `h1`, active navigation state, and indexed content.
+- Each route starts at scroll position `0`, has no horizontal overflow, and can continue to the next content page.
 - GitHub and Yuque use approved public URLs and open with `rel="noreferrer"`.
 - The page has one `h1`, ordered section headings, and a focusable skip-link target.

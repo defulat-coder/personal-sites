@@ -1,4 +1,5 @@
 import Image from "next/image";
+import Link from "next/link";
 import {
   BookOpen,
   Boxes,
@@ -8,7 +9,7 @@ import {
   Workflow,
 } from "lucide-react";
 
-import { siteShell } from "@/lib/site-shell";
+import { siteShell, type SiteNavigationKey } from "@/lib/site-shell";
 
 const navigationIcons = {
   about: UserRound,
@@ -17,7 +18,11 @@ const navigationIcons = {
   projects: Boxes,
 } as const;
 
-export function SiteHeader() {
+type SiteHeaderProps = {
+  active?: SiteNavigationKey;
+};
+
+export function SiteHeader({ active }: SiteHeaderProps) {
   const github = siteShell.externalLinks[0];
   const yuque = siteShell.externalLinks[1];
 
@@ -25,7 +30,7 @@ export function SiteHeader() {
     <header className="site-header" data-site-header>
       <div className="site-header__inner">
         <div className="site-header__primary">
-          <a className="site-brand" href="#top" aria-label="返回页面顶部">
+          <Link className="site-brand" href="/" aria-label="返回首页">
             <Image
               alt=""
               aria-hidden="true"
@@ -35,16 +40,20 @@ export function SiteHeader() {
               width={32}
             />
             <span>{siteShell.brand.label}</span>
-          </a>
+          </Link>
 
           <nav className="site-navigation" aria-label="主导航">
             {siteShell.navigation.map((item) => {
               const Icon = navigationIcons[item.anchor];
               return (
-                <a href={item.href} key={item.anchor}>
+                <Link
+                  aria-current={active === item.anchor ? "page" : undefined}
+                  href={item.href}
+                  key={item.anchor}
+                >
                   <Icon aria-hidden="true" data-nav-icon={item.anchor} />
                   <span>{item.label}</span>
-                </a>
+                </Link>
               );
             })}
           </nav>

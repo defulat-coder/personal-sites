@@ -35,6 +35,36 @@ export const collectionContent = {
   practice: getRequiredItem("overview-agent-history"),
 } as const;
 
+function createVerifiedStats(
+  summary: string,
+  stats: ReadonlyArray<{ label: string; value: string }>,
+) {
+  for (const stat of stats) {
+    if (!summary.includes(stat.value)) {
+      throw new Error(`Indexed summary no longer supports metric ${stat.value}`);
+    }
+  }
+  return stats;
+}
+
+export const collectionStats = {
+  projects: createVerifiedStats(collectionContent.projects.summary, [
+    { label: "稳定仓库 Concepts", value: "521" },
+    { label: "自有仓库", value: "127" },
+    { label: "非 Fork 原始项目", value: "18" },
+  ]),
+  knowledge: createVerifiedStats(collectionContent.knowledge.summary, [
+    { label: "个人知识库", value: "15" },
+    { label: "完整文档", value: "1788" },
+    { label: "小记", value: "1175" },
+  ]),
+  practice: createVerifiedStats(collectionContent.practice.summary, [
+    { label: "Codex / Claude Code 会话", value: "881" },
+    { label: "持久记忆", value: "142" },
+    { label: "项目目录", value: "55" },
+  ]),
+} as const;
+
 export const projectContent = [
   {
     ...getRequiredItem("project-mx-agent"),

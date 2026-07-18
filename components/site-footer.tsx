@@ -1,4 +1,5 @@
 import Image from "next/image";
+import Link from "next/link";
 import { ArrowUp, BookOpen, GitBranch } from "lucide-react";
 
 import { siteShell } from "@/lib/site-shell";
@@ -25,9 +26,9 @@ export function SiteFooter() {
         <nav aria-label="页脚导航">
           <h3>导航</h3>
           {siteShell.navigation.map((item) => (
-            <a href={item.href} key={item.anchor}>
+            <Link href={item.href} key={item.anchor}>
               {item.label}
-            </a>
+            </Link>
           ))}
         </nav>
 

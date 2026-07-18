@@ -4,7 +4,7 @@ const shellAnchorSchema = z.enum(["projects", "knowledge", "practice", "about"])
 
 const shellNavigationItemSchema = z.object({
   anchor: shellAnchorSchema,
-  href: z.string().regex(/^#[a-z-]+$/u),
+  href: z.enum(["/projects", "/knowledge", "/practice", "/about"]),
   label: z.string().min(1),
 });
 
@@ -20,7 +20,7 @@ export const siteShellSchema = z
     }),
     externalLinks: z.array(shellExternalLinkSchema).length(2),
     navigation: z.array(shellNavigationItemSchema).length(4),
-    version: z.literal(3),
+    version: z.literal(4),
   })
   .superRefine((value, context) => {
     const anchors = value.navigation.map((item) => item.anchor);
@@ -32,10 +32,10 @@ export const siteShellSchema = z
       });
     }
     for (const item of value.navigation) {
-      if (item.href !== `#${item.anchor}`) {
+      if (item.href !== `/${item.anchor}`) {
         context.addIssue({
           code: "custom",
-          message: `Navigation href must target ${item.anchor}`,
+          message: `Navigation href must route to ${item.anchor}`,
           path: ["navigation"],
         });
       }
@@ -51,12 +51,13 @@ export const siteShell = siteShellSchema.parse({
     { href: "https://www.yuque.com/defulat-coder", label: "语雀" },
   ],
   navigation: [
-    { anchor: "projects", href: "#projects", label: "项目" },
-    { anchor: "knowledge", href: "#knowledge", label: "知识" },
-    { anchor: "practice", href: "#practice", label: "实践" },
-    { anchor: "about", href: "#about", label: "关于" },
+    { anchor: "projects", href: "/projects", label: "项目" },
+    { anchor: "knowledge", href: "/knowledge", label: "知识" },
+    { anchor: "practice", href: "/practice", label: "实践" },
+    { anchor: "about", href: "/about", label: "关于" },
   ],
-  version: 3,
+  version: 4,
 });
 
 export type SiteShell = z.infer<typeof siteShellSchema>;
+export type SiteNavigationKey = SiteShell["navigation"][number]["anchor"];

@@ -1,4 +1,5 @@
 import Image from "next/image";
+import Link from "next/link";
 import { ArrowRight, BookOpen, GitBranch } from "lucide-react";
 
 import { EditorialRow } from "@/components/editorial-row";
@@ -70,9 +71,9 @@ export default function HomePage() {
 
             <section className="positioning" aria-labelledby="positioning-title">
               <h2 id="positioning-title">
-                <span>完整 OKF 索引，</span>
-                <span>不是 Raw，</span>
-                <span>直接驱动公开页面。</span>
+                <span>项目持续演进，</span>
+                <span>知识不断沉淀，</span>
+                <span>实践留下轨迹。</span>
               </h2>
               <div className="positioning__copy">
                 {Object.values(collectionContent).map((item) => (
@@ -89,6 +90,9 @@ export default function HomePage() {
                 <span>从索引里长出来的</span>
                 <strong>真实项目</strong>
               </h2>
+              <Link className="section-route-link" href="/projects">
+                进入项目页 <ArrowRight aria-hidden="true" />
+              </Link>
               <div className="editorial-list">
                 {projectContent.map((item) => (
                   <EditorialRow item={item} key={item.id} />
@@ -101,6 +105,9 @@ export default function HomePage() {
                 <span>长期积累的</span>
                 <strong>知识主题</strong>
               </h2>
+              <Link className="section-route-link" href="/knowledge">
+                进入知识页 <ArrowRight aria-hidden="true" />
+              </Link>
               <div
                 className="knowledge-overview"
                 data-content-id={collectionContent.knowledge.id}
@@ -136,6 +143,9 @@ export default function HomePage() {
                 <span>被项目索引记录的</span>
                 <strong>Agent 实践</strong>
               </h2>
+              <Link className="section-route-link" href="/practice">
+                进入实践页 <ArrowRight aria-hidden="true" />
+              </Link>
               <div className="practice-grid">
                 {practiceContent.map((item, index) => (
                   <article
@@ -203,9 +213,9 @@ export default function HomePage() {
                 <p>{identityContent.summary}</p>
                 <p>{collectionContent.projects.summary}</p>
                 <p>{collectionContent.practice.summary}</p>
-                <a href="#projects">
+                <Link href="/projects">
                   查看项目 <ArrowRight aria-hidden="true" />
-                </a>
+                </Link>
               </div>
             </section>
           </article>

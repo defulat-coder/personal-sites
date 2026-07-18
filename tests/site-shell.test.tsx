@@ -1,7 +1,11 @@
 import { render, screen } from "@testing-library/react";
 import { describe, expect, it } from "vitest";
 
+import AboutPage from "@/app/about/page";
+import KnowledgePage from "@/app/knowledge/page";
 import HomePage from "@/app/page";
+import PracticePage from "@/app/practice/page";
+import ProjectsPage from "@/app/projects/page";
 import { SiteHeader } from "@/components/site-header";
 import {
   collectionContent,
@@ -14,14 +18,14 @@ import {
 import { siteShell, siteShellSchema } from "@/lib/site-shell";
 
 describe("desktop site shell", () => {
-  it("keeps every desktop navigation item aligned to one unique anchor", () => {
+  it("routes every primary navigation item to a real content page", () => {
     expect(siteShellSchema.safeParse(siteShell).success).toBe(true);
-    expect(siteShell.version).toBe(3);
+    expect(siteShell.version).toBe(4);
     expect(siteShell.navigation.map((item) => item.href)).toEqual([
-      "#projects",
-      "#knowledge",
-      "#practice",
-      "#about",
+      "/projects",
+      "/knowledge",
+      "/practice",
+      "/about",
     ]);
   });
 
@@ -86,6 +90,82 @@ describe("desktop site shell", () => {
       if (item.url) {
         expect(hrefs).toContain(item.url);
       }
+    }
+  });
+
+  it("renders the project index as a real content page", () => {
+    const { container } = render(<ProjectsPage />);
+
+    expect(screen.getByRole("heading", { level: 1, name: "项目索引" })).toBeTruthy();
+    expect(
+      container.querySelector('[data-site-header] a[href="/projects"]')
+        ?.getAttribute("aria-current"),
+    ).toBe("page");
+    for (const item of [collectionContent.projects, ...projectContent]) {
+      const content = Array.from(
+        container.querySelectorAll(`[data-content-id="${item.id}"]`),
+      )
+        .map((element) => element.textContent)
+        .join(" ");
+      expect(content).toContain(item.title);
+      expect(content).toContain(item.summary);
+    }
+  });
+
+  it("renders the knowledge index as a real content page", () => {
+    const { container } = render(<KnowledgePage />);
+
+    expect(screen.getByRole("heading", { level: 1, name: "知识索引" })).toBeTruthy();
+    expect(
+      container.querySelector('[data-site-header] a[href="/knowledge"]')
+        ?.getAttribute("aria-current"),
+    ).toBe("page");
+    for (const item of [collectionContent.knowledge, ...knowledgeContent]) {
+      const content = Array.from(
+        container.querySelectorAll(`[data-content-id="${item.id}"]`),
+      )
+        .map((element) => element.textContent)
+        .join(" ");
+      expect(content).toContain(item.title);
+      expect(content).toContain(item.summary);
+    }
+  });
+
+  it("renders the practice index as a real content page", () => {
+    const { container } = render(<PracticePage />);
+
+    expect(screen.getByRole("heading", { level: 1, name: "实践索引" })).toBeTruthy();
+    expect(
+      container.querySelector('[data-site-header] a[href="/practice"]')
+        ?.getAttribute("aria-current"),
+    ).toBe("page");
+    for (const item of [collectionContent.practice, ...practiceContent]) {
+      const content = Array.from(
+        container.querySelectorAll(`[data-content-id="${item.id}"]`),
+      )
+        .map((element) => element.textContent)
+        .join(" ");
+      expect(content).toContain(item.title);
+      expect(content).toContain(item.summary);
+    }
+  });
+
+  it("renders the about index as a real content page", () => {
+    const { container } = render(<AboutPage />);
+
+    expect(screen.getByRole("heading", { level: 1, name: "关于我" })).toBeTruthy();
+    expect(
+      container.querySelector('[data-site-header] a[href="/about"]')
+        ?.getAttribute("aria-current"),
+    ).toBe("page");
+    for (const item of [identityContent, ...Object.values(collectionContent)]) {
+      const content = Array.from(
+        container.querySelectorAll(`[data-content-id="${item.id}"]`),
+      )
+        .map((element) => element.textContent)
+        .join(" ");
+      expect(content).toContain(item.title);
+      expect(content).toContain(item.summary);
     }
   });
 });
