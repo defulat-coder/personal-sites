@@ -314,6 +314,10 @@ async function main() {
   const quick = JSON.parse(
     await readFile(path.join(evidenceDirectory, "quick.json"), "utf8"),
   );
+  const siteAccessibilityIncomplete =
+    quick.summary.accessibilityIncomplete;
+  const siteAccessibilityViolations =
+    quick.summary.accessibilityViolations;
 
   const capture = await withProductionServer(async ({ localUrl }) => {
     const browser = await chromium.launch({ headless: true });
@@ -412,6 +416,8 @@ async function main() {
   });
   await writeJsonAtomic("accessibility.json", {
     criticalAccessibilityViolations,
+    siteAccessibilityIncomplete,
+    siteAccessibilityViolations,
     viewports: capture.locals.map((item) => ({
       violations: item.accessibilityViolations,
       viewport: item.viewport,
@@ -421,7 +427,7 @@ async function main() {
   if (checkerMode) {
     await writeTextAtomic(
       "checker-report.md",
-      `# Independent checker report\n\n- Scope: desktop site with homepage visual regression and content-route navigation\n- Result: **PASS**\n- Run ID: \`${runId}\`\n- Commands rerun: ${[...checkerCommands, "pnpm verify:content", "pnpm build", "pnpm verify:visual"].join(", ")}\n- Public projection: ${content.publicProjection.publishedCount} published, ${content.publicProjection.excludedCount} excluded, zero silent drops, and ${content.publicProjection.renderedClaimCount} approved rendered claims; generation \`${content.publicProjection.generationId}\`.\n- Content boundary: zero private-source references, secret, privacy, confidentiality, and unsupported-claim findings.\n- Browser health: zero console errors, failed first-party requests, broken internal links, critical accessibility violations, horizontal overflow, and unexpected layout shift.\n- Desktop behavior: skip link, four real content routes, active navigation, Hero, approved public sections, footer, and foundation runtime regression passed at \`1440×900\`.\n- Landmark parity: desktop max normalized delta \`${desktopComparison.maxNormalizedDelta.toFixed(6)}\` (limit \`0.05\`). Mobile is explicitly deferred by the user.\n`,
+      `# Independent checker report\n\n- Scope: desktop site with homepage visual regression and content-route navigation\n- Result: **PASS**\n- Run ID: \`${runId}\`\n- Commands rerun: ${[...checkerCommands, "pnpm verify:content", "pnpm build", "pnpm verify:visual"].join(", ")}\n- Public projection: ${content.publicProjection.publishedCount} published, ${content.publicProjection.excludedCount} excluded, zero silent drops, and ${content.publicProjection.renderedClaimCount} approved rendered claims; generation \`${content.publicProjection.generationId}\`.\n- Content boundary: zero private-source references, secret, privacy, confidentiality, and unsupported-claim findings.\n- Browser health: zero console errors, failed first-party requests, broken internal links, Axe violations, unresolved Axe checks, horizontal overflow, and unexpected layout shift.\n- Desktop behavior: skip link, four real content routes, active navigation, Hero, approved public sections, footer, and foundation runtime regression passed at \`1440×900\`.\n- Landmark parity: desktop max normalized delta \`${desktopComparison.maxNormalizedDelta.toFixed(6)}\` (limit \`0.05\`). Mobile is explicitly deferred by the user.\n`,
     );
   }
 
@@ -436,6 +442,8 @@ async function main() {
     consoleErrors,
     failedRequests,
     brokenInternalLinks: quick.summary.brokenInternalLinks,
+    accessibilityIncomplete: siteAccessibilityIncomplete,
+    accessibilityViolations: siteAccessibilityViolations,
     criticalAccessibilityViolations,
     privateSourceReferences: content.privateSourceReferences,
     secretFindings: content.secretFindings,
