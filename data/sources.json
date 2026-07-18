@@ -1,0 +1,30 @@
+{
+  "schema_version": "1.0.0",
+  "sources": [
+    {
+      "id": "resume-legacy",
+      "kind": "resume",
+      "uri": "../陈远-Agent工程师_全栈工程师_资深java工程师.md",
+      "storage": "tracked",
+      "default_visibility": "private",
+      "status": "available"
+    },
+    {
+      "id": "github-defulat-coder",
+      "kind": "github",
+      "uri": "https://github.com/defulat-coder",
+      "storage": "derived-cache",
+      "default_visibility": "public-metadata-only",
+      "status": "inventory-complete"
+    },
+    {
+      "id": "yuque-personal",
+      "kind": "yuque",
+      "uri": "https://www.yuque.com/defulat-coder",
+      "storage": "data/private/yuque/raw",
+      "default_visibility": "private",
+      "status": "imported-with-known-gaps",
+      "coverage": "private/yuque/raw/coverage.json"
+    }
+  ]
+}
