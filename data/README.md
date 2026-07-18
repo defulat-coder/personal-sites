@@ -12,9 +12,10 @@
 
 - 旧简历；
 - GitHub 自有、Starred、Watched 项目；
-- 语雀个人知识库、文档、目录、小记以及正文引用的可下载资源。
+- 语雀个人知识库、文档、目录、小记以及正文引用的可下载资源；
+- Codex 与 Claude Code 的本地会话、持久记忆、提示历史和会话索引。
 
-语雀原始数据写入 `data/private/yuque/raw/`，GitHub 原始清单写入 `data/private/github/raw/`。这些目录位于项目内，但被 Git 忽略，不能被前端直接打包，也不能进入未来的公开仓库。若要长期版本化原始资料，应使用单独的私有内容仓库。
+语雀原始数据写入 `data/private/yuque/raw/`，GitHub 原始清单写入 `data/private/github/raw/`，Agent 历史写入 `data/private/agent-history/raw/`。这些目录位于项目内，但被 Git 忽略，不能被前端直接打包，也不能进入未来的公开仓库。若要长期版本化原始资料，应使用单独的私有内容仓库。
 
 ## 语雀同步
 
@@ -56,6 +57,35 @@ Raw 目录结构支持后续更新：
 
 同一 GitHub 数字仓库 ID 只保存一条归一化记录，完整 API 响应仍按内容哈希保留为 Raw 证据。Owned、Starred、Watched 是仓库的关系。后续同步会记录新增、元数据更新、关系增加/移除、重新激活；失去全部关系的仓库会转为 inactive 历史，而不是被静默删除。某个集合请求失败时，同步器会保留上一次已知关系并把 manifest 标记为 incomplete，防止网络故障被误判成批量取消关注。README 抓取属于可选证据，其告警会记录但不会阻断仓库清单更新；告警恢复后 manifest 会清除旧状态。
 
+## Codex 与 Claude Code 历史同步
+
+历史同步直接读取当前用户目录中的本地数据，不需要额外 Token：
+
+```bash
+npm run data:update:agent-history
+```
+
+同步范围配置在 [`../config/agent-history-sync.json`](../config/agent-history-sync.json)。当前覆盖 Codex 的 active/archived 会话、会话索引、`~/.codex/memories` 文件和 `memories_1.sqlite`，以及 Claude Code 的项目会话、全局提示历史、会话元数据和全局 `CLAUDE.md`。如果以后 Claude Code 出现项目级 `memory/MEMORY.md`，同步器也会自动纳入。
+
+Codex SQLite 记忆使用 `sqlite3` 在线备份生成一致性快照，再把 `stage1_outputs` 按 thread ID 稳定导出为独立 Raw 对象和 OKF Memory Concept。数据库缺失、备份失败、完整性检查失败或导出失败都会令 manifest 变为 `complete: false` 并阻断 Bundle 重建，不能以文件目录正常为由掩盖数据库记忆缺口。运行更新命令的环境需要能从 `PATH` 调用 `sqlite3`；macOS 系统默认提供。
+
+Agent 历史分成两种用途不同的数据：
+
+- `data/private/agent-history/raw/` 是完整私有证据层。会话 JSONL 和记忆文件按 SHA-256 内容寻址保存，系统消息、开发者消息、推理、工具调用和工具结果都不会丢失；
+- `knowledge/private/personal/agent-history/` 是可读 OKF 投影。会话正文只保留用户与助手文本，另保留 compaction summary、来源路径、工作目录、时间、模型和 Raw 哈希；
+- `manifest.json` 是当前完整清单，`state.json` 保存最近 manifest 哈希，`snapshots/` 只在清单变化时增加，`objects/` 保存可读投影；
+- Codex `memories_1.sqlite` 的一致性备份作为 Raw 索引保存，每条阶段记忆同时保留 `raw_memory` 与 `rollout_summary`；
+- 会话 Concept ID 使用“平台 + session ID”，会话追加或从 active 移到 archive 后路径不变；记忆 Concept ID 使用“平台 + 类型 + 来源路径”哈希；
+- 未变化的来源按文件大小和修改时间复用，不重新扫描；新增、追加、移动和修改才生成新 Raw 对象。源文件消失会转为 inactive 历史，不会静默删除。
+
+首次同步需要读取全部本地历史，耗时和磁盘占用取决于会话体积；后续更新主要复用已有内容。快速校验使用 `npm run data:verify:agent-history`，需要逐字节重算所有 Raw SHA-256 时运行：
+
+```bash
+node scripts/verify-agent-history.mjs --full
+```
+
+历史内容可能含源码、终端输出、凭据痕迹和私人对话，因此 Raw 与完整 OKF Bundle 都保持 private；公开到个人网站必须另行逐条审核和脱敏。
+
 ## OKF 知识层
 
-OKF 约定和 Bundle 入口见 [`../knowledge/README.md`](../knowledge/README.md)。`npm run data:build:okf` 会把当前语雀与 GitHub Raw 快照原子合成为同一个私有 Bundle。原始资料永远是证据层；OKF 是可重建的知识视图，不能反向覆盖原始资料。
+OKF 约定和 Bundle 入口见 [`../knowledge/README.md`](../knowledge/README.md)。`npm run data:build:okf` 会把当前语雀、GitHub 与 Agent 历史 Raw 快照原子合成为同一个私有 Bundle。原始资料永远是证据层；OKF 是可重建的知识视图，不能反向覆盖原始资料。

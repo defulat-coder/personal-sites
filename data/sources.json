@@ -27,6 +27,16 @@
       "default_visibility": "private",
       "status": "imported-with-known-gaps",
       "coverage": "private/yuque/raw/coverage.json"
+    },
+    {
+      "id": "agent-history-local",
+      "kind": "agent-history",
+      "uri": "local://codex-and-claude-code",
+      "storage": "data/private/agent-history/raw",
+      "default_visibility": "private",
+      "status": "imported-current",
+      "coverage": "private/agent-history/raw/manifest.json",
+      "sync_config": "../config/agent-history-sync.json"
     }
   ]
 }

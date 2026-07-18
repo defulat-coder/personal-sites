@@ -13,8 +13,11 @@
     "data:verify:yuque": "node scripts/verify-yuque.mjs",
     "data:sync:github": "node scripts/github-sync.mjs",
     "data:verify:github": "node scripts/verify-github.mjs",
+    "data:sync:agent-history": "node scripts/agent-history-sync.mjs",
+    "data:verify:agent-history": "node scripts/verify-agent-history.mjs",
     "data:build:okf": "node scripts/build-okf.mjs",
-    "data:verify:okf": "node scripts/verify-okf.mjs && node scripts/verify-okf-curation.mjs && node scripts/verify-github-okf.mjs",
-    "data:update:github": "npm run data:sync:github && npm run data:verify:github && npm run data:build:okf && npm run data:verify:okf"
+    "data:verify:okf": "node scripts/verify-okf.mjs && node scripts/verify-okf-curation.mjs && node scripts/verify-github-okf.mjs && node scripts/verify-agent-history-okf.mjs",
+    "data:update:github": "npm run data:sync:github && npm run data:verify:github && npm run data:build:okf && npm run data:verify:okf",
+    "data:update:agent-history": "npm run data:sync:agent-history && npm run data:verify:agent-history && npm run data:build:okf && npm run data:verify:okf"
   }
 }

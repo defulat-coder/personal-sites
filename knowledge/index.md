@@ -8,7 +8,7 @@ okf_version: "0.1"
 
 # Sources
 
-* [数据源目录](sources/) - 简历、GitHub 与语雀的来源边界和同步状态。
+* [数据源目录](sources/) - 简历、GitHub、语雀与 Agent 历史的来源边界和同步状态。
 
 # Bundles
 
