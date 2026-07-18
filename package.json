@@ -1,0 +1,17 @@
+{
+  "name": "chen-yuan-personal-site",
+  "private": true,
+  "type": "module",
+  "engines": {
+    "node": ">=20"
+  },
+  "scripts": {
+    "data:sync:yuque": "node scripts/yuque-sync.mjs",
+    "data:resume:yuque": "node scripts/yuque-api-resume.mjs",
+    "data:sync:yuque-assets": "node scripts/yuque-assets.mjs",
+    "data:finalize:yuque": "node scripts/yuque-finalize.mjs",
+    "data:verify:yuque": "node scripts/verify-yuque.mjs",
+    "data:build:okf": "node scripts/yuque-to-okf.mjs",
+    "data:verify:okf": "node scripts/verify-okf.mjs"
+  }
+}

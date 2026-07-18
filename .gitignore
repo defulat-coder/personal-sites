@@ -1,0 +1,9 @@
+.DS_Store
+/.codex/config.toml
+.env
+.env.*
+!.env.example
+/data/private/
+/knowledge/private/
+/var/
+/.loops/reports/.digest/
