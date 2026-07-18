@@ -259,6 +259,7 @@ async function inspectViewport(browser, localUrl, projection, viewport) {
     });
     routeResults.push({
       active,
+      accessibilityIncomplete: routeAccessibility.incomplete,
       accessibilityViolations: routeAccessibility.violations,
       criticalAccessibilityViolations:
         routeCriticalAccessibilityViolations.length,
@@ -299,6 +300,10 @@ async function inspectViewport(browser, localUrl, projection, viewport) {
     (total, route) => total + route.accessibilityViolations.length,
     0,
   );
+  const routeAccessibilityIncomplete = routeResults.reduce(
+    (total, route) => total + route.accessibilityIncomplete.length,
+    0,
+  );
   const routeCriticalAccessibilityViolations = routeResults.reduce(
     (total, route) => total + route.criticalAccessibilityViolations,
     0,
@@ -334,6 +339,8 @@ async function inspectViewport(browser, localUrl, projection, viewport) {
   await context.close();
 
   return {
+    accessibilityIncomplete:
+      accessibility.incomplete.length + routeAccessibilityIncomplete,
     accessibilityViolations:
       accessibility.violations.length + routeAccessibilityViolations,
     brokenInternalLinks,
@@ -345,6 +352,10 @@ async function inspectViewport(browser, localUrl, projection, viewport) {
     failedResponses,
     id: viewport.id,
     foundationVersion,
+    homepageAccessibility: {
+      incomplete: accessibility.incomplete,
+      violations: accessibility.violations,
+    },
     layout,
     landmarks,
     shellVersion,
@@ -382,6 +393,8 @@ async function main() {
     });
     const summary = results.viewportResults.reduce(
       (totals, viewport) => ({
+        accessibilityIncomplete:
+          totals.accessibilityIncomplete + viewport.accessibilityIncomplete,
         accessibilityViolations:
           totals.accessibilityViolations + viewport.accessibilityViolations,
         brokenInternalLinks:
@@ -407,6 +420,7 @@ async function main() {
         ),
       }),
       {
+        accessibilityIncomplete: 0,
         accessibilityViolations: 0,
         brokenInternalLinks: 0,
         contentRenderingFailures: 0,
