@@ -1,0 +1,36 @@
+{
+  "schema_version": "1.0.0",
+  "max_regular_git_file_bytes": 52428800,
+  "github_hard_limit_bytes": 104857600,
+  "blocked_directories": [
+    "data/private",
+    "knowledge/private",
+    "var"
+  ],
+  "blocked_directory_names": [
+    "node_modules",
+    ".next",
+    "out",
+    "coverage",
+    "playwright-report",
+    "test-results",
+    ".turbo"
+  ],
+  "blocked_files": [
+    ".codex/config.toml"
+  ],
+  "blocked_filename_prefixes": [
+    ".env"
+  ],
+  "blocked_filename_suffixes": [
+    ".tsbuildinfo"
+  ],
+  "allowed_files": [
+    ".env.example"
+  ],
+  "required_ignored_paths": [
+    ".codex/config.toml",
+    ".env.local",
+    "cache.tsbuildinfo"
+  ]
+}

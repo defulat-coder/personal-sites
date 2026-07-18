@@ -3,7 +3,14 @@
 .env
 .env.*
 !.env.example
+node_modules/
+.next/
+out/
+coverage/
+playwright-report/
+test-results/
+.turbo/
+*.tsbuildinfo
 /data/private/
 /knowledge/private/
 /var/
-/.loops/reports/.digest/

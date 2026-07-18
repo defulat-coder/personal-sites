@@ -17,6 +17,26 @@
 
 语雀原始数据写入 `data/private/yuque/raw/`，GitHub 原始清单写入 `data/private/github/raw/`，Agent 历史写入 `data/private/agent-history/raw/`。这些目录位于项目内，但被 Git 忽略，不能被前端直接打包，也不能进入未来的公开仓库。若要长期版本化原始资料，应使用单独的私有内容仓库。
 
+## GitHub 仓库与 Raw 备份边界
+
+本仓库提交到 GitHub 的范围只包括代码、配置、说明文档和经过审核的公开内容。下列内容必须留在 Git 之外：
+
+- `data/private/`：语雀、GitHub、Codex 和 Claude Code 的完整 Raw 证据；
+- `knowledge/private/`：包含来源正文和历史会话的私有 OKF Bundle；
+- `node_modules/`、`.next/`、`out/`、测试报告和其他可重建产物；
+- `.env*`（仅允许 `.env.example`）以及本机 Codex 配置。
+
+提交前运行：
+
+```bash
+npm run git:safety
+npm run git:hooks:install
+```
+
+正常执行 `pnpm install` 或 `npm install` 时，`prepare` 会为新 clone 自动启用仓库内 hook；上面的安装命令可用于显式安装或修复。检查器只读取 Git 索引、Git tree、文件路径和大小，不遍历或读取被忽略的私有 Raw 内容。它会阻止私有目录被强制加入 Git、阻止关键忽略规则被删除，并在普通文件超过 50 MiB 时提前失败；GitHub 对大于 100 MiB 的普通 Git 文件会直接阻止推送。安装的 pre-push hook 会在上传前扫描待推送分支的全部可达历史，GitHub Push 和 Pull Request 也会用完整历史重复校验，因此“先提交私有文件、后删除再一起推送”仍会被阻止。阈值和受保护路径统一配置在 [`../config/git-safety.json`](../config/git-safety.json)。
+
+`.gitignore` 不是备份。私有 Raw 应另外保存到加密磁盘或客户端加密的对象存储，并保留至少一个不与当前工作目录共盘的副本；不要把 GitHub 私有仓库当作这批 Raw 的默认备份。**当前外部备份尚未配置**：本次护栏只负责防止误提交，不会假装资料已经备份。需要你指定目标磁盘或对象存储后，才能安全配置并验证真实备份。
+
 ## 语雀同步
 
 同步程序只从环境变量读取凭据：
