@@ -14,6 +14,57 @@ import { publicContentProjectionSchema } from "./lib/public-content-schema.mjs";
 const viewports = [
   { height: 900, id: "desktop-1440x900", width: 1440 },
 ];
+const routeChecks = [
+  {
+    heading: "项目索引",
+    href: "/projects",
+    itemIds: [
+      "overview-github",
+      "project-mx-agent",
+      "project-health-pilot",
+      "project-ddd-hr",
+      "project-agno-cookbook-cn",
+    ],
+    route: "projects",
+  },
+  {
+    heading: "知识索引",
+    href: "/knowledge",
+    itemIds: [
+      "overview-yuque",
+      "knowledge-aigc",
+      "knowledge-product",
+      "knowledge-tools",
+      "knowledge-learning",
+    ],
+    route: "knowledge",
+  },
+  {
+    heading: "实践索引",
+    href: "/practice",
+    itemIds: [
+      "overview-agent-history",
+      "practice-super-agent",
+      "practice-agent-template",
+      "practice-agent-try",
+      "practice-pilot",
+      "practice-auto-coding",
+      "practice-health-pilot",
+    ],
+    route: "practice",
+  },
+  {
+    heading: "关于我",
+    href: "/about",
+    itemIds: [
+      "identity-profile",
+      "overview-github",
+      "overview-yuque",
+      "overview-agent-history",
+    ],
+    route: "about",
+  },
+];
 
 async function checkInternalLinks(page, localUrl) {
   const hrefs = await page.locator("a[href]").evaluateAll((links) =>
@@ -140,21 +191,78 @@ async function inspectViewport(browser, localUrl, projection, viewport) {
   await page.keyboard.press("Enter");
   await page.waitForURL(/#site-main$/u);
 
-  const targetHrefs = ["#projects", "#knowledge", "#practice", "#about"];
-  for (const href of targetHrefs) {
-    if ((await page.locator(href).count()) !== 1) {
-      throw new Error(`Shell target is missing for ${href}`);
+  const routeResults = [];
+  for (const routeCheck of routeChecks) {
+    await page
+      .locator(`[data-site-header] a[href="${routeCheck.href}"]`)
+      .click();
+    await page.waitForURL(new URL(routeCheck.href, localUrl).href);
+    await page
+      .locator(`[data-page-route="${routeCheck.route}"]`)
+      .waitFor({ state: "visible" });
+    await page
+      .locator(`[data-page-route="${routeCheck.route}"]`)
+      .evaluate(async (element) => {
+        await Promise.all(
+          element.getAnimations().map((animation) => animation.finished),
+        );
+      });
+    const heading = await page.locator("h1").textContent();
+    const active = await page
+      .locator(`[data-site-header] a[href="${routeCheck.href}"]`)
+      .getAttribute("aria-current");
+    const missingItemIds = [];
+    for (const itemId of routeCheck.itemIds) {
+      if ((await page.locator(`[data-content-id="${itemId}"]`).count()) === 0) {
+        missingItemIds.push(itemId);
+      }
     }
+    if (heading?.trim() !== routeCheck.heading || active !== "page") {
+      throw new Error(`Route shell is invalid for ${routeCheck.href}`);
+    }
+    if (missingItemIds.length > 0) {
+      throw new Error(
+        `Route content is missing for ${routeCheck.href}: ${missingItemIds.join(", ")}`,
+      );
+    }
+    const routeLayout = await page.evaluate(() => ({
+      horizontalOverflow:
+        Math.max(document.documentElement.scrollWidth, document.body.scrollWidth) -
+        window.innerWidth,
+      scrollX: window.scrollX,
+      scrollY: window.scrollY,
+    }));
+    if (
+      routeLayout.horizontalOverflow !== 0 ||
+      routeLayout.scrollX !== 0 ||
+      routeLayout.scrollY !== 0
+    ) {
+      throw new Error(
+        `Route layout is not settled for ${routeCheck.href}: ${JSON.stringify(routeLayout)}`,
+      );
+    }
+    const screenshotFile = `quick-${routeCheck.route}-${viewport.id}.png`;
+    await page.screenshot({
+      path: path.join(evidenceDirectory, screenshotFile),
+    });
+    const fullScreenshotFile = `quick-${routeCheck.route}-full-${viewport.id}.png`;
+    await page.screenshot({
+      fullPage: true,
+      path: path.join(evidenceDirectory, fullScreenshotFile),
+    });
+    routeResults.push({
+      active,
+      fullScreenshotFile,
+      heading: heading.trim(),
+      href: routeCheck.href,
+      itemIds: routeCheck.itemIds,
+      layout: routeLayout,
+      screenshotFile,
+    });
   }
 
-  await page.locator('[data-site-header] a[href="#projects"]').click();
-  await page.waitForURL(/#projects$/u);
-  await page.locator('[data-site-header] a[href="#knowledge"]').first().click();
-  await page.waitForURL(/#knowledge$/u);
-  await page.locator('[data-site-header] a[href="#practice"]').first().click();
-  await page.waitForURL(/#practice$/u);
-  await page.locator('[data-site-header] a[href="#about"]').first().click();
-  await page.waitForURL(/#about$/u);
+  await page.locator(".site-brand").click();
+  await page.waitForURL(localUrl);
 
   await footer.scrollIntoViewIfNeeded();
   await footer.waitFor({ state: "visible" });
@@ -165,7 +273,7 @@ async function inspectViewport(browser, localUrl, projection, viewport) {
   const foundationVersion = await foundation.getAttribute(
     "data-foundation-version",
   );
-  if (shellVersion !== "3" || foundationVersion !== "1") {
+  if (shellVersion !== "4" || foundationVersion !== "1") {
     throw new Error("Shell or foundation runtime version is invalid");
   }
 
@@ -222,6 +330,7 @@ async function inspectViewport(browser, localUrl, projection, viewport) {
     shellVersion,
     renderedClaims: renderedProjection.renderedClaims,
     renderedItemIds: renderedProjection.renderedItemIds,
+    routeResults,
   };
 }
 
@@ -289,9 +398,10 @@ async function main() {
     const evidence = {
       result: pass ? "pass" : "fail",
       runId,
-      scope: "desktop-homepage",
+      scope: "desktop-site",
       localUrl: results.localUrl,
-      changedState: "desktop navigation, hero, approved content sections, and footer",
+      changedState:
+        "desktop navigation, four content routes, hero, approved content sections, and footer",
       adjacentState: "verified foundation runtime and public-content boundary",
       summary,
       publicProjection: {
@@ -312,7 +422,7 @@ async function main() {
     await writeJsonAtomic("quick.json", {
       result: "fail",
       runId,
-      scope: "desktop-homepage",
+      scope: "desktop-site",
       error: error.message,
     });
     throw error;

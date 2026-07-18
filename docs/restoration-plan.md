@@ -25,14 +25,22 @@
 | Source region | Measured reference | Local implementation | Preserved behavior |
 |---|---:|---|---|
 | Desktop frame | x `129`, width `1182` | `.site-frame` | centered bordered sheet |
-| Sticky header | y `0`, height `63` | `SiteHeader` | section links, GitHub/Yuque links, sticky scroll state |
+| Sticky header | y `0`, height `63` | `SiteHeader` | four content-page routes, active state, GitHub/Yuque links, sticky scroll state |
 | Hero | y `63`, height `465.36`; columns `562.85 / 619.15` | `.hero` | left display copy + public-avatar-derived hero image |
 | Positioning statement | y `528.36`, height `616`; two columns | `.positioning` | approved identity summary only |
 | Project / knowledge heading | centered `36px / 45px` | `.section-heading` | same typographic role and whitespace |
 | Editorial rows | `217px` per item; image `240×135` | `EditorialRow` | hover lift, arrow movement, external link only where approved |
 | Practice grid | three-column source card rhythm adapted to six indexed Agent projects | `.practice-grid` | border grid and concise titles |
 | About | two-column portrait + biography | `.about` | public GitHub avatar and approved identity copy |
-| Footer | white grid cells and bottom utility row | `SiteFooter` | section links, GitHub, Yuque, back to top |
+| Footer | white grid cells and bottom utility row | `SiteFooter` | content-page routes, GitHub, Yuque, back to top |
+
+## Content-route map
+
+- `/projects`: GitHub index overview, verified project metrics, and four indexed public projects.
+- `/knowledge`: Yuque index overview, verified collection metrics, and four durable knowledge themes.
+- `/practice`: Agent History overview, verified activity metrics, and six high-activity project trajectories.
+- `/about`: public identity, portrait, and links through the project, knowledge, and practice threads.
+- The homepage remains an editorial overview; its section entries and global navigation now lead to these real pages instead of only changing the URL hash.
 
 ## Public-content map
 
@@ -68,6 +76,6 @@ Only `public/images/hero-portrait.png` remains in the build. Earlier composition
 
 - Compare the live source and local page at exactly `1440×900` and the same scroll state.
 - The first viewport must preserve frame x/width, header height, hero height/column split, first editorial split, typography hierarchy, hairline rules, white field, and saturated image panel.
-- Desktop navigation and external links must be keyboard accessible; skip link and section anchors must work.
+- Desktop navigation and external links must be keyboard accessible; skip links and all four content routes must work and expose the matching active state.
 - No mobile layout or mobile screenshot is part of this correction pass.
 - Save a combined side-by-side source/local comparison and complete `design-qa.md`; final result may be `passed` only after all P0/P1/P2 visible mismatches are fixed.
