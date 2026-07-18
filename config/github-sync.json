@@ -1,0 +1,22 @@
+{
+  "schema_version": "1.0.0",
+  "source_system": "github",
+  "account": "defulat-coder",
+  "api_version": "2026-03-10",
+  "storage": {
+    "raw_root": "data/private/github/raw"
+  },
+  "collections": {
+    "owned": true,
+    "starred": true,
+    "watched": true
+  },
+  "readme": {
+    "owned_non_forks": true,
+    "max_bytes": 1048576,
+    "concurrency": 4
+  },
+  "retention": {
+    "keep_snapshot_history": true
+  }
+}

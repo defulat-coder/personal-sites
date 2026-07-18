@@ -20,7 +20,8 @@ review_status: approved
 OKF 是知识表示格式，不是原始数据备份格式。两者的边界是：
 
 - `data/private/yuque/raw/` 保存语雀 API 原始对象、正文格式、附件和校验清单；
-- `knowledge/private/personal/` 是由 Raw 数据确定性生成的完整私有 OKF Bundle；
+- `data/private/github/raw/` 保存 GitHub 仓库清单、关系历史、README 证据和增量快照；
+- `knowledge/private/personal/` 是由语雀与 GitHub Raw 数据确定性生成的完整私有 OKF Bundle；
 - `knowledge/public/` 只接收人工确认、完成脱敏、允许进入个人网站的 OKF Concepts。
 
 完整私有 Bundle 默认不进 Git，避免私有语雀内容进入未来的公开网站仓库。
@@ -47,12 +48,25 @@ OKF 是知识表示格式，不是原始数据备份格式。两者的边界是�
 - `yuque/curation-report.md` 提供可读摘要，Bundle 根目录的 `curation.json` 保存逐条决定和去重证据；
 - `content_quality`、`curation_status`、`content_fingerprint`、`duplicate_of` 和 `near_duplicates` 是本项目的 OKF 生产者扩展字段。
 
+## GitHub 项目整理策略
+
+- Concept 路径使用不可变的 GitHub 数字仓库 ID：`github/repositories/<id>.md`，仓库改名或转移不会改变 Concept ID；
+- Owned、Starred、Watched 只是同一仓库的关系，同一数字 ID 在 Bundle 中只生成一份 Concept；
+- 自有非 Fork、账号 Fork、Starred、Watched、Archived、Inactive 和语言分组分别提供渐进式 `index.md`；
+- 自有非 Fork 不自动等于完全原创，必须人工确认 Built、Adapted、Translated、Learning 等项目角色；
+- Star 或 Watch 只表示关注、参考或订阅，不推断作者身份；
+- 后续同步保留 `first_seen_at`、`last_changed_at`、关系增加/移除、inactive 和 reactivated 历史；
+- 合格的自有非 Fork 仓库 README 作为证据快照进入私有 Concept，Raw 哈希与来源路径保留在 frontmatter；
+- `github/curation-report.md` 提供可读摘要，Bundle 根目录的 `github-curation.json` 保存逐仓库整理结果。
+
 ## 生成与验证
 
 ```bash
 npm run data:finalize:yuque
+npm run data:sync:github
+npm run data:verify:github
 npm run data:build:okf
 npm run data:verify:okf
 ```
 
-`data:verify:okf` 会同时验证 OKF 结构以及整理报告、重复引用和近似内容双向链接的一致性。生成器不会修改 Raw 数据；若 Raw 对象改变，重新生成 Bundle 即可。
+`data:update:github` 会依次同步 GitHub、校验 Raw、重建统一 Bundle 并校验 OKF。`data:verify:okf` 会同时验证通用 OKF 结构、语雀整理报告、重复引用、近似内容双向链接，以及 GitHub 稳定 ID、关系索引和 Raw 追溯的一致性。生成器不会修改 Raw 数据；若任一 Raw 对象改变，重新生成 Bundle 即可。

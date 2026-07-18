@@ -13,9 +13,11 @@
       "id": "github-defulat-coder",
       "kind": "github",
       "uri": "https://github.com/defulat-coder",
-      "storage": "derived-cache",
-      "default_visibility": "public-metadata-only",
-      "status": "inventory-complete"
+      "storage": "data/private/github/raw",
+      "default_visibility": "private",
+      "status": "imported-current",
+      "coverage": "private/github/raw/manifest.json",
+      "sync_config": "../config/github-sync.json"
     },
     {
       "id": "yuque-personal",

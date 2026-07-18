@@ -11,7 +11,10 @@
     "data:sync:yuque-assets": "node scripts/yuque-assets.mjs",
     "data:finalize:yuque": "node scripts/yuque-finalize.mjs",
     "data:verify:yuque": "node scripts/verify-yuque.mjs",
-    "data:build:okf": "node scripts/yuque-to-okf.mjs",
-    "data:verify:okf": "node scripts/verify-okf.mjs && node scripts/verify-okf-curation.mjs"
+    "data:sync:github": "node scripts/github-sync.mjs",
+    "data:verify:github": "node scripts/verify-github.mjs",
+    "data:build:okf": "node scripts/build-okf.mjs",
+    "data:verify:okf": "node scripts/verify-okf.mjs && node scripts/verify-okf-curation.mjs && node scripts/verify-github-okf.mjs",
+    "data:update:github": "npm run data:sync:github && npm run data:verify:github && npm run data:build:okf && npm run data:verify:okf"
   }
 }

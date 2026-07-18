@@ -2,7 +2,8 @@
   "schema_version": "1.0.0",
   "okf_version": "0.1",
   "input": {
-    "yuque_raw_root": "data/private/yuque/raw"
+    "yuque_raw_root": "data/private/yuque/raw",
+    "github_raw_root": "data/private/github/raw"
   },
   "output": {
     "bundle_root": "knowledge/private/personal"
