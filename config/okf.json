@@ -3,7 +3,8 @@
   "okf_version": "0.1",
   "input": {
     "yuque_raw_root": "data/private/yuque/raw",
-    "github_raw_root": "data/private/github/raw"
+    "github_raw_root": "data/private/github/raw",
+    "agent_history_raw_root": "data/private/agent-history/raw"
   },
   "output": {
     "bundle_root": "knowledge/private/personal"
