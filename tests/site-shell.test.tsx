@@ -14,6 +14,7 @@ import {
   practiceContent,
   projectContent,
   publicSiteContent,
+  summarySupportsMetric,
 } from "@/lib/site-content";
 import { siteShell, siteShellSchema } from "@/lib/site-shell";
 
@@ -62,6 +63,20 @@ describe("desktop site shell", () => {
     ]);
     expect(knowledgeContent).toHaveLength(4);
     expect(practiceContent).toHaveLength(6);
+    expect(practiceContent.map((item) => item.image)).toEqual([
+      "/images/source/grid-01.webp",
+      "/images/source/grid-02.webp",
+      "/images/source/grid-03.webp",
+      "/images/source/grid-04.webp",
+      "/images/source/grid-05.webp",
+      "/images/source/grid-06.webp",
+    ]);
+  });
+
+  it("matches indexed metrics as complete numbers", () => {
+    expect(summarySupportsMetric("共有 15 个知识库", "15")).toBe(true);
+    expect(summarySupportsMetric("共有 115 个知识库", "15")).toBe(false);
+    expect(summarySupportsMetric("共 15,000 条记录", "15")).toBe(false);
   });
 
   it("renders every approved projection claim into the homepage", () => {

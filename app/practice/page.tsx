@@ -10,15 +10,6 @@ import {
   practiceContent,
 } from "@/lib/site-content";
 
-const practiceVisuals = [
-  "/images/source/grid-01.webp",
-  "/images/source/grid-02.webp",
-  "/images/source/grid-03.webp",
-  "/images/source/grid-04.webp",
-  "/images/source/grid-05.webp",
-  "/images/source/grid-06.webp",
-] as const;
-
 export const metadata: Metadata = {
   description: collectionContent.practice.summary,
   title: "实践索引｜陈远",
@@ -69,7 +60,7 @@ export default function PracticePage() {
                     alt=""
                     fill
                     sizes="320px"
-                    src={practiceVisuals[index]}
+                    src={item.image}
                   />
                 </div>
                 <span>{String(index + 1).padStart(2, "0")}</span>

@@ -40,11 +40,16 @@ function createVerifiedStats(
   stats: ReadonlyArray<{ label: string; value: string }>,
 ) {
   for (const stat of stats) {
-    if (!summary.includes(stat.value)) {
+    if (!summarySupportsMetric(summary, stat.value)) {
       throw new Error(`Indexed summary no longer supports metric ${stat.value}`);
     }
   }
   return stats;
+}
+
+export function summarySupportsMetric(summary: string, metric: string) {
+  const numericTokens: string[] = summary.match(/\d+(?:[,.]\d+)*/gu) ?? [];
+  return numericTokens.includes(metric);
 }
 
 export const collectionStats = {
@@ -93,12 +98,30 @@ export const knowledgeContent = [
 ];
 
 export const practiceContent = [
-  getRequiredItem("practice-super-agent"),
-  getRequiredItem("practice-agent-template"),
-  getRequiredItem("practice-agent-try"),
-  getRequiredItem("practice-pilot"),
-  getRequiredItem("practice-auto-coding"),
-  getRequiredItem("practice-health-pilot"),
+  {
+    ...getRequiredItem("practice-super-agent"),
+    image: "/images/source/grid-01.webp",
+  },
+  {
+    ...getRequiredItem("practice-agent-template"),
+    image: "/images/source/grid-02.webp",
+  },
+  {
+    ...getRequiredItem("practice-agent-try"),
+    image: "/images/source/grid-03.webp",
+  },
+  {
+    ...getRequiredItem("practice-pilot"),
+    image: "/images/source/grid-04.webp",
+  },
+  {
+    ...getRequiredItem("practice-auto-coding"),
+    image: "/images/source/grid-05.webp",
+  },
+  {
+    ...getRequiredItem("practice-health-pilot"),
+    image: "/images/source/grid-06.webp",
+  },
 ];
 
 export type EditorialContentItem = (typeof projectContent)[number];

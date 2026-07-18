@@ -16,15 +16,6 @@ import {
 import { siteFoundation } from "@/lib/site-foundation";
 import { siteShell } from "@/lib/site-shell";
 
-const practiceVisuals = [
-  "/images/source/grid-01.webp",
-  "/images/source/grid-02.webp",
-  "/images/source/grid-03.webp",
-  "/images/source/grid-04.webp",
-  "/images/source/grid-05.webp",
-  "/images/source/grid-06.webp",
-] as const;
-
 export default function HomePage() {
   return (
     <>
@@ -147,7 +138,7 @@ export default function HomePage() {
                 进入实践页 <ArrowRight aria-hidden="true" />
               </Link>
               <div className="practice-grid">
-                {practiceContent.map((item, index) => (
+                {practiceContent.map((item) => (
                   <article
                     className="practice-card"
                     data-content-id={item.id}
@@ -158,7 +149,7 @@ export default function HomePage() {
                         alt=""
                         fill
                         sizes="394px"
-                        src={practiceVisuals[index]}
+                        src={item.image}
                       />
                     </span>
                     <span className="practice-card__copy">
