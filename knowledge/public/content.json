@@ -1,0 +1,499 @@
+{
+  "schemaVersion": "2.0.0",
+  "generatorVersion": "2.0.0",
+  "items": [
+    {
+      "id": "identity-profile",
+      "category": "identity",
+      "sortOrder": 10,
+      "title": "陈远",
+      "summary": "以个人知识、GitHub 项目与 Codex / Claude Code 实践为三条主线，持续沉淀 Agent 工程化能力。",
+      "claims": [
+        {
+          "field": "title",
+          "value": "陈远",
+          "evidenceSha256": "3fdf6ae8e332cea51242a71e24f2fb75fb6c3429cc4efbf2b30c5a748cc76143"
+        },
+        {
+          "field": "summary",
+          "value": "以个人知识、GitHub 项目与 Codex / Claude Code 实践为三条主线，持续沉淀 Agent 工程化能力。",
+          "evidenceSha256": "3fdf6ae8e332cea51242a71e24f2fb75fb6c3429cc4efbf2b30c5a748cc76143"
+        }
+      ],
+      "provenance": [
+        {
+          "sourceId": "okf-index-catalog",
+          "sourceSha256": "c0bf5db9509d4d1101a30284787f37c6f901da326e9d8ff9794efc4465610f2a",
+          "evidenceSha256": "3fdf6ae8e332cea51242a71e24f2fb75fb6c3429cc4efbf2b30c5a748cc76143"
+        }
+      ]
+    },
+    {
+      "id": "overview-github",
+      "category": "project",
+      "sortOrder": 20,
+      "title": "GitHub 项目索引",
+      "summary": "521 个稳定仓库 Concepts，覆盖 127 个自有仓库、18 个非 Fork 原始项目，以及持续维护的技术参考图谱。",
+      "claims": [
+        {
+          "field": "title",
+          "value": "GitHub 项目索引",
+          "evidenceSha256": "f8637694c16899e825aa36ed5084bb9bc175f2e12db31a499d9660ac2d89d399"
+        },
+        {
+          "field": "summary",
+          "value": "521 个稳定仓库 Concepts，覆盖 127 个自有仓库、18 个非 Fork 原始项目，以及持续维护的技术参考图谱。",
+          "evidenceSha256": "f8637694c16899e825aa36ed5084bb9bc175f2e12db31a499d9660ac2d89d399"
+        }
+      ],
+      "provenance": [
+        {
+          "sourceId": "okf-index-catalog",
+          "sourceSha256": "c0bf5db9509d4d1101a30284787f37c6f901da326e9d8ff9794efc4465610f2a",
+          "evidenceSha256": "f8637694c16899e825aa36ed5084bb9bc175f2e12db31a499d9660ac2d89d399"
+        }
+      ]
+    },
+    {
+      "id": "project-mx-agent",
+      "category": "project",
+      "sortOrder": 30,
+      "title": "mx-agent",
+      "summary": "基于 FastAPI 与 Agno 的企业级 AI 智能助手，覆盖 HR、IT 运维、财务、法务等领域的问答与业务办理。",
+      "url": "https://github.com/defulat-coder/mx-agent",
+      "claims": [
+        {
+          "field": "title",
+          "value": "mx-agent",
+          "evidenceSha256": "3c60470b652a4a05a7bef55af55e9eb6ddb258b14b5ae7b3efa2c4cd9e4df4e0"
+        },
+        {
+          "field": "summary",
+          "value": "基于 FastAPI 与 Agno 的企业级 AI 智能助手，覆盖 HR、IT 运维、财务、法务等领域的问答与业务办理。",
+          "evidenceSha256": "3c60470b652a4a05a7bef55af55e9eb6ddb258b14b5ae7b3efa2c4cd9e4df4e0"
+        },
+        {
+          "field": "url",
+          "value": "https://github.com/defulat-coder/mx-agent",
+          "evidenceSha256": "3c60470b652a4a05a7bef55af55e9eb6ddb258b14b5ae7b3efa2c4cd9e4df4e0"
+        }
+      ],
+      "provenance": [
+        {
+          "sourceId": "okf-index-catalog",
+          "sourceSha256": "c0bf5db9509d4d1101a30284787f37c6f901da326e9d8ff9794efc4465610f2a",
+          "evidenceSha256": "3c60470b652a4a05a7bef55af55e9eb6ddb258b14b5ae7b3efa2c4cd9e4df4e0"
+        }
+      ]
+    },
+    {
+      "id": "project-health-pilot",
+      "category": "project",
+      "sortOrder": 40,
+      "title": "health-pilot",
+      "summary": "基于 Agno AgentOS 的 1v1 健康管理 AI 教练，探索多模态对话、长期记忆与主动提醒。",
+      "url": "https://github.com/defulat-coder/health-pilot",
+      "claims": [
+        {
+          "field": "title",
+          "value": "health-pilot",
+          "evidenceSha256": "a1107f901d2f8bfe97b232184950f8cbeb7da494b6719f7c36c00762d55890a9"
+        },
+        {
+          "field": "summary",
+          "value": "基于 Agno AgentOS 的 1v1 健康管理 AI 教练，探索多模态对话、长期记忆与主动提醒。",
+          "evidenceSha256": "a1107f901d2f8bfe97b232184950f8cbeb7da494b6719f7c36c00762d55890a9"
+        },
+        {
+          "field": "url",
+          "value": "https://github.com/defulat-coder/health-pilot",
+          "evidenceSha256": "a1107f901d2f8bfe97b232184950f8cbeb7da494b6719f7c36c00762d55890a9"
+        }
+      ],
+      "provenance": [
+        {
+          "sourceId": "okf-index-catalog",
+          "sourceSha256": "c0bf5db9509d4d1101a30284787f37c6f901da326e9d8ff9794efc4465610f2a",
+          "evidenceSha256": "a1107f901d2f8bfe97b232184950f8cbeb7da494b6719f7c36c00762d55890a9"
+        }
+      ]
+    },
+    {
+      "id": "project-ddd-hr",
+      "category": "project",
+      "sortOrder": 50,
+      "title": "ddd-hr",
+      "summary": "以 DDD 领域驱动设计构建 HR 业务，在真实业务模型中持续验证架构边界。",
+      "url": "https://github.com/defulat-coder/ddd-hr",
+      "claims": [
+        {
+          "field": "title",
+          "value": "ddd-hr",
+          "evidenceSha256": "a4257f25503dcf812f6384342abfdcc2e13a89c1040f5a4b63fa20b598ac1b8a"
+        },
+        {
+          "field": "summary",
+          "value": "以 DDD 领域驱动设计构建 HR 业务，在真实业务模型中持续验证架构边界。",
+          "evidenceSha256": "a4257f25503dcf812f6384342abfdcc2e13a89c1040f5a4b63fa20b598ac1b8a"
+        },
+        {
+          "field": "url",
+          "value": "https://github.com/defulat-coder/ddd-hr",
+          "evidenceSha256": "a4257f25503dcf812f6384342abfdcc2e13a89c1040f5a4b63fa20b598ac1b8a"
+        }
+      ],
+      "provenance": [
+        {
+          "sourceId": "okf-index-catalog",
+          "sourceSha256": "c0bf5db9509d4d1101a30284787f37c6f901da326e9d8ff9794efc4465610f2a",
+          "evidenceSha256": "a4257f25503dcf812f6384342abfdcc2e13a89c1040f5a4b63fa20b598ac1b8a"
+        }
+      ]
+    },
+    {
+      "id": "project-agno-cookbook-cn",
+      "category": "project",
+      "sortOrder": 60,
+      "title": "agno-cookbook-cn",
+      "summary": "Agno Cookbook 中文版，把多智能体框架的实践资料整理为可持续维护的中文知识入口。",
+      "url": "https://github.com/defulat-coder/agno-cookbook-cn",
+      "claims": [
+        {
+          "field": "title",
+          "value": "agno-cookbook-cn",
+          "evidenceSha256": "4cbe748b3fd01e1d60d8acd8df8c44a1d2cc84c23eab86ae881220e341084bcc"
+        },
+        {
+          "field": "summary",
+          "value": "Agno Cookbook 中文版，把多智能体框架的实践资料整理为可持续维护的中文知识入口。",
+          "evidenceSha256": "4cbe748b3fd01e1d60d8acd8df8c44a1d2cc84c23eab86ae881220e341084bcc"
+        },
+        {
+          "field": "url",
+          "value": "https://github.com/defulat-coder/agno-cookbook-cn",
+          "evidenceSha256": "4cbe748b3fd01e1d60d8acd8df8c44a1d2cc84c23eab86ae881220e341084bcc"
+        }
+      ],
+      "provenance": [
+        {
+          "sourceId": "okf-index-catalog",
+          "sourceSha256": "c0bf5db9509d4d1101a30284787f37c6f901da326e9d8ff9794efc4465610f2a",
+          "evidenceSha256": "4cbe748b3fd01e1d60d8acd8df8c44a1d2cc84c23eab86ae881220e341084bcc"
+        }
+      ]
+    },
+    {
+      "id": "overview-yuque",
+      "category": "knowledge",
+      "sortOrder": 70,
+      "title": "个人知识索引",
+      "summary": "15 个个人知识库汇集 1788 份文档与 1175 条小记，经过重复收敛与人工复核队列整理。",
+      "claims": [
+        {
+          "field": "title",
+          "value": "个人知识索引",
+          "evidenceSha256": "92d7e4a070723298fdbbe14560119da879a56f7f578fda0563bd249c1afcdd9d"
+        },
+        {
+          "field": "summary",
+          "value": "15 个个人知识库汇集 1788 份文档与 1175 条小记，经过重复收敛与人工复核队列整理。",
+          "evidenceSha256": "92d7e4a070723298fdbbe14560119da879a56f7f578fda0563bd249c1afcdd9d"
+        }
+      ],
+      "provenance": [
+        {
+          "sourceId": "okf-index-catalog",
+          "sourceSha256": "c0bf5db9509d4d1101a30284787f37c6f901da326e9d8ff9794efc4465610f2a",
+          "evidenceSha256": "92d7e4a070723298fdbbe14560119da879a56f7f578fda0563bd249c1afcdd9d"
+        }
+      ]
+    },
+    {
+      "id": "knowledge-aigc",
+      "category": "knowledge",
+      "sortOrder": 80,
+      "title": "AIGC",
+      "summary": "从大模型、提示工程、RAG 到 Agent 框架：要么解决问题，要么成为问题的一部分。",
+      "claims": [
+        {
+          "field": "title",
+          "value": "AIGC",
+          "evidenceSha256": "54cac1e278bf50902369521749a441ded4ebc4aca451d7eb35676953cda5ee05"
+        },
+        {
+          "field": "summary",
+          "value": "从大模型、提示工程、RAG 到 Agent 框架：要么解决问题，要么成为问题的一部分。",
+          "evidenceSha256": "54cac1e278bf50902369521749a441ded4ebc4aca451d7eb35676953cda5ee05"
+        }
+      ],
+      "provenance": [
+        {
+          "sourceId": "okf-index-catalog",
+          "sourceSha256": "c0bf5db9509d4d1101a30284787f37c6f901da326e9d8ff9794efc4465610f2a",
+          "evidenceSha256": "54cac1e278bf50902369521749a441ded4ebc4aca451d7eb35676953cda5ee05"
+        }
+      ]
+    },
+    {
+      "id": "knowledge-product",
+      "category": "knowledge",
+      "sortOrder": 90,
+      "title": "产品与业务",
+      "summary": "围绕产品思考、业务设计、数据体系与企业场景形成长期知识沉淀。",
+      "claims": [
+        {
+          "field": "title",
+          "value": "产品与业务",
+          "evidenceSha256": "5c06a415a62a3543a3a81d4cdba7c082d0ad3df41d71e72ed3eca471a276efd0"
+        },
+        {
+          "field": "summary",
+          "value": "围绕产品思考、业务设计、数据体系与企业场景形成长期知识沉淀。",
+          "evidenceSha256": "5c06a415a62a3543a3a81d4cdba7c082d0ad3df41d71e72ed3eca471a276efd0"
+        }
+      ],
+      "provenance": [
+        {
+          "sourceId": "okf-index-catalog",
+          "sourceSha256": "c0bf5db9509d4d1101a30284787f37c6f901da326e9d8ff9794efc4465610f2a",
+          "evidenceSha256": "5c06a415a62a3543a3a81d4cdba7c082d0ad3df41d71e72ed3eca471a276efd0"
+        }
+      ]
+    },
+    {
+      "id": "knowledge-tools",
+      "category": "knowledge",
+      "sortOrder": 100,
+      "title": "工具与效率",
+      "summary": "生产工具、开发环境与工程效率方法，沉淀为可复用的实践索引。",
+      "claims": [
+        {
+          "field": "title",
+          "value": "工具与效率",
+          "evidenceSha256": "f737270f261aa850f5791b5c00b2088d67f5fe6ae5dce31714f574db33959dfe"
+        },
+        {
+          "field": "summary",
+          "value": "生产工具、开发环境与工程效率方法，沉淀为可复用的实践索引。",
+          "evidenceSha256": "f737270f261aa850f5791b5c00b2088d67f5fe6ae5dce31714f574db33959dfe"
+        }
+      ],
+      "provenance": [
+        {
+          "sourceId": "okf-index-catalog",
+          "sourceSha256": "c0bf5db9509d4d1101a30284787f37c6f901da326e9d8ff9794efc4465610f2a",
+          "evidenceSha256": "f737270f261aa850f5791b5c00b2088d67f5fe6ae5dce31714f574db33959dfe"
+        }
+      ]
+    },
+    {
+      "id": "knowledge-learning",
+      "category": "knowledge",
+      "sortOrder": 110,
+      "title": "持续学习",
+      "summary": "把技术阅读、源码研究与实验记录收敛为可回看、可继续生长的知识目录。",
+      "claims": [
+        {
+          "field": "title",
+          "value": "持续学习",
+          "evidenceSha256": "fff98625fc70fe9868e806bff9a41235189744de53951250274fb7895e90a1fa"
+        },
+        {
+          "field": "summary",
+          "value": "把技术阅读、源码研究与实验记录收敛为可回看、可继续生长的知识目录。",
+          "evidenceSha256": "fff98625fc70fe9868e806bff9a41235189744de53951250274fb7895e90a1fa"
+        }
+      ],
+      "provenance": [
+        {
+          "sourceId": "okf-index-catalog",
+          "sourceSha256": "c0bf5db9509d4d1101a30284787f37c6f901da326e9d8ff9794efc4465610f2a",
+          "evidenceSha256": "fff98625fc70fe9868e806bff9a41235189744de53951250274fb7895e90a1fa"
+        }
+      ]
+    },
+    {
+      "id": "overview-agent-history",
+      "category": "practice",
+      "sortOrder": 120,
+      "title": "Agent 实践索引",
+      "summary": "881 个 Codex / Claude Code 会话、142 份记忆与 55 个项目目录，构成持续迭代的工程实践轨迹。",
+      "claims": [
+        {
+          "field": "title",
+          "value": "Agent 实践索引",
+          "evidenceSha256": "0fd4f6ffc4d519f47e02a6f79e655558b1cd310d7856d4ed021cc38bdfd30ebd"
+        },
+        {
+          "field": "summary",
+          "value": "881 个 Codex / Claude Code 会话、142 份记忆与 55 个项目目录，构成持续迭代的工程实践轨迹。",
+          "evidenceSha256": "0fd4f6ffc4d519f47e02a6f79e655558b1cd310d7856d4ed021cc38bdfd30ebd"
+        }
+      ],
+      "provenance": [
+        {
+          "sourceId": "okf-index-catalog",
+          "sourceSha256": "c0bf5db9509d4d1101a30284787f37c6f901da326e9d8ff9794efc4465610f2a",
+          "evidenceSha256": "0fd4f6ffc4d519f47e02a6f79e655558b1cd310d7856d4ed021cc38bdfd30ebd"
+        }
+      ]
+    },
+    {
+      "id": "practice-super-agent",
+      "category": "practice",
+      "sortOrder": 130,
+      "title": "super-agent-claude",
+      "summary": "OKF 项目索引记录 246 个跨平台会话，是当前最密集的 Agent 平台与工作台实践。",
+      "claims": [
+        {
+          "field": "title",
+          "value": "super-agent-claude",
+          "evidenceSha256": "4544efbdb552d434377fcf86f7ba840db59088ba2ac040db75d9e858d1c9f283"
+        },
+        {
+          "field": "summary",
+          "value": "OKF 项目索引记录 246 个跨平台会话，是当前最密集的 Agent 平台与工作台实践。",
+          "evidenceSha256": "4544efbdb552d434377fcf86f7ba840db59088ba2ac040db75d9e858d1c9f283"
+        }
+      ],
+      "provenance": [
+        {
+          "sourceId": "okf-index-catalog",
+          "sourceSha256": "c0bf5db9509d4d1101a30284787f37c6f901da326e9d8ff9794efc4465610f2a",
+          "evidenceSha256": "4544efbdb552d434377fcf86f7ba840db59088ba2ac040db75d9e858d1c9f283"
+        }
+      ]
+    },
+    {
+      "id": "practice-agent-template",
+      "category": "practice",
+      "sortOrder": 140,
+      "title": "agent-template",
+      "summary": "主项目索引记录 122 个跨平台会话，持续打磨 Agent 项目的工程基线与模板能力。",
+      "claims": [
+        {
+          "field": "title",
+          "value": "agent-template",
+          "evidenceSha256": "606d50acc684035a4e7ec5ef5845af3efa180c75b93f1bc0890607b085c5a60c"
+        },
+        {
+          "field": "summary",
+          "value": "主项目索引记录 122 个跨平台会话，持续打磨 Agent 项目的工程基线与模板能力。",
+          "evidenceSha256": "606d50acc684035a4e7ec5ef5845af3efa180c75b93f1bc0890607b085c5a60c"
+        }
+      ],
+      "provenance": [
+        {
+          "sourceId": "okf-index-catalog",
+          "sourceSha256": "c0bf5db9509d4d1101a30284787f37c6f901da326e9d8ff9794efc4465610f2a",
+          "evidenceSha256": "606d50acc684035a4e7ec5ef5845af3efa180c75b93f1bc0890607b085c5a60c"
+        }
+      ]
+    },
+    {
+      "id": "practice-agent-try",
+      "category": "practice",
+      "sortOrder": 150,
+      "title": "agent-try",
+      "summary": "项目索引记录 97 个跨平台会话，用于验证 Agent、OKF、检索与工具接入方案。",
+      "claims": [
+        {
+          "field": "title",
+          "value": "agent-try",
+          "evidenceSha256": "3a50f879f2a6cc37d3710db2ca74f3afa2f49fabab264f154998af97976113d6"
+        },
+        {
+          "field": "summary",
+          "value": "项目索引记录 97 个跨平台会话，用于验证 Agent、OKF、检索与工具接入方案。",
+          "evidenceSha256": "3a50f879f2a6cc37d3710db2ca74f3afa2f49fabab264f154998af97976113d6"
+        }
+      ],
+      "provenance": [
+        {
+          "sourceId": "okf-index-catalog",
+          "sourceSha256": "c0bf5db9509d4d1101a30284787f37c6f901da326e9d8ff9794efc4465610f2a",
+          "evidenceSha256": "3a50f879f2a6cc37d3710db2ca74f3afa2f49fabab264f154998af97976113d6"
+        }
+      ]
+    },
+    {
+      "id": "practice-pilot",
+      "category": "practice",
+      "sortOrder": 160,
+      "title": "pilot",
+      "summary": "项目索引记录 77 个跨平台会话，覆盖全栈脚手架、业务建模、数据库与协作流程。",
+      "claims": [
+        {
+          "field": "title",
+          "value": "pilot",
+          "evidenceSha256": "5024f65568fd8a5a577e2e39886261b2a3ec519dcb7768eb78b127b7f98d0255"
+        },
+        {
+          "field": "summary",
+          "value": "项目索引记录 77 个跨平台会话，覆盖全栈脚手架、业务建模、数据库与协作流程。",
+          "evidenceSha256": "5024f65568fd8a5a577e2e39886261b2a3ec519dcb7768eb78b127b7f98d0255"
+        }
+      ],
+      "provenance": [
+        {
+          "sourceId": "okf-index-catalog",
+          "sourceSha256": "c0bf5db9509d4d1101a30284787f37c6f901da326e9d8ff9794efc4465610f2a",
+          "evidenceSha256": "5024f65568fd8a5a577e2e39886261b2a3ec519dcb7768eb78b127b7f98d0255"
+        }
+      ]
+    },
+    {
+      "id": "practice-auto-coding",
+      "category": "practice",
+      "sortOrder": 170,
+      "title": "auto-coding",
+      "summary": "项目索引记录 53 个跨平台会话，聚焦自动化编码与开发工作流。",
+      "claims": [
+        {
+          "field": "title",
+          "value": "auto-coding",
+          "evidenceSha256": "09ae8bf2d8657ee953722f7f088f55331815b35fb7813599a9c2565edf93e105"
+        },
+        {
+          "field": "summary",
+          "value": "项目索引记录 53 个跨平台会话，聚焦自动化编码与开发工作流。",
+          "evidenceSha256": "09ae8bf2d8657ee953722f7f088f55331815b35fb7813599a9c2565edf93e105"
+        }
+      ],
+      "provenance": [
+        {
+          "sourceId": "okf-index-catalog",
+          "sourceSha256": "c0bf5db9509d4d1101a30284787f37c6f901da326e9d8ff9794efc4465610f2a",
+          "evidenceSha256": "09ae8bf2d8657ee953722f7f088f55331815b35fb7813599a9c2565edf93e105"
+        }
+      ]
+    },
+    {
+      "id": "practice-health-pilot",
+      "category": "practice",
+      "sortOrder": 180,
+      "title": "health-pilot",
+      "summary": "项目索引记录 36 个跨平台会话，连接原生端、后端服务与健康 Agent 场景。",
+      "claims": [
+        {
+          "field": "title",
+          "value": "health-pilot",
+          "evidenceSha256": "2c42e03d40065fcf85ac917eedbb6d61d654186ac9b9af4b8c919e2aa8d27398"
+        },
+        {
+          "field": "summary",
+          "value": "项目索引记录 36 个跨平台会话，连接原生端、后端服务与健康 Agent 场景。",
+          "evidenceSha256": "2c42e03d40065fcf85ac917eedbb6d61d654186ac9b9af4b8c919e2aa8d27398"
+        }
+      ],
+      "provenance": [
+        {
+          "sourceId": "okf-index-catalog",
+          "sourceSha256": "c0bf5db9509d4d1101a30284787f37c6f901da326e9d8ff9794efc4465610f2a",
+          "evidenceSha256": "2c42e03d40065fcf85ac917eedbb6d61d654186ac9b9af4b8c919e2aa8d27398"
+        }
+      ]
+    }
+  ],
+  "contentHash": "1fb156b622afe8b4ec1242b1cedb37ecf6c947f95cd544171fe3157e652f72a0"
+}

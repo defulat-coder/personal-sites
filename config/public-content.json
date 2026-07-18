@@ -1,0 +1,298 @@
+{
+  "schemaVersion": "2.0.0",
+  "sources": [
+    {
+      "id": "okf-index-catalog",
+      "kind": "okf-index-catalog",
+      "locator": "complete-okf-indexes"
+    }
+  ],
+  "records": [
+    {
+      "id": "identity-profile",
+      "category": "identity",
+      "sourceId": "okf-index-catalog",
+      "status": "published",
+      "sortOrder": 10,
+      "output": {
+        "title": "陈远",
+        "summary": "以个人知识、GitHub 项目与 Codex / Claude Code 实践为三条主线，持续沉淀 Agent 工程化能力。"
+      },
+      "evidenceFragments": [
+        "陈远个人知识 Bundle",
+        "语雀个人知识",
+        "GitHub 项目知识",
+        "Codex 与 Claude Code 历史知识"
+      ]
+    },
+    {
+      "id": "overview-github",
+      "category": "project",
+      "sourceId": "okf-index-catalog",
+      "status": "published",
+      "sortOrder": 20,
+      "output": {
+        "title": "GitHub 项目索引",
+        "summary": "521 个稳定仓库 Concepts，覆盖 127 个自有仓库、18 个非 Fork 原始项目，以及持续维护的技术参考图谱。"
+      },
+      "evidenceFragments": [
+        "521 个稳定仓库 Concepts",
+        "127 个；原始项目与 Fork 分层",
+        "Owned Originals — 待人工确认项目角色"
+      ]
+    },
+    {
+      "id": "project-mx-agent",
+      "category": "project",
+      "sourceId": "okf-index-catalog",
+      "status": "published",
+      "sortOrder": 30,
+      "output": {
+        "title": "mx-agent",
+        "summary": "基于 FastAPI 与 Agno 的企业级 AI 智能助手，覆盖 HR、IT 运维、财务、法务等领域的问答与业务办理。",
+        "url": "https://github.com/defulat-coder/mx-agent"
+      },
+      "evidenceFragments": [
+        "defulat-coder/mx-agent",
+        "基于 FastAPI + Agno 的企业级 AI 智能助手",
+        "支持 HR、IT 运维、财务、法务等多领域智能问答与业务办理"
+      ]
+    },
+    {
+      "id": "project-health-pilot",
+      "category": "project",
+      "sourceId": "okf-index-catalog",
+      "status": "published",
+      "sortOrder": 40,
+      "output": {
+        "title": "health-pilot",
+        "summary": "基于 Agno AgentOS 的 1v1 健康管理 AI 教练，探索多模态对话、长期记忆与主动提醒。",
+        "url": "https://github.com/defulat-coder/health-pilot"
+      },
+      "evidenceFragments": [
+        "defulat-coder/health-pilot",
+        "1v1 健康管理(减脂) AI 教练 agent",
+        "多模态对话（文字 + 图片），长期用户记忆、 主动推送提醒"
+      ]
+    },
+    {
+      "id": "project-ddd-hr",
+      "category": "project",
+      "sourceId": "okf-index-catalog",
+      "status": "published",
+      "sortOrder": 50,
+      "output": {
+        "title": "ddd-hr",
+        "summary": "以 DDD 领域驱动设计构建 HR 业务，在真实业务模型中持续验证架构边界。",
+        "url": "https://github.com/defulat-coder/ddd-hr"
+      },
+      "evidenceFragments": [
+        "defulat-coder/ddd-hr",
+        "使用 ddd 领域驱动设计 来构建 HR 业务"
+      ]
+    },
+    {
+      "id": "project-agno-cookbook-cn",
+      "category": "project",
+      "sourceId": "okf-index-catalog",
+      "status": "published",
+      "sortOrder": 60,
+      "output": {
+        "title": "agno-cookbook-cn",
+        "summary": "Agno Cookbook 中文版，把多智能体框架的实践资料整理为可持续维护的中文知识入口。",
+        "url": "https://github.com/defulat-coder/agno-cookbook-cn"
+      },
+      "evidenceFragments": [
+        "defulat-coder/agno-cookbook-cn",
+        "Agno Cookbook 中文版"
+      ]
+    },
+    {
+      "id": "overview-yuque",
+      "category": "knowledge",
+      "sourceId": "okf-index-catalog",
+      "status": "published",
+      "sortOrder": 70,
+      "output": {
+        "title": "个人知识索引",
+        "summary": "15 个个人知识库汇集 1788 份文档与 1175 条小记，经过重复收敛与人工复核队列整理。"
+      },
+      "evidenceFragments": [
+        "15 个个人知识库",
+        "1788 份完整文档正文",
+        "1175 条完整小记正文",
+        "192 条需要人工判断的内容"
+      ]
+    },
+    {
+      "id": "knowledge-aigc",
+      "category": "knowledge",
+      "sourceId": "okf-index-catalog",
+      "status": "published",
+      "sortOrder": 80,
+      "output": {
+        "title": "AIGC",
+        "summary": "从大模型、提示工程、RAG 到 Agent 框架：要么解决问题，要么成为问题的一部分。"
+      },
+      "evidenceFragments": [
+        "AIGC",
+        "要么解决问题，要么成为问题的一部分",
+        "Agno开发教程系列"
+      ]
+    },
+    {
+      "id": "knowledge-product",
+      "category": "knowledge",
+      "sourceId": "okf-index-catalog",
+      "status": "published",
+      "sortOrder": 90,
+      "output": {
+        "title": "产品与业务",
+        "summary": "围绕产品思考、业务设计、数据体系与企业场景形成长期知识沉淀。"
+      },
+      "evidenceFragments": [
+        "产品 🌴",
+        "思维与思考🤔",
+        "作为数据产品经理，你需要知道这些技术知识"
+      ]
+    },
+    {
+      "id": "knowledge-tools",
+      "category": "knowledge",
+      "sourceId": "okf-index-catalog",
+      "status": "published",
+      "sortOrder": 100,
+      "output": {
+        "title": "工具与效率",
+        "summary": "生产工具、开发环境与工程效率方法，沉淀为可复用的实践索引。"
+      },
+      "evidenceFragments": [
+        "工具 📎",
+        "生产工具"
+      ]
+    },
+    {
+      "id": "knowledge-learning",
+      "category": "knowledge",
+      "sourceId": "okf-index-catalog",
+      "status": "published",
+      "sortOrder": 110,
+      "output": {
+        "title": "持续学习",
+        "summary": "把技术阅读、源码研究与实验记录收敛为可回看、可继续生长的知识目录。"
+      },
+      "evidenceFragments": [
+        "学习 📚",
+        "修行 🎭",
+        "阅读"
+      ]
+    },
+    {
+      "id": "overview-agent-history",
+      "category": "practice",
+      "sourceId": "okf-index-catalog",
+      "status": "published",
+      "sortOrder": 120,
+      "output": {
+        "title": "Agent 实践索引",
+        "summary": "881 个 Codex / Claude Code 会话、142 份记忆与 55 个项目目录，构成持续迭代的工程实践轨迹。"
+      },
+      "evidenceFragments": [
+        "864 个会话，141 份记忆",
+        "17 个会话，1 份记忆",
+        "55 个工作目录的跨平台会话索引"
+      ]
+    },
+    {
+      "id": "practice-super-agent",
+      "category": "practice",
+      "sourceId": "okf-index-catalog",
+      "status": "published",
+      "sortOrder": 130,
+      "output": {
+        "title": "super-agent-claude",
+        "summary": "OKF 项目索引记录 246 个跨平台会话，是当前最密集的 Agent 平台与工作台实践。"
+      },
+      "evidenceFragments": [
+        "/Users/xbjt/Documents/myself/super-agent-claude",
+        "246 个跨平台会话"
+      ]
+    },
+    {
+      "id": "practice-agent-template",
+      "category": "practice",
+      "sourceId": "okf-index-catalog",
+      "status": "published",
+      "sortOrder": 140,
+      "output": {
+        "title": "agent-template",
+        "summary": "主项目索引记录 122 个跨平台会话，持续打磨 Agent 项目的工程基线与模板能力。"
+      },
+      "evidenceFragments": [
+        "/Users/xbjt/Documents/myself/agent-template",
+        "122 个跨平台会话"
+      ]
+    },
+    {
+      "id": "practice-agent-try",
+      "category": "practice",
+      "sourceId": "okf-index-catalog",
+      "status": "published",
+      "sortOrder": 150,
+      "output": {
+        "title": "agent-try",
+        "summary": "项目索引记录 97 个跨平台会话，用于验证 Agent、OKF、检索与工具接入方案。"
+      },
+      "evidenceFragments": [
+        "/Users/xbjt/Documents/myself/agent-try",
+        "97 个跨平台会话"
+      ]
+    },
+    {
+      "id": "practice-pilot",
+      "category": "practice",
+      "sourceId": "okf-index-catalog",
+      "status": "published",
+      "sortOrder": 160,
+      "output": {
+        "title": "pilot",
+        "summary": "项目索引记录 77 个跨平台会话，覆盖全栈脚手架、业务建模、数据库与协作流程。"
+      },
+      "evidenceFragments": [
+        "/Users/xbjt/Documents/myself/pilot",
+        "77 个跨平台会话",
+        "搭建 TS monorepo 全栈项目"
+      ]
+    },
+    {
+      "id": "practice-auto-coding",
+      "category": "practice",
+      "sourceId": "okf-index-catalog",
+      "status": "published",
+      "sortOrder": 170,
+      "output": {
+        "title": "auto-coding",
+        "summary": "项目索引记录 53 个跨平台会话，聚焦自动化编码与开发工作流。"
+      },
+      "evidenceFragments": [
+        "/Users/xbjt/auto-coding",
+        "53 个跨平台会话"
+      ]
+    },
+    {
+      "id": "practice-health-pilot",
+      "category": "practice",
+      "sourceId": "okf-index-catalog",
+      "status": "published",
+      "sortOrder": 180,
+      "output": {
+        "title": "health-pilot",
+        "summary": "项目索引记录 36 个跨平台会话，连接原生端、后端服务与健康 Agent 场景。"
+      },
+      "evidenceFragments": [
+        "/Users/xbjt/PycharmProjects/health-pilot",
+        "36 个跨平台会话"
+      ]
+    }
+  ]
+}

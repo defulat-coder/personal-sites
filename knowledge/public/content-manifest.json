@@ -1,0 +1,250 @@
+{
+  "schemaVersion": "2.0.0",
+  "generatorVersion": "2.0.0",
+  "generationId": "dc2129816a37c0fcb871f6983079e0a97310cb1e12f3d92993203aa0409b8cce",
+  "inputHash": "51cdaf9576c101f400605b8431d5950bbaf0aaaa555e516cc3d82a9db2a44a8d",
+  "projectionHash": "1fb156b622afe8b4ec1242b1cedb37ecf6c947f95cd544171fe3157e652f72a0",
+  "sourceCount": 1,
+  "selectedCount": 18,
+  "publishedCount": 18,
+  "excludedCount": 0,
+  "excludedByReason": {},
+  "silentDropCount": 0,
+  "categoryCounts": {
+    "identity": {
+      "selected": 1,
+      "published": 1,
+      "excluded": 0
+    },
+    "project": {
+      "selected": 5,
+      "published": 5,
+      "excluded": 0
+    },
+    "knowledge": {
+      "selected": 5,
+      "published": 5,
+      "excluded": 0
+    },
+    "practice": {
+      "selected": 7,
+      "published": 7,
+      "excluded": 0
+    }
+  },
+  "findings": {
+    "secretFindings": 0,
+    "privacyFindings": 0,
+    "confidentialityFindings": 0,
+    "unsupportedClaimFindings": 0
+  },
+  "sources": [
+    {
+      "id": "okf-index-catalog",
+      "kind": "index-source",
+      "sha256": "c0bf5db9509d4d1101a30284787f37c6f901da326e9d8ff9794efc4465610f2a",
+      "indexFileCount": 127,
+      "disposition": "published"
+    }
+  ],
+  "records": [
+    {
+      "id": "identity-profile",
+      "category": "identity",
+      "sourceId": "okf-index-catalog",
+      "sourceSha256": "c0bf5db9509d4d1101a30284787f37c6f901da326e9d8ff9794efc4465610f2a",
+      "status": "published",
+      "outputIds": [
+        "identity-profile"
+      ],
+      "evidenceSha256": "3fdf6ae8e332cea51242a71e24f2fb75fb6c3429cc4efbf2b30c5a748cc76143"
+    },
+    {
+      "id": "overview-github",
+      "category": "project",
+      "sourceId": "okf-index-catalog",
+      "sourceSha256": "c0bf5db9509d4d1101a30284787f37c6f901da326e9d8ff9794efc4465610f2a",
+      "status": "published",
+      "outputIds": [
+        "overview-github"
+      ],
+      "evidenceSha256": "f8637694c16899e825aa36ed5084bb9bc175f2e12db31a499d9660ac2d89d399"
+    },
+    {
+      "id": "project-mx-agent",
+      "category": "project",
+      "sourceId": "okf-index-catalog",
+      "sourceSha256": "c0bf5db9509d4d1101a30284787f37c6f901da326e9d8ff9794efc4465610f2a",
+      "status": "published",
+      "outputIds": [
+        "project-mx-agent"
+      ],
+      "evidenceSha256": "3c60470b652a4a05a7bef55af55e9eb6ddb258b14b5ae7b3efa2c4cd9e4df4e0"
+    },
+    {
+      "id": "project-health-pilot",
+      "category": "project",
+      "sourceId": "okf-index-catalog",
+      "sourceSha256": "c0bf5db9509d4d1101a30284787f37c6f901da326e9d8ff9794efc4465610f2a",
+      "status": "published",
+      "outputIds": [
+        "project-health-pilot"
+      ],
+      "evidenceSha256": "a1107f901d2f8bfe97b232184950f8cbeb7da494b6719f7c36c00762d55890a9"
+    },
+    {
+      "id": "project-ddd-hr",
+      "category": "project",
+      "sourceId": "okf-index-catalog",
+      "sourceSha256": "c0bf5db9509d4d1101a30284787f37c6f901da326e9d8ff9794efc4465610f2a",
+      "status": "published",
+      "outputIds": [
+        "project-ddd-hr"
+      ],
+      "evidenceSha256": "a4257f25503dcf812f6384342abfdcc2e13a89c1040f5a4b63fa20b598ac1b8a"
+    },
+    {
+      "id": "project-agno-cookbook-cn",
+      "category": "project",
+      "sourceId": "okf-index-catalog",
+      "sourceSha256": "c0bf5db9509d4d1101a30284787f37c6f901da326e9d8ff9794efc4465610f2a",
+      "status": "published",
+      "outputIds": [
+        "project-agno-cookbook-cn"
+      ],
+      "evidenceSha256": "4cbe748b3fd01e1d60d8acd8df8c44a1d2cc84c23eab86ae881220e341084bcc"
+    },
+    {
+      "id": "overview-yuque",
+      "category": "knowledge",
+      "sourceId": "okf-index-catalog",
+      "sourceSha256": "c0bf5db9509d4d1101a30284787f37c6f901da326e9d8ff9794efc4465610f2a",
+      "status": "published",
+      "outputIds": [
+        "overview-yuque"
+      ],
+      "evidenceSha256": "92d7e4a070723298fdbbe14560119da879a56f7f578fda0563bd249c1afcdd9d"
+    },
+    {
+      "id": "knowledge-aigc",
+      "category": "knowledge",
+      "sourceId": "okf-index-catalog",
+      "sourceSha256": "c0bf5db9509d4d1101a30284787f37c6f901da326e9d8ff9794efc4465610f2a",
+      "status": "published",
+      "outputIds": [
+        "knowledge-aigc"
+      ],
+      "evidenceSha256": "54cac1e278bf50902369521749a441ded4ebc4aca451d7eb35676953cda5ee05"
+    },
+    {
+      "id": "knowledge-product",
+      "category": "knowledge",
+      "sourceId": "okf-index-catalog",
+      "sourceSha256": "c0bf5db9509d4d1101a30284787f37c6f901da326e9d8ff9794efc4465610f2a",
+      "status": "published",
+      "outputIds": [
+        "knowledge-product"
+      ],
+      "evidenceSha256": "5c06a415a62a3543a3a81d4cdba7c082d0ad3df41d71e72ed3eca471a276efd0"
+    },
+    {
+      "id": "knowledge-tools",
+      "category": "knowledge",
+      "sourceId": "okf-index-catalog",
+      "sourceSha256": "c0bf5db9509d4d1101a30284787f37c6f901da326e9d8ff9794efc4465610f2a",
+      "status": "published",
+      "outputIds": [
+        "knowledge-tools"
+      ],
+      "evidenceSha256": "f737270f261aa850f5791b5c00b2088d67f5fe6ae5dce31714f574db33959dfe"
+    },
+    {
+      "id": "knowledge-learning",
+      "category": "knowledge",
+      "sourceId": "okf-index-catalog",
+      "sourceSha256": "c0bf5db9509d4d1101a30284787f37c6f901da326e9d8ff9794efc4465610f2a",
+      "status": "published",
+      "outputIds": [
+        "knowledge-learning"
+      ],
+      "evidenceSha256": "fff98625fc70fe9868e806bff9a41235189744de53951250274fb7895e90a1fa"
+    },
+    {
+      "id": "overview-agent-history",
+      "category": "practice",
+      "sourceId": "okf-index-catalog",
+      "sourceSha256": "c0bf5db9509d4d1101a30284787f37c6f901da326e9d8ff9794efc4465610f2a",
+      "status": "published",
+      "outputIds": [
+        "overview-agent-history"
+      ],
+      "evidenceSha256": "0fd4f6ffc4d519f47e02a6f79e655558b1cd310d7856d4ed021cc38bdfd30ebd"
+    },
+    {
+      "id": "practice-super-agent",
+      "category": "practice",
+      "sourceId": "okf-index-catalog",
+      "sourceSha256": "c0bf5db9509d4d1101a30284787f37c6f901da326e9d8ff9794efc4465610f2a",
+      "status": "published",
+      "outputIds": [
+        "practice-super-agent"
+      ],
+      "evidenceSha256": "4544efbdb552d434377fcf86f7ba840db59088ba2ac040db75d9e858d1c9f283"
+    },
+    {
+      "id": "practice-agent-template",
+      "category": "practice",
+      "sourceId": "okf-index-catalog",
+      "sourceSha256": "c0bf5db9509d4d1101a30284787f37c6f901da326e9d8ff9794efc4465610f2a",
+      "status": "published",
+      "outputIds": [
+        "practice-agent-template"
+      ],
+      "evidenceSha256": "606d50acc684035a4e7ec5ef5845af3efa180c75b93f1bc0890607b085c5a60c"
+    },
+    {
+      "id": "practice-agent-try",
+      "category": "practice",
+      "sourceId": "okf-index-catalog",
+      "sourceSha256": "c0bf5db9509d4d1101a30284787f37c6f901da326e9d8ff9794efc4465610f2a",
+      "status": "published",
+      "outputIds": [
+        "practice-agent-try"
+      ],
+      "evidenceSha256": "3a50f879f2a6cc37d3710db2ca74f3afa2f49fabab264f154998af97976113d6"
+    },
+    {
+      "id": "practice-pilot",
+      "category": "practice",
+      "sourceId": "okf-index-catalog",
+      "sourceSha256": "c0bf5db9509d4d1101a30284787f37c6f901da326e9d8ff9794efc4465610f2a",
+      "status": "published",
+      "outputIds": [
+        "practice-pilot"
+      ],
+      "evidenceSha256": "5024f65568fd8a5a577e2e39886261b2a3ec519dcb7768eb78b127b7f98d0255"
+    },
+    {
+      "id": "practice-auto-coding",
+      "category": "practice",
+      "sourceId": "okf-index-catalog",
+      "sourceSha256": "c0bf5db9509d4d1101a30284787f37c6f901da326e9d8ff9794efc4465610f2a",
+      "status": "published",
+      "outputIds": [
+        "practice-auto-coding"
+      ],
+      "evidenceSha256": "09ae8bf2d8657ee953722f7f088f55331815b35fb7813599a9c2565edf93e105"
+    },
+    {
+      "id": "practice-health-pilot",
+      "category": "practice",
+      "sourceId": "okf-index-catalog",
+      "sourceSha256": "c0bf5db9509d4d1101a30284787f37c6f901da326e9d8ff9794efc4465610f2a",
+      "status": "published",
+      "outputIds": [
+        "practice-health-pilot"
+      ],
+      "evidenceSha256": "2c42e03d40065fcf85ac917eedbb6d61d654186ac9b9af4b8c919e2aa8d27398"
+    }
+  ]
+}
