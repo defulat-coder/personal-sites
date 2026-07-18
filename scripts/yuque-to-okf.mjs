@@ -345,7 +345,15 @@ function prepareKnowledgeItem({
   };
 }
 
-async function generateBundle({ config, rawRoot, stagingRoot, manifest, coverage, manifestSha }) {
+async function generateBundle({
+  config,
+  rawRoot,
+  stagingRoot,
+  manifest,
+  coverage,
+  manifestSha,
+  includeRootDocuments = true,
+}) {
   const curation = normalizeCurationConfig(config);
   const repoRecords = recordByKind(manifest, "repo");
   const legacyRecords = recordByKind(manifest, "doc-legacy").filter((record) => record.valid_payload !== false);
@@ -831,10 +839,10 @@ async function generateBundle({ config, rawRoot, stagingRoot, manifest, coverage
   // subtree omits root frontmatter so it is also valid when traversed as part
   // of that containing Bundle; OKF version declarations are root-only.
   const rootIndex = `# 陈远个人知识 Bundle\n\n这是从私有 Raw 数据确定性生成的 OKF v0.1 Knowledge Bundle。它不是网站公开内容。\n\n## Snapshot\n\n${snapshot}\n\n# Collections\n\n* [语雀个人知识](yuque/) - 个人知识库、完整文档和小记正文。\n* [语雀 OKF 整理报告](yuque/curation-report.md) - 去重、质量分层和复核摘要。\n`;
-  await writeUtf8(stagingRoot, "index.md", rootIndex);
+  if (includeRootDocuments) await writeUtf8(stagingRoot, "index.md", rootIndex);
 
   const log = `# Knowledge Bundle Update Log\n\n## ${snapshotDate}\n\n* **Snapshot**: Generated the Yuque OKF bundle from Raw manifest \`${manifestSha}\`.\n* **Coverage**: Recorded complete=${Boolean(coverage.complete)}, errors=${coverage.counts?.errors ?? coverage.errors?.length ?? 0}, warnings=${coverage.counts?.warnings ?? coverage.warnings?.length ?? 0}.\n* **Fallback**: Used ${legacyFallbackCount} legacy full-document bodies where YMD was unavailable.\n* **Curation**: Folded ${redundantExactCopies} redundant bodies across ${exactPlan.groups.length} exact groups; queued ${nearPairs.length} near-duplicate pairs and ${titleCollisionGroups.length} same-title groups for review.\n`;
-  await writeUtf8(stagingRoot, "log.md", log);
+  if (includeRootDocuments) await writeUtf8(stagingRoot, "log.md", log);
   await writeUtf8(stagingRoot, "yuque/log.md", log.replace("# Knowledge Bundle", "# Yuque Bundle"));
 
   return {
