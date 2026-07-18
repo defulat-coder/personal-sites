@@ -241,6 +241,13 @@ async function inspectViewport(browser, localUrl, projection, viewport) {
         `Route layout is not settled for ${routeCheck.href}: ${JSON.stringify(routeLayout)}`,
       );
     }
+    const routeAccessibility = await new AxeBuilder({ page })
+      .withTags(["wcag2a", "wcag2aa"])
+      .analyze();
+    const routeCriticalAccessibilityViolations =
+      routeAccessibility.violations.filter(
+        (violation) => violation.impact === "critical",
+      );
     const screenshotFile = `quick-${routeCheck.route}-${viewport.id}.png`;
     await page.screenshot({
       path: path.join(evidenceDirectory, screenshotFile),
@@ -252,6 +259,9 @@ async function inspectViewport(browser, localUrl, projection, viewport) {
     });
     routeResults.push({
       active,
+      accessibilityViolations: routeAccessibility.violations,
+      criticalAccessibilityViolations:
+        routeCriticalAccessibilityViolations.length,
       fullScreenshotFile,
       heading: heading.trim(),
       href: routeCheck.href,
@@ -285,6 +295,14 @@ async function inspectViewport(browser, localUrl, projection, viewport) {
   const criticalViolations = accessibility.violations.filter(
     (violation) => violation.impact === "critical",
   );
+  const routeAccessibilityViolations = routeResults.reduce(
+    (total, route) => total + route.accessibilityViolations.length,
+    0,
+  );
+  const routeCriticalAccessibilityViolations = routeResults.reduce(
+    (total, route) => total + route.criticalAccessibilityViolations,
+    0,
+  );
   const layout = await page.evaluate(() => ({
     cumulativeLayoutShift: window.__foundationLayoutShift ?? 0,
     horizontalOverflow: Math.max(
@@ -316,11 +334,13 @@ async function inspectViewport(browser, localUrl, projection, viewport) {
   await context.close();
 
   return {
-    accessibilityViolations: accessibility.violations.length,
+    accessibilityViolations:
+      accessibility.violations.length + routeAccessibilityViolations,
     brokenInternalLinks,
     consoleErrors,
     contentRenderingFailures: renderedProjection.failures,
-    criticalAccessibilityViolations: criticalViolations.length,
+    criticalAccessibilityViolations:
+      criticalViolations.length + routeCriticalAccessibilityViolations,
     failedRequests,
     failedResponses,
     id: viewport.id,
@@ -362,6 +382,8 @@ async function main() {
     });
     const summary = results.viewportResults.reduce(
       (totals, viewport) => ({
+        accessibilityViolations:
+          totals.accessibilityViolations + viewport.accessibilityViolations,
         brokenInternalLinks:
           totals.brokenInternalLinks + viewport.brokenInternalLinks.length,
         contentRenderingFailures:
@@ -385,6 +407,7 @@ async function main() {
         ),
       }),
       {
+        accessibilityViolations: 0,
         brokenInternalLinks: 0,
         contentRenderingFailures: 0,
         consoleErrors: 0,
