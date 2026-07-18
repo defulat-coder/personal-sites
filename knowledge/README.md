@@ -35,6 +35,18 @@ OKF 是知识表示格式，不是原始数据备份格式。两者的边界是�
 - `source_object`、`source_sha256`、`visibility`、`review_status` 等是生产者扩展字段，符合 OKF 对未知字段的开放约定；
 - 网站只消费 `review_status: approved` 且 `visibility: public` 的 Concepts。
 
+## 私有知识整理策略
+
+整理发生在 `knowledge/private/personal/` 派生层，不改写 `data/private/yuque/raw/`：
+
+- 概念路径由语雀来源类型、知识库 ID 和对象 ID 决定，重新生成后保持稳定；
+- 精确重复正文只在一个主概念中保留，其他来源生成带回链的引用桩；
+- 近似重复只进入 `yuque/review/` 人工复核队列，不自动合并；
+- 同标题但正文不同的概念建立互链并进入复核，不把“同名”误当成“重复”；
+- 空正文、无有效文本、纯媒体、短小记和源端已删除内容分别标记，不因内容短或格式特殊而直接删除；
+- `yuque/curation-report.md` 提供可读摘要，Bundle 根目录的 `curation.json` 保存逐条决定和去重证据；
+- `content_quality`、`curation_status`、`content_fingerprint`、`duplicate_of` 和 `near_duplicates` 是本项目的 OKF 生产者扩展字段。
+
 ## 生成与验证
 
 ```bash
@@ -43,4 +55,4 @@ npm run data:build:okf
 npm run data:verify:okf
 ```
 
-生成器不会修改 Raw 数据。若 Raw 对象改变，重新生成 Bundle 即可。
+`data:verify:okf` 会同时验证 OKF 结构以及整理报告、重复引用和近似内容双向链接的一致性。生成器不会修改 Raw 数据；若 Raw 对象改变，重新生成 Bundle 即可。

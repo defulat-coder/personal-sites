@@ -10,5 +10,26 @@
   "include": {
     "yuque_documents": true,
     "yuque_notes": true
+  },
+  "curation": {
+    "short_form_chars": 100,
+    "placeholder_titles": [
+      "",
+      "无标题",
+      "未命名",
+      "新建文档",
+      "untitled"
+    ],
+    "exact_duplicates": {
+      "min_chars": 20
+    },
+    "near_duplicates": {
+      "min_chars": 100,
+      "threshold": 0.9,
+      "shingle_size": 5,
+      "fingerprint_size": 64,
+      "minimum_shared_fingerprints": 3,
+      "max_bucket_size": 40
+    }
   }
 }
