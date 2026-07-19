@@ -1,6 +1,4 @@
 import type { Metadata } from "next";
-import Link from "next/link";
-import { ArrowRight, BookOpen } from "lucide-react";
 
 import { ContentPageFrame } from "@/components/content-page-frame";
 import {
@@ -8,7 +6,6 @@ import {
   collectionStats,
   knowledgeContent,
 } from "@/lib/site-content";
-import { siteShell } from "@/lib/site-shell";
 
 export const metadata: Metadata = {
   description: collectionContent.knowledge.summary,
@@ -16,8 +13,6 @@ export const metadata: Metadata = {
 };
 
 export default function KnowledgePage() {
-  const yuque = siteShell.externalLinks[1];
-
   return (
     <ContentPageFrame active="knowledge">
       <article className="content-page" data-page-route="knowledge">
@@ -32,9 +27,6 @@ export default function KnowledgePage() {
           <div className="content-page__hero-copy">
             <strong>{collectionContent.knowledge.title}</strong>
             <p>{collectionContent.knowledge.summary}</p>
-            <a href={yuque.href} rel="noreferrer" target="_blank">
-              <BookOpen aria-hidden="true" /> 打开个人知识库
-            </a>
           </div>
         </header>
 
@@ -65,20 +57,11 @@ export default function KnowledgePage() {
                   <h3>{item.title}</h3>
                   <p>{item.summary}</p>
                 </div>
-                <a href={yuque.href} rel="noreferrer" target="_blank">
-                  查看语雀 <ArrowRight aria-hidden="true" />
-                </a>
               </article>
             ))}
           </div>
         </section>
 
-        <nav className="content-page__next" aria-label="继续浏览">
-          <span>NEXT INDEX</span>
-          <Link href="/practice">
-            查看 Agent 实践 <ArrowRight aria-hidden="true" />
-          </Link>
-        </nav>
       </article>
     </ContentPageFrame>
   );

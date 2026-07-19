@@ -1,7 +1,5 @@
 import type { Metadata } from "next";
 import Image from "next/image";
-import Link from "next/link";
-import { ArrowRight } from "lucide-react";
 
 import { ContentPageFrame } from "@/components/content-page-frame";
 import {
@@ -11,17 +9,14 @@ import {
 
 const streams = [
   {
-    href: "/projects",
     item: collectionContent.projects,
     label: "项目",
   },
   {
-    href: "/knowledge",
     item: collectionContent.knowledge,
     label: "知识",
   },
   {
-    href: "/practice",
     item: collectionContent.practice,
     label: "实践",
   },
@@ -70,26 +65,18 @@ export default function AboutPage() {
             <span>项目说明做过什么，知识说明如何思考，实践说明怎样持续迭代。</span>
           </div>
           <div className="about-streams__list">
-            {streams.map(({ href, item, label }, index) => (
-              <Link data-content-id={item.id} href={href} key={item.id}>
+            {streams.map(({ item, label }, index) => (
+              <article data-content-id={item.id} key={item.id}>
                 <span>{String(index + 1).padStart(2, "0")}</span>
                 <div>
                   <small>{label}</small>
                   <h3>{item.title}</h3>
                   <p>{item.summary}</p>
                 </div>
-                <ArrowRight aria-hidden="true" />
-              </Link>
+              </article>
             ))}
           </div>
         </section>
-
-        <nav className="content-page__next" aria-label="继续浏览">
-          <span>BACK TO WORK</span>
-          <Link href="/projects">
-            查看项目索引 <ArrowRight aria-hidden="true" />
-          </Link>
-        </nav>
       </article>
     </ContentPageFrame>
   );

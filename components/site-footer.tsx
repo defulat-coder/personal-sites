@@ -1,13 +1,9 @@
 import Image from "next/image";
-import Link from "next/link";
-import { ArrowUp, BookOpen, GitBranch } from "lucide-react";
+import { ArrowUp } from "lucide-react";
 
 import { siteShell } from "@/lib/site-shell";
 
 export function SiteFooter() {
-  const github = siteShell.externalLinks[0];
-  const yuque = siteShell.externalLinks[1];
-
   return (
     <footer className="site-footer" data-site-footer>
       <div className="site-footer__grid">
@@ -23,29 +19,10 @@ export function SiteFooter() {
           <p>Agentic Software Engineering</p>
         </div>
 
-        <nav aria-label="页脚导航">
-          <h3>导航</h3>
-          {siteShell.navigation.map((item) => (
-            <Link href={item.href} key={item.anchor}>
-              {item.label}
-            </Link>
-          ))}
-        </nav>
-
-        <nav aria-label="公开链接">
-          <h3>公开入口</h3>
-          <a href={github.href} rel="noreferrer" target="_blank">
-            <GitBranch aria-hidden="true" /> {github.label}
-          </a>
-          <a href={yuque.href} rel="noreferrer" target="_blank">
-            <BookOpen aria-hidden="true" /> {yuque.label}
-          </a>
-        </nav>
-
         <div className="site-footer__scope">
-          <h3>当前范围</h3>
+          <h3>内容范围</h3>
           <p>桌面端 · 1440×900</p>
-          <p>OKF 索引 · 已核验</p>
+          <p>公开 OKF 索引 · 站内直读</p>
         </div>
       </div>
 

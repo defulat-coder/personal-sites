@@ -1,5 +1,4 @@
 import Image from "next/image";
-import { ArrowRight } from "lucide-react";
 
 import type { EditorialContentItem } from "@/lib/site-content";
 
@@ -28,29 +27,12 @@ function RowContents({ item }: EditorialRowProps) {
           <span className="editorial-row__title">{item.title}</span>
           <span className="editorial-row__summary">{item.summary}</span>
         </span>
-        <span className="editorial-row__arrow" aria-hidden="true">
-          <ArrowRight />
-        </span>
       </span>
     </>
   );
 }
 
 export function EditorialRow({ item }: EditorialRowProps) {
-  if (item.url) {
-    return (
-      <a
-        className="editorial-row"
-        data-content-id={item.id}
-        href={item.url}
-        rel="noreferrer"
-        target="_blank"
-      >
-        <RowContents item={item} />
-      </a>
-    );
-  }
-
   return (
     <article
       className="editorial-row"

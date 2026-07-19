@@ -1,6 +1,4 @@
 import Image from "next/image";
-import Link from "next/link";
-import { ArrowRight, BookOpen, GitBranch } from "lucide-react";
 
 import { EditorialRow } from "@/components/editorial-row";
 import { SiteFooter } from "@/components/site-footer";
@@ -81,9 +79,6 @@ export default function HomePage() {
                 <span>从索引里长出来的</span>
                 <strong>真实项目</strong>
               </h2>
-              <Link className="section-route-link" href="/projects">
-                进入项目页 <ArrowRight aria-hidden="true" />
-              </Link>
               <div className="editorial-list">
                 {projectContent.map((item) => (
                   <EditorialRow item={item} key={item.id} />
@@ -96,9 +91,6 @@ export default function HomePage() {
                 <span>长期积累的</span>
                 <strong>知识主题</strong>
               </h2>
-              <Link className="section-route-link" href="/knowledge">
-                进入知识页 <ArrowRight aria-hidden="true" />
-              </Link>
               <div
                 className="knowledge-overview"
                 data-content-id={collectionContent.knowledge.id}
@@ -134,9 +126,6 @@ export default function HomePage() {
                 <span>被项目索引记录的</span>
                 <strong>Agent 实践</strong>
               </h2>
-              <Link className="section-route-link" href="/practice">
-                进入实践页 <ArrowRight aria-hidden="true" />
-              </Link>
               <div className="practice-grid">
                 {practiceContent.map((item) => (
                   <article
@@ -170,24 +159,11 @@ export default function HomePage() {
 
             <section className="public-cta" aria-labelledby="public-cta-title">
               <p className="public-cta__eyebrow">PUBLIC INDEX</p>
-              <h2 id="public-cta-title">继续查看公开项目与知识沉淀。</h2>
+              <h2 id="public-cta-title">公开索引，直接在站内阅读。</h2>
               <p data-content-id={identityContent.id}>{identityContent.summary}</p>
-              <div className="public-cta__links">
-                <a
-                  href={siteShell.externalLinks[0].href}
-                  rel="noreferrer"
-                  target="_blank"
-                >
-                  <GitBranch aria-hidden="true" /> GitHub
-                </a>
-                <a
-                  href={siteShell.externalLinks[1].href}
-                  rel="noreferrer"
-                  target="_blank"
-                >
-                  <BookOpen aria-hidden="true" /> 个人知识库
-                </a>
-              </div>
+              <p className="public-cta__note">
+                {publicSiteContent.items.length} 条公开 OKF 内容在项目、知识与实践页完整展开。
+              </p>
             </section>
 
             <section className="about" id="about" aria-labelledby="about-title">
@@ -204,9 +180,6 @@ export default function HomePage() {
                 <p>{identityContent.summary}</p>
                 <p>{collectionContent.projects.summary}</p>
                 <p>{collectionContent.practice.summary}</p>
-                <Link href="/projects">
-                  查看项目 <ArrowRight aria-hidden="true" />
-                </Link>
               </div>
             </section>
           </article>

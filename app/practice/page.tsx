@@ -1,7 +1,5 @@
 import type { Metadata } from "next";
 import Image from "next/image";
-import Link from "next/link";
-import { ArrowRight } from "lucide-react";
 
 import { ContentPageFrame } from "@/components/content-page-frame";
 import {
@@ -73,12 +71,6 @@ export default function PracticePage() {
           </div>
         </section>
 
-        <nav className="content-page__next" aria-label="继续浏览">
-          <span>NEXT PAGE</span>
-          <Link href="/about">
-            了解陈远 <ArrowRight aria-hidden="true" />
-          </Link>
-        </nav>
       </article>
     </ContentPageFrame>
   );

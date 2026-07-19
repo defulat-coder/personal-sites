@@ -65,6 +65,28 @@ const routeChecks = [
     route: "about",
   },
 ];
+const expectedExternalLinks = [
+  "https://github.com/defulat-coder",
+  "https://www.yuque.com/defulat-coder",
+];
+
+async function inspectExternalLinkBoundary(page) {
+  const links = await page.locator('a[href^="http"]').evaluateAll((anchors) =>
+    anchors.map((anchor) => ({
+      href: anchor.getAttribute("href"),
+      inHeader: Boolean(anchor.closest("[data-site-header]")),
+    })),
+  );
+  const hrefs = links.map((link) => link.href);
+  const pass =
+    JSON.stringify(hrefs) === JSON.stringify(expectedExternalLinks) &&
+    links.every((link) => link.inHeader);
+
+  return {
+    failures: pass ? [] : [{ expectedExternalLinks, links }],
+    links,
+  };
+}
 
 async function checkInternalLinks(page, localUrl) {
   const hrefs = await page.locator("a[href]").evaluateAll((links) =>
@@ -248,6 +270,7 @@ async function inspectViewport(browser, localUrl, projection, viewport) {
       routeAccessibility.violations.filter(
         (violation) => violation.impact === "critical",
       );
+    const routeExternalLinkBoundary = await inspectExternalLinkBoundary(page);
     const screenshotFile = `quick-${routeCheck.route}-${viewport.id}.png`;
     await page.screenshot({
       path: path.join(evidenceDirectory, screenshotFile),
@@ -263,6 +286,7 @@ async function inspectViewport(browser, localUrl, projection, viewport) {
       accessibilityViolations: routeAccessibility.violations,
       criticalAccessibilityViolations:
         routeCriticalAccessibilityViolations.length,
+      externalLinkBoundary: routeExternalLinkBoundary,
       fullScreenshotFile,
       heading: heading.trim(),
       href: routeCheck.href,
@@ -289,6 +313,7 @@ async function inspectViewport(browser, localUrl, projection, viewport) {
   }
 
   const brokenInternalLinks = await checkInternalLinks(page, localUrl);
+  const homepageExternalLinkBoundary = await inspectExternalLinkBoundary(page);
   const renderedProjection = await inspectRenderedProjection(page, projection);
   const accessibility = await new AxeBuilder({ page })
     .withTags(["wcag2a", "wcag2aa"])
@@ -306,6 +331,10 @@ async function inspectViewport(browser, localUrl, projection, viewport) {
   );
   const routeCriticalAccessibilityViolations = routeResults.reduce(
     (total, route) => total + route.criticalAccessibilityViolations,
+    0,
+  );
+  const routeExternalLinkBoundaryFailures = routeResults.reduce(
+    (total, route) => total + route.externalLinkBoundary.failures.length,
     0,
   );
   const layout = await page.evaluate(() => ({
@@ -350,12 +379,16 @@ async function inspectViewport(browser, localUrl, projection, viewport) {
       criticalViolations.length + routeCriticalAccessibilityViolations,
     failedRequests,
     failedResponses,
+    externalLinkBoundaryFailures:
+      homepageExternalLinkBoundary.failures.length +
+      routeExternalLinkBoundaryFailures,
     id: viewport.id,
     foundationVersion,
     homepageAccessibility: {
       incomplete: accessibility.incomplete,
       violations: accessibility.violations,
     },
+    homepageExternalLinkBoundary,
     layout,
     landmarks,
     shellVersion,
@@ -410,6 +443,9 @@ async function main() {
           totals.failedRequests +
           viewport.failedRequests.length +
           viewport.failedResponses.length,
+        externalLinkBoundaryFailures:
+          totals.externalLinkBoundaryFailures +
+          viewport.externalLinkBoundaryFailures,
         horizontalOverflow: Math.max(
           totals.horizontalOverflow,
           viewport.layout.horizontalOverflow,
@@ -427,6 +463,7 @@ async function main() {
         consoleErrors: 0,
         criticalAccessibilityViolations: 0,
         failedRequests: 0,
+        externalLinkBoundaryFailures: 0,
         horizontalOverflow: 0,
         cumulativeLayoutShift: 0,
       },
@@ -438,7 +475,7 @@ async function main() {
       scope: "desktop-site",
       localUrl: results.localUrl,
       changedState:
-        "desktop navigation, four content routes, hero, approved content sections, and footer",
+        "header-only external links, inline OKF content, four content routes, hero, and simplified footer",
       adjacentState: "verified foundation runtime and public-content boundary",
       summary,
       publicProjection: {

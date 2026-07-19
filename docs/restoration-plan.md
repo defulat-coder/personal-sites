@@ -15,7 +15,7 @@
 - Type: Geist; near-black display copy; compact body copy; headings use tight negative tracking and weights between `600` and `700`.
 - Hero: `465px` tall, two columns (`562.85px / 619.15px`), oversized two-line display copy on the left and a full-bleed saturated portrait panel on the right.
 - Editorial section: two-column argument block with a vertical center rule and generous `64px` insets.
-- Content rows: `217px` high, `240×135` image, large title, summary, circular arrow affordance, and one-pixel row rules.
+- Content rows: `217px` high, `240×135` image, large title, inline OKF summary, and one-pixel row rules.
 - Section headings: centered `36px / 45px`, about `80px` vertical padding.
 - Closing sections and footer: white grid cells, thin rules, restrained orange-red CTA accent; no black closing plane.
 - Shape language: square corners for structural surfaces; circles only for arrow affordances and compact controls.
@@ -29,10 +29,10 @@
 | Hero | y `63`, height `465.36`; columns `562.85 / 619.15` | `.hero` | left display copy + public-avatar-derived hero image |
 | Positioning statement | y `528.36`, height `616`; two columns | `.positioning` | approved identity summary only |
 | Project / knowledge heading | centered `36px / 45px` | `.section-heading` | same typographic role and whitespace |
-| Editorial rows | `217px` per item; image `240×135` | `EditorialRow` | hover lift, arrow movement, external link only where approved |
+| Editorial rows | `217px` per item; image `240×135` | `EditorialRow` | inline OKF content with a restrained image/edge hover |
 | Practice grid | three-column source card rhythm adapted to six indexed Agent projects | `.practice-grid` | border grid and concise titles |
 | About | two-column portrait + biography | `.about` | public GitHub avatar and approved identity copy |
-| Footer | white grid cells and bottom utility row | `SiteFooter` | content-page routes, GitHub, Yuque, back to top |
+| Footer | white grid cells and bottom utility row | `SiteFooter` | identity, direct-reading scope, and back to top |
 
 ## Content-route map
 
@@ -49,7 +49,7 @@
 - Knowledge grid: `knowledge-aigc`, `knowledge-product`, `knowledge-tools`, and `knowledge-learning` from Yuque repository/document indexes.
 - Practice grid: six high-activity Agent project entries from the Agent History project index.
 - Runtime content source: the sorted catalog of all `knowledge/private/personal/**/index.md` files; no Raw file or individual OKF concept body is read by the public-content generator.
-- External destinations: the repository-registered public GitHub profile and the approved Yuque URL only.
+- External destinations: the repository-registered public GitHub profile and approved Yuque URL appear only in the header's top-right public-entry group.
 - No newsletter form, login flow, third-party testimonial, client-logo strip, or unsupported metric will be invented.
 
 ## Asset decision manifest
@@ -76,6 +76,7 @@ Only `public/images/hero-portrait.png` remains in the build. Earlier composition
 
 - Compare the live source and local page at exactly `1440×900` and the same scroll state.
 - The first viewport must preserve frame x/width, header height, hero height/column split, first editorial split, typography hierarchy, hairline rules, white field, and saturated image panel.
-- Desktop navigation and external links must be keyboard accessible; skip links and all four content routes must work and expose the matching active state.
+- Desktop navigation and the two header-only external links must be keyboard accessible; skip links and all four content routes must work and expose the matching active state.
+- Main content must render approved OKF titles and summaries inline without links; the footer must not duplicate the header navigation or external destinations.
 - No mobile layout or mobile screenshot is part of this correction pass.
 - Save a combined side-by-side source/local comparison and complete `design-qa.md`; final result may be `passed` only after all P0/P1/P2 visible mismatches are fixed.

@@ -62,13 +62,12 @@
       "sortOrder": 30,
       "output": {
         "title": "mx-agent",
-        "summary": "基于 FastAPI 与 Agno 的企业级 AI 智能助手，覆盖 HR、IT 运维、财务、法务等领域的问答与业务办理。",
-        "url": "https://github.com/defulat-coder/mx-agent"
+        "summary": "基于 FastAPI 与 Agno 的企业级 AI 智能助手，覆盖 HR、IT 运维、财务、法务等领域的问答与业务办理。"
       },
       "evidence": [
         {
           "indexPath": "github/owned/index.md",
-          "fields": ["title", "summary", "url"],
+          "fields": ["title", "summary"],
           "fragments": [
             "defulat-coder/mx-agent",
             "基于 FastAPI + Agno 的企业级 AI 智能助手",
@@ -85,13 +84,12 @@
       "sortOrder": 40,
       "output": {
         "title": "health-pilot",
-        "summary": "基于 Agno AgentOS 的 1v1 健康管理 AI 教练，探索多模态对话、长期记忆与主动提醒。",
-        "url": "https://github.com/defulat-coder/health-pilot"
+        "summary": "基于 Agno AgentOS 的 1v1 健康管理 AI 教练，探索多模态对话、长期记忆与主动提醒。"
       },
       "evidence": [
         {
           "indexPath": "github/owned/index.md",
-          "fields": ["title", "summary", "url"],
+          "fields": ["title", "summary"],
           "fragments": [
             "defulat-coder/health-pilot",
             "1v1 健康管理(减脂) AI 教练 agent",
@@ -108,13 +106,12 @@
       "sortOrder": 50,
       "output": {
         "title": "ddd-hr",
-        "summary": "以 DDD 领域驱动设计构建 HR 业务，在真实业务模型中持续验证架构边界。",
-        "url": "https://github.com/defulat-coder/ddd-hr"
+        "summary": "以 DDD 领域驱动设计构建 HR 业务，在真实业务模型中持续验证架构边界。"
       },
       "evidence": [
         {
           "indexPath": "github/owned/index.md",
-          "fields": ["title", "summary", "url"],
+          "fields": ["title", "summary"],
           "fragments": ["defulat-coder/ddd-hr", "使用 ddd 领域驱动设计 来构建 HR 业务"]
         }
       ]
@@ -127,13 +124,12 @@
       "sortOrder": 60,
       "output": {
         "title": "agno-cookbook-cn",
-        "summary": "Agno Cookbook 中文版，把多智能体框架的实践资料整理为可持续维护的中文知识入口。",
-        "url": "https://github.com/defulat-coder/agno-cookbook-cn"
+        "summary": "Agno Cookbook 中文版，把多智能体框架的实践资料整理为可持续维护的中文知识入口。"
       },
       "evidence": [
         {
           "indexPath": "github/owned/index.md",
-          "fields": ["title", "summary", "url"],
+          "fields": ["title", "summary"],
           "fragments": ["defulat-coder/agno-cookbook-cn", "Agno Cookbook 中文版"]
         }
       ]
