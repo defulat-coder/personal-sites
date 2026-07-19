@@ -37,6 +37,7 @@ const routeChecks = [
       "knowledge-tools",
       "knowledge-learning",
     ],
+    rendersDetails: true,
     route: "knowledge",
   },
   {
@@ -214,6 +215,8 @@ async function inspectViewport(browser, localUrl, projection, viewport) {
   await page.waitForURL(/#site-main$/u);
 
   const routeResults = [];
+  const routeContentRenderingFailures = [];
+  const routeRenderedClaims = [];
   for (const routeCheck of routeChecks) {
     await page
       .locator(`[data-site-header] a[href="${routeCheck.href}"]`)
@@ -234,9 +237,30 @@ async function inspectViewport(browser, localUrl, projection, viewport) {
       .locator(`[data-site-header] a[href="${routeCheck.href}"]`)
       .getAttribute("aria-current");
     const missingItemIds = [];
+    const renderedDetailItemIds = [];
     for (const itemId of routeCheck.itemIds) {
-      if ((await page.locator(`[data-content-id="${itemId}"]`).count()) === 0) {
+      const locator = page.locator(`[data-content-id="${itemId}"]`);
+      if ((await locator.count()) === 0) {
         missingItemIds.push(itemId);
+        continue;
+      }
+      const item = projection.items.find((candidate) => candidate.id === itemId);
+      if (routeCheck.rendersDetails && item?.details) {
+        const text = (await locator.allTextContents()).join(" ").replace(/\s+/gu, " ");
+        const missingDetails = item.details.filter(
+          (detail) =>
+            !text.includes(detail.title) || !text.includes(detail.summary),
+        );
+        if (missingDetails.length > 0) {
+          routeContentRenderingFailures.push({
+            fields: ["details"],
+            itemId,
+            reason: "missing-route-detail",
+          });
+        } else {
+          renderedDetailItemIds.push(itemId);
+          routeRenderedClaims.push({ field: "details", itemId });
+        }
       }
     }
     if (heading?.trim() !== routeCheck.heading || active !== "page") {
@@ -292,6 +316,7 @@ async function inspectViewport(browser, localUrl, projection, viewport) {
       href: routeCheck.href,
       itemIds: routeCheck.itemIds,
       layout: routeLayout,
+      renderedDetailItemIds,
       screenshotFile,
     });
   }
@@ -374,7 +399,10 @@ async function inspectViewport(browser, localUrl, projection, viewport) {
       accessibility.violations.length + routeAccessibilityViolations,
     brokenInternalLinks,
     consoleErrors,
-    contentRenderingFailures: renderedProjection.failures,
+    contentRenderingFailures: [
+      ...renderedProjection.failures,
+      ...routeContentRenderingFailures,
+    ],
     criticalAccessibilityViolations:
       criticalViolations.length + routeCriticalAccessibilityViolations,
     failedRequests,
@@ -392,7 +420,10 @@ async function inspectViewport(browser, localUrl, projection, viewport) {
     layout,
     landmarks,
     shellVersion,
-    renderedClaims: renderedProjection.renderedClaims,
+    renderedClaims: [
+      ...renderedProjection.renderedClaims,
+      ...routeRenderedClaims,
+    ],
     renderedItemIds: renderedProjection.renderedItemIds,
     routeResults,
   };

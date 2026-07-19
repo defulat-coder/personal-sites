@@ -268,23 +268,79 @@
       "sortOrder": 70,
       "title": "个人知识索引",
       "summary": "15 个个人知识库汇集 1788 份文档与 1175 条小记，经过重复收敛与人工复核队列整理。",
+      "details": [
+        {
+          "title": "知识库",
+          "summary": "15 个个人知识库。"
+        },
+        {
+          "title": "文档",
+          "summary": "1788 份完整文档正文。"
+        },
+        {
+          "title": "小记",
+          "summary": "1175 条完整小记正文。"
+        },
+        {
+          "title": "复核队列",
+          "summary": "192 条需要人工判断的内容。"
+        },
+        {
+          "title": "精确重复",
+          "summary": "6 个冗余来源，正文已收敛。"
+        },
+        {
+          "title": "源端归档",
+          "summary": "3 条源端已删除内容。"
+        }
+      ],
       "claims": [
         {
           "field": "title",
           "value": "个人知识索引",
-          "evidenceSha256": "7bec87aa83ec5a7ebccc68a5feb608de12c5e3dad03d43ad1519923252adabed"
+          "evidenceSha256": "a3b20be50b66d5b654ecdda60d090a464b5660f3b9486649be7e44a461aeda74"
         },
         {
           "field": "summary",
           "value": "15 个个人知识库汇集 1788 份文档与 1175 条小记，经过重复收敛与人工复核队列整理。",
-          "evidenceSha256": "fdeadf2556f42165c2ee03e18d32a0745acf3edb8e7cfe2ba783c29984b610a6"
+          "evidenceSha256": "32a21e9f2fc0b94985164fb3526a4618e3051c6153890f7714be393ac41afde9"
+        },
+        {
+          "field": "details",
+          "value": [
+            {
+              "title": "知识库",
+              "summary": "15 个个人知识库。"
+            },
+            {
+              "title": "文档",
+              "summary": "1788 份完整文档正文。"
+            },
+            {
+              "title": "小记",
+              "summary": "1175 条完整小记正文。"
+            },
+            {
+              "title": "复核队列",
+              "summary": "192 条需要人工判断的内容。"
+            },
+            {
+              "title": "精确重复",
+              "summary": "6 个冗余来源，正文已收敛。"
+            },
+            {
+              "title": "源端归档",
+              "summary": "3 条源端已删除内容。"
+            }
+          ],
+          "evidenceSha256": "6ec92fb9a810dbd08a2f4427206d997b2fc102875dd4ca1dc9a3d1a338da0108"
         }
       ],
       "provenance": [
         {
           "sourceId": "okf-index-catalog",
           "sourceSha256": "09600b96dcc935acd5b915c4e9a6ad02a9048a60ad81666227791b67aaa3aef1",
-          "evidenceSha256": "7bec87aa83ec5a7ebccc68a5feb608de12c5e3dad03d43ad1519923252adabed",
+          "evidenceSha256": "a3b20be50b66d5b654ecdda60d090a464b5660f3b9486649be7e44a461aeda74",
           "fields": [
             "title"
           ],
@@ -295,9 +351,20 @@
         {
           "sourceId": "okf-index-catalog",
           "sourceSha256": "09600b96dcc935acd5b915c4e9a6ad02a9048a60ad81666227791b67aaa3aef1",
-          "evidenceSha256": "fdeadf2556f42165c2ee03e18d32a0745acf3edb8e7cfe2ba783c29984b610a6",
+          "evidenceSha256": "32a21e9f2fc0b94985164fb3526a4618e3051c6153890f7714be393ac41afde9",
           "fields": [
             "summary"
+          ],
+          "indexPaths": [
+            "yuque/index.md"
+          ]
+        },
+        {
+          "sourceId": "okf-index-catalog",
+          "sourceSha256": "09600b96dcc935acd5b915c4e9a6ad02a9048a60ad81666227791b67aaa3aef1",
+          "evidenceSha256": "6ec92fb9a810dbd08a2f4427206d997b2fc102875dd4ca1dc9a3d1a338da0108",
+          "fields": [
+            "details"
           ],
           "indexPaths": [
             "yuque/index.md"
@@ -311,6 +378,32 @@
       "sortOrder": 80,
       "title": "AIGC",
       "summary": "从大模型、提示工程、RAG 到 Agent 框架：要么解决问题，要么成为问题的一部分。",
+      "details": [
+        {
+          "title": "Agno 框架入门",
+          "summary": "从框架介绍开始，逐步构建第一个基础智能体。"
+        },
+        {
+          "title": "Agent 工具系统",
+          "summary": "围绕工具使用与工具系统，扩展智能体可执行的能力。"
+        },
+        {
+          "title": "Agent 记忆系统",
+          "summary": "整理让智能体记住上下文与长期信息的记忆机制。"
+        },
+        {
+          "title": "多 Agent 协作",
+          "summary": "分别记录 Team 团队协作与 Workflow 工作流机制。"
+        },
+        {
+          "title": "Agno 与 RAG",
+          "summary": "覆盖 RAG 原理、传统 RAG 与 Agentic RAG。"
+        },
+        {
+          "title": "提示词与上下文工程",
+          "summary": "把提示词工程与上下文工程放进同一组实战记录。"
+        }
+      ],
       "claims": [
         {
           "field": "title",
@@ -320,7 +413,37 @@
         {
           "field": "summary",
           "value": "从大模型、提示工程、RAG 到 Agent 框架：要么解决问题，要么成为问题的一部分。",
-          "evidenceSha256": "eacb8cca90c0eb5deb041c467b273bbc79f6f54eb6d2b456994c8dfb98bab879"
+          "evidenceSha256": "7a5daf32aa58d765b91cc9e412d21e4fbe8198beb00ce86a3d24f2c1eddc3952"
+        },
+        {
+          "field": "details",
+          "value": [
+            {
+              "title": "Agno 框架入门",
+              "summary": "从框架介绍开始，逐步构建第一个基础智能体。"
+            },
+            {
+              "title": "Agent 工具系统",
+              "summary": "围绕工具使用与工具系统，扩展智能体可执行的能力。"
+            },
+            {
+              "title": "Agent 记忆系统",
+              "summary": "整理让智能体记住上下文与长期信息的记忆机制。"
+            },
+            {
+              "title": "多 Agent 协作",
+              "summary": "分别记录 Team 团队协作与 Workflow 工作流机制。"
+            },
+            {
+              "title": "Agno 与 RAG",
+              "summary": "覆盖 RAG 原理、传统 RAG 与 Agentic RAG。"
+            },
+            {
+              "title": "提示词与上下文工程",
+              "summary": "把提示词工程与上下文工程放进同一组实战记录。"
+            }
+          ],
+          "evidenceSha256": "a4d0fb69705f7df00ecbd7c35f36fc2233150cf7766df61ea314f55c376a7228"
         }
       ],
       "provenance": [
@@ -338,12 +461,23 @@
         {
           "sourceId": "okf-index-catalog",
           "sourceSha256": "556f1f2d051c842864c8828f27d76d8d2e0a4f7c713d5c7fa0c05ffd247de66f",
-          "evidenceSha256": "eacb8cca90c0eb5deb041c467b273bbc79f6f54eb6d2b456994c8dfb98bab879",
+          "evidenceSha256": "7a5daf32aa58d765b91cc9e412d21e4fbe8198beb00ce86a3d24f2c1eddc3952",
           "fields": [
             "summary"
           ],
           "indexPaths": [
             "yuque/repositories/index.md",
+            "yuque/documents/49931046/index.md"
+          ]
+        },
+        {
+          "sourceId": "okf-index-catalog",
+          "sourceSha256": "5cc85ca6dd80bd098d219b28c2edf91efdfd4fb07ca42ca0140650b33ee5393f",
+          "evidenceSha256": "a4d0fb69705f7df00ecbd7c35f36fc2233150cf7766df61ea314f55c376a7228",
+          "fields": [
+            "details"
+          ],
+          "indexPaths": [
             "yuque/documents/49931046/index.md"
           ]
         }
@@ -355,6 +489,32 @@
       "sortOrder": 90,
       "title": "产品与业务",
       "summary": "围绕产品思考、业务设计、数据体系与企业场景形成长期知识沉淀。",
+      "details": [
+        {
+          "title": "埋点设计指南",
+          "summary": "从业务数据需求、过程追踪与结果量化切入活动数据。"
+        },
+        {
+          "title": "数据产品经理的技术知识",
+          "summary": "从用户行为数据角度整理技术架构与关键技术点。"
+        },
+        {
+          "title": "营销场景",
+          "summary": "覆盖打卡、分享、留言、邀新、报名、领券与成单。"
+        },
+        {
+          "title": "优惠券设计",
+          "summary": "记录满减、折扣、结算规则执行器与优惠券服务。"
+        },
+        {
+          "title": "支付系统设计",
+          "summary": "梳理支付、关闭、取消与退款等关键状态。"
+        },
+        {
+          "title": "聚合支付系统",
+          "summary": "统一提供支付与退款服务，并对接第三方支付或银行服务。"
+        }
+      ],
       "claims": [
         {
           "field": "title",
@@ -364,7 +524,37 @@
         {
           "field": "summary",
           "value": "围绕产品思考、业务设计、数据体系与企业场景形成长期知识沉淀。",
-          "evidenceSha256": "1298f880c18c1c8a244c1d9e54fb5c4e2acd2844c63565c1d33c0284a92bc2ae"
+          "evidenceSha256": "5056e044d4aaf197ff90ca0ea2e58c9496babf7cabc8aac4e7bd7904b3f0afa4"
+        },
+        {
+          "field": "details",
+          "value": [
+            {
+              "title": "埋点设计指南",
+              "summary": "从业务数据需求、过程追踪与结果量化切入活动数据。"
+            },
+            {
+              "title": "数据产品经理的技术知识",
+              "summary": "从用户行为数据角度整理技术架构与关键技术点。"
+            },
+            {
+              "title": "营销场景",
+              "summary": "覆盖打卡、分享、留言、邀新、报名、领券与成单。"
+            },
+            {
+              "title": "优惠券设计",
+              "summary": "记录满减、折扣、结算规则执行器与优惠券服务。"
+            },
+            {
+              "title": "支付系统设计",
+              "summary": "梳理支付、关闭、取消与退款等关键状态。"
+            },
+            {
+              "title": "聚合支付系统",
+              "summary": "统一提供支付与退款服务，并对接第三方支付或银行服务。"
+            }
+          ],
+          "evidenceSha256": "26403832cb5ca5010aa738aa2a4bf5254d1cd66daf876bebc5b16b807e9afba7"
         }
       ],
       "provenance": [
@@ -382,12 +572,23 @@
         {
           "sourceId": "okf-index-catalog",
           "sourceSha256": "29afed6df5e1269604646431d215b679aa177acc977e94bcee770cd0638f58ca",
-          "evidenceSha256": "1298f880c18c1c8a244c1d9e54fb5c4e2acd2844c63565c1d33c0284a92bc2ae",
+          "evidenceSha256": "5056e044d4aaf197ff90ca0ea2e58c9496babf7cabc8aac4e7bd7904b3f0afa4",
           "fields": [
             "summary"
           ],
           "indexPaths": [
             "yuque/repositories/index.md",
+            "yuque/documents/1654518/index.md"
+          ]
+        },
+        {
+          "sourceId": "okf-index-catalog",
+          "sourceSha256": "ca42a9ddae3c5318ffd1a99e1b7632f5723c62db9beaa092d15b46175268208c",
+          "evidenceSha256": "26403832cb5ca5010aa738aa2a4bf5254d1cd66daf876bebc5b16b807e9afba7",
+          "fields": [
+            "details"
+          ],
+          "indexPaths": [
             "yuque/documents/1654518/index.md"
           ]
         }
@@ -399,6 +600,32 @@
       "sortOrder": 100,
       "title": "工具与效率",
       "summary": "生产工具、开发环境与工程效率方法，沉淀为可复用的实践索引。",
+      "details": [
+        {
+          "title": "IntelliJ IDEA 调试",
+          "summary": "用断点日志替代临时 print，减少调试代码残留。"
+        },
+        {
+          "title": "iTerm 标签页操作",
+          "summary": "整理新建、关闭、切换与定位标签页的键盘操作。"
+        },
+        {
+          "title": "IDEA 快捷键",
+          "summary": "集中记录重构、提取方法与常用编辑操作。"
+        },
+        {
+          "title": "DataGrip",
+          "summary": "记录虚拟外键与代码补全相关的配置经验。"
+        },
+        {
+          "title": "常用工具与网站",
+          "summary": "整理配图、阅读替代与日常生产工具入口。"
+        },
+        {
+          "title": "Obsidian 生产级插件",
+          "summary": "以 Excalidraw、Dataview、Templater、QuickAdd 与 Tasks 组成工作流。"
+        }
+      ],
       "claims": [
         {
           "field": "title",
@@ -409,6 +636,36 @@
           "field": "summary",
           "value": "生产工具、开发环境与工程效率方法，沉淀为可复用的实践索引。",
           "evidenceSha256": "921721e30b7018a57602a43f736095f52598c4e7b406194a1939fdc68e0796ee"
+        },
+        {
+          "field": "details",
+          "value": [
+            {
+              "title": "IntelliJ IDEA 调试",
+              "summary": "用断点日志替代临时 print，减少调试代码残留。"
+            },
+            {
+              "title": "iTerm 标签页操作",
+              "summary": "整理新建、关闭、切换与定位标签页的键盘操作。"
+            },
+            {
+              "title": "IDEA 快捷键",
+              "summary": "集中记录重构、提取方法与常用编辑操作。"
+            },
+            {
+              "title": "DataGrip",
+              "summary": "记录虚拟外键与代码补全相关的配置经验。"
+            },
+            {
+              "title": "常用工具与网站",
+              "summary": "整理配图、阅读替代与日常生产工具入口。"
+            },
+            {
+              "title": "Obsidian 生产级插件",
+              "summary": "以 Excalidraw、Dataview、Templater、QuickAdd 与 Tasks 组成工作流。"
+            }
+          ],
+          "evidenceSha256": "51ef9b8f92b9791a109d93c3c109d6938eb6db09e5f28ec589e6cce5a581e7bf"
         }
       ],
       "provenance": [
@@ -433,6 +690,17 @@
           "indexPaths": [
             "yuque/repositories/index.md"
           ]
+        },
+        {
+          "sourceId": "okf-index-catalog",
+          "sourceSha256": "668b01c9fa90e9cd68b0e1884e5c8c07780d3faaccfaf79d57c96c3f0649758f",
+          "evidenceSha256": "51ef9b8f92b9791a109d93c3c109d6938eb6db09e5f28ec589e6cce5a581e7bf",
+          "fields": [
+            "details"
+          ],
+          "indexPaths": [
+            "yuque/documents/1953836/index.md"
+          ]
         }
       ]
     },
@@ -442,6 +710,32 @@
       "sortOrder": 110,
       "title": "持续学习",
       "summary": "把技术阅读、源码研究与实验记录收敛为可回看、可继续生长的知识目录。",
+      "details": [
+        {
+          "title": "JDK 源码阅读方法",
+          "summary": "从阅读动机、阅读顺序与阅读方法建立源码学习路径。"
+        },
+        {
+          "title": "ArrayList 源码",
+          "summary": "理解动态数组、List 接口与扩容能力。"
+        },
+        {
+          "title": "HashMap 源码",
+          "summary": "记录键值存储、平均查询复杂度与非线程安全特性。"
+        },
+        {
+          "title": "LinkedHashMap 源码",
+          "summary": "理解双向链表、访问顺序与 LRU 缓存策略。"
+        },
+        {
+          "title": "Java 集合终结篇",
+          "summary": "把 List 等集合实现放回完整类关系中复盘。"
+        },
+        {
+          "title": "Unsafe 解析",
+          "summary": "从 CAS、使用方式与风险进入 Java 并发底层能力。"
+        }
+      ],
       "claims": [
         {
           "field": "title",
@@ -452,6 +746,36 @@
           "field": "summary",
           "value": "把技术阅读、源码研究与实验记录收敛为可回看、可继续生长的知识目录。",
           "evidenceSha256": "4a0cdc0bee7ab1ce63f0e67756ab9c522f83cd04b2907aff0e002d65b493ddf2"
+        },
+        {
+          "field": "details",
+          "value": [
+            {
+              "title": "JDK 源码阅读方法",
+              "summary": "从阅读动机、阅读顺序与阅读方法建立源码学习路径。"
+            },
+            {
+              "title": "ArrayList 源码",
+              "summary": "理解动态数组、List 接口与扩容能力。"
+            },
+            {
+              "title": "HashMap 源码",
+              "summary": "记录键值存储、平均查询复杂度与非线程安全特性。"
+            },
+            {
+              "title": "LinkedHashMap 源码",
+              "summary": "理解双向链表、访问顺序与 LRU 缓存策略。"
+            },
+            {
+              "title": "Java 集合终结篇",
+              "summary": "把 List 等集合实现放回完整类关系中复盘。"
+            },
+            {
+              "title": "Unsafe 解析",
+              "summary": "从 CAS、使用方式与风险进入 Java 并发底层能力。"
+            }
+          ],
+          "evidenceSha256": "0c24539cd2ae4636ec8f48048f8cd56238339c3fea613e6b88e1f333d4f99dc8"
         }
       ],
       "provenance": [
@@ -475,6 +799,17 @@
           ],
           "indexPaths": [
             "yuque/repositories/index.md"
+          ]
+        },
+        {
+          "sourceId": "okf-index-catalog",
+          "sourceSha256": "87cbf26892ec1a93b96f2e4f858b8cfdf4793922357774fa7a3db06c2676c736",
+          "evidenceSha256": "0c24539cd2ae4636ec8f48048f8cd56238339c3fea613e6b88e1f333d4f99dc8",
+          "fields": [
+            "details"
+          ],
+          "indexPaths": [
+            "yuque/documents/1590709/index.md"
           ]
         }
       ]
@@ -782,5 +1117,5 @@
       ]
     }
   ],
-  "contentHash": "77ec692b11491f73bb3969d0a682f038bcf3a6e1b5d768ccdfd8f194f1ac8cb2"
+  "contentHash": "5fecb5aef294bf7fd880e1708f733ad3e9c8437ee3c94be91a702095d403bec8"
 }

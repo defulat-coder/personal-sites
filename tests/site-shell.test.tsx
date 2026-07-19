@@ -18,15 +18,17 @@ import {
 } from "@/lib/site-content";
 import { siteShell, siteShellSchema } from "@/lib/site-shell";
 
+const publicPages = [
+  HomePage,
+  ProjectsPage,
+  KnowledgePage,
+  PracticePage,
+  AboutPage,
+] as const;
+
 describe("desktop site shell", () => {
   it("keeps GitHub and Yuque as the only external links in the header", () => {
-    for (const Page of [
-      HomePage,
-      ProjectsPage,
-      KnowledgePage,
-      PracticePage,
-      AboutPage,
-    ]) {
+    for (const Page of publicPages) {
       const { container, unmount } = render(<Page />);
       const externalLinks = Array.from(
         container.querySelectorAll<HTMLAnchorElement>('a[href^="http"]'),
@@ -46,13 +48,7 @@ describe("desktop site shell", () => {
   });
 
   it("renders OKF content inline without links in the main reading area", () => {
-    for (const Page of [
-      HomePage,
-      ProjectsPage,
-      KnowledgePage,
-      PracticePage,
-      AboutPage,
-    ]) {
+    for (const Page of publicPages) {
       const { container, unmount } = render(<Page />);
       const mainLinks = Array.from(
         container.querySelectorAll<HTMLAnchorElement>("[data-site-main] a"),
@@ -106,6 +102,9 @@ describe("desktop site shell", () => {
       "project-agno-cookbook-cn",
     ]);
     expect(knowledgeContent).toHaveLength(4);
+    expect(
+      knowledgeContent.every((item) => item.details.length >= 4),
+    ).toBe(true);
     expect(practiceContent).toHaveLength(6);
     expect(practiceContent.map((item) => item.image)).toEqual([
       "/images/source/grid-01.webp",
@@ -187,6 +186,10 @@ describe("desktop site shell", () => {
         .join(" ");
       expect(content).toContain(item.title);
       expect(content).toContain(item.summary);
+      for (const detail of item.details) {
+        expect(content).toContain(detail.title);
+        expect(content).toContain(detail.summary);
+      }
     }
   });
 

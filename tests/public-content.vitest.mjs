@@ -6,6 +6,7 @@ import {
   scanPublicValue,
 } from "../scripts/build-public-content.mjs";
 import {
+  publicClaimSchema,
   publicContentManifestSchema,
   publicContentProjectionSchema,
 } from "../scripts/lib/public-content-schema.mjs";
@@ -69,6 +70,26 @@ describe("public content projection", () => {
         }
       }
     }
+  });
+
+  it("rejects claim values that do not match their field", () => {
+    const evidenceSha256 = "a".repeat(64);
+    const details = [{ title: "索引条目", summary: "站内直读内容。" }];
+
+    expect(
+      publicClaimSchema.safeParse({
+        evidenceSha256,
+        field: "details",
+        value: "错误的字符串明细",
+      }).success,
+    ).toBe(false);
+    expect(
+      publicClaimSchema.safeParse({
+        evidenceSha256,
+        field: "title",
+        value: details,
+      }).success,
+    ).toBe(false);
   });
 
   it("detects credentials, personal contact data, and private paths", () => {

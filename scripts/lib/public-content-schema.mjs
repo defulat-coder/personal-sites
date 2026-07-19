@@ -21,7 +21,12 @@ const identifierSchema = z.string().regex(/^[a-z0-9]+(?:-[a-z0-9]+)*$/u);
 const indexPathSchema = z
   .string()
   .regex(/^(?:[a-z0-9._-]+\/)*index\.md$/u);
-const claimFieldSchema = z.enum(["title", "summary", "url"]);
+const claimFieldSchema = z.enum(["title", "summary", "details", "url"]);
+
+const publicDetailSchema = z.object({
+  title: z.string().trim().min(1).max(160),
+  summary: z.string().trim().min(1).max(360),
+});
 
 const sourceSelectionSchema = z.object({
   id: identifierSchema,
@@ -32,6 +37,7 @@ const sourceSelectionSchema = z.object({
 const outputSelectionSchema = z.object({
   title: z.string().trim().min(1).max(120),
   summary: z.string().trim().min(1).max(360),
+  details: z.array(publicDetailSchema).min(1).max(24).optional(),
   url: z.string().url().optional(),
 });
 
@@ -100,6 +106,7 @@ export const publicContentSelectionSchema = z
         const expectedFields = [
           "title",
           "summary",
+          ...(record.output.details ? ["details"] : []),
           ...(record.output.url ? ["url"] : []),
         ];
         const evidencedFields = new Set(
@@ -144,11 +151,18 @@ const provenanceSchema = z.object({
   indexPaths: z.array(indexPathSchema).min(1),
 });
 
-const publicClaimSchema = z.object({
-  field: claimFieldSchema,
-  value: z.string().min(1),
-  evidenceSha256: sha256Schema,
-});
+export const publicClaimSchema = z.discriminatedUnion("field", [
+  z.object({
+    field: z.literal("details"),
+    value: z.array(publicDetailSchema).min(1),
+    evidenceSha256: sha256Schema,
+  }),
+  z.object({
+    field: claimFieldSchema.exclude(["details"]),
+    value: z.string().min(1),
+    evidenceSha256: sha256Schema,
+  }),
+]);
 
 export const publicContentItemSchema = z.object({
   id: identifierSchema,
@@ -156,6 +170,7 @@ export const publicContentItemSchema = z.object({
   sortOrder: z.number().int().nonnegative(),
   title: z.string().min(1).max(120),
   summary: z.string().min(1).max(360),
+  details: z.array(publicDetailSchema).min(1).max(24).optional(),
   url: z.string().url().optional(),
   claims: z.array(publicClaimSchema).min(2),
   provenance: z.array(provenanceSchema).min(1),

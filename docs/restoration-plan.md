@@ -37,7 +37,7 @@
 ## Content-route map
 
 - `/projects`: GitHub index overview, verified project metrics, and four indexed public projects.
-- `/knowledge`: Yuque index overview, verified collection metrics, and four durable knowledge themes.
+- `/knowledge`: verified OKF collection metrics, the six-part source-index structure, and four durable themes expanded into 24 directly readable index entries.
 - `/practice`: Agent History overview, verified activity metrics, and six high-activity project trajectories.
 - `/about`: public identity, portrait, and links through the project, knowledge, and practice threads.
 - The homepage remains an editorial overview; its section entries and global navigation now lead to these real pages instead of only changing the URL hash.
@@ -46,9 +46,9 @@
 
 - Hero identity: `identity-profile`, synthesized from the complete OKF index catalog.
 - Featured rows: `project-mx-agent`, `project-health-pilot`, `project-ddd-hr`, and `project-agno-cookbook-cn` from the GitHub owned-project index.
-- Knowledge grid: `knowledge-aigc`, `knowledge-product`, `knowledge-tools`, and `knowledge-learning` from Yuque repository/document indexes.
+- Knowledge reading page: `overview-yuque` exposes the six-part OKF index structure; `knowledge-aigc`, `knowledge-product`, `knowledge-tools`, and `knowledge-learning` each expose six approved index-backed entries directly in the page.
 - Practice grid: six high-activity Agent project entries from the Agent History project index.
-- Runtime content source: the sorted catalog of all `knowledge/private/personal/**/index.md` files; no Raw file or individual OKF concept body is read by the public-content generator.
+- Runtime content source: the sorted catalog of all `knowledge/private/personal/**/index.md` files; approved title, summary, and detail fields are projected from those indexes, while no Raw file or individual OKF concept body is read by the public-content generator.
 - External destinations: the repository-registered public GitHub profile and approved Yuque URL appear only in the header's top-right public-entry group.
 - No newsletter form, login flow, third-party testimonial, client-logo strip, or unsupported metric will be invented.
 
@@ -77,6 +77,6 @@ Only `public/images/hero-portrait.png` remains in the build. Earlier composition
 - Compare the live source and local page at exactly `1440×900` and the same scroll state.
 - The first viewport must preserve frame x/width, header height, hero height/column split, first editorial split, typography hierarchy, hairline rules, white field, and saturated image panel.
 - Desktop navigation and the two header-only external links must be keyboard accessible; skip links and all four content routes must work and expose the matching active state.
-- Main content must render approved OKF titles and summaries inline without links; the footer must not duplicate the header navigation or external destinations.
+- Main content must render approved OKF titles, summaries, index structure, and detail entries inline without links; the footer must not duplicate the header navigation or external destinations.
 - No mobile layout or mobile screenshot is part of this correction pass.
 - Save a combined side-by-side source/local comparison and complete `design-qa.md`; final result may be `passed` only after all P0/P1/P2 visible mismatches are fixed.
