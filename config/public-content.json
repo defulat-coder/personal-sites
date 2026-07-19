@@ -142,17 +142,45 @@
       "sortOrder": 70,
       "output": {
         "title": "个人知识索引",
-        "summary": "15 个个人知识库汇集 1788 份文档与 1175 条小记，经过重复收敛与人工复核队列整理。"
+        "summary": "15 个个人知识库汇集 1788 份文档与 1175 条小记，经过重复收敛与人工复核队列整理。",
+        "details": [
+          {
+            "title": "知识库",
+            "summary": "15 个个人知识库。"
+          },
+          {
+            "title": "文档",
+            "summary": "1788 份完整文档正文。"
+          },
+          {
+            "title": "小记",
+            "summary": "1175 条完整小记正文。"
+          },
+          {
+            "title": "复核队列",
+            "summary": "192 条需要人工判断的内容。"
+          },
+          {
+            "title": "精确重复",
+            "summary": "6 个冗余来源，正文已收敛。"
+          },
+          {
+            "title": "源端归档",
+            "summary": "3 条源端已删除内容。"
+          }
+        ]
       },
       "evidence": [
         {
           "indexPath": "yuque/index.md",
-          "fields": ["title", "summary"],
+          "fields": ["title", "summary", "details"],
           "fragments": [
             "15 个个人知识库",
             "1788 份完整文档正文",
             "1175 条完整小记正文",
-            "192 条需要人工判断的内容"
+            "192 条需要人工判断的内容",
+            "6 个冗余来源，正文已收敛",
+            "3 条源端已删除内容"
           ]
         }
       ]
@@ -165,7 +193,33 @@
       "sortOrder": 80,
       "output": {
         "title": "AIGC",
-        "summary": "从大模型、提示工程、RAG 到 Agent 框架：要么解决问题，要么成为问题的一部分。"
+        "summary": "从大模型、提示工程、RAG 到 Agent 框架：要么解决问题，要么成为问题的一部分。",
+        "details": [
+          {
+            "title": "Agno 框架入门",
+            "summary": "从框架介绍开始，逐步构建第一个基础智能体。"
+          },
+          {
+            "title": "Agent 工具系统",
+            "summary": "围绕工具使用与工具系统，扩展智能体可执行的能力。"
+          },
+          {
+            "title": "Agent 记忆系统",
+            "summary": "整理让智能体记住上下文与长期信息的记忆机制。"
+          },
+          {
+            "title": "多 Agent 协作",
+            "summary": "分别记录 Team 团队协作与 Workflow 工作流机制。"
+          },
+          {
+            "title": "Agno 与 RAG",
+            "summary": "覆盖 RAG 原理、传统 RAG 与 Agentic RAG。"
+          },
+          {
+            "title": "提示词与上下文工程",
+            "summary": "把提示词工程与上下文工程放进同一组实战记录。"
+          }
+        ]
       },
       "evidence": [
         {
@@ -175,8 +229,18 @@
         },
         {
           "indexPath": "yuque/documents/49931046/index.md",
-          "fields": ["summary"],
-          "fragments": ["Agno开发教程系列"]
+          "fields": ["summary", "details"],
+          "fragments": [
+            "Agno开发教程系列",
+            "框架介绍与基础智能体构建",
+            "工具的使用",
+            "Agent的记忆系统",
+            "Team团队协作机制",
+            "Workflow工作流机制",
+            "Agno 与 RAG",
+            "传统 RAG vs Agentic RAG",
+            "提示词工程与上下文工程实战"
+          ]
         }
       ]
     },
@@ -188,7 +252,33 @@
       "sortOrder": 90,
       "output": {
         "title": "产品与业务",
-        "summary": "围绕产品思考、业务设计、数据体系与企业场景形成长期知识沉淀。"
+        "summary": "围绕产品思考、业务设计、数据体系与企业场景形成长期知识沉淀。",
+        "details": [
+          {
+            "title": "埋点设计指南",
+            "summary": "从业务数据需求、过程追踪与结果量化切入活动数据。"
+          },
+          {
+            "title": "数据产品经理的技术知识",
+            "summary": "从用户行为数据角度整理技术架构与关键技术点。"
+          },
+          {
+            "title": "营销场景",
+            "summary": "覆盖打卡、分享、留言、邀新、报名、领券与成单。"
+          },
+          {
+            "title": "优惠券设计",
+            "summary": "记录满减、折扣、结算规则执行器与优惠券服务。"
+          },
+          {
+            "title": "支付系统设计",
+            "summary": "梳理支付、关闭、取消与退款等关键状态。"
+          },
+          {
+            "title": "聚合支付系统",
+            "summary": "统一提供支付与退款服务，并对接第三方支付或银行服务。"
+          }
+        ]
       },
       "evidence": [
         {
@@ -198,8 +288,18 @@
         },
         {
           "indexPath": "yuque/documents/1654518/index.md",
-          "fields": ["summary"],
-          "fragments": ["作为数据产品经理，你需要知道这些技术知识"]
+          "fields": ["summary", "details"],
+          "fragments": [
+            "埋点设计指南",
+            "作为数据产品经理，你需要知道这些技术知识",
+            "用户行为数据",
+            "营销场景",
+            "打卡留言分享阅读邀新(招募)报名领券成单",
+            "优惠券设计",
+            "支付系统设计",
+            "聚合支付系统设计与实现",
+            "统一支付服务"
+          ]
         }
       ]
     },
@@ -211,13 +311,60 @@
       "sortOrder": 100,
       "output": {
         "title": "工具与效率",
-        "summary": "生产工具、开发环境与工程效率方法，沉淀为可复用的实践索引。"
+        "summary": "生产工具、开发环境与工程效率方法，沉淀为可复用的实践索引。",
+        "details": [
+          {
+            "title": "IntelliJ IDEA 调试",
+            "summary": "用断点日志替代临时 print，减少调试代码残留。"
+          },
+          {
+            "title": "iTerm 标签页操作",
+            "summary": "整理新建、关闭、切换与定位标签页的键盘操作。"
+          },
+          {
+            "title": "IDEA 快捷键",
+            "summary": "集中记录重构、提取方法与常用编辑操作。"
+          },
+          {
+            "title": "DataGrip",
+            "summary": "记录虚拟外键与代码补全相关的配置经验。"
+          },
+          {
+            "title": "常用工具与网站",
+            "summary": "整理配图、阅读替代与日常生产工具入口。"
+          },
+          {
+            "title": "Obsidian 生产级插件",
+            "summary": "以 Excalidraw、Dataview、Templater、QuickAdd 与 Tasks 组成工作流。"
+          }
+        ]
       },
       "evidence": [
         {
           "indexPath": "yuque/repositories/index.md",
           "fields": ["title", "summary"],
           "fragments": ["工具 📎", "生产工具"]
+        },
+        {
+          "indexPath": "yuque/documents/1953836/index.md",
+          "fields": ["details"],
+          "fragments": [
+            "Intellij IDEA 调试",
+            "断点处添加 log",
+            "ITerms使用",
+            "标签页操作",
+            "idea 快捷键",
+            "extract method",
+            "DataGrip",
+            "虚拟外键",
+            "我经常使用的工具或网站",
+            "Obsidian生产级别的安装插件",
+            "Excalidraw",
+            "Dataview",
+            "Templater",
+            "QuickAdd",
+            "Tasks"
+          ]
         }
       ]
     },
@@ -229,13 +376,56 @@
       "sortOrder": 110,
       "output": {
         "title": "持续学习",
-        "summary": "把技术阅读、源码研究与实验记录收敛为可回看、可继续生长的知识目录。"
+        "summary": "把技术阅读、源码研究与实验记录收敛为可回看、可继续生长的知识目录。",
+        "details": [
+          {
+            "title": "JDK 源码阅读方法",
+            "summary": "从阅读动机、阅读顺序与阅读方法建立源码学习路径。"
+          },
+          {
+            "title": "ArrayList 源码",
+            "summary": "理解动态数组、List 接口与扩容能力。"
+          },
+          {
+            "title": "HashMap 源码",
+            "summary": "记录键值存储、平均查询复杂度与非线程安全特性。"
+          },
+          {
+            "title": "LinkedHashMap 源码",
+            "summary": "理解双向链表、访问顺序与 LRU 缓存策略。"
+          },
+          {
+            "title": "Java 集合终结篇",
+            "summary": "把 List 等集合实现放回完整类关系中复盘。"
+          },
+          {
+            "title": "Unsafe 解析",
+            "summary": "从 CAS、使用方式与风险进入 Java 并发底层能力。"
+          }
+        ]
       },
       "evidence": [
         {
           "indexPath": "yuque/repositories/index.md",
           "fields": ["title", "summary"],
           "fragments": ["学习 📚", "修行 🎭", "阅读"]
+        },
+        {
+          "indexPath": "yuque/documents/1590709/index.md",
+          "fields": ["details"],
+          "fragments": [
+            "如何更高效地阅读",
+            "JDK源码的阅读顺序",
+            "ArrayList源码分析",
+            "动态数组",
+            "HashMap源码分析",
+            "O(1)的平均时间复杂度",
+            "LinkedHashMap源码分析",
+            "LRU缓存策略",
+            "java所有集合之终结",
+            "Unsafe解析",
+            "Unsafe只有CAS的功能吗"
+          ]
         }
       ]
     },

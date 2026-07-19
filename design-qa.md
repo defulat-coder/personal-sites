@@ -4,7 +4,7 @@
 
 **Final result: passed**
 
-Current OKF-index site verified at `1440×900` on run `2026-07-19T01-30-36-199Z`. Mobile implementation and acceptance remain explicitly deferred.
+Current OKF-index site verified at `1440×900` on run `2026-07-19T01-45-54-961Z`. Mobile implementation and acceptance remain explicitly deferred.
 
 ## Current comparison set
 
@@ -31,8 +31,8 @@ Current OKF-index site verified at `1440×900` on run `2026-07-19T01-30-36-199Z`
 ## Current content checks
 
 - All `127` OKF `index.md` files are included in the source catalog; no Raw file is read by the public generator.
-- The public projection contains `18` published items, `0` exclusions, `0` silent drops, and `36` field-level rendered claims.
-- Every claim is bound to explicit index-file paths and is checked in the production DOM by `data-content-id`.
+- The public projection contains `18` published items, `0` exclusions, `0` silent drops, and `41` field-level rendered claims.
+- Every claim is bound to explicit index-file paths and is checked in the production DOM by `data-content-id`; five knowledge records additionally expose 30 direct-reading detail entries.
 - `/projects`, `/knowledge`, `/practice`, and `/about` each render a dedicated page, matching active navigation state, verified metrics, and the corresponding indexed content set.
 - Privacy, confidentiality, secret, unsupported-claim, private-reference, console, request, link, Axe violation, unresolved Axe check, overflow, and layout-shift findings are all zero.
 
@@ -51,6 +51,7 @@ No open P0 issues.
 - The old hash-only header navigation was replaced by four real static routes. Each route is exercised through the production browser and captured as a full-page desktop screenshot.
 - Accessibility verification now runs on the homepage and every content route, records both Axe violations and unresolved checks, and fails on either category.
 - Project, knowledge, practice, and about content now renders as inline OKF text; GitHub and Yuque remain the only external links and appear only in the header.
+- The knowledge route now renders the OKF collection structure plus 24 theme entries inline instead of stopping at four one-line summaries.
 
 No open P1 issues.
 

@@ -40,7 +40,12 @@ function assert(condition, message) {
 
 function verifyClaimCoverage(projection) {
   for (const item of projection.items) {
-    const expected = ["title", "summary", ...(item.url ? ["url"] : [])];
+    const expected = [
+      "title",
+      "summary",
+      ...(item.details ? ["details"] : []),
+      ...(item.url ? ["url"] : []),
+    ];
     assert(
       item.claims.length === expected.length,
       `Claim count mismatch for ${item.id}`,
@@ -48,7 +53,10 @@ function verifyClaimCoverage(projection) {
     for (const field of expected) {
       const claim = item.claims.find((entry) => entry.field === field);
       assert(claim, `Missing ${field} claim for ${item.id}`);
-      assert(claim.value === item[field], `Claim value mismatch for ${item.id}`);
+      assert(
+        canonicalJson(claim.value) === canonicalJson(item[field]),
+        `Claim value mismatch for ${item.id}`,
+      );
       assert(
         item.provenance.some(
           (entry) =>

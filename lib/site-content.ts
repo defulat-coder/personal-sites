@@ -4,6 +4,14 @@ import publicProjection from "@/knowledge/public/content.json";
 
 const publicItemSchema = z.object({
   category: z.enum(["identity", "project", "knowledge", "practice"]),
+  details: z
+    .array(
+      z.object({
+        summary: z.string().min(1),
+        title: z.string().min(1),
+      }),
+    )
+    .optional(),
   id: z.string().min(1),
   sortOrder: z.number().int(),
   summary: z.string().min(1),
@@ -27,11 +35,19 @@ function getRequiredItem(id: string) {
   return item;
 }
 
+function getRequiredDetailedItem(id: string) {
+  const item = getRequiredItem(id);
+  if (!item.details) {
+    throw new Error(`Missing approved public detail content: ${id}`);
+  }
+  return { ...item, details: item.details };
+}
+
 export const identityContent = getRequiredItem("identity-profile");
 
 export const collectionContent = {
   projects: getRequiredItem("overview-github"),
-  knowledge: getRequiredItem("overview-yuque"),
+  knowledge: getRequiredDetailedItem("overview-yuque"),
   practice: getRequiredItem("overview-agent-history"),
 } as const;
 
@@ -91,10 +107,10 @@ export const projectContent = [
 ];
 
 export const knowledgeContent = [
-  getRequiredItem("knowledge-aigc"),
-  getRequiredItem("knowledge-product"),
-  getRequiredItem("knowledge-tools"),
-  getRequiredItem("knowledge-learning"),
+  getRequiredDetailedItem("knowledge-aigc"),
+  getRequiredDetailedItem("knowledge-product"),
+  getRequiredDetailedItem("knowledge-tools"),
+  getRequiredDetailedItem("knowledge-learning"),
 ];
 
 export const practiceContent = [

@@ -351,6 +351,75 @@ main {
   line-height: 1.6;
 }
 
+.knowledge-structure {
+  display: grid;
+  grid-template-columns: 25rem 1fr;
+  border-bottom: 1px solid var(--site-line);
+}
+
+.knowledge-structure__heading {
+  border-right: 1px solid var(--site-line);
+  padding: 4rem;
+}
+
+.knowledge-structure__heading > p {
+  margin: 0 0 1rem;
+  color: var(--site-accent-readable);
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 0.6875rem;
+  font-weight: 700;
+  letter-spacing: 0.075rem;
+}
+
+.knowledge-structure__heading h2 {
+  margin: 0;
+  font-size: 2rem;
+  font-weight: 600;
+  letter-spacing: -0.05rem;
+  line-height: 1.2;
+}
+
+.knowledge-structure__heading > span {
+  display: block;
+  margin-top: 1.25rem;
+  color: var(--site-muted);
+  font-size: 0.9375rem;
+  line-height: 1.6;
+}
+
+.knowledge-structure__list {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  margin: 0;
+}
+
+.knowledge-structure__list > div {
+  min-height: 8.5rem;
+  border-right: 1px solid var(--site-line);
+  border-bottom: 1px solid var(--site-line);
+  padding: 2.25rem 2.5rem;
+}
+
+.knowledge-structure__list > div:nth-child(2n) {
+  border-right: 0;
+}
+
+.knowledge-structure__list > div:nth-last-child(-n + 2) {
+  border-bottom: 0;
+}
+
+.knowledge-structure__list dt {
+  font-size: 1.125rem;
+  font-weight: 600;
+}
+
+.knowledge-structure__list dd {
+  margin: 0.5rem 0 0;
+  color: var(--site-muted);
+  font-size: 0.9375rem;
+  line-height: 1.55;
+}
+
 .topic-index,
 .practice-index,
 .about-streams__list {
@@ -361,9 +430,9 @@ main {
   display: grid;
   min-height: 13rem;
   grid-template-columns: 7rem 1fr;
-  align-items: center;
+  align-items: start;
   border-bottom: 1px solid var(--site-line);
-  padding: 2.5rem 4rem;
+  padding: 4rem;
 }
 
 .topic-index__row > span,
@@ -393,6 +462,45 @@ main {
   color: var(--site-muted);
   font-size: 1rem;
   line-height: 1.6;
+}
+
+.topic-index__copy > p {
+  max-width: 45rem;
+}
+
+.topic-index__details {
+  margin: 2.5rem 0 0;
+  border-top: 1px solid var(--site-line);
+  padding: 0;
+  list-style: none;
+}
+
+.topic-index__details li {
+  display: grid;
+  grid-template-columns: 3rem 17rem 1fr;
+  align-items: baseline;
+  border-bottom: 1px solid var(--site-line);
+  padding: 1.35rem 0;
+}
+
+.topic-index__details li > span {
+  color: var(--site-accent-readable);
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 0.6875rem;
+  font-weight: 700;
+}
+
+.topic-index__details h4 {
+  margin: 0;
+  font-size: 1rem;
+  font-weight: 600;
+  line-height: 1.45;
+}
+
+.topic-index__details li > p {
+  margin: 0;
+  font-size: 0.875rem;
+  line-height: 1.55;
 }
 
 .practice-index__entry {

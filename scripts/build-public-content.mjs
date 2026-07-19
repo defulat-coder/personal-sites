@@ -164,7 +164,7 @@ async function loadSources(selection) {
 }
 
 function buildClaimEvidence(record, source) {
-  const fields = ["title", "summary", "url"];
+  const fields = ["title", "summary", "details", "url"];
   const claims = [];
   const provenance = [];
 
@@ -428,6 +428,13 @@ function renderItem(item) {
     "",
     item.summary,
   ];
+  if (item.details) {
+    body.push("", "## 站内直读", "");
+    for (const [index, detail] of item.details.entries()) {
+      if (index > 0) body.push("");
+      body.push(`### ${detail.title}`, "", detail.summary);
+    }
+  }
   if (item.url) {
     body.push("", `[访问公开来源](${item.url})`);
   }
