@@ -19,6 +19,50 @@ import {
 import { siteShell, siteShellSchema } from "@/lib/site-shell";
 
 describe("desktop site shell", () => {
+  it("keeps GitHub and Yuque as the only external links in the header", () => {
+    for (const Page of [
+      HomePage,
+      ProjectsPage,
+      KnowledgePage,
+      PracticePage,
+      AboutPage,
+    ]) {
+      const { container, unmount } = render(<Page />);
+      const externalLinks = Array.from(
+        container.querySelectorAll<HTMLAnchorElement>('a[href^="http"]'),
+      );
+      const hrefs = externalLinks.map((link) => link.getAttribute("href"));
+      const allInHeader = externalLinks.every((link) =>
+        link.closest("[data-site-header]"),
+      );
+      unmount();
+
+      expect(hrefs).toEqual([
+        "https://github.com/defulat-coder",
+        "https://www.yuque.com/defulat-coder",
+      ]);
+      expect(allInHeader).toBe(true);
+    }
+  });
+
+  it("renders OKF content inline without links in the main reading area", () => {
+    for (const Page of [
+      HomePage,
+      ProjectsPage,
+      KnowledgePage,
+      PracticePage,
+      AboutPage,
+    ]) {
+      const { container, unmount } = render(<Page />);
+      const mainLinks = Array.from(
+        container.querySelectorAll<HTMLAnchorElement>("[data-site-main] a"),
+      ).map((link) => link.getAttribute("href"));
+      unmount();
+
+      expect(mainLinks).toEqual([]);
+    }
+  });
+
   it("routes every primary navigation item to a real content page", () => {
     expect(siteShellSchema.safeParse(siteShell).success).toBe(true);
     expect(siteShell.version).toBe(4);

@@ -96,7 +96,6 @@
       "sortOrder": 30,
       "title": "mx-agent",
       "summary": "基于 FastAPI 与 Agno 的企业级 AI 智能助手，覆盖 HR、IT 运维、财务、法务等领域的问答与业务办理。",
-      "url": "https://github.com/defulat-coder/mx-agent",
       "claims": [
         {
           "field": "title",
@@ -107,11 +106,6 @@
           "field": "summary",
           "value": "基于 FastAPI 与 Agno 的企业级 AI 智能助手，覆盖 HR、IT 运维、财务、法务等领域的问答与业务办理。",
           "evidenceSha256": "4d654ef1a9f01d700232bf91ba2152d0cbae90d2b64ec4ad0cd32a64703188d8"
-        },
-        {
-          "field": "url",
-          "value": "https://github.com/defulat-coder/mx-agent",
-          "evidenceSha256": "420f68536bdb3136425ad7ccb7682e6620ed81ec4cd2903476d099be38037422"
         }
       ],
       "provenance": [
@@ -136,17 +130,6 @@
           "indexPaths": [
             "github/owned/index.md"
           ]
-        },
-        {
-          "sourceId": "okf-index-catalog",
-          "sourceSha256": "0c793de7583c4dde72f355bac18a0e3a056a795a4907e5c720ef7041757b0a2b",
-          "evidenceSha256": "420f68536bdb3136425ad7ccb7682e6620ed81ec4cd2903476d099be38037422",
-          "fields": [
-            "url"
-          ],
-          "indexPaths": [
-            "github/owned/index.md"
-          ]
         }
       ]
     },
@@ -156,7 +139,6 @@
       "sortOrder": 40,
       "title": "health-pilot",
       "summary": "基于 Agno AgentOS 的 1v1 健康管理 AI 教练，探索多模态对话、长期记忆与主动提醒。",
-      "url": "https://github.com/defulat-coder/health-pilot",
       "claims": [
         {
           "field": "title",
@@ -167,11 +149,6 @@
           "field": "summary",
           "value": "基于 Agno AgentOS 的 1v1 健康管理 AI 教练，探索多模态对话、长期记忆与主动提醒。",
           "evidenceSha256": "64ef89aeedd781b4f34ee39dd57bbd924a73ed5443c3562d432aad4902fb478d"
-        },
-        {
-          "field": "url",
-          "value": "https://github.com/defulat-coder/health-pilot",
-          "evidenceSha256": "2a8be613e1642384e54e70c3bcf2451f8321c54e5abf99e6673c201a188588c0"
         }
       ],
       "provenance": [
@@ -196,17 +173,6 @@
           "indexPaths": [
             "github/owned/index.md"
           ]
-        },
-        {
-          "sourceId": "okf-index-catalog",
-          "sourceSha256": "0c793de7583c4dde72f355bac18a0e3a056a795a4907e5c720ef7041757b0a2b",
-          "evidenceSha256": "2a8be613e1642384e54e70c3bcf2451f8321c54e5abf99e6673c201a188588c0",
-          "fields": [
-            "url"
-          ],
-          "indexPaths": [
-            "github/owned/index.md"
-          ]
         }
       ]
     },
@@ -216,7 +182,6 @@
       "sortOrder": 50,
       "title": "ddd-hr",
       "summary": "以 DDD 领域驱动设计构建 HR 业务，在真实业务模型中持续验证架构边界。",
-      "url": "https://github.com/defulat-coder/ddd-hr",
       "claims": [
         {
           "field": "title",
@@ -227,11 +192,6 @@
           "field": "summary",
           "value": "以 DDD 领域驱动设计构建 HR 业务，在真实业务模型中持续验证架构边界。",
           "evidenceSha256": "d8d27262cdf5bb033f77ee228e2060372f3863b39c947aa51645abc163bf4b6f"
-        },
-        {
-          "field": "url",
-          "value": "https://github.com/defulat-coder/ddd-hr",
-          "evidenceSha256": "14b95cb78d3daa865e423b0a14d008de1b3a51d7ce28004261c77b55f62d1fcf"
         }
       ],
       "provenance": [
@@ -256,17 +216,6 @@
           "indexPaths": [
             "github/owned/index.md"
           ]
-        },
-        {
-          "sourceId": "okf-index-catalog",
-          "sourceSha256": "0c793de7583c4dde72f355bac18a0e3a056a795a4907e5c720ef7041757b0a2b",
-          "evidenceSha256": "14b95cb78d3daa865e423b0a14d008de1b3a51d7ce28004261c77b55f62d1fcf",
-          "fields": [
-            "url"
-          ],
-          "indexPaths": [
-            "github/owned/index.md"
-          ]
         }
       ]
     },
@@ -276,7 +225,6 @@
       "sortOrder": 60,
       "title": "agno-cookbook-cn",
       "summary": "Agno Cookbook 中文版，把多智能体框架的实践资料整理为可持续维护的中文知识入口。",
-      "url": "https://github.com/defulat-coder/agno-cookbook-cn",
       "claims": [
         {
           "field": "title",
@@ -287,11 +235,6 @@
           "field": "summary",
           "value": "Agno Cookbook 中文版，把多智能体框架的实践资料整理为可持续维护的中文知识入口。",
           "evidenceSha256": "1e049b68dbe1f8e78b4deeaaa279ae9ceffb684fde9366f5058c7aabba63b0cd"
-        },
-        {
-          "field": "url",
-          "value": "https://github.com/defulat-coder/agno-cookbook-cn",
-          "evidenceSha256": "56e51d7a8085a6b7c60547248ee2830e206ea076bd0e731975d7189278a622c4"
         }
       ],
       "provenance": [
@@ -312,17 +255,6 @@
           "evidenceSha256": "1e049b68dbe1f8e78b4deeaaa279ae9ceffb684fde9366f5058c7aabba63b0cd",
           "fields": [
             "summary"
-          ],
-          "indexPaths": [
-            "github/owned/index.md"
-          ]
-        },
-        {
-          "sourceId": "okf-index-catalog",
-          "sourceSha256": "0c793de7583c4dde72f355bac18a0e3a056a795a4907e5c720ef7041757b0a2b",
-          "evidenceSha256": "56e51d7a8085a6b7c60547248ee2830e206ea076bd0e731975d7189278a622c4",
-          "fields": [
-            "url"
           ],
           "indexPaths": [
             "github/owned/index.md"
@@ -850,5 +782,5 @@
       ]
     }
   ],
-  "contentHash": "806ca47bf534a0182137e1611fd6dc9309964c6be93c7bc3b3ab3f5b2189ea7f"
+  "contentHash": "77ec692b11491f73bb3969d0a682f038bcf3a6e1b5d768ccdfd8f194f1ac8cb2"
 }

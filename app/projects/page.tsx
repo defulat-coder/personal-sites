@@ -1,6 +1,4 @@
 import type { Metadata } from "next";
-import Link from "next/link";
-import { ArrowRight, GitBranch } from "lucide-react";
 
 import { ContentPageFrame } from "@/components/content-page-frame";
 import { EditorialRow } from "@/components/editorial-row";
@@ -9,7 +7,6 @@ import {
   collectionStats,
   projectContent,
 } from "@/lib/site-content";
-import { siteShell } from "@/lib/site-shell";
 
 export const metadata: Metadata = {
   description: collectionContent.projects.summary,
@@ -17,8 +14,6 @@ export const metadata: Metadata = {
 };
 
 export default function ProjectsPage() {
-  const github = siteShell.externalLinks[0];
-
   return (
     <ContentPageFrame active="projects">
       <article className="content-page" data-page-route="projects">
@@ -33,9 +28,6 @@ export default function ProjectsPage() {
           <div className="content-page__hero-copy">
             <strong>{collectionContent.projects.title}</strong>
             <p>{collectionContent.projects.summary}</p>
-            <a href={github.href} rel="noreferrer" target="_blank">
-              <GitBranch aria-hidden="true" /> 查看完整 GitHub
-            </a>
           </div>
         </header>
 
@@ -61,12 +53,6 @@ export default function ProjectsPage() {
           </div>
         </section>
 
-        <nav className="content-page__next" aria-label="继续浏览">
-          <span>NEXT INDEX</span>
-          <Link href="/knowledge">
-            查看知识沉淀 <ArrowRight aria-hidden="true" />
-          </Link>
-        </nav>
       </article>
     </ContentPageFrame>
   );
