@@ -16,6 +16,14 @@ import type { CurationItem } from "@/lib/curation-types";
 
 type CurationEntryPageProps = { params: Promise<{ id: string }> };
 
+// 公开策展不依赖用户态：首次访问按需生成，随后五分钟内直接复用页面结果，
+// 让列表中的链接可以被 Next 提前加载，而非必须等到用户点击后再查询 Supabase。
+export const revalidate = 300;
+
+export function generateStaticParams() {
+  return [];
+}
+
 /** 把原文里的 t.co 短链替换为可点击的展开后链接 */
 function linkifyText(text: string, links: CurationItem["links"]) {
   const shortToExpanded = new Map(

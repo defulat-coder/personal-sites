@@ -2,7 +2,6 @@ import "server-only";
 
 import { createClient } from "@supabase/supabase-js";
 import { unstable_cache } from "next/cache";
-import { connection } from "next/server";
 import { cache } from "react";
 import { z } from "zod";
 
@@ -62,8 +61,7 @@ function requiredEnvironment(key: "SUPABASE_URL" | "SUPABASE_PUBLISHABLE_KEY") {
   return value;
 }
 
-async function getCurationClient() {
-  await connection();
+function getCurationClient() {
   return getPublicCurationClient();
 }
 
@@ -113,7 +111,6 @@ const getCachedCurationPage = unstable_cache(
 );
 
 export async function getCurationPage(offset = 0, limit = 20): Promise<CurationPage> {
-  await connection();
   return getCachedCurationPage(offset, limit);
 }
 
@@ -138,6 +135,5 @@ const getCachedCurationItem = unstable_cache(
 );
 
 export const findCurationItem = cache(async (id: string): Promise<CurationItem | null> => {
-  await connection();
   return getCachedCurationItem(id);
 });
