@@ -9,6 +9,7 @@ import { ArticleMarkdown } from "@/components/article-markdown";
 import { ProfileIntroduction } from "@/components/profile-introduction";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { XAppLink } from "@/components/x-app-link";
+import { XVideoPlayer } from "@/components/x-video-player";
 import {
   findCurationItem,
 } from "@/lib/curation";
@@ -156,24 +157,13 @@ export default async function CurationEntryPage({
                     />
                   </a>
                 ) : media.videoUrl ? (
-                  <figure className="curation-detail__media-player" key={media.url}>
-                    <video
-                      autoPlay={media.type === "animated_gif"}
-                      controls
-                      crossOrigin="anonymous"
-                      loop={media.type === "animated_gif"}
-                      muted={media.type === "animated_gif"}
-                      playsInline
-                      poster={media.previewUrl ?? media.url}
-                      preload="metadata"
-                    >
-                      <source src={media.videoUrl} type="video/mp4" />
-                      你的浏览器不支持视频播放。请在 X 上查看原视频。
-                    </video>
-                    <figcaption>
-                      <XAppLink href={item.tweetUrl}>在 X 上查看原视频</XAppLink>
-                    </figcaption>
-                  </figure>
+                  <XVideoPlayer
+                    isAnimatedGif={media.type === "animated_gif"}
+                    key={media.url}
+                    poster={media.previewUrl ?? media.url}
+                    tweetUrl={item.tweetUrl}
+                    videoUrl={media.videoUrl}
+                  />
                 ) : (
                   <XAppLink
                     className="curation-detail__media-video"
