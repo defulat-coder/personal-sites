@@ -1,0 +1,18 @@
+# Dependencies and local build outputs are rebuilt by Vercel.
+node_modules/
+.next/
+out/
+coverage/
+playwright-report/
+test-results/
+
+# Never upload local credentials or original sensitive data.
+.env
+.env.*
+!.env.example
+data/sensitive/
+knowledge/sensitive/
+data/private/
+knowledge/private/
+var/
+陈远-Agent工程师_全栈工程师_资深java工程师.md
