@@ -1,10 +1,10 @@
 import { z } from "zod";
 
-const shellAnchorSchema = z.enum(["projects", "knowledge", "practice", "about"]);
+const shellAnchorSchema = z.enum(["curation", "projects", "knowledge", "practice", "about"]);
 
 const shellNavigationItemSchema = z.object({
   anchor: shellAnchorSchema,
-  href: z.enum(["/projects", "/knowledge", "/practice", "/about"]),
+  href: z.enum(["/curation", "/projects", "/knowledge", "/practice", "/about"]),
   label: z.string().min(1),
 });
 
@@ -16,11 +16,11 @@ const shellExternalLinkSchema = z.object({
 export const siteShellSchema = z
   .object({
     brand: z.object({
-      label: z.literal("陈远"),
+      label: z.literal("陈远知识库"),
     }),
     externalLinks: z.array(shellExternalLinkSchema).length(2),
-    navigation: z.array(shellNavigationItemSchema).length(4),
-    version: z.literal(4),
+    navigation: z.array(shellNavigationItemSchema).length(5),
+    version: z.literal(6),
   })
   .superRefine((value, context) => {
     const anchors = value.navigation.map((item) => item.anchor);
@@ -44,19 +44,20 @@ export const siteShellSchema = z
 
 export const siteShell = siteShellSchema.parse({
   brand: {
-    label: "陈远",
+    label: "陈远知识库",
   },
   externalLinks: [
     { href: "https://github.com/defulat-coder", label: "GitHub" },
     { href: "https://www.yuque.com/defulat-coder", label: "语雀" },
   ],
   navigation: [
-    { anchor: "projects", href: "/projects", label: "项目" },
-    { anchor: "knowledge", href: "/knowledge", label: "知识" },
-    { anchor: "practice", href: "/practice", label: "实践" },
-    { anchor: "about", href: "/about", label: "关于" },
+    { anchor: "curation", href: "/curation", label: "每日策展" },
+    { anchor: "knowledge", href: "/knowledge", label: "知识库" },
+    { anchor: "projects", href: "/projects", label: "项目库" },
+    { anchor: "practice", href: "/practice", label: "实践日志" },
+    { anchor: "about", href: "/about", label: "系统说明" },
   ],
-  version: 4,
+  version: 6,
 });
 
 export type SiteShell = z.infer<typeof siteShellSchema>;
