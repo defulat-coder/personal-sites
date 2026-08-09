@@ -165,7 +165,7 @@ const getCachedOpenSourceListEntries = unstable_cache(
     return z.array(openSourceListEntrySchema).parse(data);
   },
   ["public-open-source-list-v1"],
-  { revalidate: 60, tags: ["public-open-source"] },
+  { revalidate: 300, tags: ["public-open-source"] },
 );
 
 export async function getOpenSourceListEntries(): Promise<OpenSourceListEntry[]> {

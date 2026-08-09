@@ -3,6 +3,7 @@ import "server-only";
 import { createClient } from "@supabase/supabase-js";
 import { unstable_cache } from "next/cache";
 import { connection } from "next/server";
+import { cache } from "react";
 import { z } from "zod";
 
 import type { CurationItem, CurationListItem } from "@/lib/curation-types";
@@ -108,7 +109,7 @@ const getCachedCurationPage = unstable_cache(
     };
   },
   ["public-curation-page-v1"],
-  { revalidate: 60, tags: ["public-curation"] },
+  { revalidate: 300, tags: ["public-curation"] },
 );
 
 export async function getCurationPage(offset = 0, limit = 20): Promise<CurationPage> {
@@ -121,13 +122,22 @@ export async function getCurationTags() {
   return [...new Set(items.flatMap((item) => item.tags))].sort((a, b) => a.localeCompare(b, "zh-CN"));
 }
 
-export async function findCurationItem(id: string) {
-  const client = await getCurationClient();
-  const { data, error } = await client
-    .from("x_curation_items")
-    .select("content")
-    .eq("id", id)
-    .maybeSingle();
-  if (error) throw new Error(`读取 Supabase 策展内容失败：${error.message}`);
-  return data ? curationItemSchema.parse(data.content) : null;
-}
+const getCachedCurationItem = unstable_cache(
+  async (id: string): Promise<CurationItem | null> => {
+    const client = getPublicCurationClient();
+    const { data, error } = await client
+      .from("x_curation_items")
+      .select("content")
+      .eq("id", id)
+      .maybeSingle();
+    if (error) throw new Error(`读取 Supabase 策展内容失败：${error.message}`);
+    return data ? curationItemSchema.parse(data.content) : null;
+  },
+  ["public-curation-item-v1"],
+  { revalidate: 300, tags: ["public-curation"] },
+);
+
+export const findCurationItem = cache(async (id: string): Promise<CurationItem | null> => {
+  await connection();
+  return getCachedCurationItem(id);
+});
