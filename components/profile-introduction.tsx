@@ -35,7 +35,7 @@ const GREETINGS = [
   "مرحبًا،",
   "สวัสดีครับ,",
 ];
-const INTRODUCTION_ANIMATION_SESSION_KEY = "curation-profile-introduction-played";
+const INTRODUCTION_ANIMATION_SESSION_KEY = "curation-profile-introduction-played-v3";
 
 type DisplayPhase = "english" | "erasing" | "chinese" | "complete";
 
@@ -44,7 +44,11 @@ export function ProfileIntroduction({
   englishParagraphs,
   paragraphs,
 }: ProfileIntroductionProps) {
-  const [visibleCounts, setVisibleCounts] = useState(() => paragraphs.map((paragraph) => paragraph.length));
+  const [visibleCounts, setVisibleCounts] = useState(() => (
+    animateOnFirstHomeVisit
+      ? paragraphs.map(() => 0)
+      : paragraphs.map((paragraph) => paragraph.length)
+  ));
   const [activeIndex, setActiveIndex] = useState<number | null>(null);
   const [phase, setPhase] = useState<DisplayPhase>("complete");
   const [titleVisibleCount, setTitleVisibleCount] = useState(CHINESE_TITLE.length);
@@ -182,6 +186,7 @@ export function ProfileIntroduction({
 
     const playSequence = async () => {
       setPhase("english");
+      setVisibleCounts(englishParagraphs.map(() => 0));
       setTitleVisibleCount(0);
       await typeTitle(ENGLISH_TITLE, ENGLISH_CHARACTER_DELAY);
       if (cancelled) return;
@@ -215,10 +220,8 @@ export function ProfileIntroduction({
       }
     };
 
-    const shouldPlay = (
-      shouldAnimateInitialVisit
-      && !window.matchMedia("(prefers-reduced-motion: reduce)").matches
-    );
+    const shouldPlay = shouldAnimateInitialVisit
+      && !window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
     if (!shouldPlay) {
       showAll();
