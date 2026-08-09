@@ -13,10 +13,11 @@
  *   PI_MODEL             可选，默认 kimi-for-coding
  *
  * 用法：
- *   node scripts/x-curation-enrich.mjs              # 解析全部待处理条目
- *   node scripts/x-curation-enrich.mjs --limit 20   # 只处理前 20 条
- *   node scripts/x-curation-enrich.mjs --dry-run    # 只展开链接和抓内容，不调 Pi Agent
- *   node scripts/x-curation-enrich.mjs --only <id>  # 只处理指定条目
+ *   node scripts/x-curation-enrich.mjs                    # 以默认 15 并发解析全部待处理条目
+ *   node scripts/x-curation-enrich.mjs --concurrency 10   # 调整并发数
+ *   node scripts/x-curation-enrich.mjs --limit 20         # 只处理前 20 条
+ *   node scripts/x-curation-enrich.mjs --dry-run          # 只展开链接和抓内容，不调 Pi Agent
+ *   node scripts/x-curation-enrich.mjs --only <id>        # 只处理指定条目
  */
 
 import { execFile } from "node:child_process";
@@ -50,8 +51,14 @@ const args = process.argv.slice(2);
 const DRY_RUN = args.includes("--dry-run");
 const limitIdx = args.indexOf("--limit");
 const LIMIT = limitIdx >= 0 ? Number.parseInt(args[limitIdx + 1], 10) : Infinity;
+const concurrencyIdx = args.indexOf("--concurrency");
+const CONCURRENCY = concurrencyIdx >= 0 ? Number.parseInt(args[concurrencyIdx + 1], 10) : 15;
 const onlyIdx = args.indexOf("--only");
 const ONLY = onlyIdx >= 0 ? new Set(args[onlyIdx + 1].split(",")) : null;
+
+if (!Number.isInteger(CONCURRENCY) || CONCURRENCY < 1) {
+  throw new Error("--concurrency 必须是大于 0 的整数。");
+}
 
 const README_CAP = 12_000;
 const ARTICLE_CAP = 8_000;
@@ -210,7 +217,7 @@ let targets = queue.items.filter((item) => !item.ai.enrichedAt);
 if (ONLY) targets = targets.filter((item) => ONLY.has(item.id));
 targets = targets.slice(0, LIMIT);
 
-console.log(`待解析: ${targets.length} 条${DRY_RUN ? "（dry-run，不调用 Pi Agent）" : ""}`);
+console.log(`待解析: ${targets.length} 条，并发 ${CONCURRENCY}${DRY_RUN ? "（dry-run，不调用 Pi Agent）" : ""}`);
 if (!DRY_RUN && !process.env.KIMI_API_KEY) {
   console.error("缺少 KIMI_API_KEY 环境变量，Pi 无法使用 Kimi Coding 模型。");
   process.exit(1);
@@ -219,7 +226,16 @@ const runtime = DRY_RUN ? null : await ModelRuntime.create({ allowModelNetwork: 
 
 let done = 0;
 let failed = 0;
-for (const item of targets) {
+let nextTargetIndex = 0;
+let saveQueue = Promise.resolve();
+
+function persistQueue() {
+  const snapshot = JSON.stringify(queue, null, 2) + "\n";
+  saveQueue = saveQueue.then(() => writeFile(queuePath, snapshot));
+  return saveQueue;
+}
+
+async function processItem(item) {
   try {
     // 1. 展开短链
     for (const link of item.links) {
@@ -250,7 +266,7 @@ for (const item of targets) {
       const articles = linkContents.filter((l) => l.article).length;
       console.log(`[dry-run] ${item.id} @${item.author.handle}: 展开 ${expanded}/${item.links.length} 链接，仓库 ${repos}，文章 ${articles}`);
       done += 1;
-      continue;
+      return;
     }
 
     // 3. AI 解析（带一次重试）
@@ -274,15 +290,27 @@ for (const item of targets) {
 
     done += 1;
     console.log(`[${done}/${targets.length}] ${item.id} → ${item.ai.title}`);
-    await writeFile(queuePath, JSON.stringify(queue, null, 2) + "\n"); // 每条落盘
+    await persistQueue(); // 每条落盘，按完成顺序串行写入
     await sleep(1000); // 限速
   } catch (error) {
     failed += 1;
     console.error(`[失败] ${item.id}: ${error.message.slice(0, 120)}`);
-    await writeFile(queuePath, JSON.stringify(queue, null, 2) + "\n");
+    await persistQueue();
     await sleep(2000);
   }
 }
+
+async function worker() {
+  while (true) {
+    const index = nextTargetIndex;
+    nextTargetIndex += 1;
+    if (index >= targets.length) return;
+    await processItem(targets[index]);
+  }
+}
+
+await Promise.all(Array.from({ length: Math.min(CONCURRENCY, targets.length) }, worker));
+await saveQueue;
 
 console.log(`\n完成: ${done} 条解析，${failed} 条失败（可重跑续传）`);
 if (failed > 0) process.exitCode = 1;
