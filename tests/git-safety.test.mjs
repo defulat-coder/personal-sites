@@ -114,6 +114,22 @@ test("git safety rejects a generated directory force-added below a future subpro
   assert.match(result.stderr, /禁止进入 Git/);
 });
 
+test("git safety accepts a Git submodule link without treating it as a file blob", (t) => {
+  const root = initFixture(t, { gitignore: productionGitignore });
+  const configPath = writeFixtureConfig(root);
+  execFileSync("git", [
+    "update-index",
+    "--add",
+    "--cacheinfo",
+    "160000,0123456789012345678901234567890123456789,tools/smaug",
+  ], { cwd: root });
+
+  const result = runVerifier(root, configPath);
+
+  assert.equal(result.status, 0, result.stderr);
+  assert.equal(JSON.parse(result.stdout).verified, true);
+});
+
 test("git safety rejects sensitive raw data that was added and deleted earlier in reachable history", (t) => {
   const root = initFixture(t, { gitignore: productionGitignore });
   const configPath = writeFixtureConfig(root);

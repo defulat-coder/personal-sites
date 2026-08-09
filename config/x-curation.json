@@ -3,6 +3,11 @@
   "smaugPendingFile": "tools/smaug/.state/pending-bookmarks.json",
   "rawDir": "data/sensitive/x-curation/raw",
   "reviewQueueFile": "data/sensitive/x-curation/review-queue.json",
+  "ai": {
+    "provider": "kimi",
+    "baseUrl": "https://api.moonshot.cn/v1",
+    "model": "kimi-k2-0905-preview"
+  },
   "taxonomy": [
     "Agent 工程",
     "AI 应用",
