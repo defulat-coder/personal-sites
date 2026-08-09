@@ -21,6 +21,7 @@
     "curation:enrich": "node scripts/x-curation-enrich.mjs",
     "curation:build": "node scripts/build-curation-content.mjs",
     "curation:publish": "node scripts/x-curation-publish-supabase.mjs",
+    "supabase:push": "node scripts/supabase-db-push.mjs",
     "git:safety": "node scripts/verify-git-safety.mjs --range HEAD",
     "git:hooks:install": "node scripts/install-git-hooks.mjs",
     "prepare": "node scripts/install-git-hooks.mjs --if-present"
