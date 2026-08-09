@@ -10,11 +10,9 @@ import {
   getOpenSourceCategoryLabel,
   getOpenSourceDimensionLabel,
   openSourceCategories,
-  openSourceDimensions,
   type OpenSourceCategory,
-  type OpenSourceDimension,
   type OpenSourceEntry,
-} from "@/lib/open-source";
+} from "@/lib/open-source-types";
 
 type OpenSourceStreamProps = {
   entries: OpenSourceEntry[];
@@ -22,28 +20,9 @@ type OpenSourceStreamProps = {
 
 export function OpenSourceStream({ entries }: OpenSourceStreamProps) {
   const [category, setCategory] = useState<OpenSourceCategory>("all");
-  const [dimension, setDimension] = useState<OpenSourceDimension | "all">("all");
-  const entriesInCategory = category === "all"
+  const visibleEntries = category === "all"
     ? entries
     : entries.filter((entry) => entry.category === category);
-  const availableDimensions = openSourceDimensions.filter((item) =>
-    entriesInCategory.some((entry) => entry.dimensions.includes(item.id)),
-  );
-  const visibleEntries = dimension === "all"
-    ? entriesInCategory
-    : entriesInCategory.filter((entry) => entry.dimensions.includes(dimension));
-
-  const changeCategory = (nextCategory: OpenSourceCategory) => {
-    const nextEntries = nextCategory === "all"
-      ? entries
-      : entries.filter((entry) => entry.category === nextCategory);
-
-    if (dimension !== "all" && !nextEntries.some((entry) => entry.dimensions.includes(dimension))) {
-      setDimension("all");
-    }
-
-    setCategory(nextCategory);
-  };
 
   return (
     <section aria-label="已判读的开源项目" className={styles.streamSection}>
@@ -53,29 +32,7 @@ export function OpenSourceStream({ entries }: OpenSourceStreamProps) {
             aria-pressed={category === item.id}
             className={styles.filter}
             key={item.id}
-            onClick={() => changeCategory(item.id)}
-            type="button"
-          >
-            {item.label}
-          </button>
-        ))}
-      </div>
-
-      <div className={styles.dimensionFilters} role="group" aria-label="按智能体能力维度筛选">
-        <button
-          aria-pressed={dimension === "all"}
-          className={styles.dimensionFilter}
-          onClick={() => setDimension("all")}
-          type="button"
-        >
-          全部能力
-        </button>
-        {availableDimensions.map((item) => (
-          <button
-            aria-pressed={dimension === item.id}
-            className={styles.dimensionFilter}
-            key={item.id}
-            onClick={() => setDimension(item.id)}
+            onClick={() => setCategory(item.id)}
             type="button"
           >
             {item.label}
@@ -103,6 +60,7 @@ export function OpenSourceStream({ entries }: OpenSourceStreamProps) {
           </li>
         ))}
       </ol>
+      {visibleEntries.length === 0 ? <p className={styles.empty}>暂时没有符合当前筛选的已公开仓库。</p> : null}
     </section>
   );
 }

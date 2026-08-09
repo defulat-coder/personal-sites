@@ -1,19 +1,16 @@
 import { describe, expect, it } from "vitest";
 
-import {
-  getOpenSourceEntry,
-  openSourceCategories,
-  openSourceDimensions,
-  openSourceEntries,
-} from "../lib/open-source";
+import { openSourceCategories, openSourceDimensions } from "../lib/open-source-types";
+import { resolveGitHubReadmeUrl } from "../lib/github-readme-url";
+import { openSourceSeedEntries } from "../lib/open-source-seed";
 
 describe("open-source curation", () => {
   it("only exposes a curated public subset with stable, unique routes", () => {
-    expect(openSourceEntries).toHaveLength(10);
-    expect(new Set(openSourceEntries.map((entry) => entry.slug)).size).toBe(openSourceEntries.length);
-    expect(openSourceEntries.every((entry) => entry.repositoryUrl.startsWith("https://github.com/"))).toBe(true);
-    expect(openSourceEntries.every((entry) => entry.evidence.kind === "readme")).toBe(true);
-    expect(openSourceEntries.every((entry) => entry.evidence.url.includes("/README"))).toBe(true);
+    expect(openSourceSeedEntries).toHaveLength(10);
+    expect(new Set(openSourceSeedEntries.map((entry) => entry.slug)).size).toBe(openSourceSeedEntries.length);
+    expect(openSourceSeedEntries.every((entry) => entry.repositoryUrl.startsWith("https://github.com/"))).toBe(true);
+    expect(openSourceSeedEntries.every((entry) => entry.evidence.kind === "readme")).toBe(true);
+    expect(openSourceSeedEntries.every((entry) => entry.evidence.url.includes("/README"))).toBe(true);
   });
 
   it("keeps skills and agent systems as distinct primary categories", () => {
@@ -24,17 +21,26 @@ describe("open-source curation", () => {
       "context",
       "tools",
     ]);
-    expect(openSourceEntries.some((entry) => entry.category === "skills")).toBe(true);
-    expect(openSourceEntries.some((entry) => entry.category === "agents")).toBe(true);
+    expect(openSourceSeedEntries.some((entry) => entry.category === "skills")).toBe(true);
+    expect(openSourceSeedEntries.some((entry) => entry.category === "agents")).toBe(true);
     expect(openSourceDimensions.some((dimension) => dimension.id === "agent-control")).toBe(true);
-    expect(openSourceEntries.some((entry) => entry.dimensions.includes("multi-agent"))).toBe(true);
+    expect(openSourceSeedEntries.some((entry) => entry.dimensions.includes("multi-agent"))).toBe(true);
   });
 
-  it("looks up a curated item without exposing an unbounded GitHub Star list", () => {
-    expect(getOpenSourceEntry("herdr")).toMatchObject({
+  it("keeps the publish allowlist bounded even when the Star synchronizer has all repositories", () => {
+    expect(openSourceSeedEntries.find((entry) => entry.slug === "herdr")).toMatchObject({
       repository: "herdrdev/herdr",
       category: "agents",
     });
-    expect(getOpenSourceEntry("not-starred")).toBeNull();
+    expect(openSourceSeedEntries.find((entry) => entry.slug === "not-starred")).toBeUndefined();
+  });
+
+  it("resolves README-relative links against the repository instead of this site", () => {
+    const sourceUrl = "https://github.com/jakubkrehel/skills/blob/main/README.md";
+    expect(resolveGitHubReadmeUrl("skills/better-interface/SKILL.md", sourceUrl)).toBe(
+      "https://github.com/jakubkrehel/skills/blob/main/skills/better-interface/SKILL.md",
+    );
+    expect(resolveGitHubReadmeUrl("https://interfaces.dev/", sourceUrl)).toBe("https://interfaces.dev/");
+    expect(resolveGitHubReadmeUrl("#install", sourceUrl)).toBe("#install");
   });
 });
