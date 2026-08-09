@@ -1,14 +1,26 @@
 "use client";
 
 import { Moon, Sun } from "lucide-react";
-import { useState } from "react";
+import { useSyncExternalStore } from "react";
+
+function getThemeSnapshot() {
+  return document.documentElement.dataset.curationTheme === "dark";
+}
+
+function subscribeToTheme(onStoreChange: () => void) {
+  const observer = new MutationObserver(onStoreChange);
+  observer.observe(document.documentElement, {
+    attributeFilter: ["data-curation-theme"],
+    attributes: true,
+  });
+  return () => observer.disconnect();
+}
 
 export function ThemeToggle() {
-  const [dark, setDark] = useState(false);
+  const dark = useSyncExternalStore(subscribeToTheme, getThemeSnapshot, () => false);
 
   const toggle = () => {
     const next = !dark;
-    setDark(next);
     document.documentElement.dataset.curationTheme = next ? "dark" : "light";
   };
 
