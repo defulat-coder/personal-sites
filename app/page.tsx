@@ -6,7 +6,8 @@ import { ArrowUpRight, GitBranch } from "lucide-react";
 import { InteractiveDotField } from "@/components/interactive-dot-field";
 import { ProfileIntroduction } from "@/components/profile-introduction";
 import { ThemeToggle } from "@/components/theme-toggle";
-import { curationItems, formatCurationDate } from "@/lib/curation";
+import { formatCurationDate } from "@/lib/curation-format";
+import { getCurationItems } from "@/lib/curation";
 
 const profileCopy = [
   "目前在 payermax，我做的不是 AI Demo，而是能进入企业研发主链路的 Agentic Engineering System：把 Claude Code、Codex、Pi 变成可编排、可观测、可评测、可追溯的生产能力。",
@@ -20,7 +21,8 @@ const profileCopyEnglish = [
   "With 11 years in engineering and architecture, I have built enterprise assistants, data platforms, cloud-native migrations, and high-concurrency systems at Ximalaya and Red Star Macalline—not merely shipping modules, but enabling complex systems to keep evolving.",
 ];
 
-export default function HomePage() {
+export default async function HomePage() {
+  const curationItems = await getCurationItems();
   return (
     <main className="curation-home" id="site-main" tabIndex={-1}>
       <aside aria-labelledby="profile-name" className="curation-home__profile">

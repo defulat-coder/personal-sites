@@ -20,12 +20,14 @@
     "curation:sync": "node scripts/x-curation-sync.mjs",
     "curation:enrich": "node scripts/x-curation-enrich.mjs",
     "curation:build": "node scripts/build-curation-content.mjs",
+    "curation:publish": "node scripts/x-curation-publish-supabase.mjs",
     "git:safety": "node scripts/verify-git-safety.mjs --range HEAD",
     "git:hooks:install": "node scripts/install-git-hooks.mjs",
     "prepare": "node scripts/install-git-hooks.mjs --if-present"
   },
   "dependencies": {
     "@earendil-works/pi-coding-agent": "^0.84.1",
+    "@supabase/supabase-js": "2.112.2",
     "class-variance-authority": "0.7.1",
     "clsx": "2.1.1",
     "lucide-react": "1.25.0",

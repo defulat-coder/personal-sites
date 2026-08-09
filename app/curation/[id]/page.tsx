@@ -9,11 +9,10 @@ import { ArticleMarkdown } from "@/components/article-markdown";
 import { ProfileIntroduction } from "@/components/profile-introduction";
 import { ThemeToggle } from "@/components/theme-toggle";
 import {
-  curationItems,
   findCurationItem,
-  formatCurationDate,
-  type CurationItem,
 } from "@/lib/curation";
+import { formatCurationDate } from "@/lib/curation-format";
+import type { CurationItem } from "@/lib/curation-types";
 
 type CurationEntryPageProps = { params: Promise<{ id: string }> };
 
@@ -51,14 +50,10 @@ function linkifyText(text: string, links: CurationItem["links"]) {
   });
 }
 
-export function generateStaticParams() {
-  return curationItems.map((item) => ({ id: item.id }));
-}
-
 export async function generateMetadata({
   params,
 }: CurationEntryPageProps): Promise<Metadata> {
-  const item = findCurationItem((await params).id);
+  const item = await findCurationItem((await params).id);
   return item
     ? { description: item.summary, title: `${item.title}｜每日策展` }
     : {};
@@ -67,7 +62,7 @@ export async function generateMetadata({
 export default async function CurationEntryPage({
   params,
 }: CurationEntryPageProps) {
-  const item = findCurationItem((await params).id);
+  const item = await findCurationItem((await params).id);
   if (!item) notFound();
 
   return (

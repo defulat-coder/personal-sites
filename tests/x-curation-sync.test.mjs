@@ -37,6 +37,11 @@ test("sync pipeline fetches X data, prepares the sensitive queue, then enriches 
       args: ["/repo/scripts/build-curation-content.mjs"],
       options: { cwd: "/repo" },
     },
+    {
+      command: process.execPath,
+      args: ["/repo/scripts/x-curation-publish-supabase.mjs"],
+      options: { cwd: "/repo" },
+    },
   ]);
 });
 
@@ -99,6 +104,16 @@ test("history pipeline uses bird pagination directly and imports both raw source
     {
       command: process.execPath,
       args: ["/repo/scripts/x-curation-import-bird.mjs"],
+      options: { cwd: "/repo" },
+    },
+    {
+      command: process.execPath,
+      args: ["/repo/scripts/build-curation-content.mjs"],
+      options: { cwd: "/repo" },
+    },
+    {
+      command: process.execPath,
+      args: ["/repo/scripts/x-curation-publish-supabase.mjs"],
       options: { cwd: "/repo" },
     },
   ]);
