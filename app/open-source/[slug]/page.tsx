@@ -36,7 +36,7 @@ export default async function OpenSourceEntryPage({ params, searchParams }: Open
 
       <article className="curation-detail__article curation-open-source__article">
         <nav aria-label="返回" className="curation-detail__back">
-          <Link href={"/open-source" as Route}>
+          <Link href={"/?view=open-source" as Route}>
             <ArrowLeft aria-hidden="true" />
             返回开源关注
           </Link>

@@ -1,6 +1,7 @@
 import "server-only";
 
 import { createClient } from "@supabase/supabase-js";
+import { unstable_cache } from "next/cache";
 import { connection } from "next/server";
 import { cache } from "react";
 import { z } from "zod";
@@ -101,6 +102,10 @@ function requiredEnvironment(key: "SUPABASE_URL" | "SUPABASE_PUBLISHABLE_KEY") {
 
 async function getOpenSourceClient() {
   await connection();
+  return getPublicOpenSourceClient();
+}
+
+function getPublicOpenSourceClient() {
   return createClient(
     requiredEnvironment("SUPABASE_URL"),
     requiredEnvironment("SUPABASE_PUBLISHABLE_KEY"),
@@ -119,15 +124,24 @@ export async function getOpenSourceEntries(): Promise<OpenSourceEntry[]> {
   return z.array(openSourceEntrySchema).parse(data.map((row) => row.content));
 }
 
+const getCachedOpenSourceListEntries = unstable_cache(
+  async (): Promise<OpenSourceListEntry[]> => {
+    const client = getPublicOpenSourceClient();
+    const { data, error } = await client
+      .from("github_open_source_items")
+      .select("category:content->>category,dimensions:content->dimensions,repository:content->>repository,slug,sourceSummary:content->>sourceSummary,status:content->>status,type:content->>type")
+      .order("display_rank", { ascending: true, nullsFirst: false })
+      .order("published_at", { ascending: false });
+    if (error) throw new Error(`读取 Supabase 开源关注列表失败：${error.message}`);
+    return z.array(openSourceListEntrySchema).parse(data);
+  },
+  ["public-open-source-list-v1"],
+  { revalidate: 60, tags: ["public-open-source"] },
+);
+
 export async function getOpenSourceListEntries(): Promise<OpenSourceListEntry[]> {
-  const client = await getOpenSourceClient();
-  const { data, error } = await client
-    .from("github_open_source_items")
-    .select("category:content->>category,dimensions:content->dimensions,repository:content->>repository,slug,sourceSummary:content->>sourceSummary,status:content->>status,type:content->>type")
-    .order("display_rank", { ascending: true, nullsFirst: false })
-    .order("published_at", { ascending: false });
-  if (error) throw new Error(`读取 Supabase 开源关注列表失败：${error.message}`);
-  return z.array(openSourceListEntrySchema).parse(data);
+  await connection();
+  return getCachedOpenSourceListEntries();
 }
 
 export const getOpenSourceEntry = cache(async (slug: string): Promise<OpenSourceEntry | null> => {

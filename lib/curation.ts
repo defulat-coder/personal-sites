@@ -1,6 +1,7 @@
 import "server-only";
 
 import { createClient } from "@supabase/supabase-js";
+import { unstable_cache } from "next/cache";
 import { connection } from "next/server";
 import { z } from "zod";
 
@@ -62,6 +63,10 @@ function requiredEnvironment(key: "SUPABASE_URL" | "SUPABASE_PUBLISHABLE_KEY") {
 
 async function getCurationClient() {
   await connection();
+  return getPublicCurationClient();
+}
+
+function getPublicCurationClient() {
   return createClient(
     requiredEnvironment("SUPABASE_URL"),
     requiredEnvironment("SUPABASE_PUBLISHABLE_KEY"),
@@ -85,21 +90,30 @@ export type CurationPage = {
   items: CurationListItem[];
 };
 
-export async function getCurationPage(offset = 0, limit = 20): Promise<CurationPage> {
-  const client = await getCurationClient();
-  const { data, error } = await client
-    .from("x_curation_items")
-    .select("author:content->author,id,publishedAt:content->>publishedAt,summary:content->>summary,title:content->>title")
-    .order("published_at", { ascending: false, nullsFirst: false })
-    .order("id", { ascending: false })
-    .range(offset, offset + limit);
-  if (error) throw new Error(`读取 Supabase 策展内容失败：${error.message}`);
+const getCachedCurationPage = unstable_cache(
+  async (offset: number, limit: number): Promise<CurationPage> => {
+    const client = getPublicCurationClient();
+    const { data, error } = await client
+      .from("x_curation_items")
+      .select("author:content->author,id,publishedAt:content->>publishedAt,summary:content->>summary,title:content->>title")
+      .order("published_at", { ascending: false, nullsFirst: false })
+      .order("id", { ascending: false })
+      .range(offset, offset + limit);
+    if (error) throw new Error(`读取 Supabase 策展内容失败：${error.message}`);
 
-  const items = z.array(curationListItemSchema).parse(data);
-  return {
-    hasMore: items.length > limit,
-    items: items.slice(0, limit),
-  };
+    const items = z.array(curationListItemSchema).parse(data);
+    return {
+      hasMore: items.length > limit,
+      items: items.slice(0, limit),
+    };
+  },
+  ["public-curation-page-v1"],
+  { revalidate: 60, tags: ["public-curation"] },
+);
+
+export async function getCurationPage(offset = 0, limit = 20): Promise<CurationPage> {
+  await connection();
+  return getCachedCurationPage(offset, limit);
 }
 
 export async function getCurationTags() {
