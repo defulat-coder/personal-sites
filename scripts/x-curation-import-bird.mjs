@@ -2,7 +2,7 @@
 /**
  * x-curation-import-bird.mjs
  *
- * 把 bird CLI 全量拉取的原始数据（书签 + 点赞）批量导入策展待审队列。
+ * 把 bird CLI 全量拉取的原始数据（书签 + 点赞）批量导入策展队列。
  * 用于初始化同步；日常增量仍走 smaug → x-curation-prepare.mjs。
  *
  * bird 原始格式比 smaug 精简：链接不展开（保留 t.co 原文，解析阶段再展开），
@@ -22,10 +22,11 @@ const config = JSON.parse(
 );
 
 const rawDir = path.join(repoRoot, config.rawDir);
-const queuePath = path.join(repoRoot, config.reviewQueueFile);
+const queuePath = path.join(repoRoot, config.queueFile);
 
 const SOURCES = [
   { file: path.join(rawDir, "bookmarks-all.json"), fetchSource: "bookmark" },
+  { file: path.join(rawDir, "likes-all.json"), fetchSource: "like" },
   { dir: path.join(rawDir, "likes-chunks"), fetchSource: "like" },
 ];
 
@@ -88,11 +89,6 @@ function normalizeTweet(tweet, fetchSource) {
       analysis: "",
       enrichedAt: null,
     },
-    review: {
-      status: "draft",
-      note: "",
-      reviewedAt: null,
-    },
   };
 }
 
@@ -123,7 +119,7 @@ for (const source of SOURCES) {
   }
 }
 
-const queue = await readJsonOr(queuePath, { version: 1, items: [] });
+const queue = await readJsonOr(queuePath, { version: 2, items: [] });
 const existing = new Set(queue.items.map((item) => item.id));
 const seen = new Set(existing);
 
@@ -153,6 +149,6 @@ await mkdir(path.dirname(queuePath), { recursive: true });
 await writeFile(queuePath, JSON.stringify(queue, null, 2) + "\n");
 
 console.log(`来源总量: ${tweets.length} 条（书签 + 点赞）`);
-console.log(`新增待审: ${added} 条`);
+console.log(`新增策展条目: ${added} 条`);
 console.log(`去重跳过: ${duplicated} 条（其中 ${bothSources} 条同时存在于书签和点赞，已合并标记）`);
 console.log(`队列总量: ${queue.items.length} 条`);
