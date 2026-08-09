@@ -1,0 +1,16 @@
+{
+  "source": "x-curation",
+  "smaugPendingFile": "tools/smaug/.state/pending-bookmarks.json",
+  "rawDir": "data/private/x-curation/raw",
+  "reviewQueueFile": "data/private/x-curation/review-queue.json",
+  "taxonomy": [
+    "Agent 工程",
+    "AI 应用",
+    "前端工程",
+    "架构与基础设施",
+    "研发效能",
+    "行业观察",
+    "产品与商业",
+    "其他"
+  ]
+}

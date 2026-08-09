@@ -1,21 +1,17 @@
 import type { Metadata } from "next";
-import { Geist } from "next/font/google";
+
+import { OpeningLoader } from "@/components/opening-loader";
 
 import "./globals.css";
 
-const geist = Geist({
-  subsets: ["latin"],
-  variable: "--font-geist-sans",
-});
-
 export const metadata: Metadata = {
   description:
-    "陈远的 Agentic Software Engineering 与企业级 AI Agent 工程实践。",
+    "陈远的每日策展：持续记录值得继续思考的技术、产品与 Agent 工程内容。",
   robots: {
     follow: false,
     index: false,
   },
-  title: "陈远｜Agentic Software Engineering",
+  title: "陈远｜每日策展",
 };
 
 export default function RootLayout({
@@ -24,8 +20,11 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="zh-CN" className={geist.variable}>
-      <body>{children}</body>
+    <html data-scroll-behavior="smooth" lang="zh-CN">
+      <body>
+        <OpeningLoader />
+        {children}
+      </body>
     </html>
   );
 }

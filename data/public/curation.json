@@ -1,0 +1,148 @@
+{
+  "version": 1,
+  "generatedAt": "2026-08-07T15:12:45.369Z",
+  "items": [
+    {
+      "id": "2085682703299436804",
+      "title": "Friction as a Feature：AI 时代为什么更需要一点摩擦",
+      "summary": "Emil Kowalski 短文：建造成本归零让'值不值得做'的过滤器失效，vibe-coded 应用'不像是被设计的，只是存在着'；摩擦迫使人行使判断力。",
+      "tags": [
+        "产品与商业",
+        "前端工程"
+      ],
+      "text": "Why friction might actually be a thing we need:\n\nhttps://t.co/pJqOePf6PW",
+      "quoteContext": null,
+      "analysis": "**是什么**：知名设计工程师 Emil Kowalski（前 Vercel）的一篇短文，讨论 AI 时代产品设计里\"摩擦\"的价值。\n\n**核心论点**：摩擦过去承担着一个隐形职能——建造的成本迫使你在动手之前先想清楚\"这个值不值得做\"。高成本本身就是一个想法过滤器。AI 把建造成本降到接近零之后，这个过滤机制消失了：一个想法几分钟就能变成一个应用，于是\"值不值得做\"的门槛被极大地降低。\n\n**最锐利的一句**：这就是为什么人们反感最近大量涌现的 vibe-coded 应用和 UI 库——\"它们不像是被设计出来的，它们只是存在着\"（They don't feel designed, they just exist）。\n\n**作者的平衡**：他并不反对低成本建造——\"Build A and B 然后对比，往往比空想是更好的验证，Prototyping is thinking\"。但前提是\"only if you actually validate\"——便宜地建造只有配合真正的验证才有意义，否则剩下的只有毫无质感的产出。\n\n**结论**：摩擦是 feature，不是 bug——它迫使人行使判断力，过滤掉那些不值得被建造的想法。",
+      "author": {
+        "handle": "emilkowalski",
+        "name": "Emil Kowalski"
+      },
+      "tweetUrl": "https://x.com/emilkowalski/status/2085682703299436804",
+      "links": [
+        {
+          "type": "article",
+          "url": "https://emilkowal.ski/ui/friction-as-a-feature",
+          "shortUrl": "https://t.co/pJqOePf6PW"
+        }
+      ],
+      "media": [],
+      "publishedAt": "2026-08-07T11:01:21.000Z"
+    },
+    {
+      "id": "2085606831448285251",
+      "title": "SwiftUI.js：把 SwiftUI 声明式理念搬进 React 的组件库",
+      "summary": "一个克制的移植实验：不追求平台对齐，只借鉴对 Web 有用的部分；测试 + Storybook + 文档三齐备才允许合入的工程规范是最大看点。",
+      "tags": [
+        "前端工程"
+      ],
+      "text": "果然有人做了\nhttps://t.co/rCxGMNMTgY https://t.co/ngxk7BD2WE",
+      "quoteContext": null,
+      "analysis": "**是什么**：把 SwiftUI 的声明式理念搬进 React 的组件库实验。monorepo 结构：`packages/ui`（组件库本体）+ `apps/docs`（Next.js 静态文档站）+ `apps/storybook`（开发工作台）。41 stars，2022 年创建，近期仍有提交。\n\n**定位诚实**：README 开宗明义——\"不追求与 SwiftUI 平台完全对齐，只在 SwiftUI 思想对 Web 诚实且有用的地方借鉴\"。这种克制在同类\"XX.js\"项目里少见。\n\n**工程规范是最大看点**：新组件必须测试 + Storybook stories + 文档三者齐备才允许合入；组件文档以 `*.docs.mdx` 与实现 colocated，保证行为、示例、源码同步演进；文档站被要求\"对成熟度保持诚实\"——部分实现或计划中的行为必须明说。\n\n**启示**：规模虽小，但它是\"组件库工程化\"的完整样本——monorepo 分工、文档即产品门面、Storybook 即回归工具。SwiftUI 心智模型（声明式、状态驱动、组合优于配置）向 React 的映射本身也值得前端同学一看。\n\n**配图解析**：推文配图是其文档站首页截图，透露了 README 之外的几个事实——组件注册表在构建期从 `packages/ui/src/components` 自动发现了 **118 个 colocated 组件文档**；组件命名完全对齐 SwiftUI（ActivityIndicator、Alert、AspectRatio、AsyncImage、AngularGradient……）；文档站是纯静态文件，可直接部署到 GitHub Pages 或任意 CDN。说明这个项目虽然 star 不多，但组件覆盖面和文档完整度已经相当可观。",
+      "author": {
+        "handle": "itshanrw",
+        "name": "itshan"
+      },
+      "tweetUrl": "https://x.com/itshanrw/status/2085606831448285251",
+      "links": [
+        {
+          "type": "github",
+          "url": "https://github.com/swiftuijs/ui",
+          "shortUrl": "https://t.co/rCxGMNMTgY"
+        }
+      ],
+      "media": [
+        {
+          "type": "photo",
+          "url": "https://pbs.twimg.com/media/HPGQVgpbcAAcvRx.png",
+          "previewUrl": "https://pbs.twimg.com/media/HPGQVgpbcAAcvRx.png:small",
+          "width": 1167,
+          "height": 1046
+        }
+      ],
+      "publishedAt": "2026-08-07T05:59:51.000Z"
+    },
+    {
+      "id": "2085535251632394586",
+      "title": "goal-driven：一段 prompt 实现的 Master-Subagent 目标驱动系统",
+      "summary": "立党开源的目标驱动多智能体方案：仓库无代码、只有 prompt 模板，master agent 按判据验收并无限重启 subagent，宣称可连续工作 100+ 小时完成编译器级任务。",
+      "tags": [
+        "Agent 工程"
+      ],
+      "text": "我在五个月前，开源了一款非常简单但是极度好用的multi-agent system。\n\n名字就叫goal-driven（目标驱动）\n\nhttps://t.co/WwTLrQINtr\n\n原理非常简单，就像我说过的，让一个master agent不断监督subagent工作，直到subagent完成了工作，并且master agent亲自认证工作meet the criteria，符合判据中的要求，\n\n否则就继续无限循环，逼迫subagent持续工作。\n\n顾名思义，goal-driven就是goal-driven，就是一个纯粹目标驱动的框架，只要根据criteria判据判断达不到目标，就必须收集一切错误信息进行改进，进行无限循环，直到彻底实现最终goal（目标）为止。\n\n这个设计的优势是，可以让你以>100小时的时间、极高的token消耗成本，去让这个master agent-subagent system去持续解决设计复杂、逻辑复杂、高度抽象、挑战人类和AI Agent能力极限的极其困难的问题，\n\n比如设计编译器/interpreter/transpiler、解决复杂的数学问题、复杂系统问题、电子仿真问题等等，\n\n目前这个goal-driven已经完成了三个工作，\n\n一个是全自动设计了sqlite的一个rust实现版本，sql parser非常稳定，\n\n一个是全自动设计了C++实现的TypeScript Compiler，这在去年只有微软几个人实现了这个工作，\n\n一个是全自动实现了世界上最复杂的数学证明工具——lean4的TyeScript版本编译器，这在过去也是由微软发明并且由整个数学学术界维护的。\n\ngoal-driven已经被证明了是一款非常强大、非常简单、非常直白的multi-agent system，而且只需要一个prompt写进去即可，\n\n只要你设定好了goal（目标），criteria（判据，判断成功与否的标准，比如生成1000个复杂test case），\n\n就可以让agent和subagent持续工作100小时，完成一些人类历史上极具挑战难度的、最复杂、 最抽象、最艰难的工作。\n\n好了，赶紧点个star，接下来我还要开源一个更重磅的东西。\n\nhttps://t.co/WwTLrQINtr",
+      "quoteContext": null,
+      "analysis": "**是什么**：严格说它不是一个代码框架——仓库里只有两份 README，没有任何代码。它的全部内容是一段 prompt 模板，把多智能体系统\"定义\"在提示词里（官方用法：填好 Goal 和 Criteria，粘贴进 Claude Code / Codex 等工具直接跑）。\n\n**核心设计**：四个要素——Goal（最终目标）、Criteria（可判定的成功判据）、Subagent（干活的）、Master Agent（唯一控制者与验收者）。运行循环：master 每 5 分钟检查 subagent 活性；发现不活跃或自称完成，就按 criteria 独立验收；不达标则用同名重启一个新 subagent 接着干，如此往复直到达标。伪代码核心只有一行：`while (criteria not met) { let the subagent work }`。\n\n**宣称战绩**：C++ 实现 TypeScript 编译器（约 100 小时，含 2000 个测试用例并与官方 tsc 输出对比验证）、Rust 实现 SQLite（约 30 小时）、Lean4 编译器的 TS 版（进行中）。\n\n**关键洞察**：它把\"验收判据\"提升为系统的一等公民——全部智能压力都转移到 criteria 的可机器判定性上。因此只适用于结果可被严格验证的任务（编译器、证明、可测试系统），对\"好/坏\"难以判定的开放性任务无能为力。\n\n**边界与风险**：作者自己警告 token 消耗巨大；模板里明确写着\"DO NOT STOP THE AGENTS\"，没有预算熔断、没有人工接管点；\"同名重启 subagent\"意味着失败实例的上下文被丢弃重来，只适合可从零重新验证的任务，不适合有状态的长链路工作。",
+      "author": {
+        "handle": "lidangzzz",
+        "name": "lidang 立党 （劝人卖房/学CS/买SP500/纳100/OpenAI/Anthrop第一人）"
+      },
+      "tweetUrl": "https://x.com/lidangzzz/status/2085535251632394586",
+      "links": [
+        {
+          "type": "github",
+          "url": "https://github.com/lidangzzz/goal-driven",
+          "shortUrl": "https://t.co/WwTLrQINtr"
+        }
+      ],
+      "media": [],
+      "publishedAt": "2026-08-07T01:15:26.000Z"
+    },
+    {
+      "id": "2085415461106426106",
+      "title": "Mintlify Index：文档发布方直供的 Agent 知识检索层",
+      "summary": "对标 Context7 的新 MCP 检索服务：publisher-direct 一手数据源，官方基准称 Agent 提速 2 倍、准确率 +9%，已免费开放试用。",
+      "tags": [
+        "Agent 工程",
+        "AI 应用"
+      ],
+      "text": "context7 was the first useful mcp \n\nand now mintlify index is better",
+      "quoteContext": {
+        "author": "mintlify",
+        "authorName": "Mintlify",
+        "text": "Introducing Mintlify Index: the first publisher-direct search layer for technical knowledge, built on Mintlify’s ecosystem of more than 200,000 orgs.\n\nIn our benchmark against Context7, agents using Mintlify Index finished tasks at twice the speed, and with 9% higher factual accuracy.\n\nToday, we're opening up the Index MCP server for everyone to try, fully for free:"
+      },
+      "analysis": "**是什么**：Mintlify 发布的技术知识检索层，核心卖点是 publisher-direct——数据直接来自文档发布方的一手源，而非爬虫抓取的二手网页，号称生态覆盖 20 万+ 组织。原推文作者评价：\"context7 was the first useful mcp, and now mintlify index is better\"。\n\n**宣称指标**：在 Mintlify 自建的对比基准中，使用 Index 的 Agent 完成任务速度比用 Context7 快 2 倍，事实准确率高 9%。目前已免费开放 Index MCP server 试用。\n\n**背景与意义**：Context7 是此前 Coding Agent 获取库文档的主流 MCP 方案。Mintlify 的差异化在于\"源头直连\"：文档站本身由 Mintlify 托管，索引可以直接从结构化源数据构建，更新及时性和结构完整性理论上都优于页面抓取。这代表了 Agent 知识供给的一个演进方向——从\"抓网页\"到\"发布方直接供数\"。\n\n**注意**：2 倍提速、9% 准确率均来自厂商自家基准，接入前应在自有任务集上独立评测后再下结论。",
+      "author": {
+        "handle": "rohandevs",
+        "name": "rohan"
+      },
+      "tweetUrl": "https://x.com/rohandevs/status/2085415461106426106",
+      "links": [],
+      "media": [],
+      "publishedAt": "2026-08-06T17:19:25.000Z"
+    },
+    {
+      "id": "2085393655247032824",
+      "title": "OpenTag：把任意 Agent 带进 Slack / Teams 的生产级开源助手",
+      "summary": "CopilotKit 的 Channels SDK 完整参考应用：AG-UI 协议解耦 Agent 框架、写操作审批门、线程订阅触发，fork 改完即可部署上线。",
+      "tags": [
+        "Agent 工程",
+        "AI 应用"
+      ],
+      "text": "🚀 Introducing Open Tag\n\nA better, open-source Claude Tag.\nWorks with any model, any agent harness, and fully custom agents.\n\nBring any Agent to Slack, MS Teams with Generative UI, Streaming, and much more!\n\nClone the repo and get it running in minutes\nhttps://t.co/USvVWYpgUQ\n\nPowered by the Channels SDK & AG-UI",
+      "quoteContext": null,
+      "analysis": "**是什么**：CopilotKit 开源的自托管 on-call 分诊助手，也是其 Channels SDK 的完整参考应用——把任意 AG-UI 兼容的 Agent 带进 Slack 和 Microsoft Teams。852 stars，TypeScript + Python，2026 年 6 月创建，持续活跃更新。定位明确：\"built to be taken, not just read\"——给你 fork 改完直接上线的。\n\n**架构链路**：Slack/Teams →（HTTPS）→ CopilotKit Intelligence（托管平台凭证与入口）→（本地 runtime 主动发起的出站 WebSocket）→ Node runtime（CopilotRuntime + 内嵌 Channels）→（AG-UI 协议）→ Python LangGraph agent → OpenAI / Tavily / GitHub MCP / PostHog MCP / Linear / Notion。不需要公网 URL 和隧道，平台凭证全部留在托管侧。\n\n**值得抄的三个企业级设计**：\n1. **写操作审批门**：所有 Linear/Notion 写操作在代码层被拦截器拦下，弹出 confirm_write 确认卡片，人批准后 LangGraph interrupt 才恢复执行；读操作不拦截。\n2. **线程订阅触发**：mention 一次即订阅该线程，后续免 mention 连续对话；未订阅的会话严格保持沉默——避免 bot 在群里吵。\n3. **AG-UI 协议解耦**：runtime 不关心对面是什么 Agent 框架，改一个 AGENT_URL 环境变量就能换掉整个 Agent。\n\n**一个坑**：Channel 投递是抢占式的——同一 Intelligence 项目下两个同名 runtime 会竞争投递，输家静默收不到消息。本地 fork 必须换自己的 Channel name。\n\n**部署形态**：Railway 两个服务（agent + runtime）以 IaC 声明，锁定 SDK 版本、优雅停机、带 e2e Slack 实况测试——生产形态而非 demo 形态。",
+      "author": {
+        "handle": "CopilotKit",
+        "name": "CopilotKit🪁"
+      },
+      "tweetUrl": "https://x.com/CopilotKit/status/2085393655247032824",
+      "links": [
+        {
+          "type": "github",
+          "url": "https://github.com/CopilotKit/OpenTag",
+          "shortUrl": "https://t.co/USvVWYpgUQ"
+        }
+      ],
+      "media": [
+        {
+          "type": "video",
+          "url": "https://pbs.twimg.com/amplify_video_thumb/2085393631788343296/img/cYEe_NgkjFPQyYaE.jpg",
+          "previewUrl": "https://pbs.twimg.com/amplify_video_thumb/2085393631788343296/img/cYEe_NgkjFPQyYaE.jpg:small",
+          "width": 2048,
+          "height": 1890
+        }
+      ],
+      "publishedAt": "2026-08-06T15:52:46.000Z"
+    }
+  ]
+}
