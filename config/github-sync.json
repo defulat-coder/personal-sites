@@ -19,7 +19,12 @@
   },
   "analysis": {
     "concurrency": 15,
-    "chunk_characters": 12000
+    "chunk_characters": 12000,
+    "request_timeout_ms": 240000,
+    "codex_cli": {
+      "concurrency": 1,
+      "request_timeout_ms": 240000
+    }
   },
   "retention": {
     "keep_snapshot_history": true

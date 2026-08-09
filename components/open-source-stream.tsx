@@ -53,7 +53,6 @@ export function OpenSourceStream({ entries }: OpenSourceStreamProps) {
               <div className={styles.copy}>
                 <h2>{entry.repository}</h2>
                 <p className={styles.source}>{entry.sourceSummary}</p>
-                <p className={styles.note}>{entry.personalNote}</p>
               </div>
               <span aria-hidden="true" className={styles.arrow}><ArrowUpRight /></span>
             </Link>

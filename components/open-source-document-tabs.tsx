@@ -6,28 +6,30 @@ import remarkGfm from "remark-gfm";
 
 import styles from "@/components/open-source.module.css";
 import { resolveGitHubReadmeUrl } from "@/lib/github-readme-url";
+import { OpenSourceRepositoryBrowser } from "@/components/open-source-repository-browser";
 
 type OpenSourceDocumentTabsProps = {
   parsedMarkdown: string;
   readingSource: "official-zh-readme" | "kimi-translation";
   readingSourcePath: string | null;
+  repository: string;
+  repositoryUrl: string;
+  slug: string;
   sourceUrl: string;
-  sourceMarkdown: string;
-  sourceTitle: string;
 };
 
 export function OpenSourceDocumentTabs({
   parsedMarkdown,
   readingSource,
   readingSourcePath,
+  repository,
+  repositoryUrl,
+  slug,
   sourceUrl,
-  sourceMarkdown,
-  sourceTitle,
 }: OpenSourceDocumentTabsProps) {
-  const [documentView, setDocumentView] = useState<"parsed" | "source">("parsed");
+  const [documentView, setDocumentView] = useState<"parsed" | "repository">("parsed");
   const isParsed = documentView === "parsed";
-  const content = isParsed ? parsedMarkdown : sourceMarkdown;
-  const documentPath = isParsed ? readingSourcePath ?? "README.md" : "README.md";
+  const isRepository = documentView === "repository";
 
   return (
     <section aria-labelledby="open-source-document-title" className={`curation-detail__section ${styles.documentSection}`}>
@@ -46,38 +48,44 @@ export function OpenSourceDocumentTabs({
             中文阅读版
           </button>
           <button
-            aria-controls="source-document-panel"
-            aria-selected={!isParsed}
+            aria-controls="repository-document-panel"
+            aria-selected={isRepository}
             className={styles.documentTab}
-            id="source-document-tab"
-            onClick={() => setDocumentView("source")}
+            id="repository-document-tab"
+            onClick={() => setDocumentView("repository")}
             role="tab"
             type="button"
           >
-            {sourceTitle}
+            仓库结构
           </button>
         </div>
       </div>
       <p className={styles.documentHint}>
-        {isParsed
+        {isRepository
+          ? "文件树与内容按需从原始 GitHub 仓库读取；仅已公开的收藏仓库可访问。"
+          : isParsed
           ? readingSource === "official-zh-readme"
             ? `内容直接采用仓库维护的中文 README${readingSourcePath ? `（${readingSourcePath}）` : ""}，未经过模型翻译。`
             : "中文阅读版只翻译说明性文字；术语、代码、命令、链接与原有 Markdown 结构保持不变。"
-          : sourceTitle === "原始 README" ? "内容同步自仓库 README。" : "README 缺失时，展示用于生成解析的仓库结构证据。"}
+          : null}
       </p>
       <div
-        aria-labelledby={isParsed ? "parsed-document-tab" : "source-document-tab"}
+        aria-labelledby={isRepository ? "repository-document-tab" : "parsed-document-tab"}
         className={styles.documentMarkdown}
-        id={isParsed ? "parsed-document-panel" : "source-document-panel"}
+        id={isRepository ? "repository-document-panel" : "parsed-document-panel"}
         role="tabpanel"
       >
-        <ReactMarkdown
-          remarkPlugins={[remarkGfm]}
-          skipHtml
-          urlTransform={(url) => defaultUrlTransform(resolveGitHubReadmeUrl(url, sourceUrl, documentPath))}
-        >
-          {content}
-        </ReactMarkdown>
+        {isRepository ? (
+          <OpenSourceRepositoryBrowser repository={repository} repositoryUrl={repositoryUrl} slug={slug} />
+        ) : (
+          <ReactMarkdown
+            remarkPlugins={[remarkGfm]}
+            skipHtml
+            urlTransform={(url) => defaultUrlTransform(resolveGitHubReadmeUrl(url, sourceUrl, readingSourcePath ?? "README.md"))}
+          >
+            {parsedMarkdown}
+          </ReactMarkdown>
+        )}
       </div>
     </section>
   );

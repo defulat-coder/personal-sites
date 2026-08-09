@@ -2,6 +2,7 @@ import { describe, expect, it } from "vitest";
 
 import { openSourceCategories, openSourceDimensions } from "../lib/open-source-types";
 import { resolveGitHubReadmeUrl } from "../lib/github-readme-url";
+import { buildGitHubRepositoryTree, githubRepositoryFileUrl, normalizeGitHubPath } from "../lib/github-repository-browser";
 import { openSourceSeedEntries } from "../lib/open-source-seed";
 
 describe("open-source curation", () => {
@@ -42,5 +43,23 @@ describe("open-source curation", () => {
     );
     expect(resolveGitHubReadmeUrl("https://interfaces.dev/", sourceUrl)).toBe("https://interfaces.dev/");
     expect(resolveGitHubReadmeUrl("#install", sourceUrl)).toBe("#install");
+  });
+
+  it("builds a safe navigable GitHub repository tree", () => {
+    expect(normalizeGitHubPath("src/components/App.tsx")).toBe("src/components/App.tsx");
+    expect(normalizeGitHubPath("../.env")).toBeNull();
+    expect(normalizeGitHubPath("src//App.tsx")).toBeNull();
+    expect(githubRepositoryFileUrl("https://github.com/example/repo", "main", "src/App.tsx")).toBe(
+      "https://github.com/example/repo/blob/main/src/App.tsx",
+    );
+
+    expect(buildGitHubRepositoryTree([
+      { path: "src/App.tsx", size: 120, type: "blob" },
+      { path: "README.md", size: 20, type: "blob" },
+      { path: "src", type: "tree" },
+    ])).toMatchObject([
+      { name: "src", type: "tree", children: [{ name: "App.tsx", path: "src/App.tsx", type: "blob" }] },
+      { name: "README.md", type: "blob" },
+    ]);
   });
 });
