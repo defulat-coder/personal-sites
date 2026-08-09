@@ -1,0 +1,66 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-08-09T00:00:00+08:00",
+  "title": "Design System: 陈远｜每日策展",
+  "extensions": {
+    "colorMeta": {
+      "ink": { "role": "primary", "displayName": "Ink", "canonical": "#1c1c1e", "tonalRamp": ["#ffffff", "#eeeeee", "#a1a1a4", "#8f8f93", "#6f6f72", "#4f4f52", "#252527", "#1c1c1e"] },
+      "surface": { "role": "neutral", "displayName": "Surface", "canonical": "#ffffff", "tonalRamp": ["#ffffff", "#f8f8f8", "#eeeeee", "#dedee0", "#c5c5c8", "#a1a1a4", "#6f6f72", "#1c1c1e"] },
+      "loader-green": { "role": "tertiary", "displayName": "Loader Green", "canonical": "#24cb71", "tonalRamp": ["#e5fff0", "#b8f8d3", "#7debaa", "#39eba0", "#24cb71", "#179b55", "#0f6c3c", "#063b20"] }
+    },
+    "typographyMeta": {
+      "display": { "displayName": "Curation Display", "purpose": "Detail-page entry titles only." },
+      "title": { "displayName": "Identity and Section Title", "purpose": "Names and lightweight section headings." },
+      "body": { "displayName": "Reading Body", "purpose": "Profile, summaries, and article copy." },
+      "signal": { "displayName": "Technical Signal", "purpose": "Agent-engineering terms in the signal field only." }
+    },
+    "shadows": [],
+    "motion": [
+      { "name": "loader-reveal", "value": "cubic-bezier(.76,0,.24,1)", "purpose": "One-time upward Loading reveal." },
+      { "name": "signal-float", "value": "cubic-bezier(.45,0,.2,1)", "purpose": "Low-amplitude technical signal motion." },
+      { "name": "content-typing", "value": "11ms/13ms input; 4ms deletion", "purpose": "One-time bilingual profile sequence." }
+    ],
+    "breakpoints": [
+      { "name": "desktop", "value": "> 900px" },
+      { "name": "single-column", "value": "900px" },
+      { "name": "compact-stream", "value": "560px" }
+    ]
+  },
+  "components": [
+    {
+      "name": "External Link Pill",
+      "kind": "button",
+      "refersTo": "external-link",
+      "description": "The single external identity link beneath the profile name.",
+      "html": "<a class=\"ds-external-link\" href=\"#\">GitHub</a>",
+      "css": ".ds-external-link { display:inline-flex; align-items:center; border:1px solid #1c1c1e; border-radius:999px; background:#1c1c1e; color:#fff; font:620 12px/1 -apple-system,BlinkMacSystemFont,Arial,sans-serif; padding:9px 13px; text-decoration:none; transition:background-color 180ms ease,border-color 180ms ease; }.ds-external-link:hover,.ds-external-link:focus-visible { border-color:#555; background:#555; outline:0; }"
+    },
+    {
+      "name": "Curation Stream Row",
+      "kind": "custom",
+      "refersTo": "stream-row",
+      "description": "A flat three-column item for date/author, content, and direction.",
+      "html": "<a class=\"ds-stream-row\" href=\"#\"><span>2026年8月7日<br>@author</span><strong>一条每日策展标题</strong><span>↗</span></a>",
+      "css": ".ds-stream-row { display:grid; grid-template-columns:minmax(124px,.42fr) minmax(0,1.58fr) 20px; gap:16px; border-bottom:1px solid #eee; color:#1c1c1e; font:12px/1.38 -apple-system,BlinkMacSystemFont,Arial,sans-serif; padding:26px 0; text-decoration:none; }.ds-stream-row strong { font-size:17px; font-weight:570; letter-spacing:-.04em; line-height:1.15; }.ds-stream-row:hover,.ds-stream-row:focus-visible { color:#6f6f72; outline:0; }"
+    },
+    {
+      "name": "Technical Signal",
+      "kind": "custom",
+      "refersTo": "signal",
+      "description": "An irregular, sparse Agent vocabulary field; not a tag cloud.",
+      "html": "<div class=\"ds-signal\"><span>agent.runtime</span><span>mcp.protocol</span><span>workflow.graph</span></div>",
+      "css": ".ds-signal { display:flex; flex-wrap:wrap; gap:18px 32px; min-height:96px; background:radial-gradient(circle,rgba(28,28,30,.27) 1px,transparent 1.15px); background-size:9px 9px; padding:18px; }.ds-signal span { border:1px solid rgba(28,28,30,.22); background:rgba(255,255,255,.94); color:rgba(28,28,30,.88); font:650 10px/1 ui-monospace,SFMono-Regular,Menlo,monospace; padding:7px 9px; }"
+    }
+  ],
+  "narrative": {
+    "northStar": "运行中的工程档案",
+    "overview": "A flat, high-contrast personal engineering site. The profile rail remains stable while curation entries and long-form detail create a continuous reading flow.",
+    "keyCharacteristics": ["desktop-first split layout", "flat editorial stream", "monochrome post-loader surface", "sparse technical signal field", "one-time bilingual profile motion"],
+    "rules": [
+      { "name": "Monochrome After Loading", "body": "Loader Green ends with the loading sequence; content pages use black, white, and gray.", "section": "colors" },
+      { "name": "Flat By Default", "body": "Use separators and whitespace rather than cards and shadows.", "section": "elevation" }
+    ],
+    "dos": ["Use the identity rail plus continuous content flow.", "Keep profile copy full-width inside the rail.", "Honor reduced-motion preferences."],
+    "donts": ["Do not restore knowledge-base workspace UI.", "Do not use card grids or decorative color accents.", "Do not let signal terms overlap."]
+  }
+}
