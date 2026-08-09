@@ -70,17 +70,17 @@ test("git safety accepts a public-only repository with private paths ignored", (
   assert.equal(report.violations, 0);
 });
 
-test("git safety rejects a private raw file that was force-added to Git", (t) => {
+test("git safety rejects a sensitive raw file that was force-added to Git", (t) => {
   const root = initFixture(t, { gitignore: productionGitignore });
   const configPath = writeFixtureConfig(root);
-  mkdirSync(path.join(root, "data", "private"), { recursive: true });
-  writeFileSync(path.join(root, "data", "private", "raw.json"), "private evidence\n");
-  execFileSync("git", ["add", "--force", "data/private/raw.json"], { cwd: root });
+  mkdirSync(path.join(root, "data", "sensitive"), { recursive: true });
+  writeFileSync(path.join(root, "data", "sensitive", "raw.json"), "private evidence\n");
+  execFileSync("git", ["add", "--force", "data/sensitive/raw.json"], { cwd: root });
 
   const result = runVerifier(root, configPath);
 
   assert.equal(result.status, 1);
-  assert.match(result.stderr, /data\/private\/raw\.json/);
+  assert.match(result.stderr, /data\/sensitive\/raw\.json/);
   assert.match(result.stderr, /禁止进入 Git/);
 });
 
@@ -114,21 +114,21 @@ test("git safety rejects a generated directory force-added below a future subpro
   assert.match(result.stderr, /禁止进入 Git/);
 });
 
-test("git safety rejects private Raw that was added and deleted earlier in reachable history", (t) => {
+test("git safety rejects sensitive raw data that was added and deleted earlier in reachable history", (t) => {
   const root = initFixture(t, { gitignore: productionGitignore });
   const configPath = writeFixtureConfig(root);
-  mkdirSync(path.join(root, "data", "private"), { recursive: true });
-  writeFileSync(path.join(root, "data", "private", "raw.json"), "private evidence\n");
-  execFileSync("git", ["add", "--force", "data/private/raw.json"], { cwd: root });
+  mkdirSync(path.join(root, "data", "sensitive"), { recursive: true });
+  writeFileSync(path.join(root, "data", "sensitive", "raw.json"), "private evidence\n");
+  execFileSync("git", ["add", "--force", "data/sensitive/raw.json"], { cwd: root });
   commitFixture(root, "add private evidence");
-  rmSync(path.join(root, "data", "private", "raw.json"));
+  rmSync(path.join(root, "data", "sensitive", "raw.json"));
   execFileSync("git", ["add", "--update"], { cwd: root });
   commitFixture(root, "remove private evidence");
 
   const result = runVerifier(root, configPath, ["--range", "HEAD"]);
 
   assert.equal(result.status, 1);
-  assert.match(result.stderr, /data\/private\/raw\.json/);
+  assert.match(result.stderr, /data\/sensitive\/raw\.json/);
   assert.match(result.stderr, /历史对象禁止进入 Git/);
 });
 

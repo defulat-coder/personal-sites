@@ -11,6 +11,15 @@ playwright-report/
 test-results/
 .turbo/
 *.tsbuildinfo
+/data/sensitive/
+/knowledge/sensitive/
+# Legacy names remain ignored so an old checkout cannot accidentally reintroduce
+# sensitive source data under the former directory names.
 /data/private/
 /knowledge/private/
+/tools/smaug/.state/
+/tools/smaug/smaug.config.json
+/tools/smaug/bookmarks.md
+# Sensitive source kept only for local recovery; never recreate it at repo root.
+/陈远-Agent工程师_全栈工程师_资深java工程师.md
 /var/
