@@ -3,7 +3,11 @@
   "max_regular_git_file_bytes": 52428800,
   "github_hard_limit_bytes": 104857600,
   "blocked_directories": [
+    "data/sensitive",
+    "knowledge/sensitive",
+    "tools/smaug/.state",
     "data/private",
+    "knowledge/private",
     "var"
   ],
   "blocked_directory_names": [
@@ -16,7 +20,11 @@
     ".turbo"
   ],
   "blocked_files": [
-    ".codex/config.toml"
+    ".codex/config.toml",
+    "data/sensitive/personal/resume.md",
+    "tools/smaug/smaug.config.json",
+    "tools/smaug/bookmarks.md",
+    "陈远-Agent工程师_全栈工程师_资深java工程师.md"
   ],
   "blocked_filename_prefixes": [
     ".env"
@@ -29,6 +37,12 @@
   ],
   "required_ignored_paths": [
     ".codex/config.toml",
+    "data/sensitive/.git-safety-probe",
+    "knowledge/sensitive/.git-safety-probe",
+    "data/sensitive/personal/resume.md",
+    "tools/smaug/.state/pending-bookmarks.json",
+    "tools/smaug/smaug.config.json",
+    "tools/smaug/bookmarks.md",
     ".env.local",
     "cache.tsbuildinfo"
   ]

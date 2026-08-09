@@ -2,7 +2,7 @@
 /**
  * build-curation-content.mjs
  *
- * 从策展待审队列（data/private/x-curation/review-queue.json，私有）生成
+ * 从策展待审队列（data/sensitive/x-curation/review-queue.json，敏感）生成
  * 网站公开投影（data/public/curation.json）。
  *
  * 只输出人工批准（review.status === "approved"）的条目，并剥离所有

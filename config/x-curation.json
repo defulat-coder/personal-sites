@@ -1,8 +1,8 @@
 {
   "source": "x-curation",
   "smaugPendingFile": "tools/smaug/.state/pending-bookmarks.json",
-  "rawDir": "data/private/x-curation/raw",
-  "reviewQueueFile": "data/private/x-curation/review-queue.json",
+  "rawDir": "data/sensitive/x-curation/raw",
+  "reviewQueueFile": "data/sensitive/x-curation/review-queue.json",
   "taxonomy": [
     "Agent 工程",
     "AI 应用",

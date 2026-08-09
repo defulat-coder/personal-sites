@@ -8,7 +8,7 @@
  * 管道位置：smaug fetch → 【本脚本】→ AI 打标/点评草稿 → 人工批准 → 公开投影
  *
  * 职责：
- * 1. 把 smaug pending 文件按内容快照保存到 data/private/x-curation/raw/（证据层）
+ * 1. 把 smaug pending 文件按内容快照保存到 data/sensitive/x-curation/raw/（证据层）
  * 2. 归一化为策展条目，按 tweet id 去重合并进待审队列
  * 3. 新条目状态为 draft，ai 字段留空，由 AI 打标步骤填充
  *
