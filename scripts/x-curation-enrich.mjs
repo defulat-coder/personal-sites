@@ -28,6 +28,9 @@ import path from "node:path";
 import { promisify } from "node:util";
 import { fileURLToPath } from "node:url";
 
+import { loadLocalEnv } from "./lib/load-local-env.mjs";
+import { resolveKimiConfig } from "./lib/x-curation-ai.mjs";
+
 const execFileAsync = promisify(execFile);
 const repoRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const config = JSON.parse(
@@ -35,9 +38,11 @@ const config = JSON.parse(
 );
 const queuePath = path.join(repoRoot, config.reviewQueueFile);
 
-const API_KEY = process.env.X_CURATION_API_KEY ?? "";
-const BASE_URL = (process.env.X_CURATION_BASE_URL ?? "https://api.moonshot.cn/v1").replace(/\/$/, "");
-const MODEL = process.env.X_CURATION_MODEL ?? "kimi-k2-0905-preview";
+loadLocalEnv(repoRoot);
+const kimi = resolveKimiConfig({ config, env: process.env });
+const API_KEY = kimi.apiKey;
+const BASE_URL = kimi.baseUrl;
+const MODEL = kimi.model;
 const VISION = process.env.X_CURATION_VISION === "1";
 
 const args = process.argv.slice(2);
@@ -201,7 +206,7 @@ targets = targets.slice(0, LIMIT);
 
 console.log(`待解析: ${targets.length} 条${DRY_RUN ? "（dry-run，不调用 API）" : ""}`);
 if (!DRY_RUN && !API_KEY) {
-  console.error("缺少 X_CURATION_API_KEY 环境变量。");
+  console.error("缺少 KIMI_API_KEY 环境变量（兼容 MOONSHOT_API_KEY 与 X_CURATION_API_KEY）。");
   process.exit(1);
 }
 

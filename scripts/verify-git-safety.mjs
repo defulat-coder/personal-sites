@@ -132,6 +132,10 @@ function blobSizes(root, objectIds) {
   return sizes;
 }
 
+function isGitlink(entry) {
+  return entry.mode === "160000";
+}
+
 function worktreeFileSize(root, filePath) {
   try {
     const stat = lstatSync(path.join(root, filePath));
@@ -247,7 +251,8 @@ function auditRepository(root, config, revisionSpec) {
   git(root, ["rev-parse", "--is-inside-work-tree"]);
   const entries = trackedIndexEntries(root);
   const stageZeroEntries = entries.filter((entry) => entry.stage === 0);
-  const sizes = blobSizes(root, stageZeroEntries.map((entry) => entry.objectId));
+  const blobEntries = stageZeroEntries.filter((entry) => !isGitlink(entry));
+  const sizes = blobSizes(root, blobEntries.map((entry) => entry.objectId));
   const untrackedPaths = parseNullSeparated(git(root, ["ls-files", "--others", "--exclude-standard", "-z"]));
   const violations = new Map();
   let trackedBytes = 0;
@@ -273,6 +278,9 @@ function auditRepository(root, config, revisionSpec) {
 
   for (const entry of stageZeroEntries) {
     auditWorktreePath({ root, filePath: entry.path, config, violations });
+    if (isGitlink(entry)) {
+      continue;
+    }
     const indexSize = sizes.get(entry.objectId) ?? 0;
     trackedBytes += indexSize;
     largestRegularGitBlobBytes = Math.max(largestRegularGitBlobBytes, indexSize);

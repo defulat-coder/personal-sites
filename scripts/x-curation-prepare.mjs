@@ -27,8 +27,16 @@ const config = JSON.parse(
   await readFile(path.join(repoRoot, "config/x-curation.json"), "utf8"),
 );
 
+const sourceArgIndex = process.argv.findIndex((arg) => arg === "--source");
 const sourceArg = process.argv.find((arg) => arg.startsWith("--source="));
-const fetchSource = sourceArg ? sourceArg.split("=")[1] : "bookmarks";
+const fetchSource = sourceArg
+  ? sourceArg.split("=")[1]
+  : sourceArgIndex >= 0
+    ? process.argv[sourceArgIndex + 1]
+    : "bookmarks";
+if (!['bookmarks', 'likes', 'both'].includes(fetchSource)) {
+  throw new Error("--source 只能是 bookmarks、likes 或 both。");
+}
 
 const pendingPath = path.join(repoRoot, config.smaugPendingFile);
 const rawDir = path.join(repoRoot, config.rawDir);

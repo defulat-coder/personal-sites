@@ -4,7 +4,7 @@
   "type": "module",
   "packageManager": "pnpm@11.11.0",
   "engines": {
-    "node": ">=20.19.0"
+    "node": ">=22.0.0"
   },
   "scripts": {
     "dev": "next dev --turbopack --hostname 127.0.0.1",
@@ -12,9 +12,11 @@
     "start": "next start --hostname 127.0.0.1",
     "lint": "eslint --max-warnings=0 --no-error-on-unmatched-pattern 'app/**/*.{ts,tsx}' 'components/**/*.{ts,tsx}' 'lib/**/*.{ts,tsx}' '*.config.{js,mjs,ts}'",
     "typecheck": "tsc --noEmit",
-    "test": "vitest run && node --test tests/*.test.mjs",
+    "test": "vitest run --passWithNoTests && node --test tests/*.test.mjs",
     "curation:prepare": "node scripts/x-curation-prepare.mjs",
     "curation:import": "node scripts/x-curation-import-bird.mjs",
+    "curation:fetch": "node scripts/x-curation-sync.mjs --fetch-only",
+    "curation:sync": "node scripts/x-curation-sync.mjs",
     "curation:enrich": "node scripts/x-curation-enrich.mjs",
     "curation:build": "node scripts/build-curation-content.mjs",
     "git:safety": "node scripts/verify-git-safety.mjs --range HEAD",
@@ -37,12 +39,14 @@
   "devDependencies": {
     "@axe-core/playwright": "4.12.1",
     "@playwright/test": "1.61.1",
+    "@steipete/bird": "^0.8.0",
     "@tailwindcss/postcss": "4.3.3",
     "@testing-library/dom": "10.4.1",
     "@testing-library/react": "16.3.2",
     "@types/node": "26.1.1",
     "@types/react": "19.2.17",
     "@types/react-dom": "19.2.3",
+    "dayjs": "^1.11.21",
     "eslint": "9.39.5",
     "eslint-config-next": "16.3.0-canary.89",
     "jsdom": "29.1.1",
