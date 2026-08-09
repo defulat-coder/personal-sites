@@ -111,6 +111,7 @@ export default async function CurationEntryPage({
             <ArrowLeft aria-hidden="true" />
             返回每日关注
           </Link>
+          <ThemeToggle />
         </nav>
 
         <header className="curation-detail__header">
