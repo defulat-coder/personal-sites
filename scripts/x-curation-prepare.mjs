@@ -3,14 +3,14 @@
  * x-curation-prepare.mjs
  *
  * 把 smaug 抓取的 X 书签/点赞原始数据（pending-bookmarks.json）转换为
- * 策展待审队列（review-queue.json）。
+ * 策展队列（curation-queue.json）。
  *
- * 管道位置：smaug fetch → 【本脚本】→ AI 打标/点评草稿 → 人工批准 → 公开投影
+ * 管道位置：smaug fetch → 【本脚本】→ AI 打标/点评 → 自动公开投影
  *
  * 职责：
  * 1. 把 smaug pending 文件按内容快照保存到 data/sensitive/x-curation/raw/（证据层）
- * 2. 归一化为策展条目，按 tweet id 去重合并进待审队列
- * 3. 新条目状态为 draft，ai 字段留空，由 AI 打标步骤填充
+ * 2. 归一化为策展条目，按 tweet id 去重合并进策展队列
+ * 3. 新条目 ai 字段留空，由 AI 打标步骤填充后自动公开
  *
  * 用法：
  *   node scripts/x-curation-prepare.mjs [--source bookmarks|likes|both]
@@ -40,7 +40,7 @@ if (!['bookmarks', 'likes', 'both'].includes(fetchSource)) {
 
 const pendingPath = path.join(repoRoot, config.smaugPendingFile);
 const rawDir = path.join(repoRoot, config.rawDir);
-const queuePath = path.join(repoRoot, config.reviewQueueFile);
+const queuePath = path.join(repoRoot, config.queueFile);
 
 function normalizeLink(link) {
   return {
@@ -82,11 +82,6 @@ function normalizeEntry(bookmark) {
       analysis: "", // 深度解析：GitHub 仓库完整解析 / 文章观点提炼
       enrichedAt: null,
     },
-    review: {
-      status: "draft", // draft → approved | rejected
-      note: "",
-      reviewedAt: null,
-    },
   };
 }
 
@@ -113,8 +108,8 @@ const rawHash = createHash("sha256").update(rawBody).digest("hex");
 const rawPath = path.join(rawDir, `${rawHash}.json`);
 await writeFile(rawPath, rawBody);
 
-// 2. 合并进待审队列（按 tweet id 去重，已审核条目不覆盖）
-const queue = await readJsonOr(queuePath, { version: 1, items: [] });
+// 2. 合并进策展队列（按 tweet id 去重）
+const queue = await readJsonOr(queuePath, { version: 2, items: [] });
 const existing = new Map(queue.items.map((item) => [item.id, item]));
 
 let added = 0;
@@ -131,10 +126,9 @@ queue.updatedAt = new Date().toISOString();
 await mkdir(path.dirname(queuePath), { recursive: true });
 await writeFile(queuePath, JSON.stringify(queue, null, 2) + "\n");
 
-const pendingReview = queue.items.filter((item) => item.review.status === "draft").length;
 console.log(`Raw 快照: ${path.relative(repoRoot, rawPath)}`);
-console.log(`新增待审条目: ${added}（队列共 ${queue.items.length} 条，其中 ${pendingReview} 条待审核）`);
+console.log(`新增策展条目: ${added}（队列共 ${queue.items.length} 条）`);
 console.log(`队列文件: ${path.relative(repoRoot, queuePath)}`);
 if (added > 0) {
-  console.log("下一步：AI 打标并生成点评草稿（填充 ai 字段），然后人工审核。");
+  console.log("下一步：AI 打标并生成点评，随后自动生成公开投影。");
 }

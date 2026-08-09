@@ -2,11 +2,11 @@
   "source": "x-curation",
   "smaugPendingFile": "tools/smaug/.state/pending-bookmarks.json",
   "rawDir": "data/sensitive/x-curation/raw",
-  "reviewQueueFile": "data/sensitive/x-curation/review-queue.json",
+  "queueFile": "data/sensitive/x-curation/curation-queue.json",
   "ai": {
-    "provider": "kimi",
-    "baseUrl": "https://api.moonshot.cn/v1",
-    "model": "kimi-k2-0905-preview"
+    "runtime": "pi-coding-agent",
+    "provider": "kimi-coding",
+    "model": "kimi-for-coding"
   },
   "taxonomy": [
     "Agent 工程",

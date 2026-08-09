@@ -2,23 +2,20 @@
 /**
  * x-curation-enrich.mjs
  *
- * 策展待审队列的 AI 解析程序。对待审核条目执行完整解析：
+ * 策展队列的 Pi Agent 解析程序。对未解析条目执行完整解析：
  *   1. 展开 t.co 短链并分类（github / article / 其他）
  *   2. 抓取链接内容：GitHub 仓库元数据 + 完整 README（gh CLI）；文章正文
- *   3. 可选：配图交给视觉模型读图
- *   4. 调用 OpenAI 兼容 API 生成 标题 / 摘要 / 标签 / 深度解析
- *   5. 写回待审队列（每条落盘，可断点续跑）
+ *   3. Pi Coding Agent 调用 Kimi 生成 标题 / 摘要 / 标签 / 深度解析
+ *   4. 写回策展队列（每条落盘，可断点续跑）
  *
  * 凭据从环境变量读取，不写入任何文件：
- *   X_CURATION_API_KEY   必填，API Key
- *   X_CURATION_BASE_URL  可选，默认 https://api.moonshot.cn/v1
- *   X_CURATION_MODEL     可选，默认 kimi-k2-0905-preview
- *   X_CURATION_VISION    可选，置 1 时把配图 URL 一并交给模型（需视觉模型）
+ *   KIMI_API_KEY         必填，Kimi Coding 凭据
+ *   PI_MODEL             可选，默认 kimi-for-coding
  *
  * 用法：
  *   node scripts/x-curation-enrich.mjs              # 解析全部待处理条目
  *   node scripts/x-curation-enrich.mjs --limit 20   # 只处理前 20 条
- *   node scripts/x-curation-enrich.mjs --dry-run    # 只展开链接和抓内容，不调 API
+ *   node scripts/x-curation-enrich.mjs --dry-run    # 只展开链接和抓内容，不调 Pi Agent
  *   node scripts/x-curation-enrich.mjs --only <id>  # 只处理指定条目
  */
 
@@ -28,22 +25,26 @@ import path from "node:path";
 import { promisify } from "node:util";
 import { fileURLToPath } from "node:url";
 
+import {
+  createAgentSession,
+  DefaultResourceLoader,
+  getAgentDir,
+  ModelRuntime,
+  SessionManager,
+} from "@earendil-works/pi-coding-agent";
+
 import { loadLocalEnv } from "./lib/load-local-env.mjs";
-import { resolveKimiConfig } from "./lib/x-curation-ai.mjs";
+import { resolvePiModelConfig } from "./lib/x-curation-ai.mjs";
 
 const execFileAsync = promisify(execFile);
 const repoRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const config = JSON.parse(
   await readFile(path.join(repoRoot, "config/x-curation.json"), "utf8"),
 );
-const queuePath = path.join(repoRoot, config.reviewQueueFile);
+const queuePath = path.join(repoRoot, config.queueFile);
 
 loadLocalEnv(repoRoot);
-const kimi = resolveKimiConfig({ config, env: process.env });
-const API_KEY = kimi.apiKey;
-const BASE_URL = kimi.baseUrl;
-const MODEL = kimi.model;
-const VISION = process.env.X_CURATION_VISION === "1";
+const piModel = resolvePiModelConfig({ config, env: process.env });
 
 const args = process.argv.slice(2);
 const DRY_RUN = args.includes("--dry-run");
@@ -156,59 +157,65 @@ ${linkSection ? `\n${linkSection}` : ""}
 }`;
 }
 
-async function callModel(item, prompt) {
-  const userContent = [{ type: "text", text: prompt }];
-  if (VISION) {
-    for (const media of item.media ?? []) {
-      if (media.type === "photo" && media.url) {
-        userContent.push({ type: "image_url", image_url: { url: media.url } });
-      }
-    }
-    if (userContent.length > 1) {
-      userContent[0].text += "\n\n另附推文配图，请在 analysis 末尾追加一节 **配图解析**，描述图片中可见的事实信息。";
-    }
-  }
-
-  const response = await fetch(`${BASE_URL}/chat/completions`, {
-    method: "POST",
-    headers: {
-      Authorization: `Bearer ${API_KEY}`,
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify({
-      model: MODEL,
-      messages: [{ role: "user", content: userContent }],
-      response_format: { type: "json_object" },
-      temperature: 0.3,
-    }),
-  });
-
-  if (!response.ok) {
-    const body = await response.text();
-    throw new Error(`API ${response.status}: ${body.slice(0, 200)}`);
-  }
-  const data = await response.json();
-  const parsed = JSON.parse(data.choices[0].message.content);
-  if (!parsed.title || !parsed.summary || !parsed.analysis || !Array.isArray(parsed.tags)) {
-    throw new Error("模型返回缺少必需字段");
+function parseJsonResponse(responseText) {
+  const body = responseText.trim().replace(/^```(?:json)?\s*/u, "").replace(/\s*```$/u, "");
+  const parsed = JSON.parse(body);
+  if (!parsed.title || !parsed.summary || !parsed.analysis || !Array.isArray(parsed.tags) || parsed.tags.length === 0) {
+    throw new Error("Pi Agent 返回缺少必需字段");
   }
   return parsed;
+}
+
+async function callModel(item, prompt, runtime) {
+  const model = runtime.getModel(piModel.provider, piModel.model);
+  if (!model) throw new Error(`Pi 未找到模型：${piModel.provider}/${piModel.model}`);
+
+  const resourceLoader = new DefaultResourceLoader({
+    cwd: repoRoot,
+    agentDir: getAgentDir(),
+    noExtensions: true,
+    noPromptTemplates: true,
+    noSkills: true,
+    noThemes: true,
+  });
+  await resourceLoader.reload();
+  const { session } = await createAgentSession({
+    cwd: repoRoot,
+    model,
+    modelRuntime: runtime,
+    noTools: "all",
+    resourceLoader,
+    sessionManager: SessionManager.inMemory(repoRoot),
+    thinkingLevel: "off",
+  });
+  let answer = "";
+  const unsubscribe = session.subscribe((event) => {
+    if (event.type === "message_update" && event.assistantMessageEvent.type === "text_delta") {
+      answer += event.assistantMessageEvent.delta;
+    }
+  });
+  try {
+    await session.prompt(prompt);
+    return parseJsonResponse(answer);
+  } finally {
+    unsubscribe();
+    session.dispose();
+  }
 }
 
 // ---------- 主流程 ----------
 
 const queue = JSON.parse(await readFile(queuePath, "utf8"));
-let targets = queue.items.filter(
-  (item) => item.review.status === "draft" && !item.ai.enrichedAt,
-);
+let targets = queue.items.filter((item) => !item.ai.enrichedAt);
 if (ONLY) targets = targets.filter((item) => ONLY.has(item.id));
 targets = targets.slice(0, LIMIT);
 
-console.log(`待解析: ${targets.length} 条${DRY_RUN ? "（dry-run，不调用 API）" : ""}`);
-if (!DRY_RUN && !API_KEY) {
-  console.error("缺少 KIMI_API_KEY 环境变量（兼容 MOONSHOT_API_KEY 与 X_CURATION_API_KEY）。");
+console.log(`待解析: ${targets.length} 条${DRY_RUN ? "（dry-run，不调用 Pi Agent）" : ""}`);
+if (!DRY_RUN && !process.env.KIMI_API_KEY) {
+  console.error("缺少 KIMI_API_KEY 环境变量，Pi 无法使用 Kimi Coding 模型。");
   process.exit(1);
 }
+const runtime = DRY_RUN ? null : await ModelRuntime.create({ allowModelNetwork: false });
 
 let done = 0;
 let failed = 0;
@@ -250,11 +257,11 @@ for (const item of targets) {
     const prompt = buildPrompt(item, linkContents);
     let parsed;
     try {
-      parsed = await callModel(item, prompt);
+      parsed = await callModel(item, prompt, runtime);
     } catch (firstError) {
       console.warn(`  首次调用失败（${firstError.message.slice(0, 80)}），5 秒后重试`);
       await sleep(5000);
-      parsed = await callModel(item, prompt);
+      parsed = await callModel(item, prompt, runtime);
     }
 
     item.ai = {
@@ -278,3 +285,4 @@ for (const item of targets) {
 }
 
 console.log(`\n完成: ${done} 条解析，${failed} 条失败（可重跑续传）`);
+if (failed > 0) process.exitCode = 1;
