@@ -1,13 +1,11 @@
-import type { Route } from "next";
 import Image from "next/image";
-import Link from "next/link";
-import { ArrowUpRight, BookOpen, GitBranch } from "lucide-react";
+import { BookOpen, GitBranch } from "lucide-react";
 
+import { CurationStream } from "@/components/curation-stream";
 import { InteractiveDotField } from "@/components/interactive-dot-field";
 import { ProfileIntroduction } from "@/components/profile-introduction";
 import { ThemeToggle } from "@/components/theme-toggle";
-import { formatCurationDate } from "@/lib/curation-format";
-import { getCurationItems } from "@/lib/curation";
+import { getCurationPage } from "@/lib/curation";
 
 const profileCopy = [
   "目前在 payermax，我做的不是 AI Demo，而是能进入企业研发主链路的 Agentic Engineering System：把 Claude Code、Codex、Pi 变成可编排、可观测、可评测、可追溯的生产能力。",
@@ -22,7 +20,7 @@ const profileCopyEnglish = [
 ];
 
 export default async function HomePage() {
-  const curationItems = await getCurationItems();
+  const curationPage = await getCurationPage();
   return (
     <main className="curation-home" id="site-main" tabIndex={-1}>
       <aside aria-labelledby="profile-name" className="curation-home__profile">
@@ -67,23 +65,7 @@ export default async function HomePage() {
           <p>持续更新</p>
         </header>
 
-        <ol className="curation-home__stream">
-          {curationItems.map((item) => (
-            <li key={item.id}>
-              <Link data-content-id={item.id} href={`/curation/${item.id}` as Route}>
-                <div className="curation-home__stream-meta">
-                  <time dateTime={item.publishedAt ?? undefined}>{formatCurationDate(item)}</time>
-                  <span>@{item.author.handle}</span>
-                </div>
-                <div className="curation-home__stream-copy">
-                  <h3>{item.title}</h3>
-                  <p>{item.summary}</p>
-                </div>
-                <span aria-hidden="true" className="curation-home__stream-arrow"><ArrowUpRight /></span>
-              </Link>
-            </li>
-          ))}
-        </ol>
+        <CurationStream initialHasMore={curationPage.hasMore} initialItems={curationPage.items} />
       </section>
     </main>
   );
