@@ -3,6 +3,7 @@ import { describe, expect, it } from "vitest";
 import {
   getOpenSourceEntry,
   openSourceCategories,
+  openSourceDimensions,
   openSourceEntries,
 } from "../lib/open-source";
 
@@ -11,6 +12,8 @@ describe("open-source curation", () => {
     expect(openSourceEntries).toHaveLength(10);
     expect(new Set(openSourceEntries.map((entry) => entry.slug)).size).toBe(openSourceEntries.length);
     expect(openSourceEntries.every((entry) => entry.repositoryUrl.startsWith("https://github.com/"))).toBe(true);
+    expect(openSourceEntries.every((entry) => entry.evidence.kind === "readme")).toBe(true);
+    expect(openSourceEntries.every((entry) => entry.evidence.url.includes("/README"))).toBe(true);
   });
 
   it("keeps skills and agent systems as distinct primary categories", () => {
@@ -23,6 +26,8 @@ describe("open-source curation", () => {
     ]);
     expect(openSourceEntries.some((entry) => entry.category === "skills")).toBe(true);
     expect(openSourceEntries.some((entry) => entry.category === "agents")).toBe(true);
+    expect(openSourceDimensions.some((dimension) => dimension.id === "agent-control")).toBe(true);
+    expect(openSourceEntries.some((entry) => entry.dimensions.includes("multi-agent"))).toBe(true);
   });
 
   it("looks up a curated item without exposing an unbounded GitHub Star list", () => {

@@ -15,19 +15,20 @@ type CurationPageResponse = {
 };
 
 type CurationStreamProps = {
+  active?: boolean;
   initialHasMore: boolean;
   initialItems: CurationItem[];
 };
 
 const PAGE_SIZE = 20;
 
-export function CurationStream({ initialHasMore, initialItems }: CurationStreamProps) {
+export function CurationStream({ active = true, initialHasMore, initialItems }: CurationStreamProps) {
   const [items, setItems] = useState(initialItems);
   const [hasMore, setHasMore] = useState(initialHasMore);
   const [isLoading, setIsLoading] = useState(false);
   const [loadError, setLoadError] = useState<string | null>(null);
   const loadMore = useCallback(async () => {
-    if (isLoading || !hasMore) return;
+    if (!active || isLoading || !hasMore) return;
 
     setIsLoading(true);
     setLoadError(null);
@@ -46,10 +47,10 @@ export function CurationStream({ initialHasMore, initialItems }: CurationStreamP
     } finally {
       setIsLoading(false);
     }
-  }, [hasMore, isLoading, items.length]);
+  }, [active, hasMore, isLoading, items.length]);
 
   useEffect(() => {
-    if (!hasMore) return;
+    if (!active || !hasMore) return;
 
     const loadWhenNearBottom = () => {
       const distanceToBottom = document.documentElement.scrollHeight - window.innerHeight - window.scrollY;
@@ -58,7 +59,7 @@ export function CurationStream({ initialHasMore, initialItems }: CurationStreamP
 
     window.addEventListener("scroll", loadWhenNearBottom, { passive: true });
     return () => window.removeEventListener("scroll", loadWhenNearBottom);
-  }, [hasMore, loadMore]);
+  }, [active, hasMore, loadMore]);
 
   return (
     <ol className="curation-home__stream">

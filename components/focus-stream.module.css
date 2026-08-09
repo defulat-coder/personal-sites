@@ -1,0 +1,124 @@
+.header {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  border-bottom: 1px solid var(--line);
+  padding: .375rem 0 1.05rem;
+}
+
+.header h2 {
+  margin: 0;
+}
+
+.header h2 {
+  font-size: .95rem;
+  font-weight: 620;
+  letter-spacing: -.035em;
+  line-height: 1.15;
+}
+
+.switcher {
+  display: flex;
+  align-items: center;
+  align-self: stretch;
+  gap: 1rem;
+}
+
+.switcherButton {
+  position: relative;
+  align-self: flex-end;
+  border: 0;
+  background: transparent;
+  color: #969699;
+  cursor: pointer;
+  font-size: .78rem;
+  line-height: 1;
+  padding: .28rem 0;
+  transition: color 180ms ease;
+}
+
+.switcherButton::after {
+  position: absolute;
+  right: 0;
+  bottom: -.78rem;
+  left: 0;
+  height: 1px;
+  background: currentColor;
+  content: "";
+  transform: scaleX(0);
+  transform-origin: left center;
+  transition: transform 180ms cubic-bezier(.16, 1, .3, 1);
+}
+
+.switcherButton[aria-selected="true"] {
+  color: var(--ink);
+  font-weight: 620;
+}
+
+.switcherButton[aria-selected="true"]::after {
+  transform: scaleX(1);
+}
+
+.switcherButton:hover {
+  color: var(--ink);
+}
+
+.switcherButton:focus-visible {
+  color: var(--ink);
+  outline: 2px solid currentColor;
+  outline-offset: 4px;
+}
+
+.panel:not([hidden]) {
+  animation: panel-enter 220ms cubic-bezier(.16, 1, .3, 1) both;
+}
+
+@keyframes panel-enter {
+  from {
+    opacity: 0;
+    transform: translateY(.35rem);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+:global(html[data-curation-theme="dark"]) .switcherButton[aria-selected="true"],
+:global(html[data-curation-theme="dark"]) .switcherButton:hover,
+:global(html[data-curation-theme="dark"]) .switcherButton:focus-visible {
+  color: #f4f4f4;
+}
+
+:global(html[data-curation-theme="dark"]) .switcherButton {
+  color: #999;
+}
+
+@media (max-width: 560px) {
+  .header {
+    align-items: flex-start;
+    gap: 1rem;
+  }
+
+  .switcher {
+    align-self: auto;
+    gap: .75rem;
+    padding-top: .1rem;
+  }
+
+  .switcherButton {
+    font-size: .74rem;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .panel:not([hidden]) {
+    animation: none;
+  }
+
+  .switcherButton,
+  .switcherButton::after {
+    transition: none;
+  }
+}
