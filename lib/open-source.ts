@@ -13,7 +13,22 @@ import {
   openSourceDimensions,
 } from "@/lib/open-source-types";
 import type { OpenSourceEntry } from "@/lib/open-source-types";
+import type { OpenSourceEvidence } from "@/lib/open-source-types";
 import type { OpenSourceListEntry } from "@/lib/open-source-types";
+
+export type OpenSourceDetailEntry = Pick<
+  OpenSourceEntry,
+  | "parsedMarkdown"
+  | "personalNote"
+  | "readingSource"
+  | "readingSourcePath"
+  | "repository"
+  | "repositoryDefaultBranch"
+  | "repositoryUrl"
+  | "slug"
+> & {
+  evidence: Pick<OpenSourceEvidence, "url">;
+};
 
 export {
   getOpenSourceCategoryLabel,
@@ -94,6 +109,20 @@ const openSourceListEntrySchema = z.object({
   type: z.string(),
 });
 
+const openSourceDetailEntrySchema = z.object({
+  evidence: z.object({
+    url: z.string().url(),
+  }),
+  parsedMarkdown: z.string().min(1),
+  personalNote: z.string(),
+  readingSource: z.enum(["official-zh-readme", "kimi-translation"]),
+  readingSourcePath: z.string().nullable(),
+  repository: z.string(),
+  repositoryDefaultBranch: z.string().min(1).nullable().optional(),
+  repositoryUrl: z.string().url(),
+  slug: z.string(),
+});
+
 function requiredEnvironment(key: "SUPABASE_URL" | "SUPABASE_PUBLISHABLE_KEY") {
   const value = process.env[key];
   if (!value) throw new Error(`缺少 ${key}；网站开源关注只能从 Supabase 公开投影读取。`);
@@ -144,13 +173,22 @@ export async function getOpenSourceListEntries(): Promise<OpenSourceListEntry[]>
   return getCachedOpenSourceListEntries();
 }
 
-export const getOpenSourceEntry = cache(async (slug: string): Promise<OpenSourceEntry | null> => {
-  const client = await getOpenSourceClient();
-  const { data, error } = await client
-    .from("github_open_source_items")
-    .select("content")
-    .eq("slug", slug)
-    .maybeSingle();
-  if (error) throw new Error(`读取 Supabase 开源关注详情失败：${error.message}`);
-  return data ? openSourceEntrySchema.parse(data.content) : null;
+const getCachedOpenSourceEntry = unstable_cache(
+  async (slug: string): Promise<OpenSourceDetailEntry | null> => {
+    const client = getPublicOpenSourceClient();
+    const { data, error } = await client
+      .from("github_open_source_items")
+      .select("evidence:content->evidence,parsedMarkdown:content->>parsedMarkdown,personalNote:content->>personalNote,readingSource:content->>readingSource,readingSourcePath:content->>readingSourcePath,repository:content->>repository,repositoryDefaultBranch:content->>repositoryDefaultBranch,repositoryUrl:content->>repositoryUrl,slug")
+      .eq("slug", slug)
+      .maybeSingle();
+    if (error) throw new Error(`读取 Supabase 开源关注详情失败：${error.message}`);
+    return data ? openSourceDetailEntrySchema.parse(data) : null;
+  },
+  ["public-open-source-entry-v2"],
+  { revalidate: 300, tags: ["public-open-source"] },
+);
+
+export const getOpenSourceEntry = cache(async (slug: string): Promise<OpenSourceDetailEntry | null> => {
+  await connection();
+  return getCachedOpenSourceEntry(slug);
 });

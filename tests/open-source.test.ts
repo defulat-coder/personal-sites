@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
 
 import { openSourceCategories, openSourceDimensions, toOpenSourceListEntry } from "../lib/open-source-types";
-import { resolveGitHubReadmeUrl } from "../lib/github-readme-url";
+import { resolveGitHubReadmeAssetUrl, resolveGitHubReadmeUrl } from "../lib/github-readme-url";
 import { buildGitHubRepositoryTree, githubRepositoryFileUrl, normalizeGitHubPath } from "../lib/github-repository-browser";
 import { openSourceSeedEntries } from "../lib/open-source-seed";
 
@@ -64,6 +64,16 @@ describe("open-source curation", () => {
     );
     expect(resolveGitHubReadmeUrl("https://interfaces.dev/", sourceUrl)).toBe("https://interfaces.dev/");
     expect(resolveGitHubReadmeUrl("#install", sourceUrl)).toBe("#install");
+  });
+
+  it("resolves README-relative images to raw GitHub assets and keeps external images intact", () => {
+    const sourceUrl = "https://github.com/tobi/qmd/blob/main/README.md";
+    expect(resolveGitHubReadmeAssetUrl("assets/qmd-architecture.png", sourceUrl)).toBe(
+      "https://raw.githubusercontent.com/tobi/qmd/main/assets/qmd-architecture.png",
+    );
+    expect(resolveGitHubReadmeAssetUrl("https://example.com/diagram.png", sourceUrl)).toBe(
+      "https://example.com/diagram.png",
+    );
   });
 
   it("builds a safe navigable GitHub repository tree", () => {

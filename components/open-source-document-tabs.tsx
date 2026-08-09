@@ -4,7 +4,7 @@ import ReactMarkdown, { defaultUrlTransform } from "react-markdown";
 import remarkGfm from "remark-gfm";
 
 import styles from "@/components/open-source.module.css";
-import { resolveGitHubReadmeUrl } from "@/lib/github-readme-url";
+import { resolveGitHubReadmeAssetUrl, resolveGitHubReadmeUrl } from "@/lib/github-readme-url";
 import { OpenSourceRepositoryBrowser } from "@/components/open-source-repository-browser";
 
 type OpenSourceDocumentTabsProps = {
@@ -82,9 +82,28 @@ export function OpenSourceDocumentTabs({
           <OpenSourceRepositoryBrowser repository={repository} repositoryUrl={repositoryUrl} slug={slug} />
         ) : (
           <ReactMarkdown
+            components={{
+              a: ({ children, href }) => (
+                <a href={resolveGitHubReadmeUrl(href ?? "", sourceUrl, readingSourcePath ?? "README.md")}>
+                  {children}
+                </a>
+              ),
+              img: ({ alt, src }) => {
+                if (typeof src !== "string") return null;
+                return (
+                  // README assets come from arbitrary public GitHub repositories.
+                  // eslint-disable-next-line @next/next/no-img-element
+                  <img
+                    alt={alt ?? ""}
+                    loading="lazy"
+                    src={resolveGitHubReadmeAssetUrl(src, sourceUrl, readingSourcePath ?? "README.md")}
+                  />
+                );
+              },
+            }}
             remarkPlugins={[remarkGfm]}
             skipHtml
-            urlTransform={(url) => defaultUrlTransform(resolveGitHubReadmeUrl(url, sourceUrl, readingSourcePath ?? "README.md"))}
+            urlTransform={defaultUrlTransform}
           >
             {parsedMarkdown}
           </ReactMarkdown>
