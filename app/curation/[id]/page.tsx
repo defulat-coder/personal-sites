@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { ArrowLeft, ArrowUpRight, GitBranch, Play } from "lucide-react";
+import { ArrowLeft, ArrowUpRight, BookOpen, GitBranch, Play } from "lucide-react";
 
 import { InteractiveDotField } from "@/components/interactive-dot-field";
 import { ArticleMarkdown } from "@/components/article-markdown";
@@ -71,26 +71,34 @@ export default async function CurationEntryPage({
     <main className="curation-home curation-detail" id="site-main" tabIndex={-1}>
       <aside aria-labelledby="profile-name" className="curation-home__profile">
         <ThemeToggle />
-        <Image
-          alt="参考站提供的头像插画"
-          className="curation-home__avatar"
-          height={105}
-          priority
-          src="/images/ample-avatar.png"
-          width={105}
-        />
+        <div className="curation-home__profile-header">
+          <Image
+            alt="参考站提供的头像插画"
+            className="curation-home__avatar"
+            height={105}
+            priority
+            src="/images/ample-avatar.png"
+            width={105}
+          />
 
-        <div className="curation-home__identity">
-          <h1 id="profile-name">陈远</h1>
-          <p>@defulat-coder</p>
+          <div className="curation-home__profile-summary">
+            <div className="curation-home__identity">
+              <h1 id="profile-name">陈远</h1>
+              <p>@defulat-coder</p>
+            </div>
+
+            <nav aria-label="陈远的外部主页" className="curation-home__external-links">
+              <a href="https://github.com/defulat-coder" rel="noreferrer" target="_blank">
+                <GitBranch aria-hidden="true" />
+                GitHub
+              </a>
+              <a href="https://www.yuque.com/defulat-coder" rel="noreferrer" target="_blank">
+                <BookOpen aria-hidden="true" />
+                语雀
+              </a>
+            </nav>
+          </div>
         </div>
-
-        <nav aria-label="陈远的外部主页" className="curation-home__external-links">
-          <a href="https://github.com/defulat-coder" rel="noreferrer" target="_blank">
-            <GitBranch aria-hidden="true" />
-            GitHub
-          </a>
-        </nav>
 
         <InteractiveDotField />
 
