@@ -4,7 +4,8 @@
   "account": "defulat-coder",
   "api_version": "2026-03-10",
   "storage": {
-    "raw_root": "data/sensitive/github/raw"
+    "raw_root": "data/sensitive/github/starred/raw",
+    "derived_root": "data/sensitive/github/starred/derived"
   },
   "collections": {
     "owned": true,
@@ -14,7 +15,11 @@
   "readme": {
     "owned_non_forks": true,
     "max_bytes": 1048576,
-    "concurrency": 4
+    "concurrency": 15
+  },
+  "analysis": {
+    "concurrency": 15,
+    "chunk_characters": 12000
   },
   "retention": {
     "keep_snapshot_history": true
