@@ -1,6 +1,8 @@
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 
+import { XAppLink } from "@/components/x-app-link";
+
 type ArticleMarkdownProps = {
   source: string;
 };
@@ -11,17 +13,17 @@ export function ArticleMarkdown({ source }: ArticleMarkdownProps) {
       <ReactMarkdown
         components={{
           a: ({ children, href }) => (
-            <a href={href} rel="noreferrer noopener" target="_blank">
+            <XAppLink href={href ?? "#"}>
               {children}
-            </a>
+            </XAppLink>
           ),
           img: ({ alt, src }) => (
             <span className="article-markdown__image-link">
               图片资源：
               {typeof src === "string" ? (
-                <a href={src} rel="noreferrer noopener" target="_blank">
+                <XAppLink href={src}>
                   {alt || "打开原图"}
-                </a>
+                </XAppLink>
               ) : (
                 alt || "无可用地址"
               )}

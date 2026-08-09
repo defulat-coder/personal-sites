@@ -8,6 +8,7 @@ import { InteractiveDotField } from "@/components/interactive-dot-field";
 import { ArticleMarkdown } from "@/components/article-markdown";
 import { ProfileIntroduction } from "@/components/profile-introduction";
 import { ThemeToggle } from "@/components/theme-toggle";
+import { XAppLink } from "@/components/x-app-link";
 import {
   findCurationItem,
 } from "@/lib/curation";
@@ -41,9 +42,9 @@ function linkifyText(text: string, links: CurationItem["links"]) {
     const [, shortUrl, suffix] = match;
     return (
       <span key={index}>
-        <a href={shortToExpanded.get(shortUrl) ?? shortUrl} rel="noreferrer noopener" target="_blank">
+        <XAppLink href={shortToExpanded.get(shortUrl) ?? shortUrl}>
           {shortUrl}
-        </a>
+        </XAppLink>
         {suffix}
       </span>
     );
@@ -155,12 +156,10 @@ export default async function CurationEntryPage({
                     />
                   </a>
                 ) : (
-                  <a
+                  <XAppLink
                     className="curation-detail__media-video"
                     href={item.tweetUrl}
                     key={media.url}
-                    rel="noreferrer noopener"
-                    target="_blank"
                   >
                     {/* eslint-disable-next-line @next/next/no-img-element -- 外部推文媒体直链 */}
                     <img
@@ -174,7 +173,7 @@ export default async function CurationEntryPage({
                       <Play aria-hidden="true" />
                       视频内容 · 在 X 上查看
                     </span>
-                  </a>
+                  </XAppLink>
                 ),
               )}
             </div>
@@ -190,17 +189,17 @@ export default async function CurationEntryPage({
           <h2 className="curation-detail__eyebrow">原始来源</h2>
           <ul>
             <li>
-              <a href={item.tweetUrl} rel="noreferrer noopener" target="_blank">
+              <XAppLink href={item.tweetUrl}>
                 X 原文（@{item.author.handle}）
                 <ArrowUpRight aria-hidden="true" />
-              </a>
+              </XAppLink>
             </li>
             {item.links.map((link) => (
               <li key={link.url}>
-                <a href={link.url} rel="noreferrer noopener" target="_blank">
+                <XAppLink href={link.url}>
                   {link.url}
                   <ArrowUpRight aria-hidden="true" />
-                </a>
+                </XAppLink>
               </li>
             ))}
           </ul>
