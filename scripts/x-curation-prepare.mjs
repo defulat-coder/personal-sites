@@ -21,6 +21,8 @@ import { mkdir, readFile, writeFile } from "node:fs/promises";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 
+import { mergeXMedia, normalizeXMedia } from "../modules/x-sync/media.mjs";
+
 const repoRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 
 const config = JSON.parse(
@@ -62,15 +64,7 @@ function normalizeEntry(bookmark) {
     tweetUrl: bookmark.tweetUrl ?? "",
     createdAt: bookmark.createdAt ?? "",
     links: Array.isArray(bookmark.links) ? bookmark.links.map(normalizeLink) : [],
-    media: Array.isArray(bookmark.media)
-      ? bookmark.media.map((m) => ({
-          type: m.type ?? "photo",
-          url: m.url ?? null,
-          previewUrl: m.previewUrl ?? null,
-          width: m.width ?? null,
-          height: m.height ?? null,
-        }))
-      : [],
+    media: Array.isArray(bookmark.media) ? bookmark.media.map(normalizeXMedia) : [],
     isQuote: Boolean(bookmark.isQuote),
     quoteContext: bookmark.quoteContext ?? null,
     isReply: Boolean(bookmark.isReply),
@@ -115,7 +109,11 @@ const existing = new Map(queue.items.map((item) => [item.id, item]));
 let added = 0;
 for (const bookmark of bookmarks) {
   const id = String(bookmark.id);
-  if (existing.has(id)) continue;
+  const current = existing.get(id);
+  if (current) {
+    current.media = mergeXMedia(current.media, bookmark.media ?? []);
+    continue;
+  }
   const entry = normalizeEntry(bookmark);
   queue.items.unshift(entry); // 新的在前
   existing.set(id, entry);

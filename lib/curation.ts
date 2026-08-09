@@ -22,10 +22,12 @@ const curationItemSchema = z.object({
   ),
   media: z.array(
     z.object({
+      durationMs: z.number().int().nonnegative().nullable().default(null),
       height: z.number().int().positive().nullable(),
       previewUrl: z.string().url().nullable(),
       type: z.enum(["photo", "video", "animated_gif"]),
       url: z.string().url(),
+      videoUrl: z.string().url().nullable().default(null),
       width: z.number().int().positive().nullable(),
     }),
   ),
