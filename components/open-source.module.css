@@ -104,13 +104,6 @@
   line-height: 1.45;
 }
 
-.note {
-  margin-top: .62rem !important;
-  color: #5f5f63;
-  font-size: .82rem;
-  line-height: 1.5;
-}
-
 .arrow {
   color: #a1a1a4;
   transition: color 180ms ease, transform 180ms ease;
@@ -126,15 +119,6 @@
 .stream a:focus-visible .arrow {
   color: var(--ink);
   transform: translate(.18rem, -.18rem);
-}
-
-.entryHeader h1 {
-  max-width: 42rem;
-}
-
-.entryHeader > p {
-  color: #969699;
-  font-size: .78rem;
 }
 
 .documentSection {
@@ -227,6 +211,51 @@
 .documentMarkdown th,.documentMarkdown td { border: 1px solid var(--line); padding: .5rem .65rem; text-align: left; }
 .documentMarkdown hr { border: 0; border-top: 1px solid var(--line); margin: 1.5rem 0; }
 
+.repositoryBrowser {
+  border-top: 1px solid var(--line);
+  font-size: .8rem;
+}
+
+.repositoryBrowserToolbar,
+.repositoryFileHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.repositoryBrowserToolbar {
+  padding: .85rem 0;
+  color: #5f5f63;
+}
+
+.repositoryBrowserToolbar strong { color: var(--ink); font-size: .82rem; font-weight: 620; }
+.repositoryBrowserToolbar a,.repositoryFileHeader a { display: inline-flex; align-items: center; color: #5f5f63; gap: .3rem; text-decoration-color: #b8b8ba; text-underline-offset: .2em; }
+.repositoryBrowserToolbar a:hover,.repositoryBrowserToolbar a:focus-visible,.repositoryFileHeader a:hover,.repositoryFileHeader a:focus-visible { color: var(--ink); outline: 0; }
+.repositoryBrowserToolbar svg { width: .8rem; height: .8rem; }
+.repositoryBrowserNotice,.repositoryBrowserError,.repositoryBrowserLoading,.repositoryFileEmpty { margin: 0; color: #737376; line-height: 1.65; }
+.repositoryBrowserNotice { padding: 0 0 .85rem; }
+.repositoryBrowserError { padding: 1rem; border: 1px solid #e2bcbc; background: #fff7f7; color: #994545; }
+.repositoryBrowserLoading { display: flex; align-items: center; min-height: 10rem; justify-content: center; gap: .5rem; }
+.repositoryBrowserLoading svg { width: .9rem; height: .9rem; animation: repository-browser-spin 900ms linear infinite; }
+
+.repositoryBrowserContent { display: grid; min-height: 28rem; grid-template-columns: minmax(13rem, .68fr) minmax(0, 1.45fr); border: 1px solid var(--line); }
+.repositoryTreePane { overflow: auto; max-height: 38rem; border-right: 1px solid var(--line); padding: .45rem 0; }
+.repositoryTree { margin: 0; padding: 0; list-style: none; }
+.repositoryTreeItem { display: flex; width: 100%; min-width: max-content; align-items: center; border: 0; background: transparent; color: #5f5f63; cursor: pointer; gap: .32rem; padding-top: .27rem; padding-right: .7rem; padding-bottom: .27rem; text-align: left; }
+.repositoryTreeItem:hover,.repositoryTreeItem:focus-visible,.repositoryTreeItem[aria-current="true"] { background: #f3f3f4; color: var(--ink); outline: 0; }
+.repositoryTreeItem svg { width: .82rem; height: .82rem; flex: 0 0 auto; color: #969699; stroke-width: 1.55; }
+.repositoryTreeItem span { white-space: nowrap; }
+.repositoryTreeItem small { margin-left: auto; color: #a1a1a4; font-size: .67rem; }
+.repositoryFilePane { min-width: 0; overflow: auto; padding: .75rem 1rem; background: #fcfcfc; }
+.repositoryFileHeader { padding-bottom: .7rem; border-bottom: 1px solid var(--line); color: #5f5f63; }
+.repositoryFileHeader code { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.repositoryFileContent { overflow: auto; max-height: 35rem; margin: 0; padding: 1rem 0 0; background: transparent; color: #454548; font-size: .74rem; line-height: 1.65; }
+.repositoryFileContent code { background: transparent; color: inherit; font-size: inherit; padding: 0; }
+.repositoryFileEmpty { display: grid; min-height: 14rem; place-items: center; text-align: center; }
+
+@keyframes repository-browser-spin { to { transform: rotate(360deg); } }
+
 :global(html[data-curation-theme="dark"]) .meta span:last-child {
   color: #b5b5b7;
 }
@@ -243,13 +272,8 @@
   border-color: #333;
 }
 
-:global(html[data-curation-theme="dark"]) .note {
-  color: #b5b5b7;
-}
-
 :global(html[data-curation-theme="dark"]) .source,
 :global(html[data-curation-theme="dark"]) .meta,
-:global(html[data-curation-theme="dark"]) .entryHeader > p,
 :global(html[data-curation-theme="dark"]) .empty {
   color: #999;
 }
@@ -272,6 +296,24 @@
 :global(html[data-curation-theme="dark"]) .documentMarkdown {
   color: #b5b5b7;
 }
+
+:global(html[data-curation-theme="dark"]) .repositoryBrowser,
+:global(html[data-curation-theme="dark"]) .repositoryBrowserContent,
+:global(html[data-curation-theme="dark"]) .repositoryTreePane,
+:global(html[data-curation-theme="dark"]) .repositoryFileHeader {
+  border-color: #333;
+}
+
+:global(html[data-curation-theme="dark"]) .repositoryTreeItem:hover,
+:global(html[data-curation-theme="dark"]) .repositoryTreeItem:focus-visible,
+:global(html[data-curation-theme="dark"]) .repositoryTreeItem[aria-current="true"] { background: #282828; color: #f4f4f4; }
+:global(html[data-curation-theme="dark"]) .repositoryFilePane { background: #202020; }
+:global(html[data-curation-theme="dark"]) .repositoryBrowserToolbar strong { color: #f4f4f4; }
+:global(html[data-curation-theme="dark"]) .repositoryFileContent { color: #d0d0d2; }
+:global(html[data-curation-theme="dark"]) .repositoryBrowserNotice,
+:global(html[data-curation-theme="dark"]) .repositoryBrowserLoading,
+:global(html[data-curation-theme="dark"]) .repositoryFileEmpty { color: #999; }
+:global(html[data-curation-theme="dark"]) .repositoryBrowserError { border-color: #6d3535; background: #321d1d; color: #f0aaaa; }
 
 :global(html[data-curation-theme="dark"]) .documentMarkdown code,
 :global(html[data-curation-theme="dark"]) .documentMarkdown pre {
@@ -307,13 +349,12 @@
     content: "·";
   }
 
-  .repositoryLink + .repositoryLink {
-    margin-left: .75rem;
-  }
-
   .documentHeader {
     align-items: flex-start;
     flex-direction: column;
     gap: .75rem;
   }
+
+  .repositoryBrowserContent { grid-template-columns: 1fr; }
+  .repositoryTreePane { max-height: 16rem; border-right: 0; border-bottom: 1px solid var(--line); }
 }

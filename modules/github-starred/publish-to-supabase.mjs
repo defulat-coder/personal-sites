@@ -27,8 +27,12 @@ function toSourceRow(record, now) {
 function toAnalysisRow(analysis, now) {
   return {
     analysis_metadata: {
+      oneLineSummary: analysis.oneLineSummary,
       repository: analysis.repository,
       sourceKind: analysis.sourceKind,
+      summaryModel: analysis.summaryModel,
+      summaryFallback: analysis.summaryFallback,
+      summaryVersion: analysis.summaryVersion,
     },
     content_markdown: analysis.contentMarkdown,
     generated_at: analysis.generatedAt,
@@ -80,7 +84,7 @@ export function toPublicOpenSourceItem(record, analysis, entry, displayRank, now
       scenarios: entry.scenarios,
       slug: entry.slug,
       sourceMarkdown: record.sourceMarkdown,
-      sourceSummary: entry.sourceSummary,
+      sourceSummary: analysis.oneLineSummary ?? entry.sourceSummary,
       sourceTitle: record.sourceKind === "readme" ? "原始 README" : "仓库结构证据",
       status: entry.status,
       type: entry.type,

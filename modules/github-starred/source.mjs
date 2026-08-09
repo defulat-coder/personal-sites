@@ -295,27 +295,56 @@ export async function syncRepositorySource(repository, { exec, maxBytes = 1024 *
   return record;
 }
 
-export async function syncStarredRepositories({ concurrency = 15, exec, limit = Infinity, maxBytes, onRecord, only, rawRoot, repositories: suppliedRepositories } = {}) {
+export function repositoryNeedsSourceRefresh(repository, existingRecord) {
+  if (!existingRecord) return true;
+  const existing = existingRecord.repository;
+  return existing.updatedAt !== repository.updatedAt
+    || existing.defaultBranch !== repository.defaultBranch
+    || existing.repositoryUrl !== repository.repositoryUrl;
+}
+
+function withCurrentRepositoryMetadata(existingRecord, repository) {
+  return {
+    ...existingRecord,
+    repository,
+  };
+}
+
+export async function syncStarredRepositories({ concurrency = 15, exec, existingRecords = [], incremental = false, limit = Infinity, maxBytes, onRecord, only, rawRoot, repositories: suppliedRepositories } = {}) {
   if (!Number.isInteger(concurrency) || concurrency < 1) throw new Error("concurrency 必须是大于 0 的整数。");
   if (!rawRoot) throw new Error("rawRoot 是同步 Star 原始资料的必填目录。");
 
   const discovered = suppliedRepositories ?? await listStarredRepositories({ exec, limit: only ? Infinity : limit });
   const repositories = only ? discovered.filter((repository) => only.has(repository.fullName)).slice(0, limit) : discovered;
+  const existingByNodeId = new Map(existingRecords.map((record) => [record.repository.nodeId, record]));
   const records = [];
+  const changedRecords = [];
   let cursor = 0;
   let completed = 0;
   const worker = async () => {
     while (cursor < repositories.length) {
       const index = cursor;
       cursor += 1;
-      const record = await syncRepositorySource(repositories[index], { exec, maxBytes, rawRoot });
+      const repository = repositories[index];
+      const existing = existingByNodeId.get(repository.nodeId);
+      const changed = !incremental || repositoryNeedsSourceRefresh(repository, existing);
+      const record = changed
+        ? await syncRepositorySource(repository, { exec, maxBytes, rawRoot })
+        : withCurrentRepositoryMetadata(existing, repository);
+      if (!changed) await writeSnapshot(rawRoot, record);
       records.push(record);
+      if (changed) changedRecords.push(record);
       completed += 1;
-      await onRecord?.(record, completed, repositories.length);
+      await onRecord?.(record, completed, repositories.length, { changed });
     }
   };
   await Promise.all(Array.from({ length: Math.min(concurrency, repositories.length) }, worker));
-  return records.sort((left, right) => left.repository.fullName.localeCompare(right.repository.fullName));
+  const sortedRecords = records.sort((left, right) => left.repository.fullName.localeCompare(right.repository.fullName));
+  Object.defineProperty(sortedRecords, "changedRecords", {
+    enumerable: false,
+    value: changedRecords.sort((left, right) => left.repository.fullName.localeCompare(right.repository.fullName)),
+  });
+  return sortedRecords;
 }
 
 export async function readLocalSourceRecords(rawRoot) {
