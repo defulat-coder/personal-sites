@@ -56,7 +56,11 @@ export default async function HomePage() {
 
         <InteractiveDotField />
 
-        <ProfileIntroduction englishParagraphs={profileCopyEnglish} paragraphs={profileCopy} />
+        <ProfileIntroduction
+          animateOnFirstHomeVisit
+          englishParagraphs={profileCopyEnglish}
+          paragraphs={profileCopy}
+        />
       </aside>
 
       <section aria-labelledby="curation-feed-title" className="curation-home__feed">
