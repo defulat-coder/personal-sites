@@ -12,13 +12,13 @@
 | `data/sensitive/agent-history/` | 原始会话与任务历史 | 仅本机保存，禁止 Git |
 | `data/sensitive/github/` | GitHub 同步快照、响应和仓库原始内容 | 仅本机保存，禁止 Git |
 | `data/sensitive/yuque/` | 语雀同步对象、附件和原始文档 | 仅本机保存，禁止 Git |
-| `data/sensitive/x-curation/` | X 书签/点赞原文、媒体和策展队列 | 仅本机保存，禁止 Git |
+| `data/sensitive/x-curation/` | X 书签/点赞原文、媒体、策展队列和生成备份 | 仅本机保存，禁止 Git |
 | `knowledge/sensitive/` | 私有知识库及其个人来源分区 | 仅本机保存，禁止 Git |
 | `tools/smaug/.state/` | 抓取游标、待处理书签和运行状态 | 仅本机保存，禁止 Git |
 | `tools/smaug/smaug.config.json` | 本地抓取配置和凭据 | 仅本机保存，禁止 Git |
 | `tools/smaug/bookmarks.md` | 本地书签归档 | 仅本机保存，禁止 Git |
 
-`data/public/` 是可提交的公开投影，不等同于原始资料。经 Pi Agent 解析完成的 X 策展内容（包括原帖正文和公开链接）会自动写入该目录；原始抓取文件、敏感队列及本地凭据永远不会进入该目录。
+X 策展不再使用 `data/public/` 作为页面数据源。经 Pi Agent 解析完成的内容保留在本地敏感生成备份，并同步到 Supabase 的公开表；页面只从 Supabase 读取。原始抓取文件、敏感队列及本地凭据永远不会进入 Git 或浏览器。
 
 ## 防护约束
 

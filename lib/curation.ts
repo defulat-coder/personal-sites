@@ -1,6 +1,10 @@
+import "server-only";
+
+import { createClient } from "@supabase/supabase-js";
+import { connection } from "next/server";
 import { z } from "zod";
 
-import curationProjection from "@/data/public/curation.json";
+import type { CurationItem } from "@/lib/curation-types";
 
 const curationItemSchema = z.object({
   analysis: z.string().min(1),
@@ -40,32 +44,43 @@ const curationItemSchema = z.object({
   tweetUrl: z.string().url(),
 });
 
-const curationProjectionSchema = z.object({
-  generatedAt: z.string().datetime(),
-  items: z.array(curationItemSchema),
-  version: z.literal(1),
-});
-
-export const curationContent = curationProjectionSchema.parse(curationProjection);
-
-export type CurationItem = z.infer<typeof curationItemSchema>;
-
-export const curationItems = curationContent.items;
-
-export const curationTags = [
-  ...new Set(curationItems.flatMap((item) => item.tags)),
-].sort((a, b) => a.localeCompare(b, "zh-CN"));
-
-export function findCurationItem(id: string) {
-  return curationItems.find((item) => item.id === id) ?? null;
+function requiredEnvironment(key: "SUPABASE_URL" | "SUPABASE_PUBLISHABLE_KEY") {
+  const value = process.env[key];
+  if (!value) throw new Error(`缺少 ${key}；网站策展内容只能从 Supabase 读取。`);
+  return value;
 }
 
-export function formatCurationDate(item: CurationItem) {
-  if (!item.publishedAt) return "日期待定";
-  return new Intl.DateTimeFormat("zh-CN", {
-    day: "numeric",
-    month: "long",
-    timeZone: "Asia/Shanghai",
-    year: "numeric",
-  }).format(new Date(item.publishedAt));
+async function getCurationClient() {
+  await connection();
+  return createClient(
+    requiredEnvironment("SUPABASE_URL"),
+    requiredEnvironment("SUPABASE_PUBLISHABLE_KEY"),
+    { auth: { autoRefreshToken: false, persistSession: false } },
+  );
+}
+
+export async function getCurationItems(): Promise<CurationItem[]> {
+  const client = await getCurationClient();
+  const { data, error } = await client
+    .from("x_curation_items")
+    .select("content")
+    .order("published_at", { ascending: false, nullsFirst: false });
+  if (error) throw new Error(`读取 Supabase 策展内容失败：${error.message}`);
+  return z.array(curationItemSchema).parse(data.map((row) => row.content));
+}
+
+export async function getCurationTags() {
+  const items = await getCurationItems();
+  return [...new Set(items.flatMap((item) => item.tags))].sort((a, b) => a.localeCompare(b, "zh-CN"));
+}
+
+export async function findCurationItem(id: string) {
+  const client = await getCurationClient();
+  const { data, error } = await client
+    .from("x_curation_items")
+    .select("content")
+    .eq("id", id)
+    .maybeSingle();
+  if (error) throw new Error(`读取 Supabase 策展内容失败：${error.message}`);
+  return data ? curationItemSchema.parse(data.content) : null;
 }

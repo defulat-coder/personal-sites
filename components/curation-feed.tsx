@@ -5,8 +5,8 @@ import Link from "next/link";
 import { useState } from "react";
 import { ArrowUpRight } from "lucide-react";
 
-import type { CurationItem } from "@/lib/curation";
-import { formatCurationDate } from "@/lib/curation";
+import { formatCurationDate } from "@/lib/curation-format";
+import type { CurationItem } from "@/lib/curation-types";
 
 type CurationFeedProps = {
   items: CurationItem[];
