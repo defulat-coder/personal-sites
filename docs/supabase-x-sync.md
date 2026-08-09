@@ -18,13 +18,14 @@
 SUPABASE_URL=https://<project-ref>.supabase.co
 SUPABASE_PUBLISHABLE_KEY=<publishable-key>
 SUPABASE_SERVICE_ROLE_KEY=<service-role-key>
+SUPABASE_DB_URL=postgresql://<pooler-user>:<database-password>@<pooler-host>:5432/postgres
 ```
 
 `SUPABASE_SERVICE_ROLE_KEY` 只能由 `modules/x-sync/` 通过 `scripts/x-curation-publish-supabase.mjs` 使用，绝不能放入 `NEXT_PUBLIC_*` 环境变量，也不能给浏览器。`public.x_sync_items` 虽处于 Data API schema，但它启用 RLS、撤销了 anon/authenticated 的全部权限，且没有任何读取策略；因此仅 service role 可访问。
 
 ## 初始化与同步
 
-1. 将 [迁移](../supabase/migrations/20260809032951_create_x_sync_storage.sql) 应用到已链接的 Supabase 项目。
+1. 通过 `pnpm supabase:push` 将 [迁移](../supabase/migrations/20260809032951_create_x_sync_storage.sql) 应用到远端。先用 `pnpm supabase:push -- --dry-run` 预演时，不会写入数据库。
 2. 执行 `pnpm curation:publish`，将本地队列 upsert 到 Supabase。
 3. 日常执行 `pnpm curation:sync`：抓取、Pi 解析、本地生成备份、Supabase 同步。
 
