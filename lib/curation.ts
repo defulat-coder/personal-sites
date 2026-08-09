@@ -4,7 +4,7 @@ import { createClient } from "@supabase/supabase-js";
 import { connection } from "next/server";
 import { z } from "zod";
 
-import type { CurationItem } from "@/lib/curation-types";
+import type { CurationItem, CurationListItem } from "@/lib/curation-types";
 
 const curationItemSchema = z.object({
   analysis: z.string().min(1),
@@ -46,6 +46,14 @@ const curationItemSchema = z.object({
   tweetUrl: z.string().url(),
 });
 
+const curationListItemSchema = z.object({
+  author: z.object({ handle: z.string(), name: z.string() }),
+  id: z.string().min(1),
+  publishedAt: z.string().datetime().nullable(),
+  summary: z.string().min(1),
+  title: z.string().min(1),
+});
+
 function requiredEnvironment(key: "SUPABASE_URL" | "SUPABASE_PUBLISHABLE_KEY") {
   const value = process.env[key];
   if (!value) throw new Error(`缺少 ${key}；网站策展内容只能从 Supabase 读取。`);
@@ -74,20 +82,20 @@ export async function getCurationItems(): Promise<CurationItem[]> {
 
 export type CurationPage = {
   hasMore: boolean;
-  items: CurationItem[];
+  items: CurationListItem[];
 };
 
 export async function getCurationPage(offset = 0, limit = 20): Promise<CurationPage> {
   const client = await getCurationClient();
   const { data, error } = await client
     .from("x_curation_items")
-    .select("content")
+    .select("author:content->author,id,publishedAt:content->>publishedAt,summary:content->>summary,title:content->>title")
     .order("published_at", { ascending: false, nullsFirst: false })
     .order("id", { ascending: false })
     .range(offset, offset + limit);
   if (error) throw new Error(`读取 Supabase 策展内容失败：${error.message}`);
 
-  const items = z.array(curationItemSchema).parse(data.map((row) => row.content));
+  const items = z.array(curationListItemSchema).parse(data);
   return {
     hasMore: items.length > limit,
     items: items.slice(0, limit),

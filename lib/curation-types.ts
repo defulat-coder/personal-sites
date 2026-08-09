@@ -26,3 +26,6 @@ export type CurationItem = {
   title: string;
   tweetUrl: string;
 };
+
+/** Fields needed by the feed; the full analysis remains detail-only. */
+export type CurationListItem = Pick<CurationItem, "author" | "id" | "publishedAt" | "summary" | "title">;

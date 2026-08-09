@@ -5,15 +5,16 @@ import { useEffect, useState } from "react";
 import { CurationStream } from "@/components/curation-stream";
 import styles from "@/components/focus-stream.module.css";
 import { OpenSourceStream } from "@/components/open-source-stream";
-import { openSourceEntries } from "@/lib/open-source";
-import type { CurationItem } from "@/lib/curation-types";
+import type { CurationListItem } from "@/lib/curation-types";
+import type { OpenSourceListEntry } from "@/lib/open-source-types";
 
 export type FocusView = "daily" | "open-source";
 
 type FocusStreamProps = {
   initialHasMore: boolean;
-  initialItems: CurationItem[];
+  initialItems: CurationListItem[];
   initialView: FocusView;
+  openSourceEntries: OpenSourceListEntry[];
 };
 
 const viewCopy: Record<FocusView, { title: string }> = {
@@ -29,7 +30,7 @@ function getViewFromSearch(search: string): FocusView {
   return new URLSearchParams(search).get("view") === "open-source" ? "open-source" : "daily";
 }
 
-export function FocusStream({ initialHasMore, initialItems, initialView }: FocusStreamProps) {
+export function FocusStream({ initialHasMore, initialItems, initialView, openSourceEntries }: FocusStreamProps) {
   const [view, setView] = useState<FocusView>(initialView);
 
   useEffect(() => {

@@ -6,18 +6,18 @@ import Link from "next/link";
 import { useCallback, useEffect, useState } from "react";
 
 import { formatCurationDate } from "@/lib/curation-format";
-import type { CurationItem } from "@/lib/curation-types";
+import type { CurationListItem } from "@/lib/curation-types";
 
 type CurationPageResponse = {
   error?: string;
   hasMore: boolean;
-  items: CurationItem[];
+  items: CurationListItem[];
 };
 
 type CurationStreamProps = {
   active?: boolean;
   initialHasMore: boolean;
-  initialItems: CurationItem[];
+  initialItems: CurationListItem[];
 };
 
 const PAGE_SIZE = 20;
