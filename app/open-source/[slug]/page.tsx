@@ -9,7 +9,10 @@ import { SiteProfile } from "@/components/site-profile";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { getOpenSourceEntry } from "@/lib/open-source";
 
-type OpenSourceEntryPageProps = { params: Promise<{ slug: string }> };
+type OpenSourceEntryPageProps = {
+  params: Promise<{ slug: string }>;
+  searchParams: Promise<{ view?: string | string[] }>;
+};
 
 export async function generateMetadata({ params }: OpenSourceEntryPageProps): Promise<Metadata> {
   const entry = await getOpenSourceEntry((await params).slug);
@@ -21,9 +24,11 @@ export async function generateMetadata({ params }: OpenSourceEntryPageProps): Pr
     : {};
 }
 
-export default async function OpenSourceEntryPage({ params }: OpenSourceEntryPageProps) {
-  const entry = await getOpenSourceEntry((await params).slug);
+export default async function OpenSourceEntryPage({ params, searchParams }: OpenSourceEntryPageProps) {
+  const [{ slug }, query] = await Promise.all([params, searchParams]);
+  const entry = await getOpenSourceEntry(slug);
   if (!entry) notFound();
+  const documentView = query.view === "repository" ? "repository" : "parsed";
 
   return (
     <main className="curation-home curation-detail curation-open-source-detail" id="site-main" tabIndex={-1}>
@@ -50,6 +55,7 @@ export default async function OpenSourceEntryPage({ params }: OpenSourceEntryPag
           repositoryUrl={entry.repositoryUrl}
           slug={entry.slug}
           sourceUrl={entry.evidence.url}
+          view={documentView}
         />
       </article>
     </main>

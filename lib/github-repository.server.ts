@@ -56,7 +56,11 @@ async function resolvePublicRepository(slug: string) {
   if (!entry) throw new GitHubRepositoryBrowserError("未找到已公开的开源仓库。", 404);
   const repository = repositorySchema.safeParse(entry.repository);
   if (!repository.success) throw new GitHubRepositoryBrowserError("公开仓库地址无效。", 500);
-  return { repository: repository.data, repositoryUrl: entry.repositoryUrl };
+  return {
+    defaultBranch: entry.repositoryDefaultBranch ?? null,
+    repository: repository.data,
+    repositoryUrl: entry.repositoryUrl,
+  };
 }
 
 async function getDefaultBranch(repository: string) {
@@ -65,8 +69,8 @@ async function getDefaultBranch(repository: string) {
 }
 
 export async function getGitHubRepositoryTree(slug: string) {
-  const { repository, repositoryUrl } = await resolvePublicRepository(slug);
-  const branch = await getDefaultBranch(repository);
+  const { defaultBranch, repository, repositoryUrl } = await resolvePublicRepository(slug);
+  const branch = defaultBranch ?? await getDefaultBranch(repository);
   const response = await githubFetch(`/repos/${repository}/git/trees/${encodeURIComponent(branch)}?recursive=1`);
   const result = repositoryTreeSchema.parse(await response.json());
   const entries: GitHubRepositoryTreeEntry[] = result.tree
@@ -88,8 +92,8 @@ export async function getGitHubRepositoryFile(slug: string, requestedPath: strin
   const path = normalizeGitHubPath(requestedPath);
   if (!path) throw new GitHubRepositoryBrowserError("文件路径无效。", 400);
 
-  const { repository, repositoryUrl } = await resolvePublicRepository(slug);
-  const branch = await getDefaultBranch(repository);
+  const { defaultBranch, repository, repositoryUrl } = await resolvePublicRepository(slug);
+  const branch = defaultBranch ?? await getDefaultBranch(repository);
   const encodedPath = path.split("/").map(encodeURIComponent).join("/");
   const response = await githubFetch(`/repos/${repository}/contents/${encodedPath}?ref=${encodeURIComponent(branch)}`, {
     headers: { Accept: "application/vnd.github.raw" },

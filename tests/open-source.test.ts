@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 
-import { openSourceCategories, openSourceDimensions } from "../lib/open-source-types";
+import { openSourceCategories, openSourceDimensions, toOpenSourceListEntry } from "../lib/open-source-types";
 import { resolveGitHubReadmeUrl } from "../lib/github-readme-url";
 import { buildGitHubRepositoryTree, githubRepositoryFileUrl, normalizeGitHubPath } from "../lib/github-repository-browser";
 import { openSourceSeedEntries } from "../lib/open-source-seed";
@@ -34,6 +34,27 @@ describe("open-source curation", () => {
       category: "agents",
     });
     expect(openSourceSeedEntries.find((entry) => entry.slug === "not-starred")).toBeUndefined();
+  });
+
+  it("keeps long repository documents out of the client-side list projection", () => {
+    const entry = openSourceSeedEntries[0];
+    const listEntry = toOpenSourceListEntry({
+      ...entry,
+      parsedMarkdown: "# 很长的中文阅读版",
+      sourceMarkdown: "# Very long original README",
+    });
+
+    expect(listEntry).toEqual({
+      category: entry.category,
+      dimensions: entry.dimensions,
+      repository: entry.repository,
+      slug: entry.slug,
+      sourceSummary: entry.sourceSummary,
+      status: entry.status,
+      type: entry.type,
+    });
+    expect("parsedMarkdown" in listEntry).toBe(false);
+    expect("sourceMarkdown" in listEntry).toBe(false);
   });
 
   it("resolves README-relative links against the repository instead of this site", () => {

@@ -1,7 +1,6 @@
 "use client";
 
 import { ArrowUpRight } from "lucide-react";
-import type { Route } from "next";
 import Link from "next/link";
 import { useState } from "react";
 
@@ -11,11 +10,11 @@ import {
   getOpenSourceDimensionLabel,
   openSourceCategories,
   type OpenSourceCategory,
-  type OpenSourceEntry,
+  type OpenSourceListEntry,
 } from "@/lib/open-source-types";
 
 type OpenSourceStreamProps = {
-  entries: OpenSourceEntry[];
+  entries: OpenSourceListEntry[];
 };
 
 export function OpenSourceStream({ entries }: OpenSourceStreamProps) {
@@ -43,7 +42,7 @@ export function OpenSourceStream({ entries }: OpenSourceStreamProps) {
       <ol className={styles.stream}>
         {visibleEntries.map((entry) => (
           <li key={entry.slug}>
-            <Link href={`/open-source/${entry.slug}` as Route}>
+            <Link href={`/open-source/${entry.slug}`}>
               <div className={styles.meta}>
                 <span>{getOpenSourceCategoryLabel(entry.category)}</span>
                 <span>{getOpenSourceDimensionLabel(entry.dimensions[0])}</span>

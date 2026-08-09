@@ -1,6 +1,5 @@
-"use client";
-
-import { useState } from "react";
+import type { Route } from "next";
+import Link from "next/link";
 import ReactMarkdown, { defaultUrlTransform } from "react-markdown";
 import remarkGfm from "remark-gfm";
 
@@ -16,6 +15,7 @@ type OpenSourceDocumentTabsProps = {
   repositoryUrl: string;
   slug: string;
   sourceUrl: string;
+  view: "parsed" | "repository";
 };
 
 export function OpenSourceDocumentTabs({
@@ -26,38 +26,41 @@ export function OpenSourceDocumentTabs({
   repositoryUrl,
   slug,
   sourceUrl,
+  view,
 }: OpenSourceDocumentTabsProps) {
-  const [documentView, setDocumentView] = useState<"parsed" | "repository">("parsed");
-  const isParsed = documentView === "parsed";
-  const isRepository = documentView === "repository";
+  const isParsed = view === "parsed";
+  const isRepository = view === "repository";
+  const documentHref = (documentView: "parsed" | "repository") => (
+    documentView === "repository" ? `/open-source/${slug}?view=repository` : `/open-source/${slug}`
+  ) as Route;
 
   return (
     <section aria-labelledby="open-source-document-title" className={`curation-detail__section ${styles.documentSection}`}>
       <div className={styles.documentHeader}>
         <h2 className="curation-detail__eyebrow" id="open-source-document-title">仓库文档</h2>
         <div aria-label="切换仓库文档版本" className={styles.documentTabs} role="tablist">
-          <button
+          <Link
             aria-controls="parsed-document-panel"
             aria-selected={isParsed}
             className={styles.documentTab}
+            href={documentHref("parsed")}
             id="parsed-document-tab"
-            onClick={() => setDocumentView("parsed")}
             role="tab"
-            type="button"
+            scroll={false}
           >
             中文阅读版
-          </button>
-          <button
+          </Link>
+          <Link
             aria-controls="repository-document-panel"
             aria-selected={isRepository}
             className={styles.documentTab}
+            href={documentHref("repository")}
             id="repository-document-tab"
-            onClick={() => setDocumentView("repository")}
             role="tab"
-            type="button"
+            scroll={false}
           >
             仓库结构
-          </button>
+          </Link>
         </div>
       </div>
       <p className={styles.documentHint}>
