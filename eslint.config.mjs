@@ -9,7 +9,6 @@ export default defineConfig([
     ".next/**",
     "coverage/**",
     "data/**",
-    "knowledge/**",
     "node_modules/**",
     "out/**",
     "var/**",

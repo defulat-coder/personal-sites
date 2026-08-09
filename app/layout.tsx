@@ -6,7 +6,7 @@ import "./globals.css";
 
 export const metadata: Metadata = {
   description:
-    "陈远的每日策展：持续记录值得继续思考的技术、产品与 Agent 工程内容。",
+    "陈远的个人网站：工作履历、工程实践与每日策展。",
   robots: {
     follow: false,
     index: false,

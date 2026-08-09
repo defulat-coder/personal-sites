@@ -1,82 +1,98 @@
-# AIHero desktop restoration plan
+# Personal knowledge system architecture
 
-## Locked direction
+## Product direction
 
-- User correction: reproduce the original AIHero desktop design language and page system; remove the custom `CY` / `Personal Index` shell.
-- Current viewport scope: desktop only, accepted at `1440×900`. Mobile design and mobile verification are explicitly deferred by the user.
-- Source of truth: live captures from `https://www.aihero.dev/` saved as `var/verification/personal-site/latest/source-step-00.png` through `source-step-09.png` and measured at a `1440×900` viewport.
-- Content boundary: preserve the reference layout, typography, rules, rhythm, image density, and interactions while rendering only the project's approved public personal content. The user confirmed reproduction authorization, so the exact source mark and source thumbnails may be used; AIHero prose, identity claims, account behavior, and portrait identity remain excluded.
+- The site is a clickable personal knowledge system with a concise identity-led homepage, not a static personal-profile landing page.
+- The public OKF projection remains the only runtime content source. Private Raw files, credentials, contact details, and unreviewed source bodies never enter the web build.
+- GitHub and Yuque remain the only external destinations and appear only in the top-right header group.
+- The visual language keeps the authorized reference system's white paper, hairline rules, compact typography, black text, and restrained orange accent, but the page composition is now an application workspace.
 
-## Captured design system
+## Homepage content recomposition — 2026-07-19
 
-- Page field: very light neutral gray with a centered white sheet.
-- Desktop sheet: `1182px` wide at x `129px` in a `1440px` viewport, with one-pixel vertical edge rules.
-- Header: `63px` tall, sticky, white/translucent, compact wordmark, small icon-led navigation, and a single bottom hairline.
-- Type: Geist; near-black display copy; compact body copy; headings use tight negative tracking and weights between `600` and `700`.
-- Hero: `465px` tall, two columns (`562.85px / 619.15px`), oversized two-line display copy on the left and a full-bleed saturated portrait panel on the right.
-- Editorial section: two-column argument block with a vertical center rule and generous `64px` insets.
-- Content rows: `217px` high, `240×135` image, large title, inline OKF summary, and one-pixel row rules.
-- Section headings: centered `36px / 45px`, about `80px` vertical padding.
-- Closing sections and footer: white grid cells, thin rules, restrained orange-red CTA accent; no black closing plane.
-- Shape language: square corners for structural surfaces; circles only for arrow affordances and compact controls.
+### Build contract
 
-## Reference-to-build map
+- Builder: the installed `frontend-skill`; the optional `identity-skill` embedded frontend-builder and asset-splitter references are not present in this checkout.
+- Scope: desktop homepage content and layout only. The shared header, footer, routes, public/private boundary, typography family, white editorial sheet, hairline rules, and orange accent stay intact.
+- Reference: the existing authorized desktop template remains the visual frame. Its content composition is no longer treated as a source of truth.
 
-| Source region | Measured reference | Local implementation | Preserved behavior |
-|---|---:|---|---|
-| Desktop frame | x `129`, width `1182` | `.site-frame` | centered bordered sheet |
-| Sticky header | y `0`, height `63` | `SiteHeader` | four content-page routes, active state, GitHub/Yuque links, sticky scroll state |
-| Hero | y `63`, height `465.36`; columns `562.85 / 619.15` | `.hero` | left display copy + public-avatar-derived hero image |
-| Positioning statement | y `528.36`, height `616`; two columns | `.positioning` | approved identity summary only |
-| Project / knowledge heading | centered `36px / 45px` | `.section-heading` | same typographic role and whitespace |
-| Editorial rows | `217px` per item; image `240×135` | `EditorialRow` | inline OKF content with a restrained image/edge hover |
-| Practice grid | three-column source card rhythm adapted to six indexed Agent projects | `.practice-grid` | border grid and concise titles |
-| About | two-column portrait + biography | `.about` | public GitHub avatar and approved identity copy |
-| Footer | white grid cells and bottom utility row | `SiteFooter` | identity, direct-reading scope, and back to top |
+### Visual thesis
 
-## Content-route map
+A precise white editorial index crossed by one orange career trace: technical, personal, dense enough to reward reading, but never presented as a dashboard or a collage of cards.
 
-- `/projects`: GitHub index overview, verified project metrics, and four indexed public projects.
-- `/knowledge`: verified OKF collection metrics, the six-part source-index structure, and four durable themes expanded into 24 directly readable index entries.
-- `/practice`: Agent History overview, verified activity metrics, and six high-activity project trajectories.
-- `/about`: public identity, portrait, and links through the project, knowledge, and practice threads.
-- The homepage remains an editorial overview; its section entries and global navigation now lead to these real pages instead of only changing the URL hash.
+### Content plan
 
-## Public-content map
+1. Hero — identify Chen Yuan, state that the path did not begin with AI, and show the four-stage engineering trajectory as the dominant visual.
+2. Career support — explain the continuous move from business systems to architecture, organization effectiveness, and Agent engineering.
+3. Project evidence — keep four indexed projects as proof, using the existing editorial rows and approved thumbnails.
+4. Knowledge depth — replace generic legacy themes with the semantic OKF domains and direct library routes.
+5. Practice and principles — use a text-first Agent practice index plus the operating principles: context, tools, boundaries, evidence, evaluation, and recovery.
+6. Final invitation — explain that the site is a readable knowledge system, then route to knowledge and system notes.
 
-- Hero identity: `identity-profile`, synthesized from the complete OKF index catalog.
-- Featured rows: `project-mx-agent`, `project-health-pilot`, `project-ddd-hr`, and `project-agno-cookbook-cn` from the GitHub owned-project index.
-- Knowledge reading page: `overview-yuque` exposes the six-part OKF index structure; `knowledge-aigc`, `knowledge-product`, `knowledge-tools`, and `knowledge-learning` each expose six approved index-backed entries directly in the page.
-- Practice grid: six high-activity Agent project entries from the Agent History project index.
-- Runtime content source: the sorted catalog of all `knowledge/private/personal/**/index.md` files; approved title, summary, and detail fields are projected from those indexes, while no Raw file or individual OKF concept body is read by the public-content generator.
-- External destinations: the repository-registered public GitHub profile and approved Yuque URL appear only in the header's top-right public-entry group.
-- No newsletter form, login flow, third-party testimonial, client-logo strip, or unsupported metric will be invented.
+### Interaction thesis
 
-## Asset decision manifest
+- A short staggered entrance gives the hero title and trajectory enough presence without making the page theatrical.
+- Career and knowledge rows reveal the orange trace and move their directional affordance on hover/focus.
+- Editorial project rows retain their existing image crop and restrained color reveal; no carousel or decorative motion is added.
 
-| Asset | Role | Decision | Source / constraint | Final path |
-|---|---|---|---|---|
-| Hero portrait | full-bleed hero visual | one retained generated raster | project-registered public GitHub avatar is the identity anchor; live AIHero capture is the composition and palette reference | `public/images/hero-portrait.png` |
-| About portrait | biography visual | public identity asset | repository-registered public GitHub avatar; no generated alternative | `public/images/avatar-source.png` |
-| Editorial thumbnails | four `240×135` row images | authorized source assets | exact source thumbnails retained to preserve the original image density and crop behavior | `public/images/source/row-01.webp` through `row-04.webp` |
-| Career grid thumbnails | six `16:9` grid images | authorized source assets | exact source thumbnails retained to preserve the original three-column card system | `public/images/source/grid-01.webp` through `grid-06.webp` |
-| Header mark | identity mark | authorized source asset | exact source mark extracted from the live page after the user confirmed reproduction authorization; paired with the user's name, not the source wordmark | `public/images/aihero-mark-authorized.svg` |
-| Navigation and row icons | navigation / affordance | icon library | use the closest Lucide icons; no handcrafted SVGs | `components/site-header.tsx`, `components/editorial-row.tsx` |
-| Structural frame, rules, spacing | design system | code-native | measured CSS only; no screenshot clipping or CSS artwork | `app/globals.css` |
+### Reference-to-build map
 
-### Final retained ImageGen prompt
+| Region | Code layer | Background asset | Foreground asset | Preserved anchor | Deliberate change |
+|---|---|---|---|---|---|
+| Header | Existing `SiteHeader` | None, code-native | Existing authorized mark | 63px sticky shell and top-right public links | None |
+| Hero | Name, thesis, CTA, four-stage trajectory | None, code-native | None | Existing desktop height and column split | Generated portrait removed; career trajectory becomes the visual anchor |
+| Positioning | One continuous engineering thesis plus three internal paths | None, code-native | None | Existing split section and center rule | Repetitive collection marketing copy replaced by identity-led content |
+| Career path | Four chronological stages | None, code-native | None | Hairline grid and orange accent | New content-derived section |
+| Projects | Existing linked editorial rows | Existing white sheet | Four retained approved project thumbnails | Row rhythm and hover | Heading reframed as evidence rather than a gallery |
+| Knowledge | Semantic domain names, descriptions, counts, and routes | None, code-native | None | Indexed grid and monospace labels | Legacy four-topic cards replaced by current OKF taxonomy |
+| Practice | Text-first indexed links | None, code-native | None | Border rhythm | Six decorative practice images removed |
+| Principles | Six parallel operating constraints | Orange code-native field | None | Strong closing color anchor | Generic slogan replaced by explicit Agent engineering position |
+| Final CTA | Knowledge-system explanation and internal links | None, code-native | None | Calm white closing section | Duplicate portrait/about block removed |
 
-The retained Hero uses the public GitHub avatar as its identity source and the live `1440×900` source capture as its composition reference. Its final composition edit was:
+### Asset decision manifest
 
-> Preserve the same illustrated character, warm abstract background, palette, texture, lighting, and full-bleed 1536×1024 canvas. Keep the reduced subject scale, then translate the character horizontally so the face center lands at 52% of the canvas width. Do not add text, logos, frames, or new objects.
+| Asset | Status | Decision |
+|---|---|---|
+| Header mark | `ready` | Retain the existing authorized SVG. |
+| Project thumbnails | `ready` | Retain the four existing approved thumbnails because they identify real project records. |
+| Hero portrait | `not-used` | Remove from the homepage; the career trace carries the visual hierarchy. |
+| Practice thumbnails | `not-used` | Remove from the homepage; practice is presented as readable evidence. |
+| About portrait | `not-used` | Remove from the homepage to avoid repeating the identity section. |
+| New generated imagery | `not-required` | No image generation or collection is authorized or needed for this pass. |
 
-Only `public/images/hero-portrait.png` remains in the build. Earlier composition drafts and the four generated thumbnail drafts were removed after authorization allowed exact source thumbnails.
+### Acceptance additions
+
+- A first-time visitor can scan only the headings and understand the progression: business systems → group architecture → organization effectiveness → Agent engineering.
+- The first viewport contains one thesis, two internal actions, and one four-stage trajectory; it contains no portrait card, statistic strip, or floating dashboard.
+- Knowledge links point to the semantic OKF library routes instead of sending every topic to the collection root.
+- The homepage uses no practice or biography images and keeps no duplicated identity/CTA section.
+- Existing public content claims remain rendered somewhere in the internal site, and the homepage keeps the approved identity summary attached to `identity-profile`.
+
+## Information architecture
+
+| Surface | Route shape | Purpose |
+|---|---|---|
+| Homepage | `/` | Introduce Chen Yuan, establish the Agent-engineering focus, and route readers into the three internal collections |
+| Knowledge workspace | `/knowledge` | Search and filter the content-derived OKF taxonomy: 9 semantic domains plus a governed review library, local full text, and 60 approved public entries |
+| Knowledge library | `/knowledge/[library]` | Read one library summary and browse all entries in that library |
+| Knowledge entry | `/knowledge/[library]/[entry]` | Read one public index note with breadcrumbs, context, and adjacent navigation |
+| Project library | `/projects` and `/projects/[project]` | Browse four public project records and open each record in site |
+| Practice log | `/practice` and `/practice/[practice]` | Browse six Agent practice records and open each record in site |
+| System description | `/about` | Explain the knowledge model, reading surfaces, and public/private boundary |
+
+The root route renders the approved editorial homepage. The production build generates 87 static pages across the homepage, indexes, 10 knowledge-library routes, 60 public note routes, four project routes, and six practice routes.
+
+## Interaction model
+
+- Search matches library names, note titles, and note summaries at entry level.
+- Library filters update the visible note list without leaving the workspace.
+- Every library, note, project, and practice record is a real internal link.
+- Knowledge pages keep orientation through persistent navigation, active library state, breadcrumbs, reading context, and previous/next links.
+- At narrow preview widths the three-column workspace collapses into a readable single-column flow without horizontal overflow.
 
 ## Acceptance contract
 
-- Compare the live source and local page at exactly `1440×900` and the same scroll state.
-- The first viewport must preserve frame x/width, header height, hero height/column split, first editorial split, typography hierarchy, hairline rules, white field, and saturated image panel.
-- Desktop navigation and the two header-only external links must be keyboard accessible; skip links and all four content routes must work and expose the matching active state.
-- Main content must render approved OKF titles, summaries, index structure, and detail entries inline without links; the footer must not duplicate the header navigation or external destinations.
-- No mobile layout or mobile screenshot is part of this correction pass.
-- Save a combined side-by-side source/local comparison and complete `design-qa.md`; final result may be `passed` only after all P0/P1/P2 visible mismatches are fixed.
+- All semantic domains, governed local concepts, and 60 approved public notes must have stable internal routes.
+- All 4 project records and 6 practice records must have stable internal detail routes.
+- Search for `RAG` must return the `Agno 与 RAG` entry rather than the whole AIGC library.
+- Production browser checks must report zero broken internal links, failed requests, console errors, accessibility violations/incomplete checks, and horizontal overflow.
+- Every approved public projection title, summary, and detail claim must remain visible in a production DOM surface.

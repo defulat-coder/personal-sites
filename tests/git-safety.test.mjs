@@ -100,19 +100,6 @@ test("git safety rejects an oversized untracked file before it is staged", (t) =
   assert.match(result.stderr, /超过常规 Git 上限/);
 });
 
-test("git safety rejects a repository missing a required private ignore rule", (t) => {
-  const root = initFixture(t, {
-    gitignore: productionGitignore.replace("/knowledge/private/\n", ""),
-  });
-  const configPath = writeFixtureConfig(root);
-
-  const result = runVerifier(root, configPath);
-
-  assert.equal(result.status, 1);
-  assert.match(result.stderr, /knowledge\/private\/\.git-safety-probe/);
-  assert.match(result.stderr, /未被 \.gitignore 覆盖/);
-});
-
 test("git safety rejects a generated directory force-added below a future subproject", (t) => {
   const root = initFixture(t, { gitignore: productionGitignore });
   const configPath = writeFixtureConfig(root);

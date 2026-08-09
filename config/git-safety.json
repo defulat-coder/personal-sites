@@ -4,7 +4,6 @@
   "github_hard_limit_bytes": 104857600,
   "blocked_directories": [
     "data/private",
-    "knowledge/private",
     "var"
   ],
   "blocked_directory_names": [

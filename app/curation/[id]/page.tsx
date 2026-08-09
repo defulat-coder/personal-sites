@@ -1,10 +1,13 @@
 import type { Metadata } from "next";
+import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { ArrowLeft, ArrowUpRight, Play } from "lucide-react";
+import { ArrowLeft, ArrowUpRight, GitBranch, Play } from "lucide-react";
 
-import { KnowledgeMarkdown } from "@/components/knowledge-markdown";
-import { WorkspaceFrame } from "@/components/workspace-frame";
+import { InteractiveDotField } from "@/components/interactive-dot-field";
+import { ArticleMarkdown } from "@/components/article-markdown";
+import { ProfileIntroduction } from "@/components/profile-introduction";
+import { ThemeToggle } from "@/components/theme-toggle";
 import {
   curationItems,
   findCurationItem,
@@ -13,6 +16,18 @@ import {
 } from "@/lib/curation";
 
 type CurationEntryPageProps = { params: Promise<{ id: string }> };
+
+const profileCopy = [
+  "目前在 payermax，我做的不是 AI Demo，而是能进入企业研发主链路的 Agentic Engineering System：把 Claude Code、Codex、Pi 变成可编排、可观测、可评测、可追溯的生产能力。",
+  "技术上横跨 React + TypeScript、Python Agent Runtime 与 Java 分布式服务：前端任务态可视化，后端工作流调度，SSE 事件流，Tool 调用与质量 / 成本度量，一条链打到位。",
+  "11 年工程与架构经验，曾在喜马拉雅和红星美凯龙啃过企业智能助手、数据中台、云原生迁移与高并发业务系统；不只交付模块，更让复杂系统持续演进。",
+];
+
+const profileCopyEnglish = [
+  "At PayerMax, I build more than AI demos: Agentic Engineering Systems that enter the core enterprise development workflow, turning Claude Code, Codex, and Pi into production capabilities that are orchestrated, observable, evaluated, and traceable.",
+  "Across React + TypeScript, Python agent runtimes, and Java distributed services, I build the whole path: task-state visualization in the frontend, workflow orchestration in the backend, SSE event streams, tool calls, and quality/cost measurement.",
+  "With 11 years in engineering and architecture, I have built enterprise assistants, data platforms, cloud-native migrations, and high-concurrency systems at Ximalaya and Red Star Macalline—not merely shipping modules, but enabling complex systems to keep evolving.",
+];
 
 /** 把原文里的 t.co 短链替换为可点击的展开后链接 */
 function linkifyText(text: string, links: CurationItem["links"]) {
@@ -56,17 +71,45 @@ export default async function CurationEntryPage({
   if (!item) notFound();
 
   return (
-    <WorkspaceFrame active="curation">
-      <article className="curation-entry" data-content-id={item.id}>
-        <nav aria-label="返回" className="curation-entry__back">
-          <Link href="/curation">
+    <main className="curation-home curation-detail" id="site-main" tabIndex={-1}>
+      <aside aria-labelledby="profile-name" className="curation-home__profile">
+        <ThemeToggle />
+        <Image
+          alt="参考站提供的头像插画"
+          className="curation-home__avatar"
+          height={105}
+          priority
+          src="/images/ample-avatar.png"
+          width={105}
+        />
+
+        <div className="curation-home__identity">
+          <h1 id="profile-name">陈远</h1>
+          <p>@defulat-coder</p>
+        </div>
+
+        <nav aria-label="陈远的外部主页" className="curation-home__external-links">
+          <a href="https://github.com/defulat-coder" rel="noreferrer" target="_blank">
+            <GitBranch aria-hidden="true" />
+            GitHub
+          </a>
+        </nav>
+
+        <InteractiveDotField />
+
+        <ProfileIntroduction englishParagraphs={profileCopyEnglish} paragraphs={profileCopy} />
+      </aside>
+
+      <article className="curation-detail__article" data-content-id={item.id}>
+        <nav aria-label="返回" className="curation-detail__back">
+          <Link href="/">
             <ArrowLeft aria-hidden="true" />
-            每日策展
+            返回每日策展
           </Link>
         </nav>
 
-        <header className="curation-entry__header">
-          <div className="curation-entry__meta">
+        <header className="curation-detail__header">
+          <div className="curation-detail__meta">
             <time dateTime={item.publishedAt ?? undefined}>
               {formatCurationDate(item)}
             </time>
@@ -74,15 +117,15 @@ export default async function CurationEntryPage({
           </div>
           <h1>{item.title}</h1>
           <p>{item.summary}</p>
-          <div className="curation-entry__tags">
+          <div className="curation-detail__tags">
             {item.tags.map((tag) => (
               <em key={tag}>{tag}</em>
             ))}
           </div>
         </header>
 
-        <section aria-label="原始内容" className="curation-entry__original">
-          <h2>原始内容</h2>
+        <section aria-label="原始内容" className="curation-detail__section curation-detail__original">
+          <h2 className="curation-detail__eyebrow">原始内容</h2>
           <blockquote>
             <p>{linkifyText(item.text, item.links)}</p>
             <footer>
@@ -90,7 +133,7 @@ export default async function CurationEntryPage({
             </footer>
           </blockquote>
           {item.quoteContext ? (
-            <blockquote className="curation-entry__quote">
+            <blockquote className="curation-detail__quote">
               <p>{linkifyText(item.quoteContext.text, item.links)}</p>
               <footer>
                 — @{item.quoteContext.author}（{item.quoteContext.authorName}）的引用原文
@@ -98,7 +141,7 @@ export default async function CurationEntryPage({
             </blockquote>
           ) : null}
           {item.media.length > 0 ? (
-            <div className="curation-entry__media">
+            <div className="curation-detail__media">
               {item.media.map((media) =>
                 media.type === "photo" ? (
                   <a
@@ -118,7 +161,7 @@ export default async function CurationEntryPage({
                   </a>
                 ) : (
                   <a
-                    className="curation-entry__media-video"
+                    className="curation-detail__media-video"
                     href={item.tweetUrl}
                     key={media.url}
                     rel="noreferrer noopener"
@@ -143,13 +186,13 @@ export default async function CurationEntryPage({
           ) : null}
         </section>
 
-        <section aria-label="深度解析" className="curation-entry__analysis">
-          <h2 className="curation-entry__analysis-heading">深度解析</h2>
-          <KnowledgeMarkdown source={item.analysis} />
+        <section aria-label="深度解析" className="curation-detail__section curation-detail__analysis">
+          <h2 className="curation-detail__eyebrow">深度解析</h2>
+          <ArticleMarkdown source={item.analysis} />
         </section>
 
-        <footer className="curation-entry__sources" aria-label="原始链接">
-          <h2>原始来源</h2>
+        <footer className="curation-detail__sources" aria-label="原始链接">
+          <h2 className="curation-detail__eyebrow">原始来源</h2>
           <ul>
             <li>
               <a href={item.tweetUrl} rel="noreferrer noopener" target="_blank">
@@ -168,6 +211,6 @@ export default async function CurationEntryPage({
           </ul>
         </footer>
       </article>
-    </WorkspaceFrame>
+    </main>
   );
 }
