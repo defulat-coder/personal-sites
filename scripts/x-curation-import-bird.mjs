@@ -16,6 +16,8 @@ import { mkdir, readFile, readdir, writeFile } from "node:fs/promises";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 
+import { mergeXMedia, normalizeXMedia } from "../modules/x-sync/media.mjs";
+
 const repoRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const config = JSON.parse(
   await readFile(path.join(repoRoot, "config/x-curation.json"), "utf8"),
@@ -57,15 +59,7 @@ function normalizeTweet(tweet, fetchSource) {
     tweetUrl: handle ? `https://x.com/${handle}/status/${tweet.id}` : "",
     createdAt: tweet.createdAt ?? "",
     links: extractShortLinks(tweet.text ?? ""),
-    media: Array.isArray(tweet.media)
-      ? tweet.media.map((m) => ({
-          type: m.type ?? "photo",
-          url: m.url ?? null,
-          previewUrl: m.previewUrl ?? null,
-          width: m.width ?? null,
-          height: m.height ?? null,
-        }))
-      : [],
+    media: Array.isArray(tweet.media) ? tweet.media.map(normalizeXMedia) : [],
     isQuote: Boolean(tweet.quotedTweet),
     quoteContext: tweet.quotedTweet
       ? {
@@ -136,6 +130,7 @@ for (const { tweet, fetchSource } of tweets) {
       item.fetchSource = `${item.fetchSource}+${fetchSource}`;
       bothSources += 1;
     }
+    if (item) item.media = mergeXMedia(item.media, tweet.media ?? []);
     continue;
   }
   const entry = normalizeTweet(tweet, fetchSource);

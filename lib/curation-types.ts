@@ -10,10 +10,12 @@ export type CurationItem = {
   id: string;
   links: CurationLink[];
   media: Array<{
+    durationMs: number | null;
     height: number | null;
     previewUrl: string | null;
     type: "photo" | "video" | "animated_gif";
     url: string;
+    videoUrl: string | null;
     width: number | null;
   }>;
   publishedAt: string | null;
