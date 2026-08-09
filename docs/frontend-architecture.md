@@ -29,7 +29,7 @@ RootLayout
 | 首页 | `app/page.tsx` | 左右两栏编排、策展条目入口 | 详情内容渲染 |
 | 详情页 | `app/curation/[id]/page.tsx` | 条目元信息、原文、媒体、解析、来源 | 第二套个人侧栏 |
 | Loading | `components/opening-loader.tsx` | 加载阶段、滚动锁定、向上揭幕 | 常规页面配色 |
-| 个人简介 | `components/profile-introduction.tsx` | 双语逐字输入/删除/最终中文状态 | 静态履历数据源 |
+| 个人简介 | `components/profile-introduction.tsx` | 双语逐字输入/删除、最终中文正文与多语言标题轮换 | 静态履历数据源 |
 | 技术信号场 | `components/interactive-dot-field.tsx` | 技术词词库与稀疏视觉表达 | 标签过滤或导航 |
 | 策展数据 | `lib/curation.ts` | Zod 校验、查询、日期格式化 | 页面布局 |
 
@@ -60,7 +60,7 @@ RootLayout
 | 色彩 | 页面主体是黑白灰；绿色仅在 Loading | 禁止在内容页新增黄、绿或渐变点缀 |
 | 层级 | 细线 + 留白 + 字重 | 禁止卡片网格、装饰阴影和玻璃效果 |
 | 技术感 | 等宽技术节点 + 低幅运动效 | 禁止把页面正文全面等宽化 |
-| 简介 | 英文输入、删除、空光标两次、中文输入并停留 | 必须保留 `prefers-reduced-motion` 的最终中文状态 |
+| 简介 | 英文输入、删除、空光标两次、中文输入；完成后标题轮换多语言问候语 | `prefers-reduced-motion` 下保留最终中文状态，不进入轮换 |
 | 流式内容 | 三列策展行，hover 只做文字/箭头轻变化 | 禁止 hover 变卡片或填充色块 |
 | 深色模式 | 替换黑白灰令牌 | 不新建独立暗色品牌风格 |
 
