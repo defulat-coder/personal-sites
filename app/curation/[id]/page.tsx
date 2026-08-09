@@ -160,6 +160,7 @@ export default async function CurationEntryPage({
                     <video
                       autoPlay={media.type === "animated_gif"}
                       controls
+                      crossOrigin="anonymous"
                       loop={media.type === "animated_gif"}
                       muted={media.type === "animated_gif"}
                       playsInline
