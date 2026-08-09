@@ -19,15 +19,15 @@ import type { CurationItem } from "@/lib/curation-types";
 type CurationEntryPageProps = { params: Promise<{ id: string }> };
 
 const profileCopy = [
-  "目前在 payermax，我做的不是 AI Demo，而是能进入企业研发主链路的 Agentic Engineering System：把 Claude Code、Codex、Pi 变成可编排、可观测、可评测、可追溯的生产能力。",
-  "技术上横跨 React + TypeScript、Python Agent Runtime 与 Java 分布式服务：前端任务态可视化，后端工作流调度，SSE 事件流，Tool 调用与质量 / 成本度量，一条链打到位。",
-  "11 年工程与架构经验，曾在喜马拉雅和红星美凯龙啃过企业智能助手、数据中台、云原生迁移与高并发业务系统；不只交付模块，更让复杂系统持续演进。",
+  "十余年项目开发经验，横跨 Java、Python、TypeScript 与前端；从业务平台、云服务到企业 AI，一直在做需要长期负责的工程系统。",
+  "现在关心 AI 如何进入真实工作，Web 如何成为新的创造界面，以及系统如何经得起长期使用。",
+  "这里记录正在构建的东西，以及那些值得继续拆解的工程问题。",
 ];
 
 const profileCopyEnglish = [
-  "At PayerMax, I build more than AI demos: Agentic Engineering Systems that enter the core enterprise development workflow, turning Claude Code, Codex, and Pi into production capabilities that are orchestrated, observable, evaluated, and traceable.",
-  "Across React + TypeScript, Python agent runtimes, and Java distributed services, I build the whole path: task-state visualization in the frontend, workflow orchestration in the backend, SSE event streams, tool calls, and quality/cost measurement.",
-  "With 11 years in engineering and architecture, I have built enterprise assistants, data platforms, cloud-native migrations, and high-concurrency systems at Ximalaya and Red Star Macalline—not merely shipping modules, but enabling complex systems to keep evolving.",
+  "With more than a decade in project development across Java, Python, TypeScript, and frontend work, I have built engineering systems meant to be owned for the long term—from business platforms and cloud services to enterprise AI.",
+  "I care about how AI enters real work, how the web becomes a new creative interface, and how systems remain useful over time.",
+  "This is where I document what I am building and the engineering problems worth continuing to unpack.",
 ];
 
 /** 把原文里的 t.co 短链替换为可点击的展开后链接 */

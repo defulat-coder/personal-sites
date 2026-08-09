@@ -17,6 +17,24 @@ const LANGUAGE_TRANSITION_DELAY = 720;
 const CURSOR_BLINK_DELAY = 1520;
 const ENGLISH_TITLE = "Hello,";
 const CHINESE_TITLE = "你好，";
+const GREETING_CHARACTER_DELAY = 72;
+const GREETING_HOLD_DELAY = 2_600;
+const GREETINGS = [
+  CHINESE_TITLE,
+  ENGLISH_TITLE,
+  "Hola,",
+  "こんにちは、",
+  "안녕하세요,",
+  "Bonjour,",
+  "नमस्ते,",
+  "Ciao,",
+  "Olá,",
+  "Hallo,",
+  "Merhaba,",
+  "Привет,",
+  "مرحبًا،",
+  "สวัสดีครับ,",
+];
 const INTRODUCTION_ANIMATION_SESSION_KEY = "curation-profile-introduction-played";
 
 type DisplayPhase = "english" | "erasing" | "chinese" | "complete";
@@ -31,11 +49,60 @@ export function ProfileIntroduction({
   const [phase, setPhase] = useState<DisplayPhase>("complete");
   const [titleVisibleCount, setTitleVisibleCount] = useState(CHINESE_TITLE.length);
   const [titleIsTyping, setTitleIsTyping] = useState(false);
+  const [greetingIndex, setGreetingIndex] = useState(0);
   const [shouldAnimateInitialVisit] = useState(
     () => animateOnFirstHomeVisit
       && typeof window !== "undefined"
       && !window.sessionStorage.getItem(INTRODUCTION_ANIMATION_SESSION_KEY),
   );
+
+  useEffect(() => {
+    let cancelled = false;
+    let timeoutId: number | undefined;
+
+    if (phase !== "complete" || window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+      return undefined;
+    }
+
+    const wait = (delay: number) => new Promise<void>((resolve) => {
+      timeoutId = window.setTimeout(resolve, delay);
+    });
+
+    const typeGreeting = async (greeting: string) => {
+      setTitleIsTyping(true);
+
+      for (let characterIndex = 1; characterIndex <= greeting.length; characterIndex += 1) {
+        if (cancelled) return;
+        setTitleVisibleCount(characterIndex);
+        await wait(/[，、,.!?]/u.test(greeting[characterIndex - 1]) ? PUNCTUATION_DELAY : GREETING_CHARACTER_DELAY);
+      }
+
+      setTitleIsTyping(false);
+    };
+
+    const cycleGreetings = async () => {
+      let nextGreetingIndex = 1;
+
+      while (!cancelled) {
+        await wait(GREETING_HOLD_DELAY);
+        if (cancelled) return;
+
+        setGreetingIndex(nextGreetingIndex);
+        setTitleVisibleCount(0);
+        await typeGreeting(GREETINGS[nextGreetingIndex]);
+        if (cancelled) return;
+
+        nextGreetingIndex = (nextGreetingIndex + 1) % GREETINGS.length;
+      }
+    };
+
+    void cycleGreetings();
+
+    return () => {
+      cancelled = true;
+      if (timeoutId) window.clearTimeout(timeoutId);
+    };
+  }, [phase]);
 
   useEffect(() => {
     let cancelled = false;
@@ -184,7 +251,9 @@ export function ProfileIntroduction({
     : paragraphs;
   const introductionTitle = phase === "english" || phase === "erasing"
     ? ENGLISH_TITLE
-    : CHINESE_TITLE;
+    : phase === "complete"
+      ? GREETINGS[greetingIndex]
+      : CHINESE_TITLE;
 
   return (
     <section className="curation-home__bio" aria-labelledby="profile-introduction">
