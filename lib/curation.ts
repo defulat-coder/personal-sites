@@ -66,9 +66,32 @@ export async function getCurationItems(): Promise<CurationItem[]> {
   const { data, error } = await client
     .from("x_curation_items")
     .select("content")
-    .order("published_at", { ascending: false, nullsFirst: false });
+    .order("published_at", { ascending: false, nullsFirst: false })
+    .order("id", { ascending: false });
   if (error) throw new Error(`读取 Supabase 策展内容失败：${error.message}`);
   return z.array(curationItemSchema).parse(data.map((row) => row.content));
+}
+
+export type CurationPage = {
+  hasMore: boolean;
+  items: CurationItem[];
+};
+
+export async function getCurationPage(offset = 0, limit = 20): Promise<CurationPage> {
+  const client = await getCurationClient();
+  const { data, error } = await client
+    .from("x_curation_items")
+    .select("content")
+    .order("published_at", { ascending: false, nullsFirst: false })
+    .order("id", { ascending: false })
+    .range(offset, offset + limit);
+  if (error) throw new Error(`读取 Supabase 策展内容失败：${error.message}`);
+
+  const items = z.array(curationItemSchema).parse(data.map((row) => row.content));
+  return {
+    hasMore: items.length > limit,
+    items: items.slice(0, limit),
+  };
 }
 
 export async function getCurationTags() {
