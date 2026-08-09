@@ -42,6 +42,7 @@ export type OpenSourceEntry = {
   parsedMarkdown?: string | null;
   personalNote: string;
   repository: string;
+  repositoryDefaultBranch?: string | null;
   repositoryUrl: string;
   readingSource?: "official-zh-readme" | "kimi-translation";
   readingSourcePath?: string | null;
@@ -54,6 +55,28 @@ export type OpenSourceEntry = {
   type: string;
   workflow: Array<{ description: string; label: string }>;
 };
+
+/**
+ * The stream only needs this small public projection. Keeping the long
+ * Markdown documents out of the client boundary makes the home route cheap
+ * to transfer and hydrate even as the curated repository set grows.
+ */
+export type OpenSourceListEntry = Pick<
+  OpenSourceEntry,
+  "category" | "dimensions" | "repository" | "slug" | "sourceSummary" | "status" | "type"
+>;
+
+export function toOpenSourceListEntry(entry: OpenSourceEntry): OpenSourceListEntry {
+  return {
+    category: entry.category,
+    dimensions: entry.dimensions,
+    repository: entry.repository,
+    slug: entry.slug,
+    sourceSummary: entry.sourceSummary,
+    status: entry.status,
+    type: entry.type,
+  };
+}
 
 export function getOpenSourceCategoryLabel(category: OpenSourceCategory) {
   return openSourceCategories.find((item) => item.id === category)?.label ?? category;

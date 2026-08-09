@@ -245,7 +245,7 @@ test("Kimi 未返回简介时以 GitHub 元数据生成一句话兜底", async (
 
 test("公开投影只携带选中的单仓库资料及双版本 Markdown", () => {
   const record = {
-    repository: { fullName: "example/repo", nodeId: "node-1", repositoryUrl: "https://github.com/example/repo" },
+    repository: { defaultBranch: "main", fullName: "example/repo", nodeId: "node-1", repositoryUrl: "https://github.com/example/repo" },
     sourceKind: "readme",
     sourceMarkdown: "# Original README\n",
   };
@@ -274,6 +274,7 @@ test("公开投影只携带选中的单仓库资料及双版本 Markdown", () =>
   assert.equal(item.content.parsedMarkdown, "# 中文阅读版\n");
   assert.equal(item.content.sourceSummary, "Kimi 生成的一句话简介。");
   assert.equal(item.content.readingSource, "kimi-translation");
+  assert.equal(item.content.repositoryDefaultBranch, "main");
 });
 
 test("发布器分别写入私有来源、私有阅读版、策展层和公开投影", async () => {

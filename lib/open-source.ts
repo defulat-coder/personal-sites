@@ -2,6 +2,7 @@ import "server-only";
 
 import { createClient } from "@supabase/supabase-js";
 import { connection } from "next/server";
+import { cache } from "react";
 import { z } from "zod";
 
 import {
@@ -11,6 +12,7 @@ import {
   openSourceDimensions,
 } from "@/lib/open-source-types";
 import type { OpenSourceEntry } from "@/lib/open-source-types";
+import type { OpenSourceListEntry } from "@/lib/open-source-types";
 
 export {
   getOpenSourceCategoryLabel,
@@ -23,6 +25,7 @@ export type {
   OpenSourceDimension,
   OpenSourceEntry,
   OpenSourceEvidence,
+  OpenSourceListEntry,
   OpenSourceStatus,
 } from "@/lib/open-source-types";
 
@@ -54,6 +57,7 @@ const openSourceEntrySchema = z.object({
   parsedMarkdown: z.string().min(1),
   personalNote: z.string(),
   repository: z.string(),
+  repositoryDefaultBranch: z.string().min(1).nullable().optional(),
   repositoryUrl: z.string().url(),
   readingSource: z.enum(["official-zh-readme", "kimi-translation"]),
   readingSourcePath: z.string().nullable(),
@@ -65,6 +69,28 @@ const openSourceEntrySchema = z.object({
   status: z.enum(["持续跟踪", "计划试用", "已提炼"]),
   type: z.string(),
   workflow: z.array(z.object({ description: z.string(), label: z.string() })),
+});
+
+const openSourceListEntrySchema = z.object({
+  category: z.enum(["skills", "agents", "context", "tools"]),
+  dimensions: z.array(z.enum([
+    "agent-skills",
+    "coding-agent",
+    "agent-runtime",
+    "long-running",
+    "multi-agent",
+    "agent-control",
+    "agent-infra",
+    "agent-context",
+    "local-retrieval",
+    "model-gateway",
+    "ai-ingestion",
+  ])),
+  repository: z.string(),
+  slug: z.string(),
+  sourceSummary: z.string(),
+  status: z.enum(["持续跟踪", "计划试用", "已提炼"]),
+  type: z.string(),
 });
 
 function requiredEnvironment(key: "SUPABASE_URL" | "SUPABASE_PUBLISHABLE_KEY") {
@@ -93,7 +119,18 @@ export async function getOpenSourceEntries(): Promise<OpenSourceEntry[]> {
   return z.array(openSourceEntrySchema).parse(data.map((row) => row.content));
 }
 
-export async function getOpenSourceEntry(slug: string): Promise<OpenSourceEntry | null> {
+export async function getOpenSourceListEntries(): Promise<OpenSourceListEntry[]> {
+  const client = await getOpenSourceClient();
+  const { data, error } = await client
+    .from("github_open_source_items")
+    .select("category:content->>category,dimensions:content->dimensions,repository:content->>repository,slug,sourceSummary:content->>sourceSummary,status:content->>status,type:content->>type")
+    .order("display_rank", { ascending: true, nullsFirst: false })
+    .order("published_at", { ascending: false });
+  if (error) throw new Error(`读取 Supabase 开源关注列表失败：${error.message}`);
+  return z.array(openSourceListEntrySchema).parse(data);
+}
+
+export const getOpenSourceEntry = cache(async (slug: string): Promise<OpenSourceEntry | null> => {
   const client = await getOpenSourceClient();
   const { data, error } = await client
     .from("github_open_source_items")
@@ -102,4 +139,4 @@ export async function getOpenSourceEntry(slug: string): Promise<OpenSourceEntry 
     .maybeSingle();
   if (error) throw new Error(`读取 Supabase 开源关注详情失败：${error.message}`);
   return data ? openSourceEntrySchema.parse(data.content) : null;
-}
+});
