@@ -1,101 +1,3 @@
-.feedActions {
-  display: flex;
-  align-items: center;
-  gap: .85rem;
-}
-
-.homeLink {
-  display: inline-flex;
-  align-items: center;
-  color: #6f6f72;
-  font-size: .78rem;
-  font-weight: 500;
-  gap: .28rem;
-  text-decoration: none;
-  transition: color 180ms ease;
-}
-
-.homeLink:hover,
-.homeLink:focus-visible {
-  color: var(--ink);
-  outline: 0;
-}
-
-.homeLink svg {
-  width: .85rem;
-  height: .85rem;
-  stroke-width: 1.5;
-}
-
-.heading {
-  display: flex;
-  align-items: flex-end;
-  justify-content: space-between;
-  border-bottom: 1px solid var(--line);
-  padding: .375rem 0 1.15rem;
-}
-
-.heading h1,
-.heading p {
-  margin: 0;
-}
-
-.heading p {
-  color: #a1a1a4;
-  font-size: .75rem;
-  letter-spacing: -.012em;
-}
-
-.heading h1 {
-  margin-top: .42rem;
-  font-size: 1.25rem;
-  font-weight: 620;
-  letter-spacing: -.04em;
-  line-height: 1.15;
-}
-
-.heading > a {
-  display: inline-flex;
-  align-items: center;
-  color: #6f6f72;
-  font-size: .78rem;
-  gap: .42rem;
-  text-decoration: none;
-  transition: color 180ms ease, transform 180ms ease;
-}
-
-.heading > a:hover,
-.heading > a:focus-visible {
-  color: var(--ink);
-  outline: 0;
-  transform: translateX(-.14rem);
-}
-
-.heading > a svg {
-  width: .85rem;
-  height: .85rem;
-  stroke-width: 1.6;
-}
-
-.intro {
-  max-width: 42rem;
-  border-bottom: 1px solid var(--line);
-  padding: 1.55rem 0 1.7rem;
-}
-
-.intro p {
-  margin: 0;
-  color: #5f5f63;
-  font-size: .88rem;
-  line-height: 1.62;
-}
-
-.intro p + p {
-  margin-top: .55rem;
-  color: #969699;
-  font-size: .78rem;
-}
-
 .streamSection {
   padding-top: 1.25rem;
 }
@@ -104,7 +6,7 @@
   display: flex;
   flex-wrap: wrap;
   gap: .35rem .85rem;
-  padding: 0 0 .8rem;
+  padding: 0 0 .6rem;
 }
 
 .filter {
@@ -128,6 +30,40 @@
 
 .filter:focus-visible {
   color: var(--ink);
+  outline: 2px solid currentColor;
+  outline-offset: 3px;
+}
+
+.dimensionFilters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: .3rem .7rem;
+  margin-bottom: 1rem;
+  padding: .7rem 0 .05rem;
+  border-top: 1px solid var(--line);
+}
+
+.dimensionFilter {
+  border: 0;
+  background: transparent;
+  color: #a1a1a4;
+  cursor: pointer;
+  font-size: .7rem;
+  padding: .14rem 0;
+  transition: color 180ms ease;
+}
+
+.dimensionFilter[aria-pressed="true"] {
+  color: #5f5f63;
+  font-weight: 620;
+}
+
+.dimensionFilter:hover,
+.dimensionFilter:focus-visible {
+  color: var(--ink);
+}
+
+.dimensionFilter:focus-visible {
   outline: 2px solid currentColor;
   outline-offset: 3px;
 }
@@ -255,6 +191,10 @@
   transition: color 180ms ease;
 }
 
+.repositoryLink + .repositoryLink {
+  margin-left: 1rem;
+}
+
 .repositoryLink:hover,
 .repositoryLink:focus-visible {
   color: var(--ink);
@@ -267,25 +207,74 @@
   stroke-width: 1.5;
 }
 
-.focusList {
-  display: flex;
-  flex-wrap: wrap;
+.workflow,
+.detailList {
   max-width: 40rem;
   margin: 0;
   padding: 0;
   list-style: none;
 }
 
-.focusList li {
-  color: #5f5f63;
-  font-size: .88rem;
-  line-height: 1.4;
+.workflow li {
+  display: grid;
+  grid-template-columns: 2.25rem minmax(0, 1fr);
+  gap: .75rem;
+  padding: .8rem 0;
 }
 
-.focusList li + li {
-  border-left: 1px solid var(--line);
-  margin-left: .65rem;
-  padding-left: .65rem;
+.workflow li + li,
+.detailList li + li {
+  border-top: 1px solid var(--line);
+}
+
+.workflow li > span {
+  color: #a1a1a4;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: .68rem;
+  line-height: 1.65;
+}
+
+.workflow h3,
+.workflow p {
+  margin: 0;
+}
+
+.workflow h3 {
+  color: #303033;
+  font-size: .9rem;
+  font-weight: 560;
+  letter-spacing: -.02em;
+  line-height: 1.45;
+}
+
+.workflow p,
+.detailList li {
+  color: #5f5f63;
+  font-size: .88rem;
+  line-height: 1.65;
+}
+
+.workflow p {
+  margin-top: .22rem;
+}
+
+.detailList li {
+  padding: .8rem 0;
+}
+
+.detailList li::before {
+  color: #a1a1a4;
+  content: "— ";
+}
+
+.judgement {
+  max-width: 40rem;
+  margin: 1rem 0 0;
+  color: #303033;
+  font-size: 1rem;
+  font-weight: 520;
+  letter-spacing: -.018em;
+  line-height: 1.78;
 }
 
 .nextStep {
@@ -296,21 +285,18 @@
   padding-bottom: 2rem;
 }
 
-:global(html[data-curation-theme="dark"]) .homeLink,
-:global(html[data-curation-theme="dark"]) .heading > a,
 :global(html[data-curation-theme="dark"]) .meta span:last-child,
 :global(html[data-curation-theme="dark"]) .repositoryLink,
-:global(html[data-curation-theme="dark"]) .focusList li {
+:global(html[data-curation-theme="dark"]) .workflow p,
+:global(html[data-curation-theme="dark"]) .detailList li {
   color: #b5b5b7;
 }
 
-:global(html[data-curation-theme="dark"]) .homeLink:hover,
-:global(html[data-curation-theme="dark"]) .homeLink:focus-visible,
-:global(html[data-curation-theme="dark"]) .heading > a:hover,
-:global(html[data-curation-theme="dark"]) .heading > a:focus-visible,
 :global(html[data-curation-theme="dark"]) .filter[aria-pressed="true"],
 :global(html[data-curation-theme="dark"]) .filter:hover,
 :global(html[data-curation-theme="dark"]) .filter:focus-visible,
+:global(html[data-curation-theme="dark"]) .dimensionFilter:hover,
+:global(html[data-curation-theme="dark"]) .dimensionFilter:focus-visible,
 :global(html[data-curation-theme="dark"]) .repositoryLink:hover,
 :global(html[data-curation-theme="dark"]) .repositoryLink:focus-visible,
 :global(html[data-curation-theme="dark"]) .stream a:hover .arrow,
@@ -318,26 +304,34 @@
   color: #f4f4f4;
 }
 
-:global(html[data-curation-theme="dark"]) .heading,
-:global(html[data-curation-theme="dark"]) .intro,
 :global(html[data-curation-theme="dark"]) .stream li,
-:global(html[data-curation-theme="dark"]) .focusList li + li {
+:global(html[data-curation-theme="dark"]) .dimensionFilters,
+:global(html[data-curation-theme="dark"]) .workflow li + li,
+:global(html[data-curation-theme="dark"]) .detailList li + li {
   border-color: #333;
 }
 
-:global(html[data-curation-theme="dark"]) .intro p,
 :global(html[data-curation-theme="dark"]) .note,
 :global(html[data-curation-theme="dark"]) .bodyCopy,
 :global(html[data-curation-theme="dark"]) .nextStep p {
   color: #b5b5b7;
 }
 
-:global(html[data-curation-theme="dark"]) .intro p + p,
-:global(html[data-curation-theme="dark"]) .heading p,
+:global(html[data-curation-theme="dark"]) .judgement,
+:global(html[data-curation-theme="dark"]) .workflow h3 {
+  color: #f4f4f4;
+}
+
 :global(html[data-curation-theme="dark"]) .source,
 :global(html[data-curation-theme="dark"]) .meta,
-:global(html[data-curation-theme="dark"]) .entryHeader > p {
+:global(html[data-curation-theme="dark"]) .entryHeader > p,
+:global(html[data-curation-theme="dark"]) .dimensionFilter,
+:global(html[data-curation-theme="dark"]) .workflow li > span {
   color: #999;
+}
+
+:global(html[data-curation-theme="dark"]) .dimensionFilter[aria-pressed="true"] {
+  color: #d0d0d2;
 }
 
 :global(html[data-curation-theme="dark"]) .copy h2 {
@@ -345,25 +339,6 @@
 }
 
 @media (max-width: 560px) {
-  .feedActions {
-    gap: .65rem;
-  }
-
-  .homeLink {
-    font-size: .74rem;
-  }
-
-  .heading {
-    align-items: flex-start;
-    gap: 1rem;
-  }
-
-  .heading > a {
-    flex: 0 0 auto;
-    margin-top: .2rem;
-    font-size: .74rem;
-  }
-
   .stream a {
     grid-template-columns: 1fr 1.25rem;
   }
@@ -380,13 +355,7 @@
     content: "·";
   }
 
-  .focusList {
-    display: block;
-  }
-
-  .focusList li + li {
-    border-left: 0;
-    margin: .45rem 0 0;
-    padding-left: 0;
+  .repositoryLink + .repositoryLink {
+    margin-left: .75rem;
   }
 }
