@@ -65,7 +65,7 @@ export default async function HomePage() {
 
       <section aria-labelledby="curation-feed-title" className="curation-home__feed">
         <header className="curation-home__feed-heading">
-          <h2 id="curation-feed-title">每日策展</h2>
+          <h2 id="curation-feed-title">每日关注</h2>
           <p>持续更新</p>
         </header>
 
