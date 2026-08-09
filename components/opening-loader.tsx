@@ -41,7 +41,7 @@ export function OpeningLoader() {
 
   return (
     <div
-      aria-label="正在加载陈远知识库"
+      aria-label="正在加载陈远的个人网站"
       aria-live="polite"
       className={`opening-loader opening-loader--${phase}`}
       onAnimationEnd={(event) => {
@@ -74,7 +74,7 @@ export function OpeningLoader() {
           width={700}
         />
       </div>
-      <span className="sr-only">正在加载陈远知识库</span>
+      <span className="sr-only">正在加载陈远的个人网站</span>
     </div>
   );
 }

@@ -1,17 +1,23 @@
 import type { Route } from "next";
 import Image from "next/image";
 import Link from "next/link";
-import { ArrowUpRight, BookOpen, GitBranch } from "lucide-react";
+import { ArrowUpRight, GitBranch } from "lucide-react";
 
 import { InteractiveDotField } from "@/components/interactive-dot-field";
+import { ProfileIntroduction } from "@/components/profile-introduction";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { curationItems, formatCurationDate } from "@/lib/curation";
-import { siteShell } from "@/lib/site-shell";
 
 const profileCopy = [
-  "我持续整理个人知识、项目与 Agent 工程实践，把零散证据沉淀为可查询、可复用的公开索引。",
-  "目前围绕 Codex / Claude Code 工作流、多 Agent 协作与知识系统，验证从原型到工程化的路径。",
-  "每日策展记录来自 X 上值得继续阅读、复盘和落地的技术内容。",
+  "目前在 payermax，我做的不是 AI Demo，而是能进入企业研发主链路的 Agentic Engineering System：把 Claude Code、Codex、Pi 变成可编排、可观测、可评测、可追溯的生产能力。",
+  "技术上横跨 React + TypeScript、Python Agent Runtime 与 Java 分布式服务：前端任务态可视化，后端工作流调度，SSE 事件流，Tool 调用与质量 / 成本度量，一条链打到位。",
+  "11 年工程与架构经验，曾在喜马拉雅和红星美凯龙啃过企业智能助手、数据中台、云原生迁移与高并发业务系统；不只交付模块，更让复杂系统持续演进。",
+];
+
+const profileCopyEnglish = [
+  "At PayerMax, I build more than AI demos: Agentic Engineering Systems that enter the core enterprise development workflow, turning Claude Code, Codex, and Pi into production capabilities that are orchestrated, observable, evaluated, and traceable.",
+  "Across React + TypeScript, Python agent runtimes, and Java distributed services, I build the whole path: task-state visualization in the frontend, workflow orchestration in the backend, SSE event streams, tool calls, and quality/cost measurement.",
+  "With 11 years in engineering and architecture, I have built enterprise assistants, data platforms, cloud-native migrations, and high-concurrency systems at Ximalaya and Red Star Macalline—not merely shipping modules, but enabling complex systems to keep evolving.",
 ];
 
 export default function HomePage() {
@@ -34,20 +40,15 @@ export default function HomePage() {
         </div>
 
         <nav aria-label="陈远的外部主页" className="curation-home__external-links">
-          {siteShell.externalLinks.map((link) => (
-            <a href={link.href} key={link.href} rel="noreferrer" target="_blank">
-              {link.label === "GitHub" ? <GitBranch aria-hidden="true" /> : <BookOpen aria-hidden="true" />}
-              {link.label}
-            </a>
-          ))}
+          <a href="https://github.com/defulat-coder" rel="noreferrer" target="_blank">
+            <GitBranch aria-hidden="true" />
+            GitHub
+          </a>
         </nav>
 
         <InteractiveDotField />
 
-        <section className="curation-home__bio" aria-labelledby="profile-introduction">
-          <h2 id="profile-introduction">你好，</h2>
-          {profileCopy.map((paragraph) => <p key={paragraph}>{paragraph}</p>)}
-        </section>
+        <ProfileIntroduction englishParagraphs={profileCopyEnglish} paragraphs={profileCopy} />
       </aside>
 
       <section aria-labelledby="curation-feed-title" className="curation-home__feed">

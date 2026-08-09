@@ -29,7 +29,7 @@
       "source": "mattpocock/skills",
       "sourceType": "github",
       "skillPath": "skills/in-progress/claude-handoff/SKILL.md",
-      "computedHash": "6bde27729c8a56b601b4137024a6a9e8056e214b45d2cfc64c69eec93d0b6f66"
+      "computedHash": "6bde27729c8c0b456133a60be07493dd091ace65f52b02f90cbb8f75de15989f"
     },
     "code-review": {
       "source": "mattpocock/skills",
@@ -199,47 +199,11 @@
       "skillPath": "skills/indexion-wiki/SKILL.md",
       "computedHash": "ea7a8cc793275edc5fc8c0ff39f643ddd0e8bb4fb83bceb19049e546d4d44d17"
     },
-    "loop-generate": {
-      "source": "FUY25/Loop",
-      "sourceType": "github",
-      "skillPath": "skills/loop-generate/SKILL.md",
-      "computedHash": "226fb325037d0cc71612c150cd28f0541aac26be34f5ee1e0093cbc6b4a99ba3"
-    },
-    "loop-list": {
-      "source": "FUY25/Loop",
-      "sourceType": "github",
-      "skillPath": "skills/loop-list/SKILL.md",
-      "computedHash": "3d3964bb6691d83ed175daf05651ef0f54f0ce1b38dc21259e88c36ae7b22ce2"
-    },
     "loop-me": {
       "source": "mattpocock/skills",
       "sourceType": "github",
       "skillPath": "skills/in-progress/loop-me/SKILL.md",
       "computedHash": "b3306d9b5af2e9ed341ec290ea97898205f27fb3131b16b8535549b8c90343f8"
-    },
-    "loop-run": {
-      "source": "FUY25/Loop",
-      "sourceType": "github",
-      "skillPath": "skills/loop-run/SKILL.md",
-      "computedHash": "a3d60c5c58a5cd6510919c393ee76df9a3584aae95a42bfbe784d16ca5199dec"
-    },
-    "loop-scan": {
-      "source": "FUY25/Loop",
-      "sourceType": "github",
-      "skillPath": "skills/loop-scan/SKILL.md",
-      "computedHash": "216edd95aa3ab8b98f45aa3ba99625a51691ee0977a9f7cfc08207dbf4d82fe8"
-    },
-    "loop-status": {
-      "source": "FUY25/Loop",
-      "sourceType": "github",
-      "skillPath": "skills/loop-status/SKILL.md",
-      "computedHash": "de7cdc643a8c4f428893406b733a3868639afbf99dea9431cbc39e464f2f7c46"
-    },
-    "loop-verify": {
-      "source": "FUY25/Loop",
-      "sourceType": "github",
-      "skillPath": "skills/loop-verify/SKILL.md",
-      "computedHash": "c2b168317bce120d19d91aeda620bc41c4b15338689758a4b2756d2de90d78dd"
     },
     "migrate-to-shoehorn": {
       "source": "mattpocock/skills",
