@@ -46,7 +46,7 @@ export function InteractiveDotField() {
 
   return (
     <div
-      aria-label="以隐藏显示的不规则技术信号节点展示多种智能体开发技术词条"
+      aria-label="以从右向左滚动的弹幕展示多种智能体开发技术词条"
       className="interactive-dot-field"
       role="img"
     >
