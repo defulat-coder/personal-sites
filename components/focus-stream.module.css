@@ -1,8 +1,12 @@
 .header {
+  position: sticky;
+  z-index: 1;
+  top: 0;
   display: flex;
   align-items: flex-end;
   justify-content: space-between;
   border-bottom: 1px solid var(--line);
+  background: #fff;
   padding: .375rem 0 1.05rem;
 }
 
@@ -93,6 +97,16 @@
 
 :global(html[data-curation-theme="dark"]) .switcherButton {
   color: #999;
+}
+
+:global(html[data-curation-theme="dark"]) .header {
+  background: #181818;
+}
+
+@media (max-width: 900px) {
+  .header {
+    position: static;
+  }
 }
 
 @media (max-width: 560px) {
