@@ -1,5 +1,5 @@
 import Image from "next/image";
-import { BookOpen, GitBranch } from "lucide-react";
+import { BookOpen, GitBranch, MessageCircleMore } from "lucide-react";
 
 import { InteractiveDotField } from "@/components/interactive-dot-field";
 import { ProfileIntroduction } from "@/components/profile-introduction";
@@ -49,6 +49,10 @@ export function SiteProfile({ animateOnFirstHomeVisit = false }: SiteProfileProp
             <a href="https://www.yuque.com/defulat-coder" rel="noreferrer" target="_blank">
               <BookOpen aria-hidden="true" />
               语雀
+            </a>
+            <a href="/ask">
+              <MessageCircleMore aria-hidden="true" />
+              问一问
             </a>
           </nav>
         </div>

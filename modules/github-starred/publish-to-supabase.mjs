@@ -1,5 +1,6 @@
 import { createClient } from "@supabase/supabase-js";
 
+import { deleteAskSearchDocuments, syncAskSearchDocuments, toOpenSourceSearchDocuments } from "../ask/search-index.mjs";
 function requiredEnvironment(env, key) {
   const value = env[key];
   if (!value) throw new Error(`缺少 ${key}；仅可在本机或部署环境中配置。`);
@@ -172,9 +173,13 @@ export async function publishStarredRecords({ analyses = [], clientFactory = cre
   if (unpublishedRecordIds.length > 0) {
     const { error } = await client.from("github_open_source_items").delete().in("repo_node_id", unpublishedRecordIds);
     if (error) throw new Error(`撤回未发布开源关注投影失败：${error.message}`);
+    await deleteAskSearchDocuments(client, "open-source", unpublishedRecordIds);
   }
 
+  const indexedCount = await syncAskSearchDocuments(client, "open-source", toOpenSourceSearchDocuments(publicRows));
+
   return {
+    indexedCount,
     privateAnalysisCount: analyses.length,
     privateSourceCount: records.length,
     publicCount: publicRows.length,

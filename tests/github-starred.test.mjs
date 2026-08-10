@@ -279,6 +279,7 @@ test("公开投影只携带选中的单仓库资料及双版本 Markdown", () =>
 
 test("发布器分别写入私有来源、私有阅读版、策展层和公开投影", async () => {
   const tables = [];
+  const rpcCalls = [];
   const clientFactory = () => ({
     from(table) {
       tables.push(table);
@@ -286,6 +287,10 @@ test("发布器分别写入私有来源、私有阅读版、策展层和公开�
         async upsert() { return { error: null }; },
         delete() { return { async in() { return { error: null }; } }; },
       };
+    },
+    async rpc(name, arguments_) {
+      rpcCalls.push({ arguments_, name });
+      return { data: 1, error: null };
     },
   });
   const record = {
@@ -318,5 +323,52 @@ test("发布器分别写入私有来源、私有阅读版、策展层和公开�
     "github_starred_curation",
     "github_open_source_items",
   ]);
-  assert.deepEqual(result, { privateAnalysisCount: 1, privateSourceCount: 1, publicCount: 1 });
+  assert.deepEqual(result, { indexedCount: 1, privateAnalysisCount: 1, privateSourceCount: 1, publicCount: 1 });
+  assert.equal(rpcCalls[0].name, "sync_ask_search_documents");
+  assert.equal(rpcCalls[0].arguments_.p_replace_scope, false);
+  assert.equal(rpcCalls[0].arguments_.p_scope, "open-source");
+  assert.equal(rpcCalls[0].arguments_.p_documents[0].source_id, "node-1");
+  assert.equal(rpcCalls[0].arguments_.p_documents[0].source_url, "/open-source/example-repo#中文阅读版");
+});
+
+test("撤回公开仓库时只删除该仓库的问答索引", async () => {
+  const rpcCalls = [];
+  const clientFactory = () => ({
+    from() {
+      return {
+        async upsert() { return { error: null }; },
+        delete() { return { async in() { return { error: null }; } }; },
+      };
+    },
+    async rpc(name, arguments_) {
+      rpcCalls.push({ arguments_, name });
+      return { data: 0, error: null };
+    },
+  });
+  const record = {
+    repository: { fullName: "example/withdrawn", nodeId: "node-withdrawn", repositoryUrl: "https://github.com/example/withdrawn", starredAt: null },
+    sourceFetchedAt: "2026-08-09T00:00:00.000Z",
+    sourceKind: "readme",
+    sourceMarkdown: "# README\n",
+    sourceSha256: "sha",
+    sourceStructure: null,
+    sourceTruncated: false,
+  };
+
+  await publishStarredRecords({
+    clientFactory,
+    env: { SUPABASE_SERVICE_ROLE_KEY: "service", SUPABASE_URL: "https://example.supabase.co" },
+    records: [record],
+  });
+
+  assert.deepEqual(rpcCalls, [
+    {
+      arguments_: { p_scope: "open-source", p_source_ids: ["node-withdrawn"] },
+      name: "delete_ask_search_documents",
+    },
+    {
+      arguments_: { p_documents: [], p_replace_scope: false, p_scope: "open-source" },
+      name: "sync_ask_search_documents",
+    },
+  ]);
 });

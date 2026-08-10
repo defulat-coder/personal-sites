@@ -11,7 +11,7 @@ import {
   SessionManager,
 } from "@earendil-works/pi-coding-agent";
 
-import { resolvePiModelConfig } from "../../scripts/lib/x-curation-ai.mjs";
+import { getFinalAssistantFailure, getFinalAssistantText, resolvePiModelConfig } from "../../lib/pi-runtime.mjs";
 import { repositoryDirectoryName } from "./source.mjs";
 
 const PARSER_VERSION = "github-starred-zh-reader/v1";
@@ -163,23 +163,6 @@ function collectModelText(session) {
     }
   });
   return { getText: () => answer, unsubscribe };
-}
-
-function getFinalAssistantText(session) {
-  const lastMessage = session.state?.messages?.at(-1);
-  if (lastMessage?.role !== "assistant" || !Array.isArray(lastMessage.content)) return "";
-  return lastMessage.content
-    .filter((content) => content?.type === "text" && typeof content.text === "string")
-    .map((content) => content.text)
-    .join("")
-    .trim();
-}
-
-function getFinalAssistantFailure(session) {
-  const lastMessage = session.state?.messages?.at(-1);
-  if (lastMessage?.role !== "assistant") return "";
-  if (lastMessage.stopReason !== "error" && lastMessage.stopReason !== "aborted") return "";
-  return lastMessage.errorMessage || `Kimi 请求以 ${lastMessage.stopReason} 结束。`;
 }
 
 export async function awaitModelResponse(request, timeoutMilliseconds, { label = "Kimi" } = {}) {

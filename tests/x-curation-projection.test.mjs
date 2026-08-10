@@ -102,3 +102,39 @@ test("Supabase publisher requires service credentials before accessing the netwo
     /SUPABASE_URL/u,
   );
 });
+
+test("publishing a public curation projection refreshes the daily Q&A index", async () => {
+  const calls = [];
+  const client = {
+    from: () => ({ upsert: async () => ({ error: null }) }),
+    rpc: async (name, arguments_) => {
+      calls.push({ arguments_, name });
+      return { data: 1, error: null };
+    },
+  };
+
+  const result = await publishQueueToSupabase({ items: [item] }, {
+    SUPABASE_SERVICE_ROLE_KEY: "service-key",
+    SUPABASE_URL: "https://example.supabase.co",
+  }, () => client);
+
+  assert.equal(result.indexedCount, 1);
+  assert.deepEqual(calls[0], {
+    arguments_: {
+      p_documents: [{
+        content: "摘要\n\n解析\n\n公开原文",
+        id: "daily:1",
+        published_at: "2026-08-09T00:00:00.000Z",
+        search_text: "标题\n\nAgent 工程\n\nAuthor\n\nauthor\n\n摘要\n\n解析\n\n公开原文",
+        section: null,
+        source_id: "1",
+        source_scope: "daily",
+        source_url: "/curation/1",
+        title: "标题",
+      }],
+      p_replace_scope: false,
+      p_scope: "daily",
+    },
+    name: "sync_ask_search_documents",
+  });
+});

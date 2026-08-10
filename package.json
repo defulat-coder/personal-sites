@@ -27,6 +27,7 @@
     "github:starred:analyze": "node scripts/github-starred.mjs analyze",
     "github:starred:analyze:codex": "node scripts/github-starred.mjs analyze --engine codex-cli",
     "github:starred:publish": "node scripts/github-starred.mjs publish",
+    "ask:reindex": "node scripts/ask-reindex.mjs",
     "github:starred:run": "node scripts/github-starred.mjs run",
     "supabase:push": "node scripts/supabase-db-push.mjs",
     "git:safety": "node scripts/verify-git-safety.mjs --range HEAD",
@@ -35,6 +36,8 @@
   },
   "dependencies": {
     "@earendil-works/pi-coding-agent": "^0.84.1",
+    "@fingerprintjs/fingerprintjs": "^5.2.0",
+    "@shadcn/react": "^0.3.0",
     "@supabase/supabase-js": "2.112.2",
     "class-variance-authority": "0.7.1",
     "clsx": "2.1.1",

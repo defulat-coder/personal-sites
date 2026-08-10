@@ -1,5 +1,6 @@
 import { createClient } from "@supabase/supabase-js";
 
+import { syncAskSearchDocuments, toDailySearchDocuments } from "../ask/search-index.mjs";
 import { isReadyForPublication, toPublicCurationItem } from "./curation-projection.mjs";
 
 function requireEnvironment(env, key) {
@@ -14,8 +15,8 @@ function fetchSources(fetchSource) {
     .filter(Boolean);
 }
 
-export async function publishQueueToSupabase(queue, env = process.env) {
-  const client = createClient(
+export async function publishQueueToSupabase(queue, env = process.env, clientFactory = createClient) {
+  const client = clientFactory(
     requireEnvironment(env, "SUPABASE_URL"),
     requireEnvironment(env, "SUPABASE_SERVICE_ROLE_KEY"),
     { auth: { autoRefreshToken: false, persistSession: false } },
@@ -51,5 +52,6 @@ export async function publishQueueToSupabase(queue, env = process.env) {
     const { error } = await client.from("x_curation_items").upsert(publicRows, { onConflict: "id" });
     if (error) throw new Error(`写入 Supabase 公开策展数据失败：${error.message}`);
   }
-  return { privateCount: privateRows.length, publicCount: publicRows.length };
+  const indexedCount = await syncAskSearchDocuments(client, "daily", toDailySearchDocuments(publicRows));
+  return { indexedCount, privateCount: privateRows.length, publicCount: publicRows.length };
 }

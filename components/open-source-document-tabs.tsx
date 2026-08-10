@@ -1,3 +1,4 @@
+import { createElement, type ComponentProps } from "react";
 import type { Route } from "next";
 import Link from "next/link";
 import ReactMarkdown, { defaultUrlTransform } from "react-markdown";
@@ -6,6 +7,7 @@ import remarkGfm from "remark-gfm";
 import styles from "@/components/open-source.module.css";
 import { resolveGitHubReadmeAssetUrl, resolveGitHubReadmeUrl } from "@/lib/github-readme-url";
 import { OpenSourceRepositoryBrowser } from "@/components/open-source-repository-browser";
+import { createMarkdownHeadingId } from "@/lib/markdown-anchor.mjs";
 
 type OpenSourceDocumentTabsProps = {
   parsedMarkdown: string;
@@ -17,6 +19,38 @@ type OpenSourceDocumentTabsProps = {
   sourceUrl: string;
   view: "parsed" | "repository";
 };
+
+type MarkdownNode = {
+  children?: MarkdownNode[];
+  value?: unknown;
+};
+
+type MarkdownHeadingProps = ComponentProps<"h1"> & { node?: MarkdownNode };
+
+function markdownNodeText(node: MarkdownNode | undefined): string {
+  if (typeof node?.value === "string") return node.value;
+  return node?.children?.map(markdownNodeText).join("") ?? "";
+}
+
+function createHeadingComponents() {
+  const headingIds = new Map<string, number>();
+  const heading = (tagName: "h1" | "h2" | "h3" | "h4" | "h5" | "h6") => {
+    const MarkdownHeading = ({ node, ...props }: MarkdownHeadingProps) => createElement(tagName, {
+      ...props,
+      id: createMarkdownHeadingId(markdownNodeText(node), headingIds),
+    });
+    MarkdownHeading.displayName = `Markdown${tagName.toUpperCase()}`;
+    return MarkdownHeading;
+  };
+  return {
+    h1: heading("h1"),
+    h2: heading("h2"),
+    h3: heading("h3"),
+    h4: heading("h4"),
+    h5: heading("h5"),
+    h6: heading("h6"),
+  };
+}
 
 export function OpenSourceDocumentTabs({
   parsedMarkdown,
@@ -33,6 +67,7 @@ export function OpenSourceDocumentTabs({
   const documentHref = (documentView: "parsed" | "repository") => (
     documentView === "repository" ? `/open-source/${slug}?view=repository` : `/open-source/${slug}`
   ) as Route;
+  const headingComponents = createHeadingComponents();
 
   return (
     <section aria-labelledby="open-source-document-title" className={`curation-detail__section ${styles.documentSection}`}>
@@ -83,6 +118,7 @@ export function OpenSourceDocumentTabs({
         ) : (
           <ReactMarkdown
             components={{
+              ...headingComponents,
               a: ({ children, href }) => (
                 <a href={resolveGitHubReadmeUrl(href ?? "", sourceUrl, readingSourcePath ?? "README.md")}>
                   {children}
