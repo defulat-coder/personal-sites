@@ -32,8 +32,8 @@ function requiredSessionSecret() {
   return value;
 }
 
-function getSessionId(visitorId: string) {
-  return createHmac("sha256", requiredSessionSecret()).update(visitorId).digest("hex");
+function getSessionId(visitorId: string, conversationId: string) {
+  return createHmac("sha256", requiredSessionSecret()).update(`${visitorId}:${conversationId}`).digest("hex");
 }
 
 function formatSources(sources: AskSource[]) {
@@ -44,18 +44,18 @@ function formatSources(sources: AskSource[]) {
 }
 
 async function cleanExpiredSessions() {
-  await mkdir(askSessionDirectory, { mode: 0o700, recursive: true });
-  await chmod(askSessionDirectory, 0o700);
+  await mkdir(/* turbopackIgnore: true */ askSessionDirectory, { mode: 0o700, recursive: true });
+  await chmod(/* turbopackIgnore: true */ askSessionDirectory, 0o700);
   const now = Date.now();
   const retentionMilliseconds = getSessionRetentionMilliseconds();
-  const entries = await readdir(askSessionDirectory, { withFileTypes: true });
+  const entries = await readdir(/* turbopackIgnore: true */ askSessionDirectory, { withFileTypes: true });
   await Promise.all(entries
     .filter((entry) => entry.isFile() && entry.name.endsWith(".jsonl"))
     .map(async (entry) => {
-      const filePath = path.join(askSessionDirectory, entry.name);
-      const metadata = await stat(filePath);
+      const filePath = path.join(/* turbopackIgnore: true */ askSessionDirectory, entry.name);
+      const metadata = await stat(/* turbopackIgnore: true */ filePath);
       if (now - metadata.mtimeMs > retentionMilliseconds) {
-        await rm(filePath, { force: true });
+        await rm(/* turbopackIgnore: true */ filePath, { force: true });
       }
     }));
 }
@@ -66,13 +66,13 @@ async function getSessionManager(
 ) {
   await cleanExpiredSessions();
   const sessionSuffix = `_${sessionId}.jsonl`;
-  const existing = (await readdir(askSessionDirectory))
+  const existing = (await readdir(/* turbopackIgnore: true */ askSessionDirectory))
     .filter((entry) => entry.endsWith(sessionSuffix))
     .sort()
     .at(-1);
 
   const manager = existing
-    ? SessionManager.open(path.join(askSessionDirectory, existing), askSessionDirectory, process.cwd())
+    ? SessionManager.open(path.join(/* turbopackIgnore: true */ askSessionDirectory, existing), askSessionDirectory, process.cwd())
     : SessionManager.create(process.cwd(), askSessionDirectory, { id: sessionId });
   const sessionFile = manager.getSessionFile();
   if (sessionFile) await chmod(sessionFile, 0o600);
@@ -97,19 +97,21 @@ async function withSessionLock<T>(sessionId: string, operation: () => Promise<T>
 }
 
 export async function streamAskAnswer({
+  conversationId,
   onText,
   question,
   signal,
   sources,
   visitorId,
 }: {
+  conversationId: string;
   onText: (text: string) => void;
   question: string;
   signal?: AbortSignal;
   sources: AskSource[];
   visitorId: string;
 }) {
-  const sessionId = getSessionId(visitorId);
+  const sessionId = getSessionId(visitorId, conversationId);
   return withSessionLock(sessionId, async () => {
     // Pi imports optional Node integrations internally. Keep that code out of
     // static page generation; it is needed only after a real POST request.

@@ -5,10 +5,14 @@ import { searchAskDocuments } from "@/lib/ask-search.server";
 import { streamAskAnswer } from "@/lib/ask-session.server";
 import { askScopes } from "@/lib/ask-types";
 
-const requestSchema = z.object({
+const sessionSchema = z.object({
+  conversationId: z.string().regex(/^[A-Za-z0-9_-]{16,128}$/, "会话标识无效。"),
+  visitorId: z.string().regex(/^[A-Za-z0-9_-]{16,128}$/, "浏览器会话标识无效。"),
+});
+
+const requestSchema = sessionSchema.extend({
   question: z.string().trim().min(2).max(1_000),
   scope: z.enum(askScopes),
-  visitorId: z.string().regex(/^[A-Za-z0-9_-]{16,128}$/, "浏览器会话标识无效。"),
 });
 
 function getClientIp(request: Request) {
@@ -41,12 +45,14 @@ export async function POST(request: Request) {
         const sources = await searchAskDocuments(parsed.data.question, parsed.data.scope);
         write("sources", { sources });
         if (sources.length === 0) {
-          write("text", { delta: "现有公开资料不足以确认这个问题。你可以换一个更具体的关键词，或切换检索范围后再试。" });
+          const message = "现有公开资料不足以确认这个问题。你可以换一个更具体的关键词，或切换检索范围后再试。";
+          write("text", { delta: message });
           write("done", {});
           return;
         }
 
         await streamAskAnswer({
+          conversationId: parsed.data.conversationId,
           onText: (delta) => write("text", { delta }),
           question: parsed.data.question,
           signal: request.signal,
