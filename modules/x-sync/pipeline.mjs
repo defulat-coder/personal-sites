@@ -29,18 +29,27 @@ function runCommand(command, args, options) {
   });
 }
 
-export async function runSyncPipeline({ repoRoot, options, env = process.env, execute = runCommand }) {
+export async function runSyncPipeline({
+  repoRoot,
+  options,
+  captureSourceOrder,
+  env = process.env,
+  execute = runCommand,
+}) {
   const smaugRoot = path.join(repoRoot, "tools/smaug");
   const birdPath = env.BIRD_PATH ?? path.join(repoRoot, "node_modules/.bin/bird");
   const sources = options.source === "both" ? ["bookmarks", "likes"] : [options.source];
 
   for (const source of sources) {
+    const sourceOrderPath = captureSourceOrder ? await captureSourceOrder(source) : null;
     const fetchArgs = ["src/cli.js", "fetch", "--source", source];
     if (options.media) fetchArgs.push("--media");
     await execute(process.execPath, fetchArgs, { cwd: smaugRoot, env: { BIRD_PATH: birdPath } });
+    const prepareArgs = [path.join(repoRoot, "scripts/x-curation-prepare.mjs"), `--source=${source}`];
+    if (sourceOrderPath) prepareArgs.push(`--source-order-file=${sourceOrderPath}`);
     await execute(
       process.execPath,
-      [path.join(repoRoot, "scripts/x-curation-prepare.mjs"), `--source=${source}`],
+      prepareArgs,
       { cwd: repoRoot },
     );
   }

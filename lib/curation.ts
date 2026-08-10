@@ -13,6 +13,8 @@ const curationItemSchema = z.object({
     handle: z.string(),
     name: z.string(),
   }),
+  collectedAt: z.string().datetime().nullable().default(null),
+  collectedOrder: z.number().int().nonnegative().nullable().default(null),
   id: z.string().min(1),
   links: z.array(
     z.object({
@@ -49,6 +51,7 @@ const curationItemSchema = z.object({
 
 const curationListItemSchema = z.object({
   author: z.object({ handle: z.string(), name: z.string() }),
+  collectedAt: z.string().datetime().nullable().default(null),
   id: z.string().min(1),
   publishedAt: z.string().datetime().nullable(),
   summary: z.string().min(1),
@@ -78,6 +81,8 @@ export async function getCurationItems(): Promise<CurationItem[]> {
   const { data, error } = await client
     .from("x_curation_items")
     .select("content")
+    .order("collected_at", { ascending: false, nullsFirst: false })
+    .order("collected_order", { ascending: true, nullsFirst: false })
     .order("published_at", { ascending: false, nullsFirst: false })
     .order("id", { ascending: false });
   if (error) throw new Error(`读取 Supabase 策展内容失败：${error.message}`);
@@ -94,7 +99,9 @@ const getCachedCurationPage = unstable_cache(
     const client = getPublicCurationClient();
     const { data, error } = await client
       .from("x_curation_items")
-      .select("author:content->author,id,publishedAt:content->>publishedAt,summary:content->>summary,title:content->>title")
+      .select("author:content->author,collectedAt:content->>collectedAt,id,publishedAt:content->>publishedAt,summary:content->>summary,title:content->>title")
+      .order("collected_at", { ascending: false, nullsFirst: false })
+      .order("collected_order", { ascending: true, nullsFirst: false })
       .order("published_at", { ascending: false, nullsFirst: false })
       .order("id", { ascending: false })
       .range(offset, offset + limit);
@@ -106,7 +113,7 @@ const getCachedCurationPage = unstable_cache(
       items: items.slice(0, limit),
     };
   },
-  ["public-curation-page-v1"],
+  ["public-curation-page-v2"],
   { revalidate: 300, tags: ["public-curation"] },
 );
 

@@ -30,7 +30,11 @@ const ready = queue.items.filter(isReadyForPublication);
 
 const items = ready
   .map(toPublicCurationItem)
-  .sort((a, b) => (b.publishedAt ?? "").localeCompare(a.publishedAt ?? ""));
+  .sort((a, b) =>
+    (b.collectedAt ?? "").localeCompare(a.collectedAt ?? "")
+    || (a.collectedOrder ?? Number.MAX_SAFE_INTEGER) - (b.collectedOrder ?? Number.MAX_SAFE_INTEGER)
+    || (b.publishedAt ?? "").localeCompare(a.publishedAt ?? ""),
+  );
 
 const output = {
   version: 1,

@@ -11,7 +11,7 @@ import { XVideoPlayer } from "@/components/x-video-player";
 import {
   findCurationItem,
 } from "@/lib/curation";
-import { formatCurationDate } from "@/lib/curation-format";
+import { formatCurationDate, formatOriginalPublicationDate } from "@/lib/curation-format";
 import type { CurationItem } from "@/lib/curation-types";
 
 type CurationEntryPageProps = { params: Promise<{ id: string }> };
@@ -76,10 +76,11 @@ export default async function CurationEntryPage({
 
         <header className="curation-detail__header">
           <div className="curation-detail__meta">
-            <time dateTime={item.publishedAt ?? undefined}>
+            <time dateTime={item.collectedAt ?? item.publishedAt ?? undefined}>
               {formatCurationDate(item)}
             </time>
             <span>来自 @{item.author.handle}（{item.author.name}）</span>
+            <span>原推发布于 {formatOriginalPublicationDate(item)}</span>
           </div>
           <h1>{item.title}</h1>
           <p>{item.summary}</p>

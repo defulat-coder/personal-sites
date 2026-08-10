@@ -67,7 +67,7 @@ export function CurationStream({ active = true, initialHasMore, initialItems }: 
         <li key={item.id}>
           <Link data-content-id={item.id} href={`/curation/${item.id}` as Route}>
             <div className="curation-home__stream-meta">
-              <time dateTime={item.publishedAt ?? undefined}>{formatCurationDate(item)}</time>
+              <time dateTime={item.collectedAt ?? item.publishedAt ?? undefined}>{formatCurationDate(item)}</time>
               <span>@{item.author.handle}</span>
             </div>
             <div className="curation-home__stream-copy">

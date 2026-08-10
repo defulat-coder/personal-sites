@@ -22,6 +22,7 @@ import path from "node:path";
 import { fileURLToPath } from "node:url";
 
 import { mergeXMedia, normalizeXMedia } from "../modules/x-sync/media.mjs";
+import { firstSeenMetadata, parseSourceOrderSnapshot } from "../modules/x-sync/source-order.mjs";
 
 const repoRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 
@@ -31,6 +32,7 @@ const config = JSON.parse(
 
 const sourceArgIndex = process.argv.findIndex((arg) => arg === "--source");
 const sourceArg = process.argv.find((arg) => arg.startsWith("--source="));
+const sourceOrderFileArg = process.argv.find((arg) => arg.startsWith("--source-order-file="));
 const fetchSource = sourceArg
   ? sourceArg.split("=")[1]
   : sourceArgIndex >= 0
@@ -88,6 +90,13 @@ async function readJsonOr(filePath, fallback) {
   }
 }
 
+async function readSourceOrder() {
+  if (!sourceOrderFileArg) return null;
+  const sourceOrderPath = sourceOrderFileArg.slice("--source-order-file=".length);
+  const snapshot = await readJsonOr(sourceOrderPath, null);
+  return parseSourceOrderSnapshot(snapshot, fetchSource);
+}
+
 const pending = JSON.parse(await readFile(pendingPath, "utf8"));
 const bookmarks = Array.isArray(pending.bookmarks) ? pending.bookmarks : [];
 if (bookmarks.length === 0) {
@@ -105,8 +114,10 @@ await writeFile(rawPath, rawBody);
 // 2. 合并进策展队列（按 tweet id 去重）
 const queue = await readJsonOr(queuePath, { version: 2, items: [] });
 const existing = new Map(queue.items.map((item) => [item.id, item]));
+const sourceOrder = await readSourceOrder();
 
 let added = 0;
+let addedWithoutSourceOrder = 0;
 for (const bookmark of bookmarks) {
   const id = String(bookmark.id);
   const current = existing.get(id);
@@ -115,6 +126,15 @@ for (const bookmark of bookmarks) {
     continue;
   }
   const entry = normalizeEntry(bookmark);
+  const firstSeen = firstSeenMetadata({
+    itemId: id,
+    sourceOrder,
+  });
+  if (firstSeen) {
+    Object.assign(entry, firstSeen);
+  } else {
+    addedWithoutSourceOrder += 1;
+  }
   queue.items.unshift(entry); // 新的在前
   existing.set(id, entry);
   added += 1;
@@ -127,6 +147,9 @@ await writeFile(queuePath, JSON.stringify(queue, null, 2) + "\n");
 console.log(`Raw 快照: ${path.relative(repoRoot, rawPath)}`);
 console.log(`新增策展条目: ${added}（队列共 ${queue.items.length} 条）`);
 console.log(`队列文件: ${path.relative(repoRoot, queuePath)}`);
+if (addedWithoutSourceOrder > 0) {
+  console.warn(`其中 ${addedWithoutSourceOrder} 条不在本次 X 列表快照中，未写入收录时间和顺序。`);
+}
 if (added > 0) {
   console.log("下一步：AI 打标并生成点评，随后自动生成公开投影。");
 }

@@ -7,6 +7,8 @@ export type CurationLink = {
 export type CurationItem = {
   analysis: string;
   author: { handle: string; name: string };
+  collectedAt: string | null;
+  collectedOrder: number | null;
   id: string;
   links: CurationLink[];
   media: Array<{
@@ -28,4 +30,4 @@ export type CurationItem = {
 };
 
 /** Fields needed by the feed; the full analysis remains detail-only. */
-export type CurationListItem = Pick<CurationItem, "author" | "id" | "publishedAt" | "summary" | "title">;
+export type CurationListItem = Pick<CurationItem, "author" | "collectedAt" | "id" | "publishedAt" | "summary" | "title">;

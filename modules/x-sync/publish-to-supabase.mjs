@@ -36,6 +36,8 @@ export async function publishQueueToSupabase(queue, env = process.env) {
       return {
         id: content.id,
         content,
+        collected_at: content.collectedAt,
+        collected_order: content.collectedOrder,
         published_at: content.publishedAt,
         synced_at: now,
       };

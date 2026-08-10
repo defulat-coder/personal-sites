@@ -13,6 +13,10 @@ function toIsoDate(createdAt) {
   return Number.isNaN(parsed.getTime()) ? null : parsed.toISOString();
 }
 
+function toOrder(value) {
+  return Number.isInteger(value) && value >= 0 ? value : null;
+}
+
 export function toPublicCurationItem(item) {
   return {
     id: item.id,
@@ -45,6 +49,8 @@ export function toPublicCurationItem(item) {
       ).values(),
     ],
     media: (item.media ?? []).filter((media) => media.url),
+    collectedAt: toIsoDate(item.firstSeenAt),
+    collectedOrder: toOrder(item.firstSeenOrder),
     publishedAt: toIsoDate(item.createdAt),
   };
 }

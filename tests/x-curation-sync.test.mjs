@@ -62,6 +62,26 @@ test("both sources retain their own origin before Pi Agent enrichment", async ()
   ]);
 });
 
+test("sync pipeline passes the captured X list order to the queue preparation step", async () => {
+  const calls = [];
+
+  await runSyncPipeline({
+    repoRoot: "/repo",
+    options: parseSyncArgs(["--source", "bookmarks", "--fetch-only"]),
+    captureSourceOrder: async (source) => `/private/${source}-order.json`,
+    execute: async (command, args, options) => calls.push({ command, args, options }),
+  });
+
+  assert.deepEqual(calls.map((call) => call.args), [
+    ["src/cli.js", "fetch", "--source", "bookmarks"],
+    [
+      "/repo/scripts/x-curation-prepare.mjs",
+      "--source=bookmarks",
+      "--source-order-file=/private/bookmarks-order.json",
+    ],
+  ]);
+});
+
 test("sync arguments accept pnpm's -- separator", () => {
   assert.deepEqual(parseSyncArgs(["--", "--source=bookmarks", "--fetch-only"]), {
     source: "bookmarks",

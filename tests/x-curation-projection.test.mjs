@@ -3,6 +3,7 @@ import test from "node:test";
 
 import { publishQueueToSupabase } from "../modules/x-sync/publish-to-supabase.mjs";
 import { isReadyForPublication, toPublicCurationItem } from "../modules/x-sync/curation-projection.mjs";
+import { firstSeenMetadata, parseSourceOrderSnapshot } from "../modules/x-sync/source-order.mjs";
 
 const item = {
   ai: {
@@ -36,6 +37,8 @@ test("only completed Pi results become a public curation record", () => {
   assert.deepEqual(toPublicCurationItem(item), {
     analysis: "解析",
     author: { handle: "author", name: "Author" },
+    collectedAt: null,
+    collectedOrder: null,
     id: "1",
     links: [{ shortUrl: "https://t.co/x", type: "article", url: "https://example.com" }],
     media: [{
@@ -55,6 +58,42 @@ test("only completed Pi results become a public curation record", () => {
     title: "标题",
     tweetUrl: "https://x.com/author/status/1",
   });
+});
+
+test("the public projection retains first-seen time and X list position for feed ordering", () => {
+  const projected = toPublicCurationItem({
+    ...item,
+    firstSeenAt: "2026-08-10T07:24:00.000Z",
+    firstSeenOrder: 3,
+  });
+
+  assert.equal(projected.collectedAt, "2026-08-10T07:24:00.000Z");
+  assert.equal(projected.collectedOrder, 3);
+});
+
+test("only items present in the X snapshot receive its collection time and list position", () => {
+  const sourceOrder = parseSourceOrderSnapshot({
+    capturedAt: "2026-08-10T07:24:00.000Z",
+    ids: Array.from({ length: 20 }, (_, index) => `x-${index}`),
+    source: "bookmarks",
+  }, "bookmarks");
+
+  assert.deepEqual(
+    firstSeenMetadata({ itemId: "x-19", sourceOrder }),
+    { firstSeenAt: "2026-08-10T07:24:00.000Z", firstSeenOrder: 19 },
+  );
+  assert.deepEqual(
+    ["backlog-1", "backlog-2", "backlog-3", "backlog-4", "backlog-5", "x-0"].map((itemId) =>
+      firstSeenMetadata({ itemId, sourceOrder })),
+    [null, null, null, null, null, {
+      firstSeenAt: "2026-08-10T07:24:00.000Z",
+      firstSeenOrder: 0,
+    }],
+  );
+  assert.throws(
+    () => parseSourceOrderSnapshot({ capturedAt: "2026-08-10T07:24:00.000Z", ids: [], source: "likes" }, "bookmarks"),
+    /来源不匹配/u,
+  );
 });
 
 test("Supabase publisher requires service credentials before accessing the network", async () => {

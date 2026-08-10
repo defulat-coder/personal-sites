@@ -4,8 +4,10 @@
  * result into the ignored sensitive queue, then analyze it with Pi Coding Agent.
  */
 
+import { execFile } from "node:child_process";
 import { existsSync, readFileSync } from "node:fs";
-import { mkdir } from "node:fs/promises";
+import { mkdir, writeFile } from "node:fs/promises";
+import { promisify } from "node:util";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 
@@ -16,6 +18,7 @@ import { runHistoryPipeline, runSyncPipeline } from "../modules/x-sync/pipeline.
 export { runHistoryPipeline, runSyncPipeline } from "../modules/x-sync/pipeline.mjs";
 
 const repoRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
+const execFileAsync = promisify(execFile);
 
 function requireValue(args, index, option) {
   const value = args[index + 1];
@@ -90,6 +93,37 @@ function printUsage() {
 `);
 }
 
+function tweetsFromBirdResponse(raw) {
+  const parsed = JSON.parse(raw);
+  return Array.isArray(parsed) ? parsed : Array.isArray(parsed.tweets) ? parsed.tweets : [];
+}
+
+async function captureSourceOrder({ birdPath, credentials, source }) {
+  try {
+    const { stdout } = await execFileAsync(birdPath, [source, "-n", "20", "--json"], {
+      cwd: repoRoot,
+      env: { ...process.env, AUTH_TOKEN: credentials.authToken, CT0: credentials.ct0 },
+      maxBuffer: 10 * 1024 * 1024,
+    });
+    const capturedAt = new Date().toISOString();
+    const snapshot = {
+      capturedAt,
+      ids: tweetsFromBirdResponse(stdout).map((tweet) => String(tweet.id)).filter(Boolean),
+      source,
+      version: 1,
+    };
+    const sourceOrderDir = path.join(repoRoot, "data/sensitive/x-curation/raw/source-order");
+    await mkdir(sourceOrderDir, { recursive: true });
+    const filename = `${source}-${capturedAt.replaceAll(/[:.]/gu, "-")}.json`;
+    const outputPath = path.join(sourceOrderDir, filename);
+    await writeFile(outputPath, JSON.stringify(snapshot, null, 2) + "\n", { mode: 0o600 });
+    return outputPath;
+  } catch (error) {
+    console.warn(`无法读取 X ${source} 列表顺序；新条目将暂不写入收录时间和顺序：${error.message}`);
+    return null;
+  }
+}
+
 async function main() {
   const options = parseSyncArgs(process.argv.slice(2));
   if (options.help) return printUsage();
@@ -102,6 +136,7 @@ async function main() {
   if (!process.env.BIRD_PATH && !existsSync(path.join(repoRoot, "node_modules/.bin/bird"))) {
     throw new Error("缺少本地 bird 依赖；请先执行 pnpm install。");
   }
+  const credentials = readSmaugCredentials(smaugConfig);
 
   if (options.history) {
     const curationConfig = JSON.parse(readFileSync(path.join(repoRoot, "config/x-curation.json"), "utf8"));
@@ -111,7 +146,7 @@ async function main() {
     await runHistoryPipeline({
       repoRoot,
       birdPath,
-      credentials: readSmaugCredentials(smaugConfig),
+      credentials,
     });
     return;
   }
@@ -125,7 +160,12 @@ async function main() {
   }
 
   console.log(`开始 X 策展同步：${options.source}${options.fetchOnly ? "（仅抓取）" : "（抓取、Pi Agent 解析并自动公开）"}`);
-  await runSyncPipeline({ repoRoot, options });
+  const birdPath = process.env.BIRD_PATH ?? path.join(repoRoot, "node_modules/.bin/bird");
+  await runSyncPipeline({
+    repoRoot,
+    options,
+    captureSourceOrder: (source) => captureSourceOrder({ birdPath, credentials, source }),
+  });
 }
 
 if (import.meta.url === new URL(`file://${process.argv[1]}`).href) {
