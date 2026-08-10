@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useLayoutEffect, useRef, useState } from "react";
 
 type ProfileIntroductionProps = {
   animateOnFirstHomeVisit?: boolean;
@@ -44,6 +44,8 @@ export function ProfileIntroduction({
   englishParagraphs,
   paragraphs,
 }: ProfileIntroductionProps) {
+  const englishMeasureRef = useRef<HTMLDivElement>(null);
+  const chineseMeasureRef = useRef<HTMLDivElement>(null);
   const [visibleCounts, setVisibleCounts] = useState(() => (
     animateOnFirstHomeVisit
       ? paragraphs.map(() => 0)
@@ -54,6 +56,10 @@ export function ProfileIntroduction({
   const [titleVisibleCount, setTitleVisibleCount] = useState(CHINESE_TITLE.length);
   const [titleIsTyping, setTitleIsTyping] = useState(false);
   const [greetingIndex, setGreetingIndex] = useState(0);
+  const [reservedHeight, setReservedHeight] = useState<number | null>(null);
+  const [hasCompletedInitialSequence, setHasCompletedInitialSequence] = useState(
+    () => !animateOnFirstHomeVisit,
+  );
   const [shouldAnimateInitialVisit] = useState(
     () => animateOnFirstHomeVisit
       && typeof window !== "undefined"
@@ -119,6 +125,7 @@ export function ProfileIntroduction({
       setPhase("complete");
       setTitleVisibleCount(CHINESE_TITLE.length);
       setTitleIsTyping(false);
+      setHasCompletedInitialSequence(true);
     };
 
     const wait = (delay: number) => new Promise<void>((resolve) => {
@@ -217,6 +224,7 @@ export function ProfileIntroduction({
       if (!cancelled) {
         setActiveIndex(null);
         setPhase("complete");
+        setHasCompletedInitialSequence(true);
       }
     };
 
@@ -249,6 +257,31 @@ export function ProfileIntroduction({
     };
   }, [englishParagraphs, paragraphs, shouldAnimateInitialVisit]);
 
+  useLayoutEffect(() => {
+    const measurements = [englishMeasureRef.current, chineseMeasureRef.current];
+
+    const updateReservedHeight = () => {
+      const nextHeight = Math.ceil(Math.max(...measurements.map((element) => (
+        element?.getBoundingClientRect().height ?? 0
+      ))));
+
+      if (nextHeight > 0) {
+        setReservedHeight((currentHeight) => (
+          currentHeight === nextHeight ? currentHeight : nextHeight
+        ));
+      }
+    };
+
+    updateReservedHeight();
+
+    const observer = new ResizeObserver(updateReservedHeight);
+    measurements.forEach((element) => {
+      if (element) observer.observe(element);
+    });
+
+    return () => observer.disconnect();
+  }, [englishParagraphs, paragraphs]);
+
   const displayedParagraphs = phase === "english" || phase === "erasing"
     ? englishParagraphs
     : paragraphs;
@@ -257,9 +290,14 @@ export function ProfileIntroduction({
     : phase === "complete"
       ? GREETINGS[greetingIndex]
       : CHINESE_TITLE;
+  const shouldReserveHeight = shouldAnimateInitialVisit && !hasCompletedInitialSequence;
 
   return (
-    <section className="curation-home__bio" aria-labelledby="profile-introduction">
+    <section
+      aria-labelledby="profile-introduction"
+      className="curation-home__bio"
+      style={shouldReserveHeight && reservedHeight ? { minHeight: `${reservedHeight}px` } : undefined}
+    >
       <h2 className={titleIsTyping ? "is-typing" : undefined} id="profile-introduction">
         {introductionTitle.slice(0, titleVisibleCount)}
       </h2>
@@ -268,6 +306,14 @@ export function ProfileIntroduction({
           <span aria-hidden="true">{paragraph.slice(0, visibleCounts[index])}</span>
         </p>
       ))}
+      <div aria-hidden="true" className="curation-home__bio-measure" ref={englishMeasureRef}>
+        <h2>{ENGLISH_TITLE}</h2>
+        {englishParagraphs.map((paragraph) => <p key={paragraph}>{paragraph}</p>)}
+      </div>
+      <div aria-hidden="true" className="curation-home__bio-measure" ref={chineseMeasureRef}>
+        <h2>{CHINESE_TITLE}</h2>
+        {paragraphs.map((paragraph) => <p key={paragraph}>{paragraph}</p>)}
+      </div>
     </section>
   );
 }
