@@ -74,9 +74,19 @@ async function getSessionManager(
   const manager = existing
     ? SessionManager.open(path.join(/* turbopackIgnore: true */ askSessionDirectory, existing), askSessionDirectory, process.cwd())
     : SessionManager.create(process.cwd(), askSessionDirectory, { id: sessionId });
-  const sessionFile = manager.getSessionFile();
-  if (sessionFile) await chmod(sessionFile, 0o600);
+  await secureSessionFile(manager.getSessionFile());
   return manager;
+}
+
+async function secureSessionFile(sessionFile: string | undefined) {
+  if (!sessionFile) return;
+  try {
+    await chmod(/* turbopackIgnore: true */ sessionFile, 0o600);
+  } catch (error) {
+    // Pi allocates a new session path before its first message creates the file.
+    if (typeof error === "object" && error !== null && "code" in error && error.code === "ENOENT") return;
+    throw error;
+  }
 }
 
 async function withSessionLock<T>(sessionId: string, operation: () => Promise<T>) {
@@ -142,13 +152,14 @@ export async function streamAskAnswer({
     });
     await resourceLoader.reload();
 
+    const sessionManager = await getSessionManager(sessionId, SessionManager);
     const { session } = await createAgentSession({
       cwd: process.cwd(),
       model,
       modelRuntime: runtime,
       noTools: "all",
       resourceLoader,
-      sessionManager: await getSessionManager(sessionId, SessionManager),
+      sessionManager,
       thinkingLevel: "off",
     });
     const abortSession = () => { void session.abort(); };
@@ -173,6 +184,7 @@ export async function streamAskAnswer({
     } finally {
       signal?.removeEventListener("abort", abortSession);
       unsubscribe();
+      await secureSessionFile(sessionManager.getSessionFile());
       session.dispose();
     }
   });

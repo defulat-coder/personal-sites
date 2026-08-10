@@ -1,6 +1,7 @@
 "use client";
 
 import { InputGroup, InputGroupAddon, InputGroupButton, InputGroupTextarea } from "@/components/ui/input-group";
+import { AskAnswerMarkdown } from "@/components/ask-answer-markdown";
 import { Bubble, BubbleContent } from "@/components/ui/bubble";
 import { Button } from "@/components/ui/button";
 import {
@@ -38,10 +39,13 @@ import type { AskScope, AskSource } from "@/lib/ask-types";
 import { ArrowUpRight, ChevronDown, Search, SendHorizontal, Square } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 
+import styles from "./ask-chat.module.css";
+
 type ChatMessage = {
   citations: AskSource[];
   content: string;
   id: string;
+  isComplete: boolean;
   role: "assistant" | "user";
 };
 
@@ -137,8 +141,8 @@ export function AskChat() {
     const controller = new AbortController();
     requestController.current = controller;
     setMessages((current) => [...current,
-      { citations: [], content: trimmedQuestion, id: userId, role: "user" },
-      { citations: [], content: "", id: assistantId, role: "assistant" },
+      { citations: [], content: trimmedQuestion, id: userId, isComplete: true, role: "user" },
+      { citations: [], content: "", id: assistantId, isComplete: false, role: "assistant" },
     ]);
 
     try {
@@ -168,20 +172,26 @@ export function AskChat() {
           if (item.event === "text" && typeof item.data.delta === "string") {
             updateAssistant(assistantId, (message) => ({ ...message, content: `${message.content}${item.data.delta}` }));
           }
+          if (item.event === "done") {
+            updateAssistant(assistantId, (message) => ({ ...message, isComplete: true }));
+          }
           if (item.event === "error") {
             updateAssistant(assistantId, (message) => ({
               ...message,
+              citations: [],
               content: typeof item.data.message === "string" ? item.data.message : "回答暂时不可用，请稍后重试。",
+              isComplete: true,
             }));
           }
         }
         if (done) break;
       }
+      updateAssistant(assistantId, (message) => ({ ...message, isComplete: true }));
     } catch (error) {
       const message = error instanceof DOMException && error.name === "AbortError"
         ? "已停止生成。"
         : error instanceof Error ? error.message : "回答暂时不可用，请稍后重试。";
-      updateAssistant(assistantId, (current) => ({ ...current, content: message }));
+      updateAssistant(assistantId, (current) => ({ ...current, citations: [], content: message, isComplete: true }));
     } finally {
       requestController.current = null;
       setIsStreaming(false);
@@ -191,8 +201,8 @@ export function AskChat() {
   const canSubmit = Boolean(question.trim() && visitorId && visitorId !== "unavailable" && conversationId && !isStreaming);
 
   return (
-    <section aria-labelledby="ask-title" className="ask-chat">
-      <header className="ask-chat__header">
+    <section aria-labelledby="ask-title" className={styles.root}>
+      <header className={styles.header}>
         <div>
           <h2 id="ask-title">问一问</h2>
           <p>从每日关注和开源 README 中检索，每个结论都附上实际来源。</p>
@@ -200,17 +210,17 @@ export function AskChat() {
       </header>
 
       <MessageScrollerProvider autoScroll={!prefersReducedMotion} defaultScrollPosition="end">
-        <MessageScroller className="ask-chat__scroller">
-          <MessageScrollerViewport aria-label="问答记录" className="ask-chat__viewport">
-            <MessageScrollerContent aria-busy={isStreaming} className="ask-chat__messages">
+        <MessageScroller className={styles.scroller}>
+          <MessageScrollerViewport aria-label="问答记录" className={styles.viewport}>
+            <MessageScrollerContent aria-busy={isStreaming} className={styles.messages}>
               {messages.length === 0 ? (
                 <MessageScrollerItem messageId="ask-empty-state">
-                  <Empty className="ask-chat__empty">
+                  <Empty className={styles.empty}>
                     <EmptyHeader>
                       <EmptyTitle>从公开资料开始</EmptyTitle>
                       <EmptyDescription>我不会补充未公开的资料，也不会把猜测写成结论。</EmptyDescription>
                     </EmptyHeader>
-                    <EmptyContent className="ask-chat__suggestions">
+                    <EmptyContent className={styles.suggestions}>
                       {suggestedQuestions.map((suggestion) => (
                         <Button key={suggestion} onClick={() => setQuestion(suggestion)} size="sm" type="button" variant="ghost">
                           {suggestion}
@@ -227,36 +237,34 @@ export function AskChat() {
                   messageId={message.id}
                   scrollAnchor={message.role === "user"}
                 >
-                  <Message align={message.role === "user" ? "end" : "start"}>
+                  <Message align={message.role === "user" ? "end" : "start"} className={styles.message}>
                     <MessageContent>
-                      <MessageHeader>{message.role === "user" ? "你" : "公开资料回答"}</MessageHeader>
+                      <MessageHeader className={styles.messageHeader}>{message.role === "user" ? "你" : "公开资料回答"}</MessageHeader>
                       {message.content ? (
                         <Bubble align={message.role === "user" ? "end" : "start"} variant={message.role === "user" ? "default" : "ghost"}>
-                          <BubbleContent aria-live={message.role === "assistant" ? "polite" : undefined} className={`ask-chat__bubble ask-chat__bubble--${message.role}`}>
-                            {message.content}
+                          <BubbleContent aria-live={message.role === "assistant" ? "polite" : undefined} className={`${styles.bubble} ${message.role === "user" ? styles.userBubble : styles.assistantBubble}`}>
+                            {message.role === "assistant" ? <AskAnswerMarkdown source={message.content} /> : message.content}
                           </BubbleContent>
                         </Bubble>
                       ) : isStreaming && index === messages.length - 1 ? (
-                        <Marker className="ask-chat__status" role="status">
+                        <Marker className={styles.status} role="status">
                           <MarkerIcon><Search /></MarkerIcon>
                           <MarkerContent>
                             {message.citations.length > 0
-                              ? `已检索 ${message.citations.length} 条公开资料，正在生成回答…`
+                              ? "已检索公开资料，正在生成回答…"
                               : "正在检索公开资料…"}
                           </MarkerContent>
                         </Marker>
                       ) : null}
-                      {message.role === "assistant" && message.citations.length > 0 ? (
-                        <MessageFooter className="ask-chat__sources">
-                          <ol aria-label="回答来源" className="ask-chat__citations">
+                      {message.role === "assistant" && message.isComplete && message.content && message.citations.length > 0 ? (
+                        <MessageFooter className={styles.sources}>
+                          <ol aria-label="回答来源" className={styles.citations}>
                             {message.citations.map((source, sourceIndex) => (
                               <li key={source.id}>
-                                <Marker asChild variant="border">
-                                  <a href={source.sourceUrl}>
-                                    <MarkerContent>【{sourceIndex + 1}】{source.title}{source.section ? ` · ${source.section}` : ""}</MarkerContent>
-                                    <MarkerIcon><ArrowUpRight /></MarkerIcon>
-                                  </a>
-                                </Marker>
+                                <a className={styles.citation} href={source.sourceUrl}>
+                                  <span>【{sourceIndex + 1}】{source.title}{source.section ? ` · ${source.section}` : ""}</span>
+                                  <ArrowUpRight aria-hidden="true" />
+                                </a>
                               </li>
                             ))}
                           </ol>
@@ -273,13 +281,13 @@ export function AskChat() {
       </MessageScrollerProvider>
 
       <form
-        className="ask-chat__form"
+        className={styles.form}
         onSubmit={(event) => {
           event.preventDefault();
           void submit();
         }}
       >
-        <InputGroup className="ask-chat__composer">
+        <InputGroup className={styles.composer}>
           <InputGroupTextarea
             aria-label="输入问题"
             disabled={!visitorId || visitorId === "unavailable" || isStreaming}
@@ -295,16 +303,16 @@ export function AskChat() {
             rows={1}
             value={question}
           />
-          <InputGroupAddon align="block-end" className="ask-chat__composer-footer">
+          <InputGroupAddon align="block-end" className={styles.composerFooter}>
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <InputGroupButton aria-label={`检索范围：${scopeLabels[scope]}`} className="ask-chat__scope-trigger" size="sm" type="button" variant="ghost">
+                <InputGroupButton aria-label={`检索范围：${scopeLabels[scope]}`} className={styles.scopeTrigger} size="sm" type="button" variant="ghost">
                   <Search data-icon="inline-start" />
                   {scopeLabels[scope]}
                   <ChevronDown data-icon="inline-end" />
                 </InputGroupButton>
               </DropdownMenuTrigger>
-              <DropdownMenuContent align="start" className="ask-chat__scope-menu" side="top" sideOffset={8}>
+              <DropdownMenuContent align="start" className={styles.scopeMenu} side="top" sideOffset={8}>
                 <DropdownMenuLabel>检索范围</DropdownMenuLabel>
                 <DropdownMenuGroup>
                   <DropdownMenuRadioGroup
@@ -323,7 +331,7 @@ export function AskChat() {
             {isStreaming ? (
               <InputGroupButton
                 aria-label="停止生成"
-                className="ask-chat__send"
+                className={styles.send}
                 onClick={() => requestController.current?.abort()}
                 size="icon-sm"
                 type="button"
@@ -332,7 +340,7 @@ export function AskChat() {
                 <Square aria-hidden="true" />
               </InputGroupButton>
             ) : (
-              <InputGroupButton aria-label="发送问题" className="ask-chat__send" disabled={!canSubmit} size="icon-sm" type="submit" variant="ghost">
+              <InputGroupButton aria-label="发送问题" className={styles.send} disabled={!canSubmit} size="icon-sm" type="submit" variant="ghost">
                 <SendHorizontal aria-hidden="true" />
               </InputGroupButton>
             )}

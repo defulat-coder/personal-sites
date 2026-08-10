@@ -1,0 +1,158 @@
+.root {
+  max-width: 42rem;
+  color: #3f3f42;
+  font-size: 0.84rem;
+  letter-spacing: -0.008em;
+  line-height: 1.68;
+  overflow-wrap: anywhere;
+}
+
+.root > :first-child {
+  margin-top: 0;
+}
+
+.root > :last-child {
+  margin-bottom: 0;
+}
+
+.root h1,
+.root h2,
+.root h3,
+.root h4 {
+  margin: 1.55rem 0 0.6rem;
+  color: var(--ink);
+  font-size: 0.94rem;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  line-height: 1.35;
+}
+
+.root h1 {
+  font-size: 1.04rem;
+}
+
+.root h3,
+.root h4 {
+  font-size: 0.88rem;
+}
+
+.root p,
+.root ul,
+.root ol,
+.root blockquote,
+.root pre,
+.root table {
+  margin: 0.72rem 0;
+}
+
+.root ul,
+.root ol {
+  padding-left: 1.25rem;
+}
+
+.root li + li {
+  margin-top: 0.24rem;
+}
+
+.root a {
+  color: inherit;
+  text-decoration-color: #a8a8ab;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 0.18em;
+}
+
+.root a:hover,
+.root a:focus-visible {
+  color: var(--ink);
+}
+
+.root blockquote {
+  border-left: 2px solid #d5d5d6;
+  color: #6f6f72;
+  padding: 0.08rem 0 0.08rem 0.85rem;
+}
+
+.root code {
+  border-radius: 0.2rem;
+  background: #f2f2f2;
+  color: #252527;
+  padding: 0.08rem 0.24rem;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 0.88em;
+}
+
+.root pre {
+  overflow-x: auto;
+  border: 1px solid #e5e5e5;
+  border-radius: 0.35rem;
+  background: #f7f7f7;
+  color: #252527;
+  padding: 0.7rem 0.78rem;
+}
+
+.root pre code {
+  background: transparent;
+  color: inherit;
+  padding: 0;
+}
+
+.root table {
+  display: block;
+  width: 100%;
+  overflow-x: auto;
+  border-collapse: collapse;
+  font-size: 0.78rem;
+}
+
+.root th,
+.root td {
+  border: 1px solid #e5e5e5;
+  padding: 0.45rem 0.55rem;
+  text-align: left;
+}
+
+.root th {
+  color: var(--ink);
+  font-weight: 600;
+}
+
+.root hr {
+  height: 1px;
+  margin: 1.4rem 0;
+  border: 0;
+  background: var(--line);
+}
+
+:global(html[data-curation-theme="dark"]) .root {
+  color: #c7c7ca;
+}
+
+:global(html[data-curation-theme="dark"]) .root h1,
+:global(html[data-curation-theme="dark"]) .root h2,
+:global(html[data-curation-theme="dark"]) .root h3,
+:global(html[data-curation-theme="dark"]) .root h4,
+:global(html[data-curation-theme="dark"]) .root a:hover,
+:global(html[data-curation-theme="dark"]) .root a:focus-visible {
+  color: #f4f4f4;
+}
+
+:global(html[data-curation-theme="dark"]) .root a {
+  text-decoration-color: #666;
+}
+
+:global(html[data-curation-theme="dark"]) .root blockquote {
+  border-color: #555;
+  color: #999;
+}
+
+:global(html[data-curation-theme="dark"]) .root code,
+:global(html[data-curation-theme="dark"]) .root pre {
+  border-color: #414141;
+  background: #242424;
+  color: #f4f4f4;
+}
+
+:global(html[data-curation-theme="dark"]) .root th,
+:global(html[data-curation-theme="dark"]) .root td {
+  border-color: #414141;
+}

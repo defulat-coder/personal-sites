@@ -1,0 +1,426 @@
+.root {
+  display: flex;
+  width: 100%;
+  max-width: 50rem;
+  min-width: 0;
+  min-height: 100dvh;
+  flex-direction: column;
+  padding: 2rem 1.875rem 3rem 0;
+}
+
+.header {
+  border-bottom: 1px solid var(--line);
+  padding: 0.375rem 0 1rem;
+}
+
+.header h2,
+.header p {
+  margin: 0;
+}
+
+.header h2 {
+  color: var(--ink);
+  font-size: 0.95rem;
+  font-weight: 600;
+  letter-spacing: -0.028em;
+}
+
+.header p {
+  max-width: 30rem;
+  margin-top: 0.38rem;
+  color: #747477;
+  font-size: 0.76rem;
+  line-height: 1.5;
+}
+
+.scroller {
+  min-height: 28rem;
+  flex: 1;
+}
+
+.viewport {
+  padding: 1.2rem 0 1.45rem;
+}
+
+.messages {
+  gap: 1.55rem;
+}
+
+.empty {
+  min-height: 20rem;
+  border: 0;
+  border-radius: 0;
+  color: #747477;
+  padding: 1.6rem 0;
+}
+
+.empty :global([data-slot="empty-title"]) {
+  color: var(--ink);
+  font-size: 0.87rem;
+  font-weight: 600;
+  letter-spacing: -0.018em;
+}
+
+.empty :global([data-slot="empty-description"]) {
+  max-width: 23rem;
+  font-size: 0.76rem;
+  line-height: 1.55;
+}
+
+.suggestions {
+  width: 100%;
+  max-width: 30rem !important;
+  align-items: stretch !important;
+  gap: 0 !important;
+}
+
+.suggestions :global([data-slot="button"]) {
+  width: 100%;
+  min-height: 2.5rem;
+  justify-content: space-between;
+  border-bottom: 1px solid var(--line);
+  border-radius: 0;
+  color: #5f5f63;
+  font-size: 0.75rem;
+  font-weight: 500;
+  padding: 0.52rem 0;
+  text-align: left;
+}
+
+.suggestions :global([data-slot="button"]):hover,
+.suggestions :global([data-slot="button"]):focus-visible {
+  background: transparent;
+  color: var(--ink);
+}
+
+.message :global([data-slot="message-content"]) {
+  gap: 0.48rem;
+}
+
+.messageHeader {
+  padding: 0;
+  color: #858589;
+  font-size: 0.69rem;
+  font-weight: 500;
+  letter-spacing: -0.006em;
+}
+
+.bubble {
+  overflow-wrap: anywhere;
+}
+
+.userBubble {
+  max-width: min(31rem, 88vw);
+  border-radius: 0.48rem 0.48rem 0.12rem;
+  font-size: 0.82rem;
+  line-height: 1.55;
+  padding: 0.52rem 0.72rem;
+  white-space: pre-wrap;
+}
+
+.assistantBubble {
+  max-width: 42rem;
+}
+
+.status {
+  color: #77777a;
+  font-size: 0.73rem;
+  padding: 0.18rem 0;
+}
+
+.sources {
+  display: block !important;
+  width: 100%;
+  max-width: 42rem;
+  padding: 0.35rem 0 0 !important;
+}
+
+.sources::before {
+  color: #858589;
+  content: "本轮引用";
+  display: block;
+  font-size: 0.67rem;
+  font-weight: 500;
+  letter-spacing: 0.01em;
+  margin-bottom: 0.28rem;
+}
+
+.citations {
+  display: flex;
+  width: 100%;
+  flex-direction: column;
+  gap: 0;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.citation {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 0.8rem;
+  border-top: 1px solid var(--line);
+  color: #69696d;
+  font-size: 0.71rem;
+  line-height: 1.45;
+  padding: 0.48rem 0;
+  text-decoration: none;
+  transition: color 160ms ease;
+}
+
+.citation:hover,
+.citation:focus-visible {
+  color: var(--ink);
+  outline: 0;
+}
+
+.citation svg {
+  width: 0.75rem;
+  height: 0.75rem;
+  flex: 0 0 auto;
+  stroke-width: 1.5;
+}
+
+.form {
+  position: sticky;
+  bottom: 0;
+  background: var(--background);
+  padding-top: 1rem;
+}
+
+.composer {
+  min-height: 0;
+  border: 1px solid #dedee1 !important;
+  border-radius: 0.5rem !important;
+  background: #fff !important;
+  box-shadow: none !important;
+  padding: 0 0.66rem;
+}
+
+.composer:focus-within {
+  border-color: #9a9a9e !important;
+}
+
+.composer textarea {
+  min-height: 2.75rem;
+  max-height: 6.25rem;
+  color: var(--ink);
+  font-size: 0.82rem;
+  line-height: 1.55;
+  padding: 0.58rem 0.04rem 0.28rem;
+}
+
+.composerFooter {
+  min-height: 2rem;
+  justify-content: flex-start !important;
+  border-top: 0;
+  color: #717175 !important;
+  padding: 0.12rem 0 0.38rem !important;
+}
+
+.scopeTrigger {
+  height: 1.7rem !important;
+  margin-left: -0.22rem;
+  border-radius: 0.35rem !important;
+  color: #747477;
+  font-size: 0.7rem !important;
+  padding: 0 0.36rem !important;
+}
+
+.scopeTrigger:hover,
+.scopeTrigger:focus-visible,
+.scopeTrigger[data-state="open"] {
+  background: #f0f0f1 !important;
+  color: var(--ink);
+  transform: none !important;
+}
+
+.send {
+  width: 1.78rem !important;
+  height: 1.78rem !important;
+  margin-left: auto;
+  border-radius: 0.4rem !important;
+  background: var(--ink) !important;
+  color: #fff !important;
+}
+
+.send:hover,
+.send:focus-visible {
+  background: #3a3a3d !important;
+  color: #fff !important;
+  transform: none !important;
+}
+
+.send:disabled {
+  background: #c4c4c7 !important;
+  color: #fff !important;
+  opacity: 1 !important;
+}
+
+.scopeMenu {
+  width: 11rem !important;
+  min-width: 11rem !important;
+  border: 1px solid var(--line);
+  border-radius: 0.45rem !important;
+  background: #fff !important;
+  color: var(--ink);
+  box-shadow: 0 0.2rem 0.42rem rgb(28 28 30 / 8%) !important;
+  padding: 0.28rem !important;
+}
+
+.scopeMenu :global([data-slot="dropdown-menu-label"]) {
+  color: #858589;
+  font-size: 0.67rem;
+  padding: 0.32rem 0.42rem 0.26rem;
+}
+
+.scopeMenu :global([data-slot="dropdown-menu-radio-item"]) {
+  border-radius: 0.3rem;
+  color: #5f5f63;
+  font-size: 0.74rem;
+  padding: 0.42rem 1.65rem 0.42rem 0.42rem;
+}
+
+.scopeMenu :global([data-slot="dropdown-menu-radio-item"]):focus {
+  background: #f0f0f1;
+  color: var(--ink);
+}
+
+.scopeMenu :global([data-slot="dropdown-menu-radio-item"])[data-state="checked"] {
+  color: var(--ink);
+  font-weight: 600;
+}
+
+.scopeMenu :global([data-slot="dropdown-menu-radio-item-indicator"]) {
+  color: var(--ink);
+}
+
+:global(html[data-curation-theme="dark"]) .root {
+  color: #f4f4f4;
+}
+
+:global(html[data-curation-theme="dark"]) .header,
+:global(html[data-curation-theme="dark"]) .suggestions :global([data-slot="button"]),
+:global(html[data-curation-theme="dark"]) .citation {
+  border-color: #333;
+}
+
+:global(html[data-curation-theme="dark"]) .header p,
+:global(html[data-curation-theme="dark"]) .empty,
+:global(html[data-curation-theme="dark"]) .suggestions :global([data-slot="button"]),
+:global(html[data-curation-theme="dark"]) .messageHeader,
+:global(html[data-curation-theme="dark"]) .sources::before,
+:global(html[data-curation-theme="dark"]) .citation,
+:global(html[data-curation-theme="dark"]) .status,
+:global(html[data-curation-theme="dark"]) .composerFooter,
+:global(html[data-curation-theme="dark"]) .scopeTrigger {
+  color: #999;
+}
+
+:global(html[data-curation-theme="dark"]) .header h2,
+:global(html[data-curation-theme="dark"]) .empty :global([data-slot="empty-title"]),
+:global(html[data-curation-theme="dark"]) .suggestions :global([data-slot="button"]):hover,
+:global(html[data-curation-theme="dark"]) .suggestions :global([data-slot="button"]):focus-visible,
+:global(html[data-curation-theme="dark"]) .citation:hover,
+:global(html[data-curation-theme="dark"]) .citation:focus-visible {
+  color: #f4f4f4;
+}
+
+:global(html[data-curation-theme="dark"]) .form {
+  background: #181818;
+}
+
+:global(html[data-curation-theme="dark"]) .composer {
+  border-color: #454545 !important;
+  background: #242424 !important;
+}
+
+:global(html[data-curation-theme="dark"]) .composer:focus-within {
+  border-color: #777 !important;
+}
+
+:global(html[data-curation-theme="dark"]) .composer textarea {
+  color: #f4f4f4;
+}
+
+:global(html[data-curation-theme="dark"]) .scopeTrigger:hover,
+:global(html[data-curation-theme="dark"]) .scopeTrigger:focus-visible,
+:global(html[data-curation-theme="dark"]) .scopeTrigger[data-state="open"] {
+  background: #353535 !important;
+  color: #f4f4f4;
+}
+
+:global(html[data-curation-theme="dark"]) .send {
+  background: #f4f4f4 !important;
+  color: #181818 !important;
+}
+
+:global(html[data-curation-theme="dark"]) .send:hover,
+:global(html[data-curation-theme="dark"]) .send:focus-visible {
+  background: #d8d8d8 !important;
+  color: #181818 !important;
+}
+
+:global(html[data-curation-theme="dark"]) .send:disabled {
+  background: #5a5a5a !important;
+  color: #a9a9a9 !important;
+}
+
+:global(html[data-curation-theme="dark"]) .scopeMenu {
+  border-color: #484848;
+  background: #242424 !important;
+  color: #f4f4f4;
+  box-shadow: 0 0.2rem 0.42rem rgb(0 0 0 / 24%) !important;
+}
+
+:global(html[data-curation-theme="dark"]) .scopeMenu :global([data-slot="dropdown-menu-label"]) {
+  color: #999;
+}
+
+:global(html[data-curation-theme="dark"]) .scopeMenu :global([data-slot="dropdown-menu-radio-item"]) {
+  color: #bbb;
+}
+
+:global(html[data-curation-theme="dark"]) .scopeMenu :global([data-slot="dropdown-menu-radio-item"]):focus {
+  background: #353535;
+  color: #f4f4f4;
+}
+
+:global(html[data-curation-theme="dark"]) .scopeMenu :global([data-slot="dropdown-menu-radio-item"])[data-state="checked"],
+:global(html[data-curation-theme="dark"]) .scopeMenu :global([data-slot="dropdown-menu-radio-item-indicator"]) {
+  color: #f4f4f4;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .root :global([data-slot="message-scroller-viewport"]) {
+    scroll-behavior: auto !important;
+  }
+
+  .root :global([data-slot="message-scroller-button"]) {
+    transition: none !important;
+  }
+}
+
+@media (max-width: 900px) {
+  .root {
+    min-height: 0;
+    max-width: none;
+    padding: 2rem;
+  }
+
+  .scroller {
+    min-height: 23rem;
+  }
+
+  .form {
+    bottom: -2rem;
+    padding-bottom: 2rem;
+  }
+}
+
+@media (max-width: 560px) {
+  .userBubble {
+    max-width: 94%;
+  }
+}
