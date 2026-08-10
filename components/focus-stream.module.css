@@ -109,6 +109,12 @@
   }
 }
 
+@media (min-width: 901px) {
+  .header {
+    padding-top: 2rem;
+  }
+}
+
 @media (max-width: 560px) {
   .header {
     align-items: flex-start;
