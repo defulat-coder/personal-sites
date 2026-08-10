@@ -66,13 +66,13 @@ export function CurationStream({ active = true, initialHasMore, initialItems }: 
       {items.map((item) => (
         <li key={item.id}>
           <Link data-content-id={item.id} href={`/curation/${item.id}` as Route}>
-            <div className="curation-home__stream-meta">
-              <time dateTime={item.collectedAt ?? item.publishedAt ?? undefined}>{formatCurationDate(item)}</time>
-              <span>@{item.author.handle}</span>
-            </div>
             <div className="curation-home__stream-copy">
               <h3>{item.title}</h3>
               <p>{item.summary}</p>
+              <div className="curation-home__stream-meta">
+                <time dateTime={item.collectedAt ?? item.publishedAt ?? undefined}>{formatCurationDate(item)}</time>
+                <span>@{item.author.handle}</span>
+              </div>
             </div>
             <span aria-hidden="true" className="curation-home__stream-arrow"><ArrowUpRight /></span>
           </Link>

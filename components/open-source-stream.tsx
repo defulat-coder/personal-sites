@@ -43,15 +43,15 @@ export function OpenSourceStream({ entries }: OpenSourceStreamProps) {
         {visibleEntries.map((entry) => (
           <li key={entry.slug}>
             <Link href={`/open-source/${entry.slug}`}>
-              <div className={styles.meta}>
-                <span>{getOpenSourceCategoryLabel(entry.category)}</span>
-                <span>{getOpenSourceDimensionLabel(entry.dimensions[0])}</span>
-                <span>{entry.type}</span>
-                <span>{entry.status}</span>
-              </div>
               <div className={styles.copy}>
                 <h2>{entry.repository}</h2>
                 <p className={styles.source}>{entry.sourceSummary}</p>
+                <div className={styles.meta}>
+                  <span>{getOpenSourceCategoryLabel(entry.category)}</span>
+                  <span>{getOpenSourceDimensionLabel(entry.dimensions[0])}</span>
+                  <span>{entry.type}</span>
+                  <span>{entry.status}</span>
+                </div>
               </div>
               <span aria-hidden="true" className={styles.arrow}><ArrowUpRight /></span>
             </Link>

@@ -56,7 +56,7 @@
 
 .stream a {
   display: grid;
-  grid-template-columns: minmax(8.5rem, .5fr) minmax(0, 1.5fr) 1.25rem;
+  grid-template-columns: minmax(0, 1fr) 1.25rem;
   align-items: start;
   gap: 1rem;
   color: inherit;
@@ -73,15 +73,18 @@
 
 .meta {
   display: flex;
-  flex-direction: column;
+  flex-wrap: wrap;
   color: #969699;
   font-size: .72rem;
-  gap: .28rem;
-  line-height: 1.22;
+  gap: .35rem;
+  line-height: 1;
+  margin-top: .65rem;
 }
 
-.meta span:last-child {
-  color: #6f6f72;
+.meta span {
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  padding: .38rem .55rem;
 }
 
 .copy h2,
@@ -289,10 +292,6 @@
 
 @keyframes repository-browser-spin { to { transform: rotate(360deg); } }
 
-:global(html[data-curation-theme="dark"]) .meta span:last-child {
-  color: #b5b5b7;
-}
-
 :global(html[data-curation-theme="dark"]) .filter[aria-pressed="true"],
 :global(html[data-curation-theme="dark"]) .filter:hover,
 :global(html[data-curation-theme="dark"]) .filter:focus-visible,
@@ -309,6 +308,10 @@
 :global(html[data-curation-theme="dark"]) .meta,
 :global(html[data-curation-theme="dark"]) .empty {
   color: #999;
+}
+
+:global(html[data-curation-theme="dark"]) .meta span {
+  border-color: #404040;
 }
 
 :global(html[data-curation-theme="dark"]) .documentHint,
@@ -377,15 +380,7 @@
   }
 
   .meta {
-    grid-column: 1 / -1;
-    flex-direction: row;
-    flex-wrap: wrap;
-    gap: .25rem .55rem;
-  }
-
-  .meta span + span::before {
-    margin-right: .55rem;
-    content: "·";
+    gap: .3rem;
   }
 
   .documentHeader {
