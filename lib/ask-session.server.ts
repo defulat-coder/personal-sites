@@ -14,6 +14,7 @@ import { getFinalAssistantFailure, getFinalAssistantText, resolvePiModelConfig }
 const DEFAULT_SESSION_RETENTION_HOURS = 24;
 const MAX_SOURCE_CHARACTERS = 2_400;
 const ASK_SESSION_BUCKET = "ask-sessions";
+const ASK_RUNTIME_DIRECTORY = "ask-runtime";
 const sessionLocks = new Map<string, Promise<void>>();
 
 const askSystemPrompt = `你是“陈远｜每日关注”的公开资料问答助手。只依据每一轮随消息给出的公开资料包回答；不能使用工具、文件、网络、数据库、技能或任何未提供的上下文。使用中文，简洁、准确、可追溯。资料不足、资料互相矛盾或无法确认时，直接说明“现有公开资料不足以确认”，不要猜测。回答中在相关断言后用【来源编号】标注资料包编号。`;
@@ -36,6 +37,15 @@ function getSessionDirectory() {
   return usesRemoteSessionStorage()
     ? path.join(tmpdir(), "ask-sessions")
     : path.join(process.cwd(), "var", "ask-sessions");
+}
+
+/**
+ * Pi's credential and resource stores are process-local implementation data,
+ * not part of an anonymous visitor's persisted conversation. Vercel does not
+ * provide a writable home directory, so never let Pi fall back to ~/.pi/agent.
+ */
+function getRuntimeDirectory() {
+  return path.join(tmpdir(), ASK_RUNTIME_DIRECTORY);
 }
 
 function getRemoteSessionPath(sessionId: string) {
@@ -69,6 +79,13 @@ async function ensureSessionDirectory() {
   await mkdir(/* turbopackIgnore: true */ sessionDirectory, { mode: 0o700, recursive: true });
   await chmod(/* turbopackIgnore: true */ sessionDirectory, 0o700);
   return sessionDirectory;
+}
+
+async function ensureRuntimeDirectory() {
+  const runtimeDirectory = getRuntimeDirectory();
+  await mkdir(/* turbopackIgnore: true */ runtimeDirectory, { mode: 0o700, recursive: true });
+  await chmod(/* turbopackIgnore: true */ runtimeDirectory, 0o700);
+  return runtimeDirectory;
 }
 
 async function restoreRemoteSession(sessionId: string, sessionDirectory: string) {
@@ -227,19 +244,25 @@ export async function streamAskAnswer({
     const {
       createAgentSession,
       DefaultResourceLoader,
-      getAgentDir,
       ModelRuntime,
       SessionManager,
     } = await import("@earendil-works/pi-coding-agent");
     const modelConfig = resolvePiModelConfig({ env: process.env });
-    if (!process.env.KIMI_API_KEY) throw new Error("缺少 KIMI_API_KEY，暂时无法生成回答。");
+    const kimiApiKey = process.env.KIMI_API_KEY;
+    if (!kimiApiKey) throw new Error("缺少 KIMI_API_KEY，暂时无法生成回答。");
 
-    const runtime = await ModelRuntime.create({ allowModelNetwork: false });
+    const runtimeDirectory = await ensureRuntimeDirectory();
+    const runtime = await ModelRuntime.create({
+      allowModelNetwork: false,
+      authPath: path.join(runtimeDirectory, "auth.json"),
+      modelsPath: null,
+    });
+    await runtime.setRuntimeApiKey(modelConfig.provider, kimiApiKey);
     const model = runtime.getModel(modelConfig.provider, modelConfig.model);
     if (!model) throw new Error(`Pi 未找到模型：${modelConfig.provider}/${modelConfig.model}`);
 
     const resourceLoader = new DefaultResourceLoader({
-      agentDir: getAgentDir(),
+      agentDir: runtimeDirectory,
       appendSystemPromptOverride: () => [],
       cwd: process.cwd(),
       noContextFiles: true,
@@ -253,6 +276,7 @@ export async function streamAskAnswer({
 
     const sessionManager = await getSessionManager(sessionId, SessionManager);
     const { session } = await createAgentSession({
+      agentDir: runtimeDirectory,
       cwd: process.cwd(),
       model,
       modelRuntime: runtime,
