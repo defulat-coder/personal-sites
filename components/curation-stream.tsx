@@ -3,10 +3,15 @@
 import { ArrowUpRight } from "lucide-react";
 import type { Route } from "next";
 import Link from "next/link";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 
 import { formatCurationDate } from "@/lib/curation-format";
 import type { CurationListItem } from "@/lib/curation-types";
+
+import {
+  getCurationScrollTarget,
+  isNearCurationScrollEnd,
+} from "./curation-scroll";
 
 type CurationPageResponse = {
   error?: string;
@@ -23,6 +28,7 @@ type CurationStreamProps = {
 const PAGE_SIZE = 20;
 
 export function CurationStream({ active = true, initialHasMore, initialItems }: CurationStreamProps) {
+  const streamRef = useRef<HTMLOListElement>(null);
   const [items, setItems] = useState(initialItems);
   const [hasMore, setHasMore] = useState(initialHasMore);
   const [isLoading, setIsLoading] = useState(false);
@@ -50,19 +56,22 @@ export function CurationStream({ active = true, initialHasMore, initialItems }: 
   }, [active, hasMore, isLoading, items.length]);
 
   useEffect(() => {
-    if (!active || !hasMore) return;
+    const stream = streamRef.current;
+    if (!active || !hasMore || !stream) return;
+
+    const target = getCurationScrollTarget(stream);
 
     const loadWhenNearBottom = () => {
-      const distanceToBottom = document.documentElement.scrollHeight - window.innerHeight - window.scrollY;
-      if (distanceToBottom <= 48) void loadMore();
+      if (isNearCurationScrollEnd(target)) void loadMore();
     };
 
-    window.addEventListener("scroll", loadWhenNearBottom, { passive: true });
-    return () => window.removeEventListener("scroll", loadWhenNearBottom);
+    target.addEventListener("scroll", loadWhenNearBottom, { passive: true });
+    loadWhenNearBottom();
+    return () => target.removeEventListener("scroll", loadWhenNearBottom);
   }, [active, hasMore, loadMore]);
 
   return (
-    <ol className="curation-home__stream">
+    <ol className="curation-home__stream" ref={streamRef}>
       {items.map((item) => (
         <li key={item.id}>
           <Link data-content-id={item.id} href={`/curation/${item.id}` as Route}>
