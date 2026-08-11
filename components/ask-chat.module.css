@@ -1,13 +1,9 @@
 .root {
   display: flex;
   width: 100%;
-  max-width: 50rem;
   min-width: 0;
-  height: 100dvh;
   min-height: 0;
   flex-direction: column;
-  overflow: hidden;
-  padding: 2rem 1.875rem 3rem 0;
 }
 
 .scroller {
@@ -44,15 +40,25 @@
 }
 
 .messages {
+  min-height: 0 !important;
   gap: 1.55rem;
 }
 
 .empty {
-  min-height: 20rem;
+  min-height: 0;
+  flex: 0 0 auto !important;
+  align-items: flex-start;
+  justify-content: flex-start;
   border: 0;
   border-radius: 0;
   color: #747477;
-  padding: 1.6rem 0;
+  padding: 1.2rem 0 0;
+  text-align: left;
+}
+
+.empty :global([data-slot="empty-header"]) {
+  align-items: flex-start;
+  gap: 0.25rem;
 }
 
 .empty :global([data-slot="empty-title"]) {
@@ -70,21 +76,21 @@
 
 .suggestions {
   width: 100%;
-  max-width: 30rem !important;
+  max-width: 42rem !important;
   align-items: stretch !important;
   gap: 0 !important;
 }
 
 .suggestions :global([data-slot="button"]) {
   width: 100%;
-  min-height: 2.5rem;
+  min-height: 3rem;
   justify-content: space-between;
   border-bottom: 1px solid var(--line);
   border-radius: 0;
   color: #5f5f63;
   font-size: 0.74rem;
   font-weight: 500;
-  padding: 0.52rem 0;
+  padding: 0.68rem 0;
   text-align: left;
 }
 

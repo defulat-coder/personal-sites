@@ -223,7 +223,7 @@ export function AskChat() {
   const canSubmit = Boolean(question.trim() && visitorId && visitorId !== "unavailable" && conversationId && !isStreaming);
 
   return (
-    <section aria-label="问一问" className={`${styles.root} site-section-motion`}>
+    <section aria-label="问一问" className={`curation-home__feed ${styles.root} site-section-motion`}>
       <ContentSectionNavigation current="ask" />
 
       <MessageScrollerProvider autoScroll={false} defaultScrollPosition="end">

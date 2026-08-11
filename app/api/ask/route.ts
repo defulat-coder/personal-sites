@@ -55,7 +55,6 @@ export async function POST(request: Request) {
           conversationId: parsed.data.conversationId,
           onText: (delta) => write("text", { delta }),
           question: parsed.data.question,
-          signal: request.signal,
           sources,
           visitorId: parsed.data.visitorId,
         });

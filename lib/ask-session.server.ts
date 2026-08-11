@@ -1,12 +1,13 @@
 import "server-only";
 
 import { createHmac } from "node:crypto";
-import { chmod, mkdir, readFile, readdir, rm, stat, writeFile } from "node:fs/promises";
+import { chmod, mkdir, readdir, rm, stat, writeFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import path from "node:path";
 
 import { createClient } from "@supabase/supabase-js";
 
+import { readPersistableSessionFile } from "@/lib/ask-session-file";
 import type { AskSource } from "@/lib/ask-types";
 import { getFinalAssistantFailure, getFinalAssistantText, resolvePiModelConfig } from "@/lib/pi-runtime.mjs";
 
@@ -90,7 +91,8 @@ async function restoreRemoteSession(sessionId: string, sessionDirectory: string)
 async function persistRemoteSession(sessionId: string, sessionFile: string | undefined) {
   if (!usesRemoteSessionStorage() || !sessionFile) return;
 
-  const contents = await readFile(/* turbopackIgnore: true */ sessionFile);
+  const contents = await readPersistableSessionFile(sessionFile);
+  if (!contents) return;
   const { error } = await getSessionStorageClient().storage
     .from(ASK_SESSION_BUCKET)
     .upload(getRemoteSessionPath(sessionId), contents, {
@@ -283,7 +285,13 @@ export async function streamAskAnswer({
       unsubscribe();
       try {
         await secureSessionFile(sessionManager.getSessionFile());
-        await persistRemoteSession(sessionId, sessionManager.getSessionFile());
+        try {
+          await persistRemoteSession(sessionId, sessionManager.getSessionFile());
+        } catch (error) {
+          // The generated reply is still valid if its next-turn context cannot
+          // be saved. Never replace it with a generic streaming error.
+          console.error("Public ask session persistence failed", error);
+        }
       } finally {
         session.dispose();
       }
