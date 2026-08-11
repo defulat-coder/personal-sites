@@ -17,6 +17,7 @@
 | `tools/smaug/.state/` | 抓取游标、待处理书签和运行状态 | 仅本机保存，禁止 Git |
 | `tools/smaug/smaug.config.json` | 本地抓取配置和凭据 | 仅本机保存，禁止 Git |
 | `tools/smaug/bookmarks.md` | 本地书签归档 | 仅本机保存，禁止 Git |
+| 私有 Supabase Storage `ask-sessions` | 匿名问答 JSONL 会话与模型生成记录 | 仅服务端 service role 可读写，禁止浏览器、Git 与公开链接 |
 
 X 策展不再使用 `data/public/` 作为页面数据源。经 Pi Agent 解析完成的内容保留在本地敏感生成备份，并同步到 Supabase 的公开表；页面只从 Supabase 读取。原始抓取文件、敏感队列及本地凭据永远不会进入 Git 或浏览器。
 
@@ -27,6 +28,7 @@ X 策展不再使用 `data/public/` 作为页面数据源。经 Pi Agent 解析�
 - `.githooks/pre-push` 在推送前运行 `scripts/verify-git-safety.mjs`，检查暂存区、工作区候选文件和可达历史对象。
 - 根目录个人简历已移入 `data/sensitive/personal/resume.md` 并从 Git 索引移除；页面代码仍保留，不读取该源文件。
 - 网站运行时、浏览器验证、构建输出和截图不得读取或复制 `data/sensitive/`、`knowledge/sensitive/`、凭据配置或原始会话。
+- 在 Vercel 上，问答会话只在 `/tmp/ask-sessions` 中短暂恢复和运行；请求结束后回写私有 Supabase Storage，不能依赖 Function 本地磁盘作为持久化层。
 
 ## 操作检查
 

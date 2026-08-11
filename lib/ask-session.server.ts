@@ -1,15 +1,18 @@
 import "server-only";
 
 import { createHmac } from "node:crypto";
-import { chmod, mkdir, readdir, rm, stat } from "node:fs/promises";
+import { chmod, mkdir, readFile, readdir, rm, stat, writeFile } from "node:fs/promises";
+import { tmpdir } from "node:os";
 import path from "node:path";
+
+import { createClient } from "@supabase/supabase-js";
 
 import type { AskSource } from "@/lib/ask-types";
 import { getFinalAssistantFailure, getFinalAssistantText, resolvePiModelConfig } from "@/lib/pi-runtime.mjs";
 
 const DEFAULT_SESSION_RETENTION_HOURS = 24;
 const MAX_SOURCE_CHARACTERS = 2_400;
-const askSessionDirectory = path.join(process.cwd(), "var", "ask-sessions");
+const ASK_SESSION_BUCKET = "ask-sessions";
 const sessionLocks = new Map<string, Promise<void>>();
 
 const askSystemPrompt = `你是“陈远｜每日关注”的公开资料问答助手。只依据每一轮随消息给出的公开资料包回答；不能使用工具、文件、网络、数据库、技能或任何未提供的上下文。使用中文，简洁、准确、可追溯。资料不足、资料互相矛盾或无法确认时，直接说明“现有公开资料不足以确认”，不要猜测。回答中在相关断言后用【来源编号】标注资料包编号。`;
@@ -22,6 +25,98 @@ function getSessionRetentionMilliseconds() {
     throw new Error("ASK_SESSION_RETENTION_HOURS 必须是大于 0 的小时数。");
   }
   return hours * 60 * 60 * 1_000;
+}
+
+function usesRemoteSessionStorage() {
+  return process.env.VERCEL === "1";
+}
+
+function getSessionDirectory() {
+  return usesRemoteSessionStorage()
+    ? path.join(tmpdir(), "ask-sessions")
+    : path.join(process.cwd(), "var", "ask-sessions");
+}
+
+function getRemoteSessionPath(sessionId: string) {
+  return `${sessionId}.jsonl`;
+}
+
+function getRestoredSessionFileName(sessionId: string) {
+  return `ask_${sessionId}.jsonl`;
+}
+
+function requiredStorageEnvironment(key: "SUPABASE_URL" | "SUPABASE_SERVICE_ROLE_KEY") {
+  const value = process.env[key];
+  if (!value) throw new Error(`缺少 ${key}；无法持久保存公开问答会话。`);
+  return value;
+}
+
+function getSessionStorageClient() {
+  return createClient(
+    requiredStorageEnvironment("SUPABASE_URL"),
+    requiredStorageEnvironment("SUPABASE_SERVICE_ROLE_KEY"),
+    { auth: { autoRefreshToken: false, persistSession: false } },
+  );
+}
+
+function isMissingRemoteSession(error: { message?: string; status?: number; statusCode?: string } | null) {
+  return error?.statusCode === "404" && /object not found/i.test(error.message ?? "");
+}
+
+async function ensureSessionDirectory() {
+  const sessionDirectory = getSessionDirectory();
+  await mkdir(/* turbopackIgnore: true */ sessionDirectory, { mode: 0o700, recursive: true });
+  await chmod(/* turbopackIgnore: true */ sessionDirectory, 0o700);
+  return sessionDirectory;
+}
+
+async function restoreRemoteSession(sessionId: string, sessionDirectory: string) {
+  if (!usesRemoteSessionStorage()) return;
+
+  const { data, error } = await getSessionStorageClient().storage
+    .from(ASK_SESSION_BUCKET)
+    .download(getRemoteSessionPath(sessionId));
+  if (error) {
+    if (isMissingRemoteSession(error)) return;
+    throw new Error(`读取公开问答会话失败：${error.message}`);
+  }
+  if (!data) return;
+
+  const sessionFile = path.join(sessionDirectory, getRestoredSessionFileName(sessionId));
+  await writeFile(/* turbopackIgnore: true */ sessionFile, Buffer.from(await data.arrayBuffer()), { mode: 0o600 });
+  await chmod(/* turbopackIgnore: true */ sessionFile, 0o600);
+}
+
+async function persistRemoteSession(sessionId: string, sessionFile: string | undefined) {
+  if (!usesRemoteSessionStorage() || !sessionFile) return;
+
+  const contents = await readFile(/* turbopackIgnore: true */ sessionFile);
+  const { error } = await getSessionStorageClient().storage
+    .from(ASK_SESSION_BUCKET)
+    .upload(getRemoteSessionPath(sessionId), contents, {
+      cacheControl: "0",
+      contentType: "application/x-ndjson",
+      upsert: true,
+    });
+  if (error) throw new Error(`保存公开问答会话失败：${error.message}`);
+}
+
+async function cleanExpiredRemoteSessions() {
+  if (!usesRemoteSessionStorage()) return;
+
+  const { data, error } = await getSessionStorageClient().storage
+    .from(ASK_SESSION_BUCKET)
+    .list("", { limit: 1_000, sortBy: { column: "updated_at", order: "asc" } });
+  if (error) throw new Error(`清理公开问答会话失败：${error.message}`);
+
+  const expiresBefore = Date.now() - getSessionRetentionMilliseconds();
+  const expiredPaths = (data ?? [])
+    .filter((entry) => entry.name.endsWith(".jsonl") && Date.parse(entry.updated_at ?? "") < expiresBefore)
+    .map((entry) => entry.name);
+  if (expiredPaths.length === 0) return;
+
+  const { error: removeError } = await getSessionStorageClient().storage.from(ASK_SESSION_BUCKET).remove(expiredPaths);
+  if (removeError) throw new Error(`删除过期公开问答会话失败：${removeError.message}`);
 }
 
 function requiredSessionSecret() {
@@ -44,36 +139,38 @@ function formatSources(sources: AskSource[]) {
 }
 
 async function cleanExpiredSessions() {
-  await mkdir(/* turbopackIgnore: true */ askSessionDirectory, { mode: 0o700, recursive: true });
-  await chmod(/* turbopackIgnore: true */ askSessionDirectory, 0o700);
+  const sessionDirectory = await ensureSessionDirectory();
   const now = Date.now();
   const retentionMilliseconds = getSessionRetentionMilliseconds();
-  const entries = await readdir(/* turbopackIgnore: true */ askSessionDirectory, { withFileTypes: true });
+  const entries = await readdir(/* turbopackIgnore: true */ sessionDirectory, { withFileTypes: true });
   await Promise.all(entries
     .filter((entry) => entry.isFile() && entry.name.endsWith(".jsonl"))
     .map(async (entry) => {
-      const filePath = path.join(/* turbopackIgnore: true */ askSessionDirectory, entry.name);
+      const filePath = path.join(/* turbopackIgnore: true */ sessionDirectory, entry.name);
       const metadata = await stat(/* turbopackIgnore: true */ filePath);
       if (now - metadata.mtimeMs > retentionMilliseconds) {
         await rm(/* turbopackIgnore: true */ filePath, { force: true });
       }
     }));
+  await cleanExpiredRemoteSessions();
+  return sessionDirectory;
 }
 
 async function getSessionManager(
   sessionId: string,
   SessionManager: typeof import("@earendil-works/pi-coding-agent").SessionManager,
 ) {
-  await cleanExpiredSessions();
+  const sessionDirectory = await cleanExpiredSessions();
+  await restoreRemoteSession(sessionId, sessionDirectory);
   const sessionSuffix = `_${sessionId}.jsonl`;
-  const existing = (await readdir(/* turbopackIgnore: true */ askSessionDirectory))
+  const existing = (await readdir(/* turbopackIgnore: true */ sessionDirectory))
     .filter((entry) => entry.endsWith(sessionSuffix))
     .sort()
     .at(-1);
 
   const manager = existing
-    ? SessionManager.open(path.join(/* turbopackIgnore: true */ askSessionDirectory, existing), askSessionDirectory, process.cwd())
-    : SessionManager.create(process.cwd(), askSessionDirectory, { id: sessionId });
+    ? SessionManager.open(path.join(/* turbopackIgnore: true */ sessionDirectory, existing), sessionDirectory, process.cwd())
+    : SessionManager.create(process.cwd(), sessionDirectory, { id: sessionId });
   await secureSessionFile(manager.getSessionFile());
   return manager;
 }
@@ -184,8 +281,12 @@ export async function streamAskAnswer({
     } finally {
       signal?.removeEventListener("abort", abortSession);
       unsubscribe();
-      await secureSessionFile(sessionManager.getSessionFile());
-      session.dispose();
+      try {
+        await secureSessionFile(sessionManager.getSessionFile());
+        await persistRemoteSession(sessionId, sessionManager.getSessionFile());
+      } finally {
+        session.dispose();
+      }
     }
   });
 }
