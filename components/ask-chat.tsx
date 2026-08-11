@@ -35,9 +35,10 @@ import {
   MessageScrollerProvider,
   MessageScrollerViewport,
 } from "@/components/ui/message-scroller";
+import { ContentSectionNavigation } from "@/components/site-section-navigation";
 import type { AskScope, AskSource } from "@/lib/ask-types";
-import { ArrowUpRight, ChevronDown, Search, SendHorizontal, Square } from "lucide-react";
-import { useEffect, useRef, useState } from "react";
+import { ArrowUpRight, Bot, ChevronDown, Search, SendHorizontal, Square, UserRound } from "lucide-react";
+import { useCallback, useEffect, useRef, useState } from "react";
 
 import styles from "./ask-chat.module.css";
 
@@ -86,7 +87,10 @@ export function AskChat() {
   const [isStreaming, setIsStreaming] = useState(false);
   const [prefersReducedMotion, setPrefersReducedMotion] = useState(false);
   const requestController = useRef<AbortController | null>(null);
+  const shouldFollowLatest = useRef(true);
+  const isProgrammaticScroll = useRef(false);
   const textareaRef = useRef<HTMLTextAreaElement | null>(null);
+  const viewportRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
     let active = true;
@@ -126,6 +130,23 @@ export function AskChat() {
     textarea.style.overflowY = textarea.scrollHeight > maxHeight ? "auto" : "hidden";
   }, [question]);
 
+  const scrollToLatest = useCallback(() => {
+    const viewport = viewportRef.current;
+    if (!viewport || !shouldFollowLatest.current) return;
+
+    isProgrammaticScroll.current = true;
+    viewport.scrollTop = viewport.scrollHeight;
+    window.requestAnimationFrame(() => {
+      isProgrammaticScroll.current = false;
+    });
+  }, []);
+
+  useEffect(() => {
+    if (!shouldFollowLatest.current) return;
+    const frame = window.requestAnimationFrame(scrollToLatest);
+    return () => window.cancelAnimationFrame(frame);
+  }, [messages, scrollToLatest]);
+
   const updateAssistant = (id: string, update: (message: ChatMessage) => ChatMessage) => {
     setMessages((current) => current.map((message) => message.id === id ? update(message) : message));
   };
@@ -136,6 +157,7 @@ export function AskChat() {
 
     const userId = crypto.randomUUID();
     const assistantId = crypto.randomUUID();
+    shouldFollowLatest.current = true;
     setQuestion("");
     setIsStreaming(true);
     const controller = new AbortController();
@@ -201,17 +223,32 @@ export function AskChat() {
   const canSubmit = Boolean(question.trim() && visitorId && visitorId !== "unavailable" && conversationId && !isStreaming);
 
   return (
-    <section aria-labelledby="ask-title" className={styles.root}>
-      <header className={styles.header}>
-        <div>
-          <h2 id="ask-title">问一问</h2>
-          <p>从每日关注和开源 README 中检索，每个结论都附上实际来源。</p>
-        </div>
-      </header>
+    <section aria-label="问一问" className={`${styles.root} site-section-motion`}>
+      <ContentSectionNavigation current="ask" />
 
-      <MessageScrollerProvider autoScroll={!prefersReducedMotion} defaultScrollPosition="end">
+      <MessageScrollerProvider autoScroll={false} defaultScrollPosition="end">
         <MessageScroller className={styles.scroller}>
-          <MessageScrollerViewport aria-label="问答记录" className={styles.viewport}>
+          <MessageScrollerViewport
+            aria-label="问答记录"
+            className={styles.viewport}
+            onKeyDown={(event) => {
+              if (["ArrowUp", "Home", "PageUp", " "].includes(event.key)) {
+                shouldFollowLatest.current = false;
+              }
+            }}
+            onScroll={(event) => {
+              if (isProgrammaticScroll.current) return;
+              const viewport = event.currentTarget;
+              shouldFollowLatest.current = viewport.scrollHeight - viewport.clientHeight - viewport.scrollTop <= 24;
+            }}
+            onTouchMove={() => {
+              shouldFollowLatest.current = false;
+            }}
+            onWheel={(event) => {
+              if (event.deltaY < 0) shouldFollowLatest.current = false;
+            }}
+            ref={viewportRef}
+          >
             <MessageScrollerContent aria-busy={isStreaming} className={styles.messages}>
               {messages.length === 0 ? (
                 <MessageScrollerItem messageId="ask-empty-state">
@@ -233,13 +270,19 @@ export function AskChat() {
               ) : null}
               {messages.map((message, index) => (
                 <MessageScrollerItem
+                  className={styles.messageItem}
                   key={message.id}
                   messageId={message.id}
                   scrollAnchor={message.role === "user"}
                 >
                   <Message align={message.role === "user" ? "end" : "start"} className={styles.message}>
                     <MessageContent>
-                      <MessageHeader className={styles.messageHeader}>{message.role === "user" ? "你" : "公开资料回答"}</MessageHeader>
+                      <MessageHeader className={styles.messageHeader}>
+                        <span className={styles.messageIdentity}>
+                          {message.role === "user" ? <UserRound aria-hidden="true" /> : <Bot aria-hidden="true" />}
+                          <span>{message.role === "user" ? "你" : "归档助手"}</span>
+                        </span>
+                      </MessageHeader>
                       {message.content ? (
                         <Bubble align={message.role === "user" ? "end" : "start"} variant={message.role === "user" ? "default" : "ghost"}>
                           <BubbleContent aria-live={message.role === "assistant" ? "polite" : undefined} className={`${styles.bubble} ${message.role === "user" ? styles.userBubble : styles.assistantBubble}`}>
@@ -276,7 +319,15 @@ export function AskChat() {
               ))}
             </MessageScrollerContent>
           </MessageScrollerViewport>
-          <MessageScrollerButton aria-label="回到最新消息" />
+          <MessageScrollerButton
+            aria-label="回到最新消息"
+            behavior={prefersReducedMotion ? "auto" : "smooth"}
+            className={styles.scrollToLatest}
+            onClick={() => {
+              shouldFollowLatest.current = true;
+              window.requestAnimationFrame(scrollToLatest);
+            }}
+          />
         </MessageScroller>
       </MessageScrollerProvider>
 

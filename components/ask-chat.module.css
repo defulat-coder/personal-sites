@@ -3,43 +3,44 @@
   width: 100%;
   max-width: 50rem;
   min-width: 0;
-  min-height: 100dvh;
+  height: 100dvh;
+  min-height: 0;
   flex-direction: column;
+  overflow: hidden;
   padding: 2rem 1.875rem 3rem 0;
 }
 
-.header {
-  border-bottom: 1px solid var(--line);
-  padding: 0.375rem 0 1rem;
-}
-
-.header h2,
-.header p {
-  margin: 0;
-}
-
-.header h2 {
-  color: var(--ink);
-  font-size: 0.95rem;
-  font-weight: 600;
-  letter-spacing: -0.028em;
-}
-
-.header p {
-  max-width: 30rem;
-  margin-top: 0.38rem;
-  color: #747477;
-  font-size: 0.76rem;
-  line-height: 1.5;
-}
-
 .scroller {
-  min-height: 28rem;
   flex: 1;
+  min-height: 0;
 }
 
 .viewport {
+  min-height: 0;
+  overscroll-behavior: contain;
   padding: 1.2rem 0 1.45rem;
+  scrollbar-color: rgb(28 28 30 / 28%) transparent;
+  scrollbar-gutter: stable;
+  scrollbar-width: thin;
+}
+
+.viewport::-webkit-scrollbar {
+  width: 0.45rem;
+}
+
+.viewport::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.viewport::-webkit-scrollbar-thumb {
+  border: 0.125rem solid transparent;
+  border-radius: 999px;
+  background: rgb(28 28 30 / 28%);
+  background-clip: padding-box;
+}
+
+.viewport:hover::-webkit-scrollbar-thumb {
+  background-color: rgb(28 28 30 / 46%);
 }
 
 .messages {
@@ -56,15 +57,15 @@
 
 .empty :global([data-slot="empty-title"]) {
   color: var(--ink);
-  font-size: 0.87rem;
+  font-size: 0.84rem;
   font-weight: 600;
   letter-spacing: -0.018em;
 }
 
 .empty :global([data-slot="empty-description"]) {
   max-width: 23rem;
-  font-size: 0.76rem;
-  line-height: 1.55;
+  font-size: 0.74rem;
+  line-height: 1.5;
 }
 
 .suggestions {
@@ -81,7 +82,7 @@
   border-bottom: 1px solid var(--line);
   border-radius: 0;
   color: #5f5f63;
-  font-size: 0.75rem;
+  font-size: 0.74rem;
   font-weight: 500;
   padding: 0.52rem 0;
   text-align: left;
@@ -97,12 +98,29 @@
   gap: 0.48rem;
 }
 
+.messageItem {
+  contain-intrinsic-size: auto;
+  content-visibility: visible;
+}
+
 .messageHeader {
   padding: 0;
   color: #858589;
-  font-size: 0.69rem;
+  font-size: 0.68rem;
   font-weight: 500;
   letter-spacing: -0.006em;
+}
+
+.messageIdentity {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.28rem;
+}
+
+.messageIdentity svg {
+  width: 0.76rem;
+  height: 0.76rem;
+  stroke-width: 1.65;
 }
 
 .bubble {
@@ -112,9 +130,9 @@
 .userBubble {
   max-width: min(31rem, 88vw);
   border-radius: 0.48rem 0.48rem 0.12rem;
-  font-size: 0.82rem;
-  line-height: 1.55;
-  padding: 0.52rem 0.72rem;
+  font-size: 0.78rem;
+  line-height: 1.52;
+  padding: 0.48rem 0.68rem;
   white-space: pre-wrap;
 }
 
@@ -124,8 +142,12 @@
 
 .status {
   color: #77777a;
-  font-size: 0.73rem;
+  font-size: 0.7rem;
   padding: 0.18rem 0;
+}
+
+.scrollToLatest {
+  bottom: 0.85rem !important;
 }
 
 .sources {
@@ -139,7 +161,7 @@
   color: #858589;
   content: "本轮引用";
   display: block;
-  font-size: 0.67rem;
+  font-size: 0.66rem;
   font-weight: 500;
   letter-spacing: 0.01em;
   margin-bottom: 0.28rem;
@@ -162,9 +184,9 @@
   gap: 0.8rem;
   border-top: 1px solid var(--line);
   color: #69696d;
-  font-size: 0.71rem;
-  line-height: 1.45;
-  padding: 0.48rem 0;
+  font-size: 0.68rem;
+  line-height: 1.42;
+  padding: 0.44rem 0;
   text-decoration: none;
   transition: color 160ms ease;
 }
@@ -206,8 +228,8 @@
   min-height: 2.75rem;
   max-height: 6.25rem;
   color: var(--ink);
-  font-size: 0.82rem;
-  line-height: 1.55;
+  font-size: 0.78rem;
+  line-height: 1.52;
   padding: 0.58rem 0.04rem 0.28rem;
 }
 
@@ -300,13 +322,23 @@
   color: #f4f4f4;
 }
 
-:global(html[data-curation-theme="dark"]) .header,
 :global(html[data-curation-theme="dark"]) .suggestions :global([data-slot="button"]),
 :global(html[data-curation-theme="dark"]) .citation {
   border-color: #333;
 }
 
-:global(html[data-curation-theme="dark"]) .header p,
+:global(html[data-curation-theme="dark"]) .viewport {
+  scrollbar-color: rgb(244 244 244 / 30%) transparent;
+}
+
+:global(html[data-curation-theme="dark"]) .viewport::-webkit-scrollbar-thumb {
+  background-color: rgb(244 244 244 / 30%);
+}
+
+:global(html[data-curation-theme="dark"]) .viewport:hover::-webkit-scrollbar-thumb {
+  background-color: rgb(244 244 244 / 48%);
+}
+
 :global(html[data-curation-theme="dark"]) .empty,
 :global(html[data-curation-theme="dark"]) .suggestions :global([data-slot="button"]),
 :global(html[data-curation-theme="dark"]) .messageHeader,
@@ -318,7 +350,6 @@
   color: #999;
 }
 
-:global(html[data-curation-theme="dark"]) .header h2,
 :global(html[data-curation-theme="dark"]) .empty :global([data-slot="empty-title"]),
 :global(html[data-curation-theme="dark"]) .suggestions :global([data-slot="button"]):hover,
 :global(html[data-curation-theme="dark"]) .suggestions :global([data-slot="button"]):focus-visible,
@@ -404,18 +435,19 @@
 
 @media (max-width: 900px) {
   .root {
+    height: 100%;
     min-height: 0;
     max-width: none;
+    overflow: hidden;
     padding: 2rem;
   }
 
   .scroller {
-    min-height: 23rem;
+    min-height: 0;
   }
 
   .form {
-    bottom: -2rem;
-    padding-bottom: 2rem;
+    position: static;
   }
 }
 

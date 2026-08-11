@@ -2,7 +2,7 @@
 
 import { ArrowUpRight } from "lucide-react";
 import Link from "next/link";
-import { useState } from "react";
+import { useState, type CSSProperties } from "react";
 
 import styles from "@/components/open-source.module.css";
 import {
@@ -19,6 +19,15 @@ type OpenSourceStreamProps = {
 
 export function OpenSourceStream({ entries }: OpenSourceStreamProps) {
   const [category, setCategory] = useState<OpenSourceCategory>("all");
+  const [hasFiltered, setHasFiltered] = useState(false);
+  const categoryCounts = new Map<OpenSourceCategory, number>(
+    openSourceCategories.map((item) => [item.id, item.id === "all" ? entries.length : 0]),
+  );
+
+  for (const entry of entries) {
+    categoryCounts.set(entry.category, (categoryCounts.get(entry.category) ?? 0) + 1);
+  }
+
   const visibleEntries = category === "all"
     ? entries
     : entries.filter((entry) => entry.category === category);
@@ -29,19 +38,32 @@ export function OpenSourceStream({ entries }: OpenSourceStreamProps) {
         {openSourceCategories.map((item) => (
           <button
             aria-pressed={category === item.id}
+            aria-label={`${item.label}，${categoryCounts.get(item.id) ?? 0} 个项目`}
             className={styles.filter}
             key={item.id}
-            onClick={() => setCategory(item.id)}
+            onClick={() => {
+              if (item.id === category) return;
+              setHasFiltered(true);
+              setCategory(item.id);
+            }}
             type="button"
           >
-            {item.label}
+            <span>{item.label}</span>
+            <span className={styles.filterCount} aria-hidden="true">
+              {categoryCounts.get(item.id) ?? 0}
+            </span>
           </button>
         ))}
       </div>
 
-      <ol className={styles.stream}>
-        {visibleEntries.map((entry) => (
-          <li key={entry.slug}>
+      <ol
+        aria-live="polite"
+        className={styles.stream}
+        data-filtered={hasFiltered ? "true" : undefined}
+        key={category}
+      >
+        {visibleEntries.map((entry, index) => (
+          <li key={entry.slug} style={{ "--filter-entry-index": index } as CSSProperties}>
             <Link href={`/open-source/${entry.slug}`}>
               <div className={styles.copy}>
                 <h2>{entry.repository}</h2>

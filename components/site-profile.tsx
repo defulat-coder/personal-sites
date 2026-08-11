@@ -1,8 +1,10 @@
 import Image from "next/image";
-import { BookOpen, GitBranch, MessageCircleMore } from "lucide-react";
+import { BookOpen, GitBranch } from "lucide-react";
 
 import { InteractiveDotField } from "@/components/interactive-dot-field";
 import { ProfileIntroduction } from "@/components/profile-introduction";
+import { ProfileTransitionBridge } from "@/components/profile-transition-bridge";
+import { MobileSectionNavigation, type SiteSection } from "@/components/site-section-navigation";
 import { ThemeToggle } from "@/components/theme-toggle";
 
 const profileCopy = [
@@ -19,11 +21,13 @@ const profileCopyEnglish = [
 
 type SiteProfileProps = {
   animateOnFirstHomeVisit?: boolean;
+  mobileSection?: SiteSection;
 };
 
-export function SiteProfile({ animateOnFirstHomeVisit = false }: SiteProfileProps) {
+export function SiteProfile({ animateOnFirstHomeVisit = false, mobileSection }: SiteProfileProps) {
   return (
     <aside aria-labelledby="profile-name" className="curation-home__profile">
+      <ProfileTransitionBridge section={mobileSection ?? "profile"} />
       <ThemeToggle />
       <div className="curation-home__profile-header">
         <Image
@@ -41,7 +45,7 @@ export function SiteProfile({ animateOnFirstHomeVisit = false }: SiteProfileProp
             <p>@defulat-coder</p>
           </div>
 
-          <nav aria-label="陈远的外部主页" className="curation-home__external-links">
+          <nav aria-label="外部链接" className="curation-home__external-links">
             <a href="https://github.com/defulat-coder" rel="noreferrer" target="_blank">
               <GitBranch aria-hidden="true" />
               GitHub
@@ -50,13 +54,11 @@ export function SiteProfile({ animateOnFirstHomeVisit = false }: SiteProfileProp
               <BookOpen aria-hidden="true" />
               语雀
             </a>
-            <a href="/ask">
-              <MessageCircleMore aria-hidden="true" />
-              问一问
-            </a>
           </nav>
         </div>
       </div>
+
+      {mobileSection ? <MobileSectionNavigation current={mobileSection} /> : null}
 
       <InteractiveDotField />
 

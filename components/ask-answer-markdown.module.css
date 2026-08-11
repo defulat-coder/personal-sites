@@ -1,9 +1,9 @@
 .root {
   max-width: 42rem;
   color: #3f3f42;
-  font-size: 0.84rem;
+  font-size: 0.79rem;
   letter-spacing: -0.008em;
-  line-height: 1.68;
+  line-height: 1.6;
   overflow-wrap: anywhere;
 }
 
@@ -19,21 +19,21 @@
 .root h2,
 .root h3,
 .root h4 {
-  margin: 1.55rem 0 0.6rem;
+  margin: 1.35rem 0 0.5rem;
   color: var(--ink);
-  font-size: 0.94rem;
+  font-size: 0.88rem;
   font-weight: 600;
   letter-spacing: -0.02em;
   line-height: 1.35;
 }
 
 .root h1 {
-  font-size: 1.04rem;
+  font-size: 0.94rem;
 }
 
 .root h3,
 .root h4 {
-  font-size: 0.88rem;
+  font-size: 0.82rem;
 }
 
 .root p,
@@ -42,7 +42,7 @@
 .root blockquote,
 .root pre,
 .root table {
-  margin: 0.72rem 0;
+  margin: 0.62rem 0;
 }
 
 .root ul,
@@ -101,7 +101,7 @@
   width: 100%;
   overflow-x: auto;
   border-collapse: collapse;
-  font-size: 0.78rem;
+  font-size: 0.74rem;
 }
 
 .root th,
