@@ -251,7 +251,7 @@ export function AskChat() {
           >
             <MessageScrollerContent aria-busy={isStreaming} className={styles.messages}>
               {messages.length === 0 ? (
-                <MessageScrollerItem messageId="ask-empty-state">
+                <MessageScrollerItem className={styles.emptyItem} messageId="ask-empty-state">
                   <Empty className={styles.empty}>
                     <EmptyHeader>
                       <EmptyTitle>从公开资料开始</EmptyTitle>
