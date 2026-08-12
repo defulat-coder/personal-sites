@@ -15,7 +15,7 @@
 .viewport {
   min-height: 0;
   overscroll-behavior: contain;
-  padding: 1.625rem 0 1rem;
+  padding: 1.625rem 0.75rem 1rem 0;
   scrollbar-color: rgb(28 28 30 / 28%) transparent;
   scrollbar-gutter: stable;
   scrollbar-width: thin;
@@ -225,7 +225,7 @@
   position: sticky;
   bottom: 0;
   border-top: 1px solid var(--line);
-  background: var(--surface);
+  background: #f7f7f8;
   padding-top: 0.75rem;
   transition: border-color 180ms ease;
 }
@@ -388,7 +388,7 @@
 
 :global(html[data-curation-theme="dark"]) .form {
   border-color: #333;
-  background: #181818;
+  background: #242424;
 }
 
 :global(html[data-curation-theme="dark"]) .form:focus-within {

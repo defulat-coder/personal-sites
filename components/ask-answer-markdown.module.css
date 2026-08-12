@@ -131,6 +131,7 @@
 :global(html[data-curation-theme="dark"]) .root h2,
 :global(html[data-curation-theme="dark"]) .root h3,
 :global(html[data-curation-theme="dark"]) .root h4,
+:global(html[data-curation-theme="dark"]) .root th,
 :global(html[data-curation-theme="dark"]) .root a:hover,
 :global(html[data-curation-theme="dark"]) .root a:focus-visible {
   color: #f4f4f4;
