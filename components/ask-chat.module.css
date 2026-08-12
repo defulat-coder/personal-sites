@@ -224,23 +224,23 @@
 .form {
   position: sticky;
   bottom: 0;
-  border-top: 1px solid var(--line);
-  background: #f7f7f8;
+  background: var(--surface);
   padding-top: 0.75rem;
-  transition: border-color 180ms ease;
-}
-
-.form:focus-within {
-  border-color: var(--quiet);
 }
 
 .composer {
+  max-width: var(--ask-measure);
   min-height: 0;
-  border: 0 !important;
-  border-radius: 0 !important;
-  background: transparent !important;
+  border: 1px solid #dedee1 !important;
+  border-radius: 0.75rem !important;
+  background: #fff !important;
   box-shadow: none !important;
-  padding: 0;
+  padding: 0 0.75rem;
+  transition: border-color 180ms ease;
+}
+
+.composer:focus-within {
+  border-color: var(--quiet) !important;
 }
 
 .composer textarea {
@@ -387,12 +387,16 @@
 }
 
 :global(html[data-curation-theme="dark"]) .form {
-  border-color: #333;
-  background: #242424;
+  background: #181818;
 }
 
-:global(html[data-curation-theme="dark"]) .form:focus-within {
-  border-color: #777;
+:global(html[data-curation-theme="dark"]) .composer {
+  border-color: #454545 !important;
+  background: #242424 !important;
+}
+
+:global(html[data-curation-theme="dark"]) .composer:focus-within {
+  border-color: #777 !important;
 }
 
 :global(html[data-curation-theme="dark"]) .composer textarea {
