@@ -75,19 +75,23 @@ export default async function CurationEntryPage({
         </nav>
 
         <header className="curation-detail__header">
-          <div className="curation-detail__meta">
-            <time dateTime={item.collectedAt ?? item.publishedAt ?? undefined}>
-              {formatCurationDate(item)}
-            </time>
-            <span>来自 @{item.author.handle}（{item.author.name}）</span>
-            <span>原推发布于 {formatOriginalPublicationDate(item)}</span>
+          <div className="curation-detail__context">
+            <div className="curation-detail__meta">
+              <time dateTime={item.collectedAt ?? item.publishedAt ?? undefined}>
+                {formatCurationDate(item)}
+              </time>
+              <span>来自 @{item.author.handle}（{item.author.name}）</span>
+              <span>原推发布于 {formatOriginalPublicationDate(item)}</span>
+            </div>
+            <div className="curation-detail__tags">
+              {item.tags.map((tag) => (
+                <em key={tag}>{tag}</em>
+              ))}
+            </div>
           </div>
-          <h1>{item.title}</h1>
-          <p>{item.summary}</p>
-          <div className="curation-detail__tags">
-            {item.tags.map((tag) => (
-              <em key={tag}>{tag}</em>
-            ))}
+          <div className="curation-detail__intro">
+            <h1>{item.title}</h1>
+            <p>{item.summary}</p>
           </div>
         </header>
 
