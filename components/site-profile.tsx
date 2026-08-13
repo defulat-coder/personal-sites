@@ -1,9 +1,9 @@
 import Image from "next/image";
 import { BookOpen, GitBranch } from "lucide-react";
 
+import { AboutPrint } from "@/components/about-print";
 import { InteractiveDotField } from "@/components/interactive-dot-field";
 import { ProfileIntroduction } from "@/components/profile-introduction";
-import { ProfileJourney } from "@/components/profile-journey";
 import { ProfileTransitionBridge } from "@/components/profile-transition-bridge";
 import { MobileSectionNavigation, type SiteSection } from "@/components/site-section-navigation";
 import { ThemeToggle } from "@/components/theme-toggle";
@@ -69,7 +69,7 @@ export function SiteProfile({ animateOnFirstHomeVisit = false, mobileSection }: 
         paragraphs={profileCopy}
       />
 
-      <ProfileJourney />
+      <AboutPrint />
     </aside>
   );
 }
