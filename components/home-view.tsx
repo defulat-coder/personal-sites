@@ -1,0 +1,19 @@
+"use client";
+
+import { useSearchParams } from "next/navigation";
+
+import { HomeMain, type HomeStreamData } from "@/components/home-main";
+import type { SiteSection } from "@/components/site-section-navigation";
+
+// ?view= 只影响移动端默认展示哪个版块，放在客户端读取，首页保持静态/ISR。
+export function HomeView(props: HomeStreamData) {
+  const view = useSearchParams().get("view");
+  const mobileSection: SiteSection = view === "open-source" ? "open-source" : view === "daily" ? "daily" : "home";
+  return (
+    <HomeMain
+      {...props}
+      initialView={mobileSection === "open-source" ? "open-source" : "daily"}
+      mobileSection={mobileSection}
+    />
+  );
+}

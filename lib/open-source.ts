@@ -169,7 +169,6 @@ const getCachedOpenSourceListEntries = unstable_cache(
 );
 
 export async function getOpenSourceListEntries(): Promise<OpenSourceListEntry[]> {
-  await connection();
   return getCachedOpenSourceListEntries();
 }
 
@@ -189,6 +188,5 @@ const getCachedOpenSourceEntry = unstable_cache(
 );
 
 export const getOpenSourceEntry = cache(async (slug: string): Promise<OpenSourceDetailEntry | null> => {
-  await connection();
   return getCachedOpenSourceEntry(slug);
 });

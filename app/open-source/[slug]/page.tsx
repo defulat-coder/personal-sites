@@ -1,6 +1,5 @@
 import type { Metadata } from "next";
 import { ArrowLeft } from "lucide-react";
-import type { Route } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 
@@ -11,8 +10,14 @@ import { getOpenSourceEntry } from "@/lib/open-source";
 
 type OpenSourceEntryPageProps = {
   params: Promise<{ slug: string }>;
-  searchParams: Promise<{ view?: string | string[] }>;
 };
+
+// 与 /curation/[id] 一致：首次访问按需生成，随后五分钟内复用页面结果。
+export const revalidate = 300;
+
+export function generateStaticParams() {
+  return [];
+}
 
 export async function generateMetadata({ params }: OpenSourceEntryPageProps): Promise<Metadata> {
   const entry = await getOpenSourceEntry((await params).slug);
@@ -24,11 +29,10 @@ export async function generateMetadata({ params }: OpenSourceEntryPageProps): Pr
     : {};
 }
 
-export default async function OpenSourceEntryPage({ params, searchParams }: OpenSourceEntryPageProps) {
-  const [{ slug }, query] = await Promise.all([params, searchParams]);
+export default async function OpenSourceEntryPage({ params }: OpenSourceEntryPageProps) {
+  const { slug } = await params;
   const entry = await getOpenSourceEntry(slug);
   if (!entry) notFound();
-  const documentView = query.view === "repository" ? "repository" : "parsed";
 
   return (
     <main className="curation-home curation-detail curation-open-source-detail" id="site-main" tabIndex={-1}>
@@ -36,7 +40,7 @@ export default async function OpenSourceEntryPage({ params, searchParams }: Open
 
       <article className="curation-detail__article curation-open-source__article">
         <nav aria-label="返回" className="curation-detail__back">
-          <Link href={"/?view=open-source" as Route}>
+          <Link href="/?view=open-source">
             <ArrowLeft aria-hidden="true" />
             返回开源关注
           </Link>
@@ -55,7 +59,6 @@ export default async function OpenSourceEntryPage({ params, searchParams }: Open
           repositoryUrl={entry.repositoryUrl}
           slug={entry.slug}
           sourceUrl={entry.evidence.url}
-          view={documentView}
         />
       </article>
     </main>

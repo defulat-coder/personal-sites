@@ -8,30 +8,33 @@
 
 ```text
 RootLayout
-├─ OpeningLoader（一次性全屏遮罩）
+├─ OpeningLoader（全屏遮罩，每个浏览器会话只播放一次）
 └─ 路由页面
-   ├─ /                         首页
+   ├─ /                         首页（ISR，revalidate = 300）
    │  ├─ Profile rail（sticky）
-   │  └─ 桌面默认每日关注；移动端默认显示个人首页
+   │  └─ 桌面默认每日关注；移动端默认显示个人首页；?view= 由客户端 HomeView 读取
    ├─ /ask                      问一问
    │  ├─ Profile rail（与首页相同）
-   │  └─ 内容导航 + 公开资料问答
-   └─ /curation/[id]            详情页
+   │  └─ 内容导航 + 公开资料问答（指纹与 Markdown 渲染按需加载）
+   ├─ /curation/[id]            详情页（ISR，revalidate = 300）
+   │  ├─ Profile rail（与首页相同）
+   │  └─ Curation article
+   │     ├─ Back navigation
+   │     ├─ Metadata / title / summary / tags
+   │     ├─ Original source and media
+   │     ├─ Markdown analysis
+   │     └─ Source links
+   └─ /open-source/[slug]       开源详情页（ISR，revalidate = 300）
       ├─ Profile rail（与首页相同）
-      └─ Curation article
-         ├─ Back navigation
-         ├─ Metadata / title / summary / tags
-         ├─ Original source and media
-         ├─ Markdown analysis
-         └─ Source links
+      └─ 文档版本切换为客户端状态，中文阅读版服务端渲染
 ```
 
 | 区域 | 主文件 | 责任 | 不应承担的责任 |
 |---|---|---|---|
 | 全局壳 | `app/layout.tsx` | metadata、全局 CSS、Loading 注入 | 路由内容或业务数据 |
-| 首页 | `app/page.tsx` | 左右两栏编排、策展条目入口 | 详情内容渲染 |
+| 首页 | `app/page.tsx` | ISR 静态壳 + `HomeView`/`HomeMain` 编排、策展条目入口 | 详情内容渲染；`?view=` 不进服务端 |
 | 详情页 | `app/curation/[id]/page.tsx` | 条目元信息、原文、媒体、解析、来源 | 第二套个人侧栏 |
-| Loading | `components/opening-loader.tsx` | 加载阶段、滚动锁定、向上揭幕 | 常规页面配色 |
+| Loading | `components/opening-loader.tsx` | 加载阶段、滚动锁定、向上揭幕；sessionStorage 标记 + `<html>` data 属性预隐藏，水合后移除 | 常规页面配色；重复访问不遮挡内容 |
 | 个人简介 | `components/profile-introduction.tsx` | 双语逐字输入/删除、最终中文正文与多语言标题轮换 | 静态履历数据源 |
 | 内容导航 | `components/site-section-navigation.tsx` | 统一三项内容入口的路由跳转与当前页面状态；导航即栏目页头，不重复显示标题与说明 | 外部链接或同页 Tab 语义 |
 | 技术信号场 | `components/interactive-dot-field.tsx` | 技术词词库与稀疏视觉表达 | 标签过滤或导航 |
@@ -85,5 +88,5 @@ RootLayout
 - 移动端首页进入内容页时，身份轨不直接动画整体高度：信号场和简介先离场，头像与身份信息通过临时共享覆盖层收拢到紧凑头部，导航与内容流随后落位；从内容页回首页按相反节奏展开。该覆盖层必须 `aria-hidden`、不可交互并在终态后清理。
 - 策展内容已从卡片选择器收敛为默认信息流；详情页继承同样的排版语法。
 - 开源关注的主题筛选采用带项目数的轻量文本索引：当前项只用短下划线强调，小屏自动换行，不使用按钮块或横向滚动。
-- Loading、技术信号、双语简介属于身份轨的三种不同时间尺度的动效，分别为一次性揭幕、环境信号、个人叙事；它们不应扩散到右侧内容流。
+- Loading、技术信号、双语简介属于身份轨的三种不同时间尺度的动效，分别为每会话一次的揭幕、环境信号、个人叙事；它们不应扩散到右侧内容流。
 - 旧知识库、语雀同步、表格工作区及相关框架不再属于当前前端信息架构。

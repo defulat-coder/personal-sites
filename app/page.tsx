@@ -1,29 +1,22 @@
-import { FocusStream, type FocusView } from "@/components/focus-stream";
-import { SectionMotionLifecycle } from "@/components/section-motion-lifecycle";
-import type { SiteSection } from "@/components/site-section-navigation";
-import { SiteProfile } from "@/components/site-profile";
+import { Suspense } from "react";
+
+import { HomeMain, type HomeStreamData } from "@/components/home-main";
+import { HomeView } from "@/components/home-view";
 import { getCurationPage } from "@/lib/curation";
 import { getOpenSourceListEntries } from "@/lib/open-source";
 
-type HomePageProps = {
-  searchParams: Promise<{ view?: string | string[] }>;
-};
+export const revalidate = 300;
 
-export default async function HomePage({ searchParams }: HomePageProps) {
-  const view = (await searchParams).view;
-  const mobileView: SiteSection = view === "open-source" ? "open-source" : view === "daily" ? "daily" : "home";
-  const initialView: FocusView = mobileView === "open-source" ? "open-source" : "daily";
+export default async function HomePage() {
   const [curationPage, openSourceEntries] = await Promise.all([getCurationPage(), getOpenSourceListEntries()]);
+  const streamData: HomeStreamData = {
+    initialHasMore: curationPage.hasMore,
+    initialItems: curationPage.items,
+    openSourceEntries,
+  };
   return (
-    <main className={`curation-home${mobileView === "home" ? " curation-home--mobile-home" : ""}`} id="site-main" tabIndex={-1}>
-      <SiteProfile animateOnFirstHomeVisit mobileSection={mobileView} />
-      <SectionMotionLifecycle section={mobileView} />
-      <FocusStream
-        initialHasMore={curationPage.hasMore}
-        initialItems={curationPage.items}
-        initialView={initialView}
-        openSourceEntries={openSourceEntries}
-      />
-    </main>
+    <Suspense fallback={<HomeMain {...streamData} initialView="daily" mobileSection="home" />}>
+      <HomeView {...streamData} />
+    </Suspense>
   );
 }

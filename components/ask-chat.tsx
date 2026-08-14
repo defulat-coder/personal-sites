@@ -1,7 +1,6 @@
 "use client";
 
 import { InputGroup, InputGroupAddon, InputGroupButton, InputGroupTextarea } from "@/components/ui/input-group";
-import { AskAnswerMarkdown } from "@/components/ask-answer-markdown";
 import { Bubble, BubbleContent } from "@/components/ui/bubble";
 import { Button } from "@/components/ui/button";
 import {
@@ -38,9 +37,13 @@ import {
 import { ContentSectionNavigation } from "@/components/site-section-navigation";
 import type { AskScope, AskSource } from "@/lib/ask-types";
 import { ArrowUpRight, Bot, ChevronDown, Search, SendHorizontal, Square, UserRound } from "lucide-react";
+import dynamic from "next/dynamic";
 import { useCallback, useEffect, useRef, useState } from "react";
 
 import styles from "./ask-chat.module.css";
+
+// react-markdown 生态只在收到第一条回答时才需要，按需加载。
+const AskAnswerMarkdown = dynamic(() => import("@/components/ask-answer-markdown").then((module) => module.AskAnswerMarkdown));
 
 type ChatMessage = {
   citations: AskSource[];
@@ -83,7 +86,6 @@ export function AskChat() {
   const [question, setQuestion] = useState("");
   const [scope, setScope] = useState<AskScope>("all");
   const [visitorId, setVisitorId] = useState<string | null>(null);
-  const [conversationId, setConversationId] = useState<string | null>(null);
   const [isStreaming, setIsStreaming] = useState(false);
   const [prefersReducedMotion, setPrefersReducedMotion] = useState(false);
   const requestController = useRef<AbortController | null>(null);
@@ -91,23 +93,24 @@ export function AskChat() {
   const isProgrammaticScroll = useRef(false);
   const textareaRef = useRef<HTMLTextAreaElement | null>(null);
   const viewportRef = useRef<HTMLDivElement | null>(null);
+  const visitorSessionPromise = useRef<Promise<{ conversationId: string; visitorId: string }> | null>(null);
 
-  useEffect(() => {
-    let active = true;
-    void (async () => {
+  // 指纹只用于限流，等用户表现出提问意图（聚焦输入框或提交）后再加载计算。
+  const ensureVisitorSession = useCallback(() => {
+    visitorSessionPromise.current ??= (async () => {
       try {
         const { default: FingerprintJS } = await import("@fingerprintjs/fingerprintjs");
         const agent = await FingerprintJS.load();
         const result = await agent.get();
-        if (active) {
-          setVisitorId(result.visitorId);
-          setConversationId(crypto.randomUUID());
-        }
+        const session = { conversationId: crypto.randomUUID(), visitorId: result.visitorId };
+        setVisitorId(session.visitorId);
+        return session;
       } catch {
-        if (active) setVisitorId("unavailable");
+        setVisitorId("unavailable");
+        return { conversationId: "", visitorId: "unavailable" };
       }
     })();
-    return () => { active = false; };
+    return visitorSessionPromise.current;
   }, []);
 
   useEffect(() => {
@@ -153,7 +156,9 @@ export function AskChat() {
 
   const submit = async () => {
     const trimmedQuestion = question.trim();
-    if (!trimmedQuestion || isStreaming || !visitorId || visitorId === "unavailable" || !conversationId) return;
+    if (!trimmedQuestion || isStreaming || visitorId === "unavailable") return;
+    const session = await (visitorSessionPromise.current ?? ensureVisitorSession());
+    if (session.visitorId === "unavailable") return;
 
     const userId = crypto.randomUUID();
     const assistantId = crypto.randomUUID();
@@ -169,7 +174,7 @@ export function AskChat() {
 
     try {
       const response = await fetch("/api/ask", {
-        body: JSON.stringify({ conversationId, question: trimmedQuestion, scope, visitorId }),
+        body: JSON.stringify({ conversationId: session.conversationId, question: trimmedQuestion, scope, visitorId: session.visitorId }),
         headers: { "Content-Type": "application/json" },
         method: "POST",
         signal: controller.signal,
@@ -220,7 +225,7 @@ export function AskChat() {
     }
   };
 
-  const canSubmit = Boolean(question.trim() && visitorId && visitorId !== "unavailable" && conversationId && !isStreaming);
+  const canSubmit = Boolean(question.trim() && visitorId !== "unavailable" && !isStreaming);
 
   return (
     <section aria-label="问一问" className={`curation-home__feed ${styles.root} site-section-motion`}>
@@ -341,15 +346,16 @@ export function AskChat() {
         <InputGroup className={styles.composer}>
           <InputGroupTextarea
             aria-label="输入问题"
-            disabled={!visitorId || visitorId === "unavailable" || isStreaming}
+            disabled={visitorId === "unavailable" || isStreaming}
             onChange={(event) => setQuestion(event.target.value)}
+            onFocus={() => void ensureVisitorSession()}
             onKeyDown={(event) => {
               if (event.key === "Enter" && !event.shiftKey) {
                 event.preventDefault();
                 void submit();
               }
             }}
-            placeholder={visitorId === "unavailable" ? "无法建立浏览器会话，请刷新后重试" : visitorId ? "问问这些公开资料…" : "正在建立本次会话…"}
+            placeholder={visitorId === "unavailable" ? "无法建立浏览器会话，请刷新后重试" : "问问这些公开资料…"}
             ref={textareaRef}
             rows={1}
             value={question}

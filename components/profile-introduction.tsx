@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useLayoutEffect, useRef, useState } from "react";
+import { useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
 
 type ProfileIntroductionProps = {
   animateOnFirstHomeVisit?: boolean;
@@ -90,11 +90,29 @@ export function ProfileIntroduction({
       setTitleIsTyping(false);
     };
 
+    const waitForVisible = () => new Promise<void>((resolve) => {
+      if (!document.hidden) {
+        resolve();
+        return;
+      }
+      const onVisibilityChange = () => {
+        if (!document.hidden) {
+          document.removeEventListener("visibilitychange", onVisibilityChange);
+          resolve();
+        }
+      };
+      document.addEventListener("visibilitychange", onVisibilityChange);
+    });
+
     const cycleGreetings = async () => {
       let nextGreetingIndex = 1;
 
       while (!cancelled) {
         await wait(GREETING_HOLD_DELAY);
+        if (cancelled) return;
+
+        // 后台标签页不空转打字机定时器，回到前台再继续。
+        await waitForVisible();
         if (cancelled) return;
 
         setGreetingIndex(nextGreetingIndex);
@@ -292,6 +310,20 @@ export function ProfileIntroduction({
       : CHINESE_TITLE;
   const shouldReserveHeight = shouldAnimateInitialVisit && !hasCompletedInitialSequence;
 
+  // 测量副本不随打字机逐字重渲，仅在文案变化时重建。
+  const englishMeasureTree = useMemo(() => (
+    <div aria-hidden="true" className="curation-home__bio-measure" ref={englishMeasureRef}>
+      <h2>{ENGLISH_TITLE}</h2>
+      {englishParagraphs.map((paragraph) => <p key={paragraph}>{paragraph}</p>)}
+    </div>
+  ), [englishParagraphs]);
+  const chineseMeasureTree = useMemo(() => (
+    <div aria-hidden="true" className="curation-home__bio-measure" ref={chineseMeasureRef}>
+      <h2>{CHINESE_TITLE}</h2>
+      {paragraphs.map((paragraph) => <p key={paragraph}>{paragraph}</p>)}
+    </div>
+  ), [paragraphs]);
+
   return (
     <section
       aria-labelledby="profile-introduction"
@@ -306,14 +338,8 @@ export function ProfileIntroduction({
           <span aria-hidden="true">{paragraph.slice(0, visibleCounts[index])}</span>
         </p>
       ))}
-      <div aria-hidden="true" className="curation-home__bio-measure" ref={englishMeasureRef}>
-        <h2>{ENGLISH_TITLE}</h2>
-        {englishParagraphs.map((paragraph) => <p key={paragraph}>{paragraph}</p>)}
-      </div>
-      <div aria-hidden="true" className="curation-home__bio-measure" ref={chineseMeasureRef}>
-        <h2>{CHINESE_TITLE}</h2>
-        {paragraphs.map((paragraph) => <p key={paragraph}>{paragraph}</p>)}
-      </div>
+      {englishMeasureTree}
+      {chineseMeasureTree}
     </section>
   );
 }
