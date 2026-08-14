@@ -19,6 +19,10 @@ export function OpeningLoader() {
     () => false,
   );
 
+  // 角色序列图约 440KB(gzip)，只在挂载后且确实要播放时才渲染 <img>，
+  // 避免 SSR HTML 里的 img/preload 让已看过的会话也下载整份序列。
+  const mounted = useSyncExternalStore(subscribeToNothing, () => true, () => false);
+
   const start = useCallback(() => {
     setPhase((current) => (current === "preparing" ? "playing" : current));
   }, []);
@@ -74,19 +78,20 @@ export function OpeningLoader() {
           </div>
           <span className="opening-loader__battery-terminal" />
         </div>
-        <Image
-          alt=""
-          aria-hidden="true"
-          className="opening-loader__character"
-          decoding="sync"
-          draggable={false}
-          height={685}
-          onError={start}
-          onLoad={start}
-          priority
-          src="/images/ample-loader-sequence.svg"
-          width={700}
-        />
+        {mounted ? (
+          <Image
+            alt=""
+            aria-hidden="true"
+            className="opening-loader__character"
+            decoding="sync"
+            draggable={false}
+            height={685}
+            onError={start}
+            onLoad={start}
+            src="/images/ample-loader-sequence.svg"
+            width={700}
+          />
+        ) : null}
       </div>
       <span className="sr-only">正在加载陈远的个人网站</span>
     </div>
