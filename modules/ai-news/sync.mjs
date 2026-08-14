@@ -105,7 +105,7 @@ async function readState(statePath) {
 }
 
 /**
- * 由本机定时任务驱动：增量（默认，24h 窗口，每 5 分钟）或回填（backfill，7d 窗口，每天）。
+ * 由 GitHub Actions（或本机 launchd 兜底）定时驱动：增量（默认，24h 窗口，每小时）或回填（backfill，7d 窗口，每天）。
  * upsert 到 Supabase 后按发布时间清理 8 天前的行。增量带 If-None-Match，feed 无变化时跳过重写；
  * 回填始终是完整抓取，且不读写增量用的 ETag 状态。
  */

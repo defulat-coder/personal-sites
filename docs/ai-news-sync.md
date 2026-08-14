@@ -13,16 +13,20 @@
 
 1. 通过 `pnpm supabase:push` 应用 [迁移](../supabase/migrations/20260814130000_ai_news_storage.sql)（先 `--dry-run` 预演）。
 2. 手动执行一次 `pnpm ai-news:sync`（增量）和 `pnpm ai-news:backfill`（7 天回填）验证。
-3. 定时任务（本机 launchd，plist 模板在 `config/` 下，含本机 nvm 的 Node 绝对路径，Node 大版本升级后需同步更新）：
-   - `ai-news-sync.launchd.plist`：每 5 分钟跑增量（24h 窗口），日志 `var/ai-news/sync.log`；
-   - `ai-news-backfill.launchd.plist`：每天 04:17 跑 7 天回填，日志 `var/ai-news/backfill.log`。
+3. 定时任务（首选 GitHub Actions，本机 launchd 为可选兜底）：
+   - `.github/workflows/ai-news-sync.yml`：每小时跑增量（24h 窗口，错开整点），每天 20:17 UTC（北京时间 04:17）跑 7 天回填；手动触发支持 `backfill` 输入。需在仓库 Settings → Secrets and variables → Actions 配置 `SUPABASE_URL` 与 `SUPABASE_SERVICE_ROLE_KEY`。
+   - Actions 环境无持久磁盘，ETag 条件请求状态（`var/ai-news/sync-state.json`）不跨运行保留，每次运行按全量 upsert 处理（幂等，按 id 冲突覆盖）。
+   - 注意私有仓库 Actions 免费额度为每月 2000 分钟；每小时一次约消耗 720~1440 分钟/月，额度内可跑满整月。仓库 60 天无活动时 GitHub 会暂停 scheduled workflow，需到 Actions 页手动恢复。
+   - 本机 launchd 兜底（plist 模板在 `config/` 下，含本机 nvm 的 Node 绝对路径，Node 大版本升级后需同步更新）：
+     - `ai-news-sync.launchd.plist`：每 5 分钟跑增量（24h 窗口），日志 `var/ai-news/sync.log`；
+     - `ai-news-backfill.launchd.plist`：每天 04:17 跑 7 天回填，日志 `var/ai-news/backfill.log`。
 
-   ```bash
-   cp config/ai-news-*.launchd.plist ~/Library/LaunchAgents/
-   launchctl bootstrap gui/$(id -u) ~/Library/LaunchAgents/site.personal.ai-news-sync.plist
-   launchctl bootstrap gui/$(id -u) ~/Library/LaunchAgents/site.personal.ai-news-backfill.plist
-   # 卸载：launchctl bootout gui/$(id -u)/site.personal.ai-news-sync（backfill 同理）
-   ```
+     ```bash
+     cp config/ai-news-*.launchd.plist ~/Library/LaunchAgents/
+     launchctl bootstrap gui/$(id -u) ~/Library/LaunchAgents/site.personal.ai-news-sync.plist
+     launchctl bootstrap gui/$(id -u) ~/Library/LaunchAgents/site.personal.ai-news-backfill.plist
+     # 卸载：launchctl bootout gui/$(id -u)/site.personal.ai-news-sync（backfill 同理）
+     ```
 
 ## 行为约定
 

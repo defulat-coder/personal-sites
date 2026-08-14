@@ -1,0 +1,46 @@
+name: AI news sync
+
+on:
+  schedule:
+    # 增量同步（24h 窗口），每小时一次（错开整点，避开 GitHub 调度高峰）
+    - cron: "13 * * * *"
+    # 回填（7d 窗口），每天 20:17 UTC = 北京时间 04:17
+    - cron: "17 20 * * *"
+  workflow_dispatch:
+    inputs:
+      backfill:
+        description: "跑 7 天回填而非增量同步"
+        type: boolean
+        default: false
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ai-news-sync
+  cancel-in-progress: false
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    env:
+      SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+      SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v7
+      - name: Set up pnpm
+        uses: pnpm/action-setup@v4
+      - name: Set up Node.js
+        uses: actions/setup-node@v7
+        with:
+          node-version: 24
+          cache: pnpm
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+      - name: Backfill (7d window)
+        if: github.event.schedule == '17 20 * * *' || inputs.backfill == true
+        run: node scripts/ai-news-sync.mjs --backfill
+      - name: Incremental sync (24h window)
+        if: github.event.schedule != '17 20 * * *' && inputs.backfill != true
+        run: node scripts/ai-news-sync.mjs
