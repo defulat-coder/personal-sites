@@ -4,6 +4,7 @@ import { ArrowUpRight } from "lucide-react";
 import type { Route } from "next";
 import Link from "next/link";
 import { useCallback, useEffect, useRef, useState } from "react";
+import type { CSSProperties } from "react";
 
 import { formatCurationDate } from "@/lib/curation-format";
 import type { CurationListItem } from "@/lib/curation-types";
@@ -30,6 +31,7 @@ const PAGE_SIZE = 20;
 export function CurationStream({ active = true, initialHasMore, initialItems }: CurationStreamProps) {
   const streamRef = useRef<HTMLOListElement>(null);
   const [items, setItems] = useState(initialItems);
+  const [appendStart, setAppendStart] = useState(initialItems.length);
   const [hasMore, setHasMore] = useState(initialHasMore);
   const [isLoading, setIsLoading] = useState(false);
   const [loadError, setLoadError] = useState<string | null>(null);
@@ -38,6 +40,7 @@ export function CurationStream({ active = true, initialHasMore, initialItems }: 
 
     setIsLoading(true);
     setLoadError(null);
+    setAppendStart(items.length);
     try {
       const response = await fetch(`/api/curation?offset=${items.length}&limit=${PAGE_SIZE}`);
       const payload = (await response.json()) as CurationPageResponse;
@@ -72,8 +75,14 @@ export function CurationStream({ active = true, initialHasMore, initialItems }: 
 
   return (
     <ol className="curation-home__stream" ref={streamRef}>
-      {items.map((item) => (
-        <li key={item.id}>
+      {items.map((item, index) => {
+        const isAppended = index >= appendStart;
+        return (
+        <li
+          data-appended={isAppended ? "" : undefined}
+          key={item.id}
+          style={isAppended ? { "--stream-i": Math.min(index - appendStart, 9) } as CSSProperties : undefined}
+        >
           <Link data-content-id={item.id} href={`/curation/${item.id}` as Route}>
             <div className="curation-home__stream-copy">
               <h3>{item.title}</h3>
@@ -86,9 +95,19 @@ export function CurationStream({ active = true, initialHasMore, initialItems }: 
             <span aria-hidden="true" className="curation-home__stream-arrow"><ArrowUpRight /></span>
           </Link>
         </li>
-      ))}
+        );
+      })}
       <li aria-live="polite" className="curation-home__stream-status">
-        {isLoading ? <span>正在加载更多内容</span> : null}
+        {isLoading ? (
+          <>
+            <span className="sr-only">正在加载更多内容</span>
+            <div aria-hidden="true" className="curation-home__stream-skeleton">
+              <span />
+              <span className="is-medium" />
+              <span className="is-short" />
+            </div>
+          </>
+        ) : null}
         {loadError ? <button onClick={() => void loadMore()} type="button">{loadError}，重试</button> : null}
         {!hasMore && !loadError ? <span>已加载全部策展内容</span> : null}
       </li>
