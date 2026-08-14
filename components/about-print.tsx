@@ -1,121 +1,162 @@
 "use client";
 
-import { Printer } from "lucide-react";
-import { useEffect, useRef, useState } from "react";
+import { CircleCheck, LoaderCircle, Printer, X } from "lucide-react";
+import { useCallback, useEffect, useRef, useState } from "react";
+import { createPortal } from "react-dom";
 
 const PRINT_DURATION = 2_400;
-const RETRACT_DURATION = 320;
-const LINE_COUNT = 9;
-const LINE_INTERVAL = PRINT_DURATION / LINE_COUNT / 1000;
+const CLOSE_DURATION = 180;
 
-const lineDelays = Array.from(
-  { length: LINE_COUNT },
-  (_, index) => `${(index * LINE_INTERVAL + 0.12).toFixed(2)}s`,
-);
+const TOOTH_COUNT = 36;
+const TOOTH_DEPTH = 5;
+const toothPoints = Array.from({ length: TOOTH_COUNT * 2 }, (_, index) => {
+  const x = 100 - ((index + 1) * 100) / (TOOTH_COUNT * 2);
+  const y = index % 2 === 0 ? "100%" : `calc(100% - ${TOOTH_DEPTH}px)`;
+  return `${x}% ${y}`;
+}).join(", ");
+const receiptClipPath = `polygon(0 0, 100% 0, 100% calc(100% - ${TOOTH_DEPTH}px), ${toothPoints})`;
 
-const printRows = [
-  { period: "2014—2019", company: "PLUS数字科技", stage: "Java · 服务运维", note: "" },
-  { period: "2019—2023", company: "红星美凯龙", stage: "业务 · 集团架构", note: "" },
-  { period: "2023—2026", company: "喜马拉雅", stage: "企业 AI 应用", note: "" },
-  { period: "2026—", company: "PayerMax", stage: "OPT · 一人团队 · 端到端交付", note: "" },
+const receiptItems = [
+  { company: "PLUS数字科技", meta: "2014—2019 · Java · 服务运维", years: "5 年" },
+  { company: "红星美凯龙", meta: "2019—2023 · 业务 · 集团架构", years: "4 年" },
+  { company: "喜马拉雅", meta: "2023—2026 · 企业 AI 应用", years: "3 年" },
+  { company: "PayerMax", meta: "2026— · OPT · 端到端交付", years: "至今" },
 ];
 
+function prefersReducedMotion() {
+  return window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+}
+
 export function AboutPrint() {
-  const [mounted, setMounted] = useState(false);
+  const [open, setOpen] = useState(false);
   const [printing, setPrinting] = useState(false);
   const [closing, setClosing] = useState(false);
   const timersRef = useRef<number[]>([]);
-  const paperRef = useRef<HTMLDivElement>(null);
+  const triggerRef = useRef<HTMLButtonElement>(null);
+  const dialogRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => () => {
     timersRef.current.forEach((timer) => window.clearTimeout(timer));
   }, []);
 
+  const close = useCallback(() => {
+    setPrinting(false);
+    setClosing(true);
+    timersRef.current.push(window.setTimeout(() => {
+      setOpen(false);
+      setClosing(false);
+      triggerRef.current?.focus();
+    }, prefersReducedMotion() ? 0 : CLOSE_DURATION));
+  }, []);
+
   useEffect(() => {
-    if (!mounted) return undefined;
+    if (!open) return undefined;
+
+    dialogRef.current?.focus();
+    const previousOverflow = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
 
     const handleKeydown = (event: KeyboardEvent) => {
-      if (event.key === "Escape") {
-        setClosing(true);
-        setPrinting(false);
-        timersRef.current.push(window.setTimeout(() => {
-          setMounted(false);
-          setClosing(false);
-        }, RETRACT_DURATION));
-      }
+      if (event.key === "Escape") close();
     };
 
     window.addEventListener("keydown", handleKeydown);
-    return () => window.removeEventListener("keydown", handleKeydown);
-  }, [mounted]);
+    return () => {
+      document.body.style.overflow = previousOverflow;
+      window.removeEventListener("keydown", handleKeydown);
+    };
+  }, [open, close]);
 
-  const open = () => {
-    setMounted(true);
+  const openModal = () => {
+    setOpen(true);
     setClosing(false);
-    setPrinting(true);
-    timersRef.current.push(window.setTimeout(() => {
-      setPrinting(false);
-      const rail = paperRef.current?.closest(".curation-home__profile");
-      if (rail) {
-        const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-        rail.scrollTo({ top: rail.scrollHeight, behavior: reduced ? "auto" : "smooth" });
-      }
-    }, PRINT_DURATION));
-  };
-
-  const close = () => {
-    setPrinting(false);
-    setClosing(true);
-    const rail = paperRef.current?.closest(".curation-home__profile");
-    if (rail) {
-      const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-      rail.scrollTo({ top: 0, behavior: reduced ? "auto" : "smooth" });
+    const reduced = prefersReducedMotion();
+    setPrinting(!reduced);
+    if (!reduced) {
+      timersRef.current.push(window.setTimeout(() => setPrinting(false), PRINT_DURATION));
     }
-    timersRef.current.push(window.setTimeout(() => {
-      setMounted(false);
-      setClosing(false);
-    }, RETRACT_DURATION));
   };
 
   return (
-    <div className="curation-home__about">
+    <>
       <button
-        aria-expanded={mounted}
+        aria-haspopup="dialog"
         className="curation-home__about-trigger"
-        onClick={mounted ? close : open}
+        onClick={openModal}
+        ref={triggerRef}
         type="button"
       >
         <Printer aria-hidden="true" />
-        {printing ? "打印中…" : mounted ? "收起" : "关于我"}
+        关于我
       </button>
 
-      {mounted ? (
-        <div
-          aria-label="关于我：个人经历打印稿"
-          className={`curation-home__about-paper${closing ? " is-closing" : ""}`}
-          ref={paperRef}
-          role="dialog"
-        >
-          <div className="curation-home__about-sheet">
-            <p className="curation-home__about-head about-line" style={{ animationDelay: lineDelays[0] }}>陈远 / CHEN YUAN</p>
-            <p className="curation-home__about-sub about-line" style={{ animationDelay: lineDelays[1] }}>个人经历 · 打印稿</p>
-            <hr className="about-line" style={{ animationDelay: lineDelays[2] }} />
-            <ol>
-              {printRows.map((row, index) => (
-                <li key={row.period}>
-                  <span className="about-line" style={{ animationDelay: lineDelays[3 + index] }}>{row.period}{row.company ? ` ${row.company}` : ""}</span>
-                  <span className="about-line" style={{ animationDelay: lineDelays[3 + index] }}>
-                    {row.stage}
-                    {row.note ? <em>{row.note}</em> : null}
+      {open ? createPortal(
+        <div className={`about-modal${closing ? " is-closing" : ""}`}>
+          <button
+            aria-label="关闭"
+            className="about-modal__backdrop"
+            onClick={close}
+            tabIndex={-1}
+            type="button"
+          />
+          <div
+            aria-label="关于我：个人经历打印稿"
+            aria-modal="true"
+            className="about-modal__dialog"
+            ref={dialogRef}
+            role="dialog"
+            tabIndex={-1}
+          >
+            <div className={`about-printer${printing ? " is-printing" : ""}`}>
+              <div className="about-printer__machine">
+                <div className="about-printer__screen">
+                  {printing ? (
+                    <LoaderCircle aria-hidden="true" className="is-spinning" />
+                  ) : (
+                    <CircleCheck aria-hidden="true" />
+                  )}
+                  <span aria-live="polite" role="status">
+                    {printing ? "正在打印个人经历…" : "打印完成 · 请取走小票"}
                   </span>
-                </li>
-              ))}
-            </ol>
-            <hr className="about-line" style={{ animationDelay: lineDelays[7] }} />
-            <p className="curation-home__about-foot about-line" style={{ animationDelay: lineDelays[8] }}>十二年 · 四段路 · 仍在增长</p>
+                  <button aria-label="关闭" className="about-modal__close" onClick={close} type="button">
+                    <X aria-hidden="true" />
+                  </button>
+                </div>
+                <div aria-hidden="true" className="about-printer__slot" />
+              </div>
+
+              <div className="about-printer__output">
+                <article className="about-printer__paper" style={{ clipPath: receiptClipPath }}>
+                  <header className="about-receipt__header">
+                    <p className="about-receipt__title">陈远 / CHEN YUAN</p>
+                    <p className="about-receipt__sub">个人经历 · CAREER RECEIPT</p>
+                  </header>
+                  <hr className="about-receipt__rule" />
+                  <ul className="about-receipt__items">
+                    {receiptItems.map((item) => (
+                      <li key={item.company}>
+                        <span className="about-receipt__line">
+                          <span>{item.company}</span>
+                          <span>{item.years}</span>
+                        </span>
+                        <span className="about-receipt__meta">{item.meta}</span>
+                      </li>
+                    ))}
+                  </ul>
+                  <hr className="about-receipt__rule" />
+                  <p className="about-receipt__total">
+                    <span>合计 TOTAL</span>
+                    <strong>12 年</strong>
+                  </p>
+                  <p className="about-receipt__foot">十二年 · 四段路 · 仍在增长</p>
+                  <div aria-hidden="true" className="about-receipt__barcode" />
+                </article>
+              </div>
+            </div>
           </div>
-        </div>
+        </div>,
+        document.body,
       ) : null}
-    </div>
+    </>
   );
 }

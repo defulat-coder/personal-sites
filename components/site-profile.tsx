@@ -55,6 +55,7 @@ export function SiteProfile({ animateOnFirstHomeVisit = false, mobileSection }: 
               <BookOpen aria-hidden="true" />
               语雀
             </a>
+            <AboutPrint />
           </nav>
         </div>
       </div>
@@ -68,8 +69,6 @@ export function SiteProfile({ animateOnFirstHomeVisit = false, mobileSection }: 
         englishParagraphs={profileCopyEnglish}
         paragraphs={profileCopy}
       />
-
-      <AboutPrint />
     </aside>
   );
 }
