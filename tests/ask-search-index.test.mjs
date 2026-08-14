@@ -1,7 +1,29 @@
 import assert from "node:assert/strict";
 import test from "node:test";
 
-import { splitReadmeByHeading, toDailySearchDocuments, toOpenSourceSearchDocuments } from "../modules/ask/search-index.mjs";
+import { splitReadmeByHeading, toAiNewsSearchDocuments, toDailySearchDocuments, toOpenSourceSearchDocuments } from "../modules/ask/search-index.mjs";
+
+test("ai-news public projections become one searchable document per item", () => {
+  const [document] = toAiNewsSearchDocuments([{
+    content: {
+      category: "ai-models",
+      id: "news-1",
+      publishedAt: "2026-08-15T01:00:00.000Z",
+      reason: "值得关注的推荐理由",
+      sourceName: "NVIDIA Blog（RSS）",
+      summary: "摘要内容",
+      title: "本地推理实践",
+    },
+    published_at: "2026-08-15T01:00:00.000Z",
+  }]);
+
+  assert.equal(document.id, "ai-news:news-1");
+  assert.equal(document.source_scope, "ai-news");
+  assert.equal(document.source_url, "/ai-news/news-1");
+  assert.match(document.search_text, /NVIDIA/u);
+  assert.match(document.search_text, /ai-models/u);
+  assert.match(document.content, /推荐理由/u);
+});
 
 test("daily public projections become one searchable document per item", () => {
   const [document] = toDailySearchDocuments([{

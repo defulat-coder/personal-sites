@@ -130,6 +130,32 @@ export function toOpenSourceSearchDocuments(rows) {
   });
 }
 
+export function toAiNewsSearchDocuments(rows) {
+  return rows.flatMap((row) => {
+    const item = row?.content;
+    if (!item?.id || !item.title || !item.summary) return [];
+    const content = joinSearchText([item.summary, item.reason]);
+    const searchText = joinSearchText([
+      item.title,
+      item.category,
+      item.sourceName,
+      content,
+    ]);
+    if (!content || !searchText) return [];
+    return [{
+      content,
+      id: `ai-news:${item.id}`,
+      published_at: item.publishedAt ?? row.published_at ?? null,
+      search_text: searchText,
+      section: null,
+      source_id: item.id,
+      source_scope: "ai-news",
+      source_url: `/ai-news/${encodeURIComponent(item.id)}`,
+      title: item.title,
+    }];
+  });
+}
+
 export async function syncAskSearchDocuments(client, scope, documents, { replaceScope = false } = {}) {
   const { data, error } = await client.rpc("sync_ask_search_documents", {
     p_documents: documents,

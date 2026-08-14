@@ -44,3 +44,6 @@ jobs:
       - name: Incremental sync (24h window)
         if: github.event.schedule != '17 20 * * *' && inputs.backfill != true
         run: node scripts/ai-news-sync.mjs
+      # 同步完成后重建公开问答全文索引（含每日动态），保持问一问语料新鲜。
+      - name: Rebuild Q&A full-text index
+        run: node scripts/ask-reindex.mjs

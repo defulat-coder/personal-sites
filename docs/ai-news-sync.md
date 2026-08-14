@@ -14,7 +14,7 @@
 1. 通过 `pnpm supabase:push` 应用 [迁移](../supabase/migrations/20260814130000_ai_news_storage.sql)（先 `--dry-run` 预演）。
 2. 手动执行一次 `pnpm ai-news:sync`（增量）和 `pnpm ai-news:backfill`（7 天回填）验证。
 3. 定时任务（首选 GitHub Actions，本机 launchd 为可选兜底）：
-   - `.github/workflows/ai-news-sync.yml`：每小时跑增量（24h 窗口，错开整点），每天 20:17 UTC（北京时间 04:17）跑 7 天回填；手动触发支持 `backfill` 输入。需在仓库 Settings → Secrets and variables → Actions 配置 `SUPABASE_URL` 与 `SUPABASE_SERVICE_ROLE_KEY`。
+   - `.github/workflows/ai-news-sync.yml`：每小时跑增量（24h 窗口，错开整点），每天 20:17 UTC（北京时间 04:17）跑 7 天回填；手动触发支持 `backfill` 输入。需在仓库 Settings → Secrets and variables → Actions 配置 `SUPABASE_URL` 与 `SUPABASE_SERVICE_ROLE_KEY`。同步完成后会追加执行 `node scripts/ask-reindex.mjs` 重建公开问答全文索引（含每日动态语料），无需单独调度。
    - Actions 环境无持久磁盘，ETag 条件请求状态（`var/ai-news/sync-state.json`）不跨运行保留，每次运行按全量 upsert 处理（幂等，按 id 冲突覆盖）。
    - 注意私有仓库 Actions 免费额度为每月 2000 分钟；每小时一次约消耗 720~1440 分钟/月，额度内可跑满整月。仓库 60 天无活动时 GitHub 会暂停 scheduled workflow，需到 Actions 页手动恢复。
    - 本机 launchd 兜底（plist 模板在 `config/` 下，含本机 nvm 的 Node 绝对路径，Node 大版本升级后需同步更新）：

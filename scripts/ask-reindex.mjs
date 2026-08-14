@@ -3,7 +3,7 @@
 
 import { createClient } from "@supabase/supabase-js";
 
-import { syncAskSearchDocuments, toDailySearchDocuments, toOpenSourceSearchDocuments } from "../modules/ask/search-index.mjs";
+import { syncAskSearchDocuments, toAiNewsSearchDocuments, toDailySearchDocuments, toOpenSourceSearchDocuments } from "../modules/ask/search-index.mjs";
 import { loadLocalEnv } from "./lib/load-local-env.mjs";
 
 loadLocalEnv(process.cwd());
@@ -26,12 +26,14 @@ async function readRows(table, columns) {
   return data;
 }
 
-const [dailyRows, openSourceRows] = await Promise.all([
+const [dailyRows, openSourceRows, aiNewsRows] = await Promise.all([
   readRows("x_curation_items", "content,published_at"),
   readRows("github_open_source_items", "content,published_at,repo_node_id"),
+  readRows("ai_news_public_items", "content,published_at"),
 ]);
 
 const dailyCount = await syncAskSearchDocuments(client, "daily", toDailySearchDocuments(dailyRows), { replaceScope: true });
 const openSourceCount = await syncAskSearchDocuments(client, "open-source", toOpenSourceSearchDocuments(openSourceRows), { replaceScope: true });
+const aiNewsCount = await syncAskSearchDocuments(client, "ai-news", toAiNewsSearchDocuments(aiNewsRows), { replaceScope: true });
 
-console.log(JSON.stringify({ dailyCount, openSourceCount }, null, 2));
+console.log(JSON.stringify({ aiNewsCount, dailyCount, openSourceCount }, null, 2));

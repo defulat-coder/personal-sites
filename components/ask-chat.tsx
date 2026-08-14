@@ -4,6 +4,15 @@ import { InputGroup, InputGroupAddon, InputGroupButton, InputGroupTextarea } fro
 import { Bubble, BubbleContent } from "@/components/ui/bubble";
 import { Button } from "@/components/ui/button";
 import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuGroup,
+  DropdownMenuLabel,
+  DropdownMenuRadioGroup,
+  DropdownMenuRadioItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import {
   Empty,
   EmptyContent,
   EmptyDescription,
@@ -25,10 +34,9 @@ import {
   MessageScrollerProvider,
   MessageScrollerViewport,
 } from "@/components/ui/message-scroller";
-import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
 import { ContentSectionNavigation } from "@/components/site-section-navigation";
 import type { AskScope, AskSource } from "@/lib/ask-types";
-import { ArrowUpRight, Search, SendHorizontal, Square } from "lucide-react";
+import { ArrowUpRight, ChevronDown, Search, SendHorizontal, Square } from "lucide-react";
 import dynamic from "next/dynamic";
 import { memo, useCallback, useEffect, useRef, useState } from "react";
 
@@ -47,6 +55,7 @@ type ChatMessage = {
 
 const scopeLabels: Record<AskScope, string> = {
   all: "全部",
+  "ai-news": "每日动态",
   daily: "推特点赞",
   "open-source": "开源关注",
 };
@@ -348,25 +357,6 @@ export function AskChat() {
         }}
       >
         <InputGroup className={styles.composer}>
-          <InputGroupAddon align="block-start" className={styles.composerScopes}>
-            <ToggleGroup
-              aria-label="检索范围"
-              className={styles.scopeGroup}
-              onValueChange={(value) => {
-                if (value === "all" || value === "daily" || value === "open-source") setScope(value);
-              }}
-              size="sm"
-              type="single"
-              value={scope}
-              variant="outline"
-            >
-              {(Object.keys(scopeLabels) as AskScope[]).map((item) => (
-                <ToggleGroupItem className={styles.scopeItem} key={item} value={item}>
-                  {scopeLabels[item]}
-                </ToggleGroupItem>
-              ))}
-            </ToggleGroup>
-          </InputGroupAddon>
           <InputGroupTextarea
             aria-label="输入问题"
             disabled={visitorId === "unavailable" || isStreaming}
@@ -384,6 +374,30 @@ export function AskChat() {
             value={question}
           />
           <InputGroupAddon align="block-end" className={styles.composerFooter}>
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <InputGroupButton aria-label={`检索范围：${scopeLabels[scope]}`} className={styles.scopeTrigger} size="sm" type="button" variant="ghost">
+                  <Search data-icon="inline-start" />
+                  {scopeLabels[scope]}
+                  <ChevronDown data-icon="inline-end" />
+                </InputGroupButton>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="start" className={styles.scopeMenu} side="top" sideOffset={8}>
+                <DropdownMenuLabel>检索范围</DropdownMenuLabel>
+                <DropdownMenuGroup>
+                  <DropdownMenuRadioGroup
+                    onValueChange={(value) => {
+                      if (value === "all" || value === "ai-news" || value === "daily" || value === "open-source") setScope(value);
+                    }}
+                    value={scope}
+                  >
+                    {(Object.keys(scopeLabels) as AskScope[]).map((item) => (
+                      <DropdownMenuRadioItem key={item} value={item}>{scopeLabels[item]}</DropdownMenuRadioItem>
+                    ))}
+                  </DropdownMenuRadioGroup>
+                </DropdownMenuGroup>
+              </DropdownMenuContent>
+            </DropdownMenu>
             {isStreaming ? (
               <InputGroupButton
                 aria-label="停止生成"

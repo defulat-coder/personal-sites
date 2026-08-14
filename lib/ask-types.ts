@@ -1,4 +1,4 @@
-export const askScopes = ["all", "daily", "open-source"] as const;
+export const askScopes = ["all", "ai-news", "daily", "open-source"] as const;
 
 export type AskScope = (typeof askScopes)[number];
 export type AskDocumentScope = Exclude<AskScope, "all">;

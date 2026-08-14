@@ -13,7 +13,7 @@ const searchResultSchema = z.object({
   score: z.number(),
   section: z.string().nullable(),
   source_id: z.string().min(1),
-  source_scope: z.enum(["daily", "open-source"]),
+  source_scope: z.enum(["daily", "open-source", "ai-news"]),
   source_url: z.string().min(1),
   title: z.string().min(1),
 });
