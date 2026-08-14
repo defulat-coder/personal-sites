@@ -286,6 +286,22 @@
   },
   "components": [
     {
+      "name": "Section Masthead",
+      "kind": "nav",
+      "refersTo": "content-navigation",
+      "description": "桌面内容区刊头：Title 档刊名居左，quiet 兄弟版块链接居右，共享唯一一条细线。",
+      "html": "<nav class=\"ds-masthead\"><span class=\"ds-masthead__current\">每日动态</span><span class=\"ds-masthead__siblings\"><a href=\"#\">推特点赞</a><a href=\"#\">开源关注</a><a href=\"#\">问一问</a></span></nav>",
+      "css": ".ds-masthead { display:flex; align-items:baseline; justify-content:space-between; gap:16px; border-bottom:1px solid #eee; padding:12px 0; font-family:-apple-system,BlinkMacSystemFont,Arial,sans-serif; }.ds-masthead__current { color:#1c1c1e; font-size:15px; font-weight:620; letter-spacing:-.035em; }.ds-masthead__siblings { display:flex; gap:16px; }.ds-masthead__siblings a { color:#767676; font-size:12px; text-decoration:none; transition:color 180ms ease; }.ds-masthead__siblings a:hover,.ds-masthead__siblings a:focus-visible { color:#1c1c1e; outline:0; }"
+    },
+    {
+      "name": "Filter Index Line",
+      "kind": "custom",
+      "refersTo": "filter-index",
+      "description": "版块内筛选索引行：quiet 文本以 · 分隔，激活态仅靠墨色与字重，无下划线无边框。",
+      "html": "<div class=\"ds-filter-index\"><button class=\"is-active\" type=\"button\">全部</button><button type=\"button\">模型</button><button type=\"button\">产品</button><button type=\"button\">行业</button></div>",
+      "css": ".ds-filter-index { display:flex; flex-wrap:wrap; align-items:baseline; font-family:-apple-system,BlinkMacSystemFont,Arial,sans-serif; }.ds-filter-index button { display:inline-flex; align-items:center; border:0; background:transparent; color:#767676; cursor:pointer; font-size:12px; line-height:1; padding:4px 0; transition:color 180ms ease; }.ds-filter-index button + button::before { margin:0 9px; color:#a9a9a9; content:\"·\"; }.ds-filter-index button.is-active { color:#1c1c1e; font-weight:620; }.ds-filter-index button:hover,.ds-filter-index button:focus-visible { color:#1c1c1e; outline:0; }"
+    },
+    {
       "name": "External Link Pill",
       "kind": "button",
       "refersTo": "external-link",
