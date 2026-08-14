@@ -22,7 +22,7 @@ export default async function HomePage() {
     openSourceEntries,
   };
   return (
-    <Suspense fallback={<HomeMain {...streamData} initialView="ai-news" mobileSection="home" />}>
+    <Suspense fallback={<HomeMain {...streamData} initialView={null} mobileSection="home" />}>
       <HomeView {...streamData} />
     </Suspense>
   );

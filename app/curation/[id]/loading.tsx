@@ -13,13 +13,13 @@ export default function CurationEntryLoading() {
         <nav aria-label="返回" className="curation-detail__back">
           <span className={styles.loadingBack}>
             <ArrowLeft aria-hidden="true" />
-            返回每日关注
+            返回推特点赞
           </span>
           <ThemeToggle />
         </nav>
 
         <header className="curation-detail__header">
-          <p className={styles.loadingLabel}>正在打开每日关注</p>
+          <p className={styles.loadingLabel}>正在打开推特点赞</p>
           <span aria-hidden="true" className={styles.loadingTitle} />
         </header>
 

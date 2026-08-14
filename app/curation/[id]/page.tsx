@@ -51,7 +51,7 @@ export async function generateMetadata({
 }: CurationEntryPageProps): Promise<Metadata> {
   const item = await findCurationItem((await params).id);
   return item
-    ? { description: item.summary, title: `${item.title}｜每日关注` }
+    ? { description: item.summary, title: `${item.title}｜推特点赞` }
     : {};
 }
 
@@ -69,7 +69,7 @@ export default async function CurationEntryPage({
         <nav aria-label="返回" className="curation-detail__back">
           <Link href="/">
             <ArrowLeft aria-hidden="true" />
-            返回每日关注
+            返回推特点赞
           </Link>
           <ThemeToggle />
         </nav>

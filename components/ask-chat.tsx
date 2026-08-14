@@ -55,14 +55,14 @@ type ChatMessage = {
 
 const scopeLabels: Record<AskScope, string> = {
   all: "全部",
-  daily: "每日关注",
+  daily: "推特点赞",
   "open-source": "开源 README",
 };
 
 const suggestedQuestions = [
   "最近有哪些关于 Agent 长期运行的实践？",
   "哪些开源项目值得持续关注？",
-  "最近的每日关注里提到了什么检索思路？",
+  "最近的推特点赞里提到了什么检索思路？",
 ];
 
 function parseEvents(buffer: string) {

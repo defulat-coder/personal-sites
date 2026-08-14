@@ -75,7 +75,7 @@ export function OpenSourceDocumentView({ parsedHint, parsedPanel, repository, re
       </p>
       <div
         aria-labelledby="parsed-document-tab"
-        className={styles.documentMarkdown}
+        className={`article-markdown ${styles.documentPanel}`}
         hidden={isRepository}
         id="parsed-document-panel"
         role="tabpanel"
@@ -85,7 +85,7 @@ export function OpenSourceDocumentView({ parsedHint, parsedPanel, repository, re
       {showRepository ? (
         <div
           aria-labelledby="repository-document-tab"
-          className={styles.documentMarkdown}
+          className={styles.documentPanel}
           hidden={!isRepository}
           id="repository-document-panel"
           role="tabpanel"

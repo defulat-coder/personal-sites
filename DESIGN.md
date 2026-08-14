@@ -4,12 +4,16 @@ description: 面向 Agent 工程实践的个人身份轨与每日关注信息流
 colors:
   ink: "#1c1c1e"
   surface: "#ffffff"
-  muted: "#8f8f93"
-  quiet: "#a1a1a4"
+  muted: "#656568"
+  quiet: "#767676"
   line: "#eeeeee"
   dark-surface: "#181818"
   dark-ink: "#f4f4f4"
   loader-green: "#24cb71"
+  loader-red: "#ef4444"
+  loader-amber: "#f2c94c"
+  paper: "#f8f8f8"
+  paper-dark: "#f6f2e9"
 typography:
   display:
     fontFamily: '"SF Pro Display", -apple-system, BlinkMacSystemFont, "PingFang SC", "Microsoft YaHei", Arial, sans-serif'
@@ -31,7 +35,35 @@ typography:
     fontFamily: "ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace"
     fontSize: "0.62rem"
     fontWeight: 650
+  scale:
+    caption-xs: "0.67rem"
+    caption-sm: "0.72rem"
+    caption: "0.74rem"
+    caption-lg: "0.76rem"
+    body-sm: "0.78rem"
+    body-md: "0.88rem"
+    body-lg: "0.9rem"
+    markdown-h3: "1rem"
+    markdown-h2: "1.18rem"
+    markdown-h1: "1.4rem"
+    detail-h1-min: "1.45rem"
+    detail-h1-fluid-min: "1.55rem"
+    detail-h1-max: "1.85rem"
+    detail-h1-fluid-max: "2.15rem"
+    stream-h3-min: "0.88rem"
+    stream-h3-max: "1rem"
 rounded:
+  micro: "0.09375rem"
+  xs: "0.125rem"
+  sm: "0.2rem"
+  md: "0.25rem"
+  lg: "0.3125rem"
+  xl: "0.35rem"
+  2xl: "0.4rem"
+  3xl: "0.45rem"
+  4xl: "0.5rem"
+  5xl: "0.7rem"
+  machine: "1.4rem"
   avatar: "12px"
   media: "12px"
   pill: "999px"
@@ -73,13 +105,16 @@ components:
 ### Primary
 
 - **Ink** (`#1c1c1e`)：标题、链接、按钮和主要内容。默认内容不引入额外品牌色。
-- **Loader Green** (`#24cb71`)：仅用于电池充电的 Loading 状态；加载完成后不可延续为页面装饰色。
+- **Loader Green / Red / Amber** (`#24cb71` / `#ef4444` / `#f2c94c`)：仅用于电池充电的 Loading 状态（红→黄→绿充电序列）；加载完成后不可延续为页面装饰色。
 
 ### Neutral
 
 - **Surface** (`#ffffff`)：浅色主题的完整底面。
-- **Muted** (`#8f8f93`)：次级信息和正文动效中的低强调文本。
-- **Quiet** (`#a1a1a4`)：时间、作者、摘要、说明性内容。
+- **Muted** (`#656568`)：次级信息和正文动效中的低强调文本。白底对比度 ≥4.5:1（WCAG AA），2026-08-15 起按要求加深。
+- **Quiet** (`#767676`)：时间、作者、摘要、说明性内容。白底对比度 ≥4.5:1（WCAG AA），2026-08-15 起按要求加深。
+- **Paper** (`#f8f8f8`，深色 `#f6f2e9`)：仅关于我打印稿的纸面。
+- **Error** (`#994545` 系列）：表单与数据错误的语义色，仅出错时使用。
+- **Shadow/Overlay**：遮罩与打印阴影只用 `rgb(0 0 0 / N%)` 黑色透明度阶。
 - **Line** (`#eeeeee`)：流式内容和区域之间的唯一分隔方式。
 - **Dark Surface / Dark Ink** (`#181818` / `#f4f4f4`)：深色主题的成对替换；暗色模式同样保持单色体系。
 
@@ -89,7 +124,7 @@ components:
 
 系统字体以 SF Pro 与中文系统字体为主，保证身份、策展标题与长文在 macOS 中文环境中的一致字形。技术信号场独立使用等宽字体，且只服务于技术语义。
 
-- **Display**（610，`clamp(2.05rem, 4.2vw, 3.85rem)`，1.04）：仅策展详情标题使用；最大负字距为 `-0.04em`。
+- **Display**（610，`clamp(2.05rem, 4.2vw, 3.85rem)`，1.04）：仅开屏等非内容场景使用，内容页标题一律用 Detail headline 档；最大负字距为 `-0.04em`。
 - **Title**（620，`0.95rem`，1.15）：左侧姓名、列表区标题与轻量区域标题。
 - **Stream headline**（500，`clamp(0.88rem, 0.95vw, 1rem)`，1.32，`-0.018em`）：信息流条目标题；使用 `text-wrap: pretty`。信息流标题保持克制，层级靠与摘要的粗细/颜色对比，不靠大字号。
 - **Body**（`0.78rem`–`0.96rem`，1.32–1.8）：简介、摘要与 Markdown 正文按阅读密度递进；简介正文可撑满身份轨，不再使用固定窄列。
@@ -97,6 +132,8 @@ components:
 - **Detail headline**（610，`clamp(1.55rem, 2.15vw, 2.15rem)`，1.16，`-0.038em`，`text-wrap: balance`）：内容详情页 h1。
 
 **语义字号规则。** 内容页面的标题不使用 display 级别——长标题在超大字号下会失控；display 档仅保留给开屏等非内容场景。首页内容通过粗细、留白和分隔线建立层级，不依赖超大标题。
+
+**字号阶梯。** frontmatter 的 `typography.scale` 是全站允许的字号清单（caption 0.67–0.76 / 正文 0.78–0.96 / Markdown 1–1.4 / 详情与信息流标题档）；新增字号先进清单再进代码，探测器以此为准。
 
 ## Elevation
 
@@ -142,6 +179,12 @@ components:
 
 - 保持同一身份轨，右侧依次为返回、元信息、标题/摘要/标签、原始内容、深度解析、来源。
 - Markdown 内容可以有阅读型排版、代码块与表格，但不得回退到旧版工作台/知识库壳层。
+
+### Markdown 正文（全站统一）
+
+- 所有长文 Markdown（策展解析、开源中文阅读版等）只用全局 `.article-markdown` 一套排版：正文 `.92rem`/`1.78`，标题 610/`-0.026em`（h1 `1.4rem` → h4 `.92rem`），代码块深色底、表格 `.82rem`。
+- 问答等对话场景的 Markdown 可以用更密的正文（body 范围内），但标题字重/字距与 `.article-markdown` 同档。
+- 新增 Markdown 场景不得再建第三套排版；模块级 Markdown 样式一律视为 drift。
 
 ### 每日动态流
 

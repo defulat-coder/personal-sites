@@ -102,8 +102,7 @@ export function AiNewsStream({ active = true, initialHasMore, initialItems }: Ai
         <div className="ai-news__filters" role="group" aria-label="按分类筛选">
           <button
             aria-pressed={activeCategory === null}
-            className="curation-tag"
-            data-active={activeCategory === null || undefined}
+            className="ai-news__filter"
             onClick={() => setActiveCategory(null)}
             type="button"
           >
@@ -112,8 +111,7 @@ export function AiNewsStream({ active = true, initialHasMore, initialItems }: Ai
           {hasSelected ? (
             <button
               aria-pressed={activeCategory === "selected"}
-              className="curation-tag"
-              data-active={activeCategory === "selected" || undefined}
+              className="ai-news__filter"
               onClick={() => setActiveCategory(activeCategory === "selected" ? null : "selected")}
               type="button"
             >
@@ -123,8 +121,7 @@ export function AiNewsStream({ active = true, initialHasMore, initialItems }: Ai
           {categories.map((category) => (
             <button
               aria-pressed={activeCategory === category.id}
-              className="curation-tag"
-              data-active={activeCategory === category.id || undefined}
+              className="ai-news__filter"
               key={category.id}
               onClick={() => setActiveCategory(category.id === activeCategory ? null : category.id)}
               type="button"
@@ -174,7 +171,7 @@ export function AiNewsStream({ active = true, initialHasMore, initialItems }: Ai
       ))}
 
       {groups.length === 0 ? (
-        <p className="curation-feed__empty">这个分类下暂时没有每日动态。</p>
+        <p className="ai-news__empty">这个分类下暂时没有每日动态。</p>
       ) : null}
 
       <div aria-live="polite" className="ai-news__status">
@@ -190,7 +187,9 @@ export function AiNewsStream({ active = true, initialHasMore, initialItems }: Ai
           </>
         ) : null}
         {loadError ? <button onClick={() => void loadMore()} type="button">{loadError}，重试</button> : null}
-        {!hasMore && !loadError ? <span>已加载最近 7 天的全部动态</span> : null}
+        {!hasMore && !loadError ? (
+          <span>{activeFilterLabel ? `已加载全部${activeFilterLabel}动态` : "已加载最近 7 天的全部动态"}</span>
+        ) : null}
       </div>
     </div>
   );

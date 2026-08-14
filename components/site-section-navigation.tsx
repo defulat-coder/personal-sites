@@ -13,7 +13,7 @@ type SiteSectionNavigationProps = {
 
 const contentSections: Array<{ href: Route; id: Exclude<SiteSection, "home">; label: string }> = [
   { href: "/?view=ai-news" as Route, id: "ai-news", label: "每日动态" },
-  { href: "/?view=daily" as Route, id: "daily", label: "每日关注" },
+  { href: "/?view=daily" as Route, id: "daily", label: "推特点赞" },
   { href: "/?view=open-source" as Route, id: "open-source", label: "开源关注" },
   { href: "/ask" as Route, id: "ask", label: "问一问" },
 ];

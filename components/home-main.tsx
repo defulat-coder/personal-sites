@@ -15,7 +15,7 @@ export type HomeStreamData = {
 };
 
 type HomeMainProps = HomeStreamData & {
-  initialView: FocusView;
+  initialView: FocusView | null;
   mobileSection: SiteSection;
 };
 
