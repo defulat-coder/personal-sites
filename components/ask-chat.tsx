@@ -38,7 +38,7 @@ import { ContentSectionNavigation } from "@/components/site-section-navigation";
 import type { AskScope, AskSource } from "@/lib/ask-types";
 import { ArrowUpRight, Bot, ChevronDown, Search, SendHorizontal, Square, UserRound } from "lucide-react";
 import dynamic from "next/dynamic";
-import { useCallback, useEffect, useRef, useState } from "react";
+import { memo, useCallback, useEffect, useRef, useState } from "react";
 
 import styles from "./ask-chat.module.css";
 
@@ -80,6 +80,62 @@ function parseEvents(buffer: string) {
   });
   return { events, remainder };
 }
+
+// 单条消息气泡独立 memo：流式 delta 只更新目标 message 对象引用，
+// 历史消息引用保持不变即可整体跳过重渲染（含其中的 Markdown 解析）。
+const AskMessageItem = memo(function AskMessageItem({ isStreamingPlaceholder, message }: {
+  isStreamingPlaceholder: boolean;
+  message: ChatMessage;
+}) {
+  return (
+    <MessageScrollerItem
+      className={styles.messageItem}
+      messageId={message.id}
+      scrollAnchor={message.role === "user"}
+    >
+      <Message align={message.role === "user" ? "end" : "start"} className={styles.message}>
+        <MessageContent>
+          <MessageHeader className={styles.messageHeader}>
+            <span className={styles.messageIdentity}>
+              {message.role === "user" ? <UserRound aria-hidden="true" /> : <Bot aria-hidden="true" />}
+              <span>{message.role === "user" ? "你" : "归档助手"}</span>
+            </span>
+          </MessageHeader>
+          {message.content ? (
+            <Bubble align={message.role === "user" ? "end" : "start"} variant={message.role === "user" ? "default" : "ghost"}>
+              <BubbleContent aria-live={message.role === "assistant" ? "polite" : undefined} className={`${styles.bubble} ${message.role === "user" ? styles.userBubble : styles.assistantBubble}`}>
+                {message.role === "assistant" ? <AskAnswerMarkdown source={message.content} /> : message.content}
+              </BubbleContent>
+            </Bubble>
+          ) : isStreamingPlaceholder ? (
+            <Marker className={styles.status} role="status">
+              <MarkerIcon><Search /></MarkerIcon>
+              <MarkerContent>
+                {message.citations.length > 0
+                  ? "已检索公开资料，正在生成回答…"
+                  : "正在检索公开资料…"}
+              </MarkerContent>
+            </Marker>
+          ) : null}
+          {message.role === "assistant" && message.isComplete && message.content && message.citations.length > 0 ? (
+            <MessageFooter className={styles.sources}>
+              <ol aria-label="回答来源" className={styles.citations}>
+                {message.citations.map((source, sourceIndex) => (
+                  <li key={source.id}>
+                    <a className={styles.citation} href={source.sourceUrl}>
+                      <span>【{sourceIndex + 1}】{source.title}{source.section ? ` · ${source.section}` : ""}</span>
+                      <ArrowUpRight aria-hidden="true" />
+                    </a>
+                  </li>
+                ))}
+              </ol>
+            </MessageFooter>
+          ) : null}
+        </MessageContent>
+      </Message>
+    </MessageScrollerItem>
+  );
+});
 
 export function AskChat() {
   const [messages, setMessages] = useState<ChatMessage[]>([]);
@@ -274,53 +330,11 @@ export function AskChat() {
                 </MessageScrollerItem>
               ) : null}
               {messages.map((message, index) => (
-                <MessageScrollerItem
-                  className={styles.messageItem}
+                <AskMessageItem
+                  isStreamingPlaceholder={isStreaming && index === messages.length - 1}
                   key={message.id}
-                  messageId={message.id}
-                  scrollAnchor={message.role === "user"}
-                >
-                  <Message align={message.role === "user" ? "end" : "start"} className={styles.message}>
-                    <MessageContent>
-                      <MessageHeader className={styles.messageHeader}>
-                        <span className={styles.messageIdentity}>
-                          {message.role === "user" ? <UserRound aria-hidden="true" /> : <Bot aria-hidden="true" />}
-                          <span>{message.role === "user" ? "你" : "归档助手"}</span>
-                        </span>
-                      </MessageHeader>
-                      {message.content ? (
-                        <Bubble align={message.role === "user" ? "end" : "start"} variant={message.role === "user" ? "default" : "ghost"}>
-                          <BubbleContent aria-live={message.role === "assistant" ? "polite" : undefined} className={`${styles.bubble} ${message.role === "user" ? styles.userBubble : styles.assistantBubble}`}>
-                            {message.role === "assistant" ? <AskAnswerMarkdown source={message.content} /> : message.content}
-                          </BubbleContent>
-                        </Bubble>
-                      ) : isStreaming && index === messages.length - 1 ? (
-                        <Marker className={styles.status} role="status">
-                          <MarkerIcon><Search /></MarkerIcon>
-                          <MarkerContent>
-                            {message.citations.length > 0
-                              ? "已检索公开资料，正在生成回答…"
-                              : "正在检索公开资料…"}
-                          </MarkerContent>
-                        </Marker>
-                      ) : null}
-                      {message.role === "assistant" && message.isComplete && message.content && message.citations.length > 0 ? (
-                        <MessageFooter className={styles.sources}>
-                          <ol aria-label="回答来源" className={styles.citations}>
-                            {message.citations.map((source, sourceIndex) => (
-                              <li key={source.id}>
-                                <a className={styles.citation} href={source.sourceUrl}>
-                                  <span>【{sourceIndex + 1}】{source.title}{source.section ? ` · ${source.section}` : ""}</span>
-                                  <ArrowUpRight aria-hidden="true" />
-                                </a>
-                              </li>
-                            ))}
-                          </ol>
-                        </MessageFooter>
-                      ) : null}
-                    </MessageContent>
-                  </Message>
-                </MessageScrollerItem>
+                  message={message}
+                />
               ))}
             </MessageScrollerContent>
           </MessageScrollerViewport>

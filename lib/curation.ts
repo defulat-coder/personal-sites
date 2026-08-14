@@ -64,29 +64,12 @@ function requiredEnvironment(key: "SUPABASE_URL" | "SUPABASE_PUBLISHABLE_KEY") {
   return value;
 }
 
-function getCurationClient() {
-  return getPublicCurationClient();
-}
-
 function getPublicCurationClient() {
   return createClient(
     requiredEnvironment("SUPABASE_URL"),
     requiredEnvironment("SUPABASE_PUBLISHABLE_KEY"),
     { auth: { autoRefreshToken: false, persistSession: false } },
   );
-}
-
-export async function getCurationItems(): Promise<CurationItem[]> {
-  const client = await getCurationClient();
-  const { data, error } = await client
-    .from("x_curation_items")
-    .select("content")
-    .order("collected_at", { ascending: false, nullsFirst: false })
-    .order("collected_order", { ascending: true, nullsFirst: false })
-    .order("published_at", { ascending: false, nullsFirst: false })
-    .order("id", { ascending: false });
-  if (error) throw new Error(`读取 Supabase 策展内容失败：${error.message}`);
-  return z.array(curationItemSchema).parse(data.map((row) => row.content));
 }
 
 export type CurationPage = {
@@ -114,16 +97,11 @@ const getCachedCurationPage = unstable_cache(
     };
   },
   ["public-curation-page-v2"],
-  { revalidate: 300, tags: ["public-curation"] },
+  { revalidate: 240, tags: ["public-curation"] },
 );
 
 export async function getCurationPage(offset = 0, limit = 20): Promise<CurationPage> {
   return getCachedCurationPage(offset, limit);
-}
-
-export async function getCurationTags() {
-  const items = await getCurationItems();
-  return [...new Set(items.flatMap((item) => item.tags))].sort((a, b) => a.localeCompare(b, "zh-CN"));
 }
 
 const getCachedCurationItem = unstable_cache(
@@ -138,7 +116,7 @@ const getCachedCurationItem = unstable_cache(
     return data ? curationItemSchema.parse(data.content) : null;
   },
   ["public-curation-item-v1"],
-  { revalidate: 300, tags: ["public-curation"] },
+  { revalidate: 240, tags: ["public-curation"] },
 );
 
 export const findCurationItem = cache(async (id: string): Promise<CurationItem | null> => {

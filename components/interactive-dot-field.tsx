@@ -1,7 +1,3 @@
-"use client";
-
-import { useEffect, useState } from "react";
-
 export const TECHNICAL_TERM_SETS = [
   [
     "agent.runtime", "multi.agent", "workflow.graph", "tool.call()",
@@ -33,17 +29,12 @@ export function selectTechnicalTerms(randomValue: number) {
   return TECHNICAL_TERM_SETS[index];
 }
 
+// 词条在构建期（SSR/ISR）确定。SSR HTML 会被 ISR 长期缓存，而 hydration 发生在
+// 之后的任意时刻，因此任何随机或时间种子都会在两端漂移、触发 hydration mismatch；
+// 只有代码内的固定种子才能保证服务端渲染与客户端首次渲染产出同一份词条。
+const SELECTED_TERMS = selectTechnicalTerms(0.61);
+
 export function InteractiveDotField() {
-  const [terms, setTerms] = useState<readonly string[]>([]);
-
-  useEffect(() => {
-    const frame = window.requestAnimationFrame(() => {
-      setTerms(selectTechnicalTerms(Math.random()));
-    });
-
-    return () => window.cancelAnimationFrame(frame);
-  }, []);
-
   return (
     <div
       aria-label="以从右向左滚动的弹幕展示多种智能体开发技术词条"
@@ -51,9 +42,9 @@ export function InteractiveDotField() {
       role="img"
     >
       <div aria-hidden="true" className="interactive-dot-field__signals">
-        {terms.map((term, index) => (
-          <span className="interactive-dot-field__term" key={`${term}-${index}`}>
-            {term}
+        {SELECTED_TERMS.map((term, index) => (
+          <span className="interactive-dot-field__track" key={`${term}-${index}`}>
+            <span className="interactive-dot-field__term">{term}</span>
           </span>
         ))}
       </div>

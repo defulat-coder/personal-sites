@@ -98,6 +98,17 @@ describe("ai news sync", () => {
     assert.match(requested[0], /window=7d/);
   });
 
+  it("fetchFeed short-circuits on 304 with the stored etag", async () => {
+    const seen = [];
+    const fetchImpl = async (url, init) => {
+      seen.push(init.headers["if-none-match"]);
+      return new Response(null, { status: 304 });
+    };
+    const feed = await fetchFeed("selected", { etag: "W/\"old\"", fetchImpl });
+    assert.deepEqual(feed, { changed: false, items: [] });
+    assert.deepEqual(seen, ["W/\"old\""]);
+  });
+
   it("strips leftover emoji from upstream copy in the public projection", () => {
     assert.equal(stripEmoji("发布新模型 🚀🎉 性能提升 ⚡️"), "发布新模型 性能提升");
     assert.equal(stripEmoji("持续增长 📈。下一步：扩大访问"), "持续增长。下一步：扩大访问");

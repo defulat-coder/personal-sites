@@ -9,10 +9,7 @@ import type { CSSProperties } from "react";
 import { formatCurationDate } from "@/lib/curation-format";
 import type { CurationListItem } from "@/lib/curation-types";
 
-import {
-  getCurationScrollTarget,
-  isNearCurationScrollEnd,
-} from "./curation-scroll";
+import { observeCurationScrollEnd } from "./curation-scroll";
 
 type CurationPageResponse = {
   error?: string;
@@ -62,15 +59,7 @@ export function CurationStream({ active = true, initialHasMore, initialItems }: 
     const stream = streamRef.current;
     if (!active || !hasMore || !stream) return;
 
-    const target = getCurationScrollTarget(stream);
-
-    const loadWhenNearBottom = () => {
-      if (isNearCurationScrollEnd(target)) void loadMore();
-    };
-
-    target.addEventListener("scroll", loadWhenNearBottom, { passive: true });
-    loadWhenNearBottom();
-    return () => target.removeEventListener("scroll", loadWhenNearBottom);
+    return observeCurationScrollEnd(stream, () => void loadMore());
   }, [active, hasMore, loadMore]);
 
   return (

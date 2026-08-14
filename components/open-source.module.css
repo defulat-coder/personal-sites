@@ -29,7 +29,7 @@
 }
 
 .filterCount {
-  color: #a1a1a4;
+  color: #767676;
   font-size: .63rem;
   font-variant-numeric: tabular-nums;
   line-height: 1;
@@ -85,6 +85,10 @@
 }
 
 .stream li {
+  /* 关注仓库已达数百条且只增不减：屏外条目跳过布局与绘制，
+     contain-intrinsic-size 用 auto 记住已渲染高度。 */
+  content-visibility: auto;
+  contain-intrinsic-size: auto 6rem;
   animation: filter-entry-reveal 280ms cubic-bezier(.16, 1, .3, 1) both;
   animation-delay: calc(var(--filter-entry-index, 0) * 32ms);
 }
@@ -103,7 +107,7 @@
 
 .empty {
   margin: 1.2rem 0 0;
-  color: #969699;
+  color: #6f6f72;
   font-size: .78rem;
 }
 
@@ -127,7 +131,7 @@
 .meta {
   display: flex;
   flex-wrap: wrap;
-  color: #969699;
+  color: #6f6f72;
   font-size: .72rem;
   gap: .35rem;
   line-height: 1;
@@ -155,13 +159,13 @@
 
 .source {
   margin-top: .38rem !important;
-  color: #969699;
+  color: #6f6f72;
   font-size: .78rem;
   line-height: 1.45;
 }
 
 .arrow {
-  color: #a1a1a4;
+  color: #767676;
   transition: color 180ms ease, transform 180ms ease;
 }
 
@@ -192,7 +196,7 @@
 
 .loadingLabel {
   margin: 0 0 .75rem;
-  color: #969699;
+  color: #6f6f72;
   font-size: .74rem;
 }
 
@@ -242,7 +246,7 @@
 .documentTab {
   border: 0;
   background: transparent;
-  color: #969699;
+  color: #6f6f72;
   cursor: pointer;
   font-size: .72rem;
   padding: .18rem 0;
@@ -264,7 +268,7 @@
 .documentHint {
   max-width: 40rem;
   margin: 1rem 0 0;
-  color: #969699;
+  color: #6f6f72;
   font-size: .75rem;
   line-height: 1.55;
 }
@@ -341,9 +345,9 @@
 .repositoryTree { margin: 0; padding: 0; list-style: none; }
 .repositoryTreeItem { display: flex; width: 100%; min-width: max-content; align-items: center; border: 0; background: transparent; color: #5f5f63; cursor: pointer; gap: .32rem; padding-top: .27rem; padding-right: .7rem; padding-bottom: .27rem; text-align: left; }
 .repositoryTreeItem:hover,.repositoryTreeItem:focus-visible,.repositoryTreeItem[aria-current="true"] { background: #f3f3f4; color: var(--ink); outline: 0; }
-.repositoryTreeItem svg { width: .82rem; height: .82rem; flex: 0 0 auto; color: #969699; stroke-width: 1.55; }
+.repositoryTreeItem svg { width: .82rem; height: .82rem; flex: 0 0 auto; color: #6f6f72; stroke-width: 1.55; }
 .repositoryTreeItem span { white-space: nowrap; }
-.repositoryTreeItem small { margin-left: auto; color: #a1a1a4; font-size: .67rem; }
+.repositoryTreeItem small { margin-left: auto; color: #767676; font-size: .67rem; }
 .repositoryFilePane { min-width: 0; overflow: auto; padding: .75rem 1rem; background: #fcfcfc; }
 .repositoryFileHeader { padding-bottom: .7rem; border-bottom: 1px solid var(--line); color: #5f5f63; }
 .repositoryFileHeader code { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }

@@ -157,9 +157,16 @@ function formatSources(sources: AskSource[]) {
   ].join("\n")).join("\n\n");
 }
 
+const SESSION_CLEANUP_INTERVAL_MS = 60 * 60 * 1_000;
+let lastSessionCleanupAt = 0;
+
 async function cleanExpiredSessions() {
   const sessionDirectory = await ensureSessionDirectory();
   const now = Date.now();
+  // 过期会话清理属于保洁操作，模块级降频到每小时最多一次，
+  // 避免每个请求都 readdir + stat 全量扫描（含远程 storage.list）。
+  if (now - lastSessionCleanupAt < SESSION_CLEANUP_INTERVAL_MS) return sessionDirectory;
+  lastSessionCleanupAt = now;
   const retentionMilliseconds = getSessionRetentionMilliseconds();
   const entries = await readdir(/* turbopackIgnore: true */ sessionDirectory, { withFileTypes: true });
   await Promise.all(entries
@@ -180,12 +187,19 @@ async function getSessionManager(
   SessionManager: typeof import("@earendil-works/pi-coding-agent").SessionManager,
 ) {
   const sessionDirectory = await cleanExpiredSessions();
-  await restoreRemoteSession(sessionId, sessionDirectory);
   const sessionSuffix = `_${sessionId}.jsonl`;
-  const existing = (await readdir(/* turbopackIgnore: true */ sessionDirectory))
+  const findLocalSessionFile = async () => (await readdir(/* turbopackIgnore: true */ sessionDirectory))
     .filter((entry) => entry.endsWith(sessionSuffix))
     .sort()
     .at(-1);
+
+  // 本地已有会话文件时直接复用；只有本地缺失（例如 serverless 新实例
+  // 继续旧会话）才按需从远程下载恢复这一条会话。
+  let existing = await findLocalSessionFile();
+  if (!existing) {
+    await restoreRemoteSession(sessionId, sessionDirectory);
+    existing = await findLocalSessionFile();
+  }
 
   const manager = existing
     ? SessionManager.open(path.join(/* turbopackIgnore: true */ sessionDirectory, existing), sessionDirectory, process.cwd())
@@ -222,6 +236,64 @@ async function withSessionLock<T>(sessionId: string, operation: () => Promise<T>
   }
 }
 
+/**
+ * Pi 的模块加载、ModelRuntime、模型解析与 ResourceLoader 都与单次会话状态无关，
+ * 在模块级缓存复用（serverless 下模块级缓存是常规做法），避免每个请求在
+ * LLM 首 token 之前重复动态 import、ModelRuntime.create 和 ResourceLoader.reload。
+ * createAgentSession 仍按请求新建，保证会话状态隔离。
+ */
+async function loadPiRuntime() {
+  // Pi imports optional Node integrations internally. Keep that code out of
+  // static page generation; it is needed only after a real POST request.
+  const {
+    createAgentSession,
+    DefaultResourceLoader,
+    ModelRuntime,
+    SessionManager,
+  } = await import("@earendil-works/pi-coding-agent");
+  const modelConfig = resolvePiModelConfig({ env: process.env });
+  const kimiApiKey = process.env.KIMI_API_KEY;
+  if (!kimiApiKey) throw new Error("缺少 KIMI_API_KEY，暂时无法生成回答。");
+
+  const runtimeDirectory = await ensureRuntimeDirectory();
+  const runtime = await ModelRuntime.create({
+    allowModelNetwork: false,
+    authPath: path.join(runtimeDirectory, "auth.json"),
+    modelsPath: null,
+  });
+  await runtime.setRuntimeApiKey(modelConfig.provider, kimiApiKey);
+  const model = runtime.getModel(modelConfig.provider, modelConfig.model);
+  if (!model) throw new Error(`Pi 未找到模型：${modelConfig.provider}/${modelConfig.model}`);
+
+  const resourceLoader = new DefaultResourceLoader({
+    agentDir: runtimeDirectory,
+    appendSystemPromptOverride: () => [],
+    cwd: process.cwd(),
+    noContextFiles: true,
+    noExtensions: true,
+    noPromptTemplates: true,
+    noSkills: true,
+    noThemes: true,
+    systemPromptOverride: () => askSystemPrompt,
+  });
+  await resourceLoader.reload();
+
+  return { createAgentSession, model, resourceLoader, runtime, runtimeDirectory, SessionManager };
+}
+
+type PiRuntime = Awaited<ReturnType<typeof loadPiRuntime>>;
+
+let piRuntimePromise: Promise<PiRuntime> | undefined;
+
+function getPiRuntime() {
+  piRuntimePromise ??= loadPiRuntime().catch((error: unknown) => {
+    // 初始化失败不缓存 rejected Promise，允许后续请求重试。
+    piRuntimePromise = undefined;
+    throw error;
+  });
+  return piRuntimePromise;
+}
+
 export async function streamAskAnswer({
   conversationId,
   onText,
@@ -239,40 +311,14 @@ export async function streamAskAnswer({
 }) {
   const sessionId = getSessionId(visitorId, conversationId);
   return withSessionLock(sessionId, async () => {
-    // Pi imports optional Node integrations internally. Keep that code out of
-    // static page generation; it is needed only after a real POST request.
     const {
       createAgentSession,
-      DefaultResourceLoader,
-      ModelRuntime,
+      model,
+      resourceLoader,
+      runtime,
+      runtimeDirectory,
       SessionManager,
-    } = await import("@earendil-works/pi-coding-agent");
-    const modelConfig = resolvePiModelConfig({ env: process.env });
-    const kimiApiKey = process.env.KIMI_API_KEY;
-    if (!kimiApiKey) throw new Error("缺少 KIMI_API_KEY，暂时无法生成回答。");
-
-    const runtimeDirectory = await ensureRuntimeDirectory();
-    const runtime = await ModelRuntime.create({
-      allowModelNetwork: false,
-      authPath: path.join(runtimeDirectory, "auth.json"),
-      modelsPath: null,
-    });
-    await runtime.setRuntimeApiKey(modelConfig.provider, kimiApiKey);
-    const model = runtime.getModel(modelConfig.provider, modelConfig.model);
-    if (!model) throw new Error(`Pi 未找到模型：${modelConfig.provider}/${modelConfig.model}`);
-
-    const resourceLoader = new DefaultResourceLoader({
-      agentDir: runtimeDirectory,
-      appendSystemPromptOverride: () => [],
-      cwd: process.cwd(),
-      noContextFiles: true,
-      noExtensions: true,
-      noPromptTemplates: true,
-      noSkills: true,
-      noThemes: true,
-      systemPromptOverride: () => askSystemPrompt,
-    });
-    await resourceLoader.reload();
+    } = await getPiRuntime();
 
     const sessionManager = await getSessionManager(sessionId, SessionManager);
     const { session } = await createAgentSession({

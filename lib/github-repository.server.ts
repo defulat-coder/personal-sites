@@ -57,6 +57,9 @@ async function resolvePublicRepository(slug: string) {
   const repository = repositorySchema.safeParse(entry.repository);
   if (!repository.success) throw new GitHubRepositoryBrowserError("公开仓库地址无效。", 500);
   return {
+    // repositoryDefaultBranch 由 github-starred 同步管线写入公开投影（见
+    // modules/github-starred/publish-to-supabase.mjs）；存量投影行在回填前仍为
+    // null，此时读取侧保留回源 GitHub 的兜底（getDefaultBranch）。
     defaultBranch: entry.repositoryDefaultBranch ?? null,
     repository: repository.data,
     repositoryUrl: entry.repositoryUrl,

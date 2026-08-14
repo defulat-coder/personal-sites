@@ -83,7 +83,7 @@ export function OpeningLoader() {
             alt=""
             aria-hidden="true"
             className="opening-loader__character"
-            decoding="sync"
+            decoding="async"
             draggable={false}
             height={685}
             onError={start}

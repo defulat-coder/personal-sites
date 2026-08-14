@@ -38,6 +38,13 @@ async function proxyMedia(request: Request, method: "GET" | "HEAD") {
     const value = upstream.headers.get(name);
     if (value) responseHeaders.set(name, value);
   }
+  // 让 CDN 缓存视频分段（含 Range 206），浏览器侧保持轻缓存；上游错误不缓存。
+  if (upstream.status >= 200 && upstream.status < 300) {
+    responseHeaders.set(
+      "cache-control",
+      "public, max-age=0, s-maxage=86400, stale-while-revalidate=604800",
+    );
+  }
   responseHeaders.set("x-content-type-options", "nosniff");
 
   return new Response(method === "HEAD" ? null : upstream.body, {
