@@ -28,7 +28,7 @@ This block is written and re-added by `next dev` — verify at `node_modules/nex
 
 ## Frontend
 
-- Treat `DESIGN.md` and `docs/frontend-architecture.md` as the current UI source of truth; `docs/redesign-plan.md` is historical.
+- Treat `PRODUCT.md` (strategic context), `DESIGN.md` and `docs/frontend-architecture.md` as the current UI source of truth; `docs/redesign-plan.md` is historical.
 - Preserve the desktop-first identity rail plus continuous content-flow layout. Do not restore the legacy knowledge/workspace shell or introduce card grids, glass, heavy shadows, or broad accent colors.
 - Reuse the identity rail on detail pages. New motion needs cleanup, a stable final state, and a `prefers-reduced-motion` path.
 - Use the Next runtime plus browser verification after UI changes; inspect compiler issues, routes, browser errors, and the rendered interaction.
@@ -38,7 +38,7 @@ This block is written and re-added by `next dev` — verify at `node_modules/nex
 - Read `docs/sensitive-data.md` before touching curation inputs or credentials. Never stage, publish, render, screenshot, or expose `data/sensitive/`, `knowledge/sensitive/`, local credentials, or `tools/smaug/.state/`.
 - The public site reads only Supabase public projections; never add a fallback from browser or runtime code to sensitive local data. Service-role keys never belong in `NEXT_PUBLIC_*` variables.
 - Keep public curation detail reads cacheable with ISR (`revalidate = 300`) and loading states. For cache changes, verify production route classification and `x-nextjs-cache` MISS then HIT behavior.
-- Treat `curation:*`, `github:starred:*`, and `supabase:push` as external data operations. Follow `docs/supabase-x-sync.md` and `docs/github-starred-sync.md`; use `pnpm supabase:push -- --dry-run` before a database write. Run daily Star syncs one at a time and report partial results until the process exits.
+- Treat `curation:*`, `github:starred:*`, `ai-news:sync`, and `supabase:push` as external data operations. Follow `docs/supabase-x-sync.md`, `docs/github-starred-sync.md`, and `docs/ai-news-sync.md`; use `pnpm supabase:push -- --dry-run` before a database write. Run daily Star syncs one at a time and report partial results until the process exits. The `ai-news:sync` launchd job runs every 5 minutes on this machine; the site only reads the `ai_news_public_items` projection.
 
 ## Git and Commits
 

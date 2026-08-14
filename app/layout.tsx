@@ -31,6 +31,7 @@ export default function RootLayout({
         />
       </head>
       <body>
+        <a className="skip-link" href="#site-main">跳到主要内容</a>
         <OpeningLoader />
         {children}
       </body>

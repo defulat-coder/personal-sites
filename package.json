@@ -27,6 +27,8 @@
     "github:starred:analyze": "node scripts/github-starred.mjs analyze",
     "github:starred:analyze:codex": "node scripts/github-starred.mjs analyze --engine codex-cli",
     "github:starred:publish": "node scripts/github-starred.mjs publish",
+    "ai-news:sync": "node scripts/ai-news-sync.mjs",
+    "ai-news:backfill": "node scripts/ai-news-sync.mjs --backfill",
     "ask:reindex": "node scripts/ask-reindex.mjs",
     "github:starred:run": "node scripts/github-starred.mjs run",
     "supabase:push": "node scripts/supabase-db-push.mjs",

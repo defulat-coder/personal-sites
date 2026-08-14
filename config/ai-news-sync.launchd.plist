@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+  <key>Label</key>
+  <string>site.personal.ai-news-sync</string>
+  <key>ProgramArguments</key>
+  <array>
+    <string>/Users/xbjt/.nvm/versions/node/v24.18.0/bin/node</string>
+    <string>/Users/xbjt/Documents/myself/personal-sites/scripts/ai-news-sync.mjs</string>
+  </array>
+  <key>WorkingDirectory</key>
+  <string>/Users/xbjt/Documents/myself/personal-sites</string>
+  <key>StartInterval</key>
+  <integer>300</integer>
+  <key>RunAtLoad</key>
+  <true/>
+  <key>StandardOutPath</key>
+  <string>/Users/xbjt/Documents/myself/personal-sites/var/ai-news/sync.log</string>
+  <key>StandardErrorPath</key>
+  <string>/Users/xbjt/Documents/myself/personal-sites/var/ai-news/sync.log</string>
+</dict>
+</plist>
