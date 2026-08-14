@@ -1,5 +1,6 @@
+import { BookOpen, GitBranch, MessageCircle } from "lucide-react";
+import Link from "next/link";
 import Image from "next/image";
-import { BookOpen, GitBranch } from "lucide-react";
 
 import { AboutPrint } from "@/components/about-print";
 import { InteractiveDotField } from "@/components/interactive-dot-field";
@@ -46,7 +47,7 @@ export function SiteProfile({ animateOnFirstHomeVisit = false, mobileSection }: 
             <p>@defulat-coder</p>
           </div>
 
-          <nav aria-label="外部链接" className="curation-home__external-links">
+          <nav aria-label="站点链接" className="curation-home__external-links">
             <a href="https://github.com/defulat-coder" rel="noreferrer" target="_blank">
               <GitBranch aria-hidden="true" />
               GitHub
@@ -55,6 +56,10 @@ export function SiteProfile({ animateOnFirstHomeVisit = false, mobileSection }: 
               <BookOpen aria-hidden="true" />
               语雀
             </a>
+            <Link href="/ask">
+              <MessageCircle aria-hidden="true" />
+              问一问
+            </Link>
             <AboutPrint />
           </nav>
         </div>
