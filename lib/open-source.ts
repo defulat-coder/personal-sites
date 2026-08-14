@@ -46,6 +46,7 @@ export type {
 
 const openSourceListEntrySchema = z.object({
   category: z.enum(["skills", "agents", "context", "tools"]),
+  checkedAt: z.string(),
   dimensions: z.array(z.enum([
     "agent-skills",
     "coding-agent",
@@ -99,7 +100,7 @@ const getCachedOpenSourceListEntries = unstable_cache(
     const client = getPublicOpenSourceClient();
     const { data, error } = await client
       .from("github_open_source_items")
-      .select("category:content->>category,dimensions:content->dimensions,repository:content->>repository,slug,sourceSummary:content->>sourceSummary,status:content->>status,type:content->>type")
+      .select("category:content->>category,checkedAt:content->evidence->>checkedAt,dimensions:content->dimensions,repository:content->>repository,slug,sourceSummary:content->>sourceSummary,status:content->>status,type:content->>type")
       .order("display_rank", { ascending: true, nullsFirst: false })
       .order("published_at", { ascending: false });
     if (error) throw new Error(`读取 Supabase 开源关注列表失败：${error.message}`);

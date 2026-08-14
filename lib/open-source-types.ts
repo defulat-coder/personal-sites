@@ -64,11 +64,15 @@ export type OpenSourceEntry = {
 export type OpenSourceListEntry = Pick<
   OpenSourceEntry,
   "category" | "dimensions" | "repository" | "slug" | "sourceSummary" | "status" | "type"
->;
+> & {
+  /** 判读时间（来自 evidence.checkedAt），快照流按它把条目放进时间轴。 */
+  checkedAt: string;
+};
 
 export function toOpenSourceListEntry(entry: OpenSourceEntry): OpenSourceListEntry {
   return {
     category: entry.category,
+    checkedAt: entry.evidence.checkedAt,
     dimensions: entry.dimensions,
     repository: entry.repository,
     slug: entry.slug,

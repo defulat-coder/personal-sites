@@ -46,6 +46,7 @@ describe("open-source curation", () => {
 
     expect(listEntry).toEqual({
       category: entry.category,
+      checkedAt: entry.evidence.checkedAt,
       dimensions: entry.dimensions,
       repository: entry.repository,
       slug: entry.slug,

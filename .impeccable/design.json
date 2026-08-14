@@ -1,6 +1,6 @@
 {
   "schemaVersion": 2,
-  "generatedAt": "2026-08-14T17:27:21Z",
+  "generatedAt": "2026-08-15T03:05:00Z",
   "title": "Design System: 陈远｜每日关注",
   "extensions": {
     "colorMeta": {
@@ -305,17 +305,17 @@
       "name": "External Link Pill",
       "kind": "button",
       "refersTo": "external-link",
-      "description": "身份轨上唯一的外链出口（GitHub），实心黑 pill。",
-      "html": "<a class=\"ds-external-link\" href=\"#\">GitHub</a>",
+      "description": "每日动态详情页的原文出口 CTA，实心黑 pill；身份轨链接行为 quiet 文本链接，不使用 pill。",
+      "html": "<a class=\"ds-external-link\" href=\"#\">阅读原文</a>",
       "css": ".ds-external-link { display:inline-flex; align-items:center; border:1px solid #1c1c1e; border-radius:999px; background:#1c1c1e; color:#fff; font:620 12px/1 -apple-system,BlinkMacSystemFont,Arial,sans-serif; padding:9px 13px; text-decoration:none; transition:background-color 180ms ease,border-color 180ms ease; }.ds-external-link:hover,.ds-external-link:focus-visible { border-color:#555; background:#555; outline:0; }"
     },
     {
-      "name": "Stream Row",
+      "name": "Ledger Stream Row",
       "kind": "custom",
       "refersTo": "stream-row",
-      "description": "每日关注/每日动态流的一行：元信息、标题/摘要、方向箭头，1px 分隔线，无卡片。",
-      "html": "<a class=\"ds-stream-row\" href=\"#\"><span class=\"ds-stream-row__meta\">2026年8月7日<br>@author</span><span class=\"ds-stream-row__body\"><strong>一条每日关注条目标题</strong><em>摘要文本，低强调，一到两行。</em></span><span class=\"ds-stream-row__arrow\">↗</span></a>",
-      "css": ".ds-stream-row { display:grid; grid-template-columns:minmax(124px,.42fr) minmax(0,1.58fr) 20px; gap:16px; border-bottom:1px solid #eee; color:#1c1c1e; font:12px/1.38 -apple-system,BlinkMacSystemFont,Arial,sans-serif; padding:26px 0; text-decoration:none; transition:color 180ms ease; }.ds-stream-row__meta { color:#767676; }.ds-stream-row__body strong { display:block; font-size:clamp(14px,.95vw,16px); font-weight:500; letter-spacing:-.018em; line-height:1.32; text-wrap:pretty; }.ds-stream-row__body em { display:block; color:#656568; font-style:normal; margin-top:4px; }.ds-stream-row__arrow { transition:transform 180ms ease; }.ds-stream-row:hover,.ds-stream-row:focus-visible { color:#656568; outline:0; }.ds-stream-row:hover .ds-stream-row__arrow { transform:translate(2px,-2px); }"
+      "description": "三条内容流共用的登记簿行：左列 quiet 登记栏，右列标题/摘要，1px 分隔线，无箭头无卡片。",
+      "html": "<a class=\"ds-stream-row\" href=\"#\"><span class=\"ds-stream-row__meta\">2026年8月7日<br>@author</span><span class=\"ds-stream-row__body\"><strong>一条每日关注条目标题</strong><em>摘要文本，低强调，一到两行。</em></span></a>",
+      "css": ".ds-stream-row { display:grid; grid-template-columns:minmax(112px,136px) minmax(0,1fr); column-gap:24px; align-items:start; border-bottom:1px solid #eee; color:#1c1c1e; font:12px/1.38 -apple-system,BlinkMacSystemFont,Arial,sans-serif; padding:24px 0; text-decoration:none; }.ds-stream-row__meta { display:flex; flex-direction:column; gap:5px; padding-top:2px; color:#767676; font-size:11.5px; line-height:1.4; }.ds-stream-row__body strong { display:block; color:#303033; font-size:clamp(14px,.95vw,16px); font-weight:500; letter-spacing:-.018em; line-height:1.32; text-wrap:pretty; transition:color 180ms ease; }.ds-stream-row__body em { display:block; color:#3f3f42; font-size:13px; font-style:normal; line-height:1.55; margin-top:8px; }.ds-stream-row:hover strong,.ds-stream-row:focus-visible strong { color:#1c1c1e; }.ds-stream-row:focus-visible { outline:2px solid #1c1c1e; outline-offset:4px; }"
     },
     {
       "name": "Tag Chip",

@@ -1,6 +1,5 @@
 "use client";
 
-import { ArrowUpRight } from "lucide-react";
 import type { Route } from "next";
 import Link from "next/link";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
@@ -151,17 +150,17 @@ export function AiNewsStream({ active = true, initialHasMore, initialItems }: Ai
                   style={isAppended ? { "--stream-i": Math.min(index - appendStart, 9) } as CSSProperties : undefined}
                 >
                   <Link className="ai-news__entry" data-content-id={item.id} href={`/ai-news/${item.id}` as Route}>
+                    <div className="ai-news__entry-meta">
+                      <time dateTime={item.publishedAt ?? undefined}>{formatAiNewsClock(item.publishedAt)}</time>
+                      {/* 登记列只保留出处名；(@handle) 会撑高左栏，详情页仍展示完整出处。 */}
+                      <span>{item.sourceName.replace(/\s*\(@[^)]+\)\s*$/, "")}</span>
+                      <span>{getAiNewsCategoryLabel(item.category)}</span>
+                      {item.selected ? <span>精选</span> : null}
+                    </div>
                     <div className="ai-news__entry-copy">
-                      <div className="ai-news__entry-meta">
-                        <time dateTime={item.publishedAt ?? undefined}>{formatAiNewsClock(item.publishedAt)}</time>
-                        <span>{item.sourceName}</span>
-                        <span>{getAiNewsCategoryLabel(item.category)}</span>
-                        {item.selected ? <span>精选</span> : null}
-                      </div>
                       <h3>{item.title}</h3>
                       {item.summary ? <p>{item.summary}</p> : null}
                     </div>
-                    <span aria-hidden="true" className="ai-news__entry-arrow"><ArrowUpRight /></span>
                   </Link>
                 </li>
               );

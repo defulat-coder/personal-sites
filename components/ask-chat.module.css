@@ -132,26 +132,6 @@
   }
 }
 
-.messageHeader {
-  padding: 0;
-  color: var(--muted);
-  font-size: 0.68rem;
-  font-weight: 500;
-  letter-spacing: -0.006em;
-}
-
-.messageIdentity {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.25rem;
-}
-
-.messageIdentity svg {
-  width: 0.76rem;
-  height: 0.76rem;
-  stroke-width: 1.65;
-}
-
 .bubble {
   overflow-wrap: anywhere;
 }
@@ -229,7 +209,6 @@
 .citation:hover,
 .citation:focus-visible {
   color: var(--ink);
-  outline: 0;
 }
 
 .citation svg {
@@ -244,6 +223,7 @@
   bottom: 0;
   background: var(--surface);
   padding-top: 0.75rem;
+  padding-bottom: env(safe-area-inset-bottom, 0px);
 }
 
 .composer {
@@ -270,8 +250,48 @@
   padding: 0.25rem 0 0.5rem;
 }
 
+/* 焦点由 .composer:focus-within 的完整圆角外框表达，不再叠加 textarea 的矩形焦点环。 */
+.composer textarea:focus-visible {
+  outline: none;
+}
+
 .composer textarea::placeholder {
   color: #6f6f72;
+}
+
+.composerScopes {
+  justify-content: flex-start !important;
+  border-top: 0;
+  padding: 0.5rem 0 0 !important;
+}
+
+.scopeGroup {
+  border: 1px solid var(--line);
+  border-radius: 0.5rem;
+  padding: 0.125rem;
+}
+
+.scopeItem {
+  min-height: 1.9rem;
+  border: 0 !important;
+  border-radius: 0.375rem !important;
+  color: #6f6f72;
+  font-size: 0.72rem !important;
+  font-weight: 500;
+  padding: 0 0.65rem !important;
+}
+
+.scopeItem:hover,
+.scopeItem:focus-visible {
+  background: transparent !important;
+  color: var(--ink);
+}
+
+.scopeItem[data-state="on"] {
+  background: #f0f0f1 !important;
+  box-shadow: none !important;
+  color: var(--ink);
+  font-weight: 620;
 }
 
 .composerFooter {
@@ -280,23 +300,6 @@
   border-top: 0;
   color: #6f6f72 !important;
   padding: 0.25rem 0 0.75rem !important;
-}
-
-.scopeTrigger {
-  height: 1.75rem !important;
-  margin-left: -0.25rem;
-  border-radius: 0.375rem !important;
-  color: #6f6f72;
-  font-size: 0.7rem !important;
-  padding: 0 0.5rem !important;
-}
-
-.scopeTrigger:hover,
-.scopeTrigger:focus-visible,
-.scopeTrigger[data-state="open"] {
-  background: #f0f0f1 !important;
-  color: var(--ink);
-  transform: none !important;
 }
 
 .send {
@@ -319,44 +322,6 @@
   background: var(--quiet) !important;
   color: #fff !important;
   opacity: 1 !important;
-}
-
-.scopeMenu {
-  width: 11rem !important;
-  min-width: 11rem !important;
-  border: 1px solid var(--line);
-  border-radius: 0.5rem !important;
-  background: #fff !important;
-  color: var(--ink);
-  box-shadow: 0 0.2rem 0.42rem rgb(28 28 30 / 8%) !important;
-  padding: 0.25rem !important;
-}
-
-.scopeMenu :global([data-slot="dropdown-menu-label"]) {
-  color: var(--muted);
-  font-size: 0.67rem;
-  padding: 0.25rem 0.5rem;
-}
-
-.scopeMenu :global([data-slot="dropdown-menu-radio-item"]) {
-  border-radius: 0.375rem;
-  color: #6f6f72;
-  font-size: 0.74rem;
-  padding: 0.5rem 1.625rem 0.5rem 0.5rem;
-}
-
-.scopeMenu :global([data-slot="dropdown-menu-radio-item"]):focus {
-  background: #f0f0f1;
-  color: var(--ink);
-}
-
-.scopeMenu :global([data-slot="dropdown-menu-radio-item"])[data-state="checked"] {
-  color: var(--ink);
-  font-weight: 600;
-}
-
-.scopeMenu :global([data-slot="dropdown-menu-radio-item-indicator"]) {
-  color: var(--ink);
 }
 
 :global(html[data-curation-theme="dark"]) .root {
@@ -382,13 +347,30 @@
 
 :global(html[data-curation-theme="dark"]) .empty,
 :global(html[data-curation-theme="dark"]) .suggestions :global([data-slot="button"]),
-:global(html[data-curation-theme="dark"]) .messageHeader,
 :global(html[data-curation-theme="dark"]) .sources::before,
 :global(html[data-curation-theme="dark"]) .citation,
 :global(html[data-curation-theme="dark"]) .status,
-:global(html[data-curation-theme="dark"]) .composerFooter,
-:global(html[data-curation-theme="dark"]) .scopeTrigger {
+:global(html[data-curation-theme="dark"]) .composerFooter {
   color: #999;
+}
+
+:global(html[data-curation-theme="dark"]) .scopeGroup {
+  border-color: #484848;
+}
+
+:global(html[data-curation-theme="dark"]) .scopeItem {
+  color: #999;
+}
+
+:global(html[data-curation-theme="dark"]) .scopeItem:hover,
+:global(html[data-curation-theme="dark"]) .scopeItem:focus-visible {
+  background: transparent !important;
+  color: #f4f4f4;
+}
+
+:global(html[data-curation-theme="dark"]) .scopeItem[data-state="on"] {
+  background: #353535 !important;
+  color: #f4f4f4;
 }
 
 :global(html[data-curation-theme="dark"]) .empty :global([data-slot="empty-title"]),
@@ -425,13 +407,6 @@
   color: #999;
 }
 
-:global(html[data-curation-theme="dark"]) .scopeTrigger:hover,
-:global(html[data-curation-theme="dark"]) .scopeTrigger:focus-visible,
-:global(html[data-curation-theme="dark"]) .scopeTrigger[data-state="open"] {
-  background: #353535 !important;
-  color: #f4f4f4;
-}
-
 :global(html[data-curation-theme="dark"]) .send {
   background: #f4f4f4 !important;
   color: #181818 !important;
@@ -446,31 +421,6 @@
 :global(html[data-curation-theme="dark"]) .send:disabled {
   background: #5a5a5a !important;
   color: #a9a9a9 !important;
-}
-
-:global(html[data-curation-theme="dark"]) .scopeMenu {
-  border-color: #484848;
-  background: #242424 !important;
-  color: #f4f4f4;
-  box-shadow: 0 0.2rem 0.42rem rgb(0 0 0 / 24%) !important;
-}
-
-:global(html[data-curation-theme="dark"]) .scopeMenu :global([data-slot="dropdown-menu-label"]) {
-  color: #999;
-}
-
-:global(html[data-curation-theme="dark"]) .scopeMenu :global([data-slot="dropdown-menu-radio-item"]) {
-  color: #bbb;
-}
-
-:global(html[data-curation-theme="dark"]) .scopeMenu :global([data-slot="dropdown-menu-radio-item"]):focus {
-  background: #353535;
-  color: #f4f4f4;
-}
-
-:global(html[data-curation-theme="dark"]) .scopeMenu :global([data-slot="dropdown-menu-radio-item"])[data-state="checked"],
-:global(html[data-curation-theme="dark"]) .scopeMenu :global([data-slot="dropdown-menu-radio-item-indicator"]) {
-  color: #f4f4f4;
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -494,15 +444,46 @@
     min-height: 0;
     max-width: none;
     overflow: hidden;
-    padding: 2rem 1rem;
+    padding: 1.5rem 1rem 0.75rem;
   }
 
   .scroller {
     min-height: 0;
   }
 
-  .form {
-    position: static;
+  .viewport {
+    padding: 1rem 0 0.5rem;
+  }
+
+  /* 输入框保持 sticky 停靠底部，移动端永不滚走；iOS 输入字号 ≥16px 防止聚焦缩放。 */
+  .scopeGroup {
+    width: 100%;
+  }
+
+  .scopeItem {
+    min-height: 2.5rem;
+    flex: 1 1 0;
+  }
+
+  .composer textarea {
+    font-size: 1rem;
+  }
+
+  .send {
+    width: 2.75rem !important;
+    height: 2.75rem !important;
+  }
+
+  .suggestions :global([data-slot="button"]) {
+    min-height: 2.75rem;
+    align-items: center;
+    font-size: 0.82rem;
+  }
+
+  .citation {
+    min-height: 2.75rem;
+    align-items: center;
+    font-size: 0.74rem;
   }
 }
 

@@ -1,6 +1,5 @@
 "use client";
 
-import { ArrowUpRight } from "lucide-react";
 import type { Route } from "next";
 import Link from "next/link";
 import { useCallback, useEffect, useRef, useState } from "react";
@@ -73,15 +72,14 @@ export function CurationStream({ active = true, initialHasMore, initialItems }: 
           style={isAppended ? { "--stream-i": Math.min(index - appendStart, 9) } as CSSProperties : undefined}
         >
           <Link data-content-id={item.id} href={`/curation/${item.id}` as Route}>
+            <div className="curation-home__stream-meta">
+              <time dateTime={item.collectedAt ?? item.publishedAt ?? undefined}>{formatCurationDate(item)}</time>
+              <span>@{item.author.handle}</span>
+            </div>
             <div className="curation-home__stream-copy">
               <h3>{item.title}</h3>
               <p>{item.summary}</p>
-              <div className="curation-home__stream-meta">
-                <time dateTime={item.collectedAt ?? item.publishedAt ?? undefined}>{formatCurationDate(item)}</time>
-                <span>@{item.author.handle}</span>
-              </div>
             </div>
-            <span aria-hidden="true" className="curation-home__stream-arrow"><ArrowUpRight /></span>
           </Link>
         </li>
         );

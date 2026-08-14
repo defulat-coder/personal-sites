@@ -1,12 +1,13 @@
 import { AiNewsStream } from "@/components/ai-news-stream";
 import { CurationStream } from "@/components/curation-stream";
+import { HomeSnapshot } from "@/components/home-snapshot";
 import { OpenSourceStream } from "@/components/open-source-stream";
 import { ContentSectionNavigation } from "@/components/site-section-navigation";
 import type { AiNewsListItem } from "@/lib/ai-news-types";
 import type { CurationListItem } from "@/lib/curation-types";
 import type { OpenSourceListEntry } from "@/lib/open-source-types";
 
-export type FocusView = "ai-news" | "daily" | "open-source";
+export type FocusView = "home" | "ai-news" | "daily" | "open-source";
 
 type FocusStreamProps = {
   aiNewsHasMore: boolean;
@@ -18,6 +19,7 @@ type FocusStreamProps = {
 };
 
 const viewLabels: Record<FocusView, string> = {
+  home: "今日快照",
   "ai-news": "每日动态",
   daily: "推特点赞",
   "open-source": "开源关注",
@@ -40,6 +42,9 @@ export function FocusStream({ aiNewsHasMore, aiNewsItems, initialHasMore, initia
       <ContentSectionNavigation current={initialView ?? "home"} />
 
       {initialView === null ? <FeedSkeleton /> : null}
+      {initialView === "home"
+        ? <HomeSnapshot aiNewsItems={aiNewsItems} curationItems={initialItems} openSourceEntries={openSourceEntries} />
+        : null}
       {initialView === "ai-news" ? <AiNewsStream initialHasMore={aiNewsHasMore} initialItems={aiNewsItems} /> : null}
       {initialView === "daily"
         ? <CurationStream initialHasMore={initialHasMore} initialItems={initialItems} />
