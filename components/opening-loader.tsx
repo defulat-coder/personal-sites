@@ -6,7 +6,12 @@ import { useCallback, useEffect, useState, useSyncExternalStore } from "react";
 type LoaderPhase = "preparing" | "playing" | "leaving" | "complete";
 
 const LOADER_SESSION_KEY = "opening-loader-played-v1";
+const LOADER_REPLAY_PARAM = "loader";
 const subscribeToNothing = () => () => {};
+
+// 带 ?loader 访问时强制重播开场加载层，忽略本会话已看过的标记。
+const shouldReplayLoader = () =>
+  new URLSearchParams(window.location.search).has(LOADER_REPLAY_PARAM);
 
 export function OpeningLoader() {
   const [phase, setPhase] = useState<LoaderPhase>("preparing");
@@ -15,7 +20,8 @@ export function OpeningLoader() {
   // 水合时先按服务端快照渲染，随后 useSyncExternalStore 切换到已看过并移除遮罩。
   const seen = useSyncExternalStore(
     subscribeToNothing,
-    () => window.sessionStorage.getItem(LOADER_SESSION_KEY) !== null,
+    () =>
+      window.sessionStorage.getItem(LOADER_SESSION_KEY) !== null && !shouldReplayLoader(),
     () => false,
   );
 
