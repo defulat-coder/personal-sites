@@ -22,6 +22,23 @@ type SectionNavigationLinkProps = {
 };
 
 const exitDuration = 130;
+// 移动端 profile 过渡有 ghost 遮挡版块的退出过程，退出动画不必播完再导航，
+// 缩短等待让路由渲染与退出动画重叠，压缩 ghost 悬停的空白窗口。
+const mobileProfileExitDuration = 60;
+
+// 站内 ?view= 切换只影响客户端 useSearchParams（服务端渲染产物与首页完全相同），
+// 用 history.pushState 完成导航可以省掉 RSC 请求——否则 slow network 下 ghost 会
+// 悬停数百毫秒等待 payload，飞行前的冻结窗口全部来自这里。Next.js 会将 pushState
+// 同步进 useSearchParams，浏览器前进/后退同样生效。
+function commitNavigation(router: ReturnType<typeof useRouter>, href: Route) {
+  const destination = new URL(href, window.location.origin);
+  if (destination.pathname === window.location.pathname) {
+    window.history.pushState(null, "", href);
+    window.scrollTo(0, 0);
+    return;
+  }
+  router.push(href);
+}
 
 export function SectionNavigationLink({
   children,
@@ -57,8 +74,8 @@ export function SectionNavigationLink({
         if (!isMobileProfileTransition) beginSectionTransition(transition);
         beginProfileTransition(from, to);
         timeout.current = window.setTimeout(() => {
-          router.push(href);
-        }, exitDuration);
+          commitNavigation(router, href);
+        }, isMobileProfileTransition ? mobileProfileExitDuration : exitDuration);
       }}
     >
       {children}

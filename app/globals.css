@@ -100,6 +100,19 @@ html[data-section-transition="entering-swap"] .site-section-motion {
   align-items: flex-start;
 }
 
+/* FLIP 过渡期间禁止平滑滚动，避免路由滚动复位变成动画，把 ghost 的测量目标推走。 */
+html[data-profile-transition] {
+  scroll-behavior: auto;
+}
+
+/* 收起过渡期间暂缓内容流渲染：长列表的布局/绘制会阻塞主线程数百毫秒，
+   若与导航同帧提交会拖住 ghost 飞行的启动。桥段启动飞行后再解除。 */
+@media (max-width:900px) {
+  html[data-profile-feed-hold] .curation-home__feed {
+    display: none;
+  }
+}
+
 @media (max-width:900px) {
   html[data-profile-transition^="leaving-"] .curation-home__profile-header {
     opacity: 0;
