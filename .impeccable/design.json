@@ -1,7 +1,7 @@
 {
   "schemaVersion": 2,
-  "generatedAt": "2026-08-09T00:00:00+08:00",
-  "title": "Design System: 陈远｜每日策展",
+  "generatedAt": "2026-08-14T17:27:21Z",
+  "title": "Design System: 陈远｜每日关注",
   "extensions": {
     "colorMeta": {
       "ink": {
@@ -10,21 +10,13 @@
         "canonical": "#1c1c1e",
         "tonalRamp": [
           "#0c0c0e",
-          "#101012",
           "#111111",
           "#1c1c1e",
           "#252527",
           "#303033",
           "#3a3a3d",
-          "#3f3f42",
           "#454548",
-          "#484848",
-          "#4f4f52",
-          "#5a5a5a",
-          "#656568",
-          "#6f6f72",
-          "#767676",
-          "#77777a"
+          "#4f4f52"
         ]
       },
       "surface": {
@@ -34,22 +26,72 @@
         "tonalRamp": [
           "#ffffff",
           "#f8f8f8",
-          "#f5f3ed",
+          "#f4f4f4",
           "#eeeeee",
           "#e5e5e5",
-          "#dedee0",
           "#d8d8d8",
-          "#d5d5d6",
-          "#d4d4d6",
-          "#d0d0d2",
           "#c5c5c8",
-          "#bbbbbb",
-          "#b8b8ba",
-          "#b8b8bb",
-          "#b5b5b7",
-          "#a9a9a9",
-          "#a8a8ab",
-          "#999999"
+          "#a9a9a9"
+        ]
+      },
+      "muted": {
+        "role": "neutral",
+        "displayName": "Muted",
+        "canonical": "#656568",
+        "tonalRamp": [
+          "#2e2e30",
+          "#3f3f42",
+          "#4f4f52",
+          "#5a5a5d",
+          "#656568",
+          "#767678",
+          "#8a8a8c",
+          "#a0a0a2"
+        ]
+      },
+      "quiet": {
+        "role": "neutral",
+        "displayName": "Quiet",
+        "canonical": "#767676",
+        "tonalRamp": [
+          "#3a3a3a",
+          "#4c4c4c",
+          "#5e5e5e",
+          "#6a6a6a",
+          "#767676",
+          "#888888",
+          "#9c9c9c",
+          "#b2b2b2"
+        ]
+      },
+      "summary": {
+        "role": "neutral",
+        "displayName": "Summary",
+        "canonical": "#6f6f72",
+        "tonalRamp": [
+          "#363638",
+          "#48484a",
+          "#58585b",
+          "#646467",
+          "#6f6f72",
+          "#818184",
+          "#959598",
+          "#ababae"
+        ]
+      },
+      "line": {
+        "role": "neutral",
+        "displayName": "Line",
+        "canonical": "#eeeeee",
+        "tonalRamp": [
+          "#d0d0d0",
+          "#dcdcdc",
+          "#e2e2e2",
+          "#e8e8e8",
+          "#eeeeee",
+          "#f2f2f2",
+          "#f6f6f6",
+          "#fafafa"
         ]
       },
       "dark-surface": {
@@ -59,19 +101,27 @@
         "tonalRamp": [
           "#181818",
           "#202020",
-          "#232321",
           "#242424",
-          "#262626",
           "#282828",
-          "#2a2a2a",
           "#303030",
-          "#333333",
-          "#353535",
           "#3a3a3a",
-          "#404040",
-          "#414141",
           "#444444",
-          "#454545"
+          "#545454"
+        ]
+      },
+      "dark-ink": {
+        "role": "neutral",
+        "displayName": "Dark Ink",
+        "canonical": "#f4f4f4",
+        "tonalRamp": [
+          "#8a8a8a",
+          "#a0a0a0",
+          "#b6b6b6",
+          "#cacaca",
+          "#dcdcdc",
+          "#e8e8e8",
+          "#f4f4f4",
+          "#fafafa"
         ]
       },
       "loader-green": {
@@ -79,14 +129,14 @@
         "displayName": "Loader Green",
         "canonical": "#24cb71",
         "tonalRamp": [
-          "#e5fff0",
-          "#b8f8d3",
-          "#7debaa",
-          "#39eba0",
-          "#24cb71",
-          "#179b55",
+          "#063b20",
           "#0f6c3c",
-          "#063b20"
+          "#179b55",
+          "#24cb71",
+          "#39eba0",
+          "#7debaa",
+          "#b8f8d3",
+          "#e5fff0"
         ]
       },
       "loader-red": {
@@ -94,7 +144,14 @@
         "displayName": "Loader Red",
         "canonical": "#ef4444",
         "tonalRamp": [
-          "#ef4444"
+          "#7f1d1d",
+          "#b91c1c",
+          "#dc2626",
+          "#ef4444",
+          "#f87171",
+          "#fca5a5",
+          "#fecaca",
+          "#fee2e2"
         ]
       },
       "loader-amber": {
@@ -102,7 +159,14 @@
         "displayName": "Loader Amber",
         "canonical": "#f2c94c",
         "tonalRamp": [
-          "#f2c94c"
+          "#6b4e0a",
+          "#97700f",
+          "#c69516",
+          "#f2c94c",
+          "#f6d979",
+          "#f9e6a6",
+          "#fcf3cf",
+          "#fef9e7"
         ]
       },
       "paper": {
@@ -110,8 +174,29 @@
         "displayName": "Receipt Paper",
         "canonical": "#f8f8f8",
         "tonalRamp": [
+          "#e8e8e8",
+          "#eeeeee",
+          "#f2f2f2",
+          "#f5f5f5",
           "#f8f8f8",
-          "#f6f2e9"
+          "#fafafa",
+          "#fcfcfc",
+          "#ffffff"
+        ]
+      },
+      "paper-dark": {
+        "role": "neutral",
+        "displayName": "Receipt Paper Dark",
+        "canonical": "#f6f2e9",
+        "tonalRamp": [
+          "#ddd6c5",
+          "#e4ddcd",
+          "#eae4d6",
+          "#f0ebdf",
+          "#f6f2e9",
+          "#f8f5ee",
+          "#faf8f3",
+          "#fcfbf8"
         ]
       },
       "error": {
@@ -119,12 +204,12 @@
         "displayName": "Error",
         "canonical": "#994545",
         "tonalRamp": [
-          "#fff7f7",
-          "#f0aaaa",
-          "#e2bcbc",
-          "#994545",
+          "#321d1d",
           "#6d3535",
-          "#321d1d"
+          "#994545",
+          "#e2bcbc",
+          "#f0aaaa",
+          "#fff7f7"
         ]
       },
       "shadow": {
@@ -139,27 +224,26 @@
           "rgb(0 0 0 / 60%)",
           "rgb(0 0 0 / 65%)",
           "rgb(0 0 0 / 70%)",
-          "rgb(0 0 0 / 75%)",
           "rgb(0 0 0 / 80%)"
         ]
       }
     },
     "typographyMeta": {
       "display": {
-        "displayName": "Curation Display",
-        "purpose": "Detail-page entry titles only."
+        "displayName": "Display",
+        "purpose": "仅开屏等非内容场景；内容页标题一律用 Detail headline 档。"
       },
       "title": {
         "displayName": "Identity and Section Title",
-        "purpose": "Names and lightweight section headings."
+        "purpose": "左侧姓名、列表区标题与轻量区域标题。"
       },
       "body": {
         "displayName": "Reading Body",
-        "purpose": "Profile, summaries, and article copy."
+        "purpose": "简介、摘要与 Markdown 正文，按阅读密度递进。"
       },
       "signal": {
         "displayName": "Technical Signal",
-        "purpose": "Agent-engineering terms in the signal field only."
+        "purpose": "仅技术信号场词节点，不作为普通 UI 正文字体。"
       }
     },
     "shadows": [],
@@ -178,6 +262,11 @@
         "name": "content-typing",
         "value": "11ms/13ms input; 4ms deletion",
         "purpose": "One-time bilingual profile sequence."
+      },
+      {
+        "name": "receipt-feed",
+        "value": "clip-path + steps()",
+        "purpose": "关于我打印稿的机械式逐段走纸；收卷为快速反向。"
       }
     ],
     "breakpoints": [
@@ -200,58 +289,86 @@
       "name": "External Link Pill",
       "kind": "button",
       "refersTo": "external-link",
-      "description": "The single external identity link beneath the profile name.",
+      "description": "身份轨上唯一的外链出口（GitHub），实心黑 pill。",
       "html": "<a class=\"ds-external-link\" href=\"#\">GitHub</a>",
       "css": ".ds-external-link { display:inline-flex; align-items:center; border:1px solid #1c1c1e; border-radius:999px; background:#1c1c1e; color:#fff; font:620 12px/1 -apple-system,BlinkMacSystemFont,Arial,sans-serif; padding:9px 13px; text-decoration:none; transition:background-color 180ms ease,border-color 180ms ease; }.ds-external-link:hover,.ds-external-link:focus-visible { border-color:#555; background:#555; outline:0; }"
     },
     {
-      "name": "Curation Stream Row",
+      "name": "Stream Row",
       "kind": "custom",
       "refersTo": "stream-row",
-      "description": "A flat three-column item for date/author, content, and direction.",
-      "html": "<a class=\"ds-stream-row\" href=\"#\"><span>2026年8月7日<br>@author</span><strong>一条每日策展标题</strong><span>↗</span></a>",
-      "css": ".ds-stream-row { display:grid; grid-template-columns:minmax(124px,.42fr) minmax(0,1.58fr) 20px; gap:16px; border-bottom:1px solid #eee; color:#1c1c1e; font:12px/1.38 -apple-system,BlinkMacSystemFont,Arial,sans-serif; padding:26px 0; text-decoration:none; }.ds-stream-row strong { font-size:17px; font-weight:570; letter-spacing:-.04em; line-height:1.15; }.ds-stream-row:hover,.ds-stream-row:focus-visible { color:#6f6f72; outline:0; }"
+      "description": "每日关注/每日动态流的一行：元信息、标题/摘要、方向箭头，1px 分隔线，无卡片。",
+      "html": "<a class=\"ds-stream-row\" href=\"#\"><span class=\"ds-stream-row__meta\">2026年8月7日<br>@author</span><span class=\"ds-stream-row__body\"><strong>一条每日关注条目标题</strong><em>摘要文本，低强调，一到两行。</em></span><span class=\"ds-stream-row__arrow\">↗</span></a>",
+      "css": ".ds-stream-row { display:grid; grid-template-columns:minmax(124px,.42fr) minmax(0,1.58fr) 20px; gap:16px; border-bottom:1px solid #eee; color:#1c1c1e; font:12px/1.38 -apple-system,BlinkMacSystemFont,Arial,sans-serif; padding:26px 0; text-decoration:none; transition:color 180ms ease; }.ds-stream-row__meta { color:#767676; }.ds-stream-row__body strong { display:block; font-size:clamp(14px,.95vw,16px); font-weight:500; letter-spacing:-.018em; line-height:1.32; text-wrap:pretty; }.ds-stream-row__body em { display:block; color:#656568; font-style:normal; margin-top:4px; }.ds-stream-row__arrow { transition:transform 180ms ease; }.ds-stream-row:hover,.ds-stream-row:focus-visible { color:#656568; outline:0; }.ds-stream-row:hover .ds-stream-row__arrow { transform:translate(2px,-2px); }"
+    },
+    {
+      "name": "Tag Chip",
+      "kind": "chip",
+      "refersTo": "tag",
+      "description": "详情页标签，安静文本色的小 pill。",
+      "html": "<span class=\"ds-tag\">agent</span>",
+      "css": ".ds-tag { display:inline-flex; align-items:center; border-radius:999px; color:#6f6f72; font:12px/1 -apple-system,BlinkMacSystemFont,Arial,sans-serif; padding:7px 10px; }"
     },
     {
       "name": "Technical Signal",
       "kind": "custom",
       "refersTo": "signal",
-      "description": "An irregular, sparse Agent vocabulary field; not a tag cloud.",
+      "description": "点阵画布上错落排布的技术词节点，不是标签云。",
       "html": "<div class=\"ds-signal\"><span>agent.runtime</span><span>mcp.protocol</span><span>workflow.graph</span></div>",
-      "css": ".ds-signal { display:flex; flex-wrap:wrap; gap:18px 32px; min-height:96px; background:radial-gradient(circle,rgba(28,28,30,.27) 1px,transparent 1.15px); background-size:9px 9px; padding:18px; }.ds-signal span { border:1px solid rgba(28,28,30,.22); background:rgba(255,255,255,.94); color:rgba(28,28,30,.88); font:650 10px/1 ui-monospace,SFMono-Regular,Menlo,monospace; padding:7px 9px; }"
+      "css": ".ds-signal { display:flex; flex-wrap:wrap; gap:18px 32px; min-height:96px; background-image:radial-gradient(circle,rgba(28,28,30,.27) 1px,transparent 1.15px); background-size:9px 9px; padding:18px; }.ds-signal span { border:1px solid rgba(28,28,30,.22); background:rgba(255,255,255,.94); color:rgba(28,28,30,.88); font:650 10px/1 ui-monospace,SFMono-Regular,Menlo,monospace; padding:7px 9px; }"
+    },
+    {
+      "name": "About Receipt",
+      "kind": "custom",
+      "refersTo": "about-receipt",
+      "description": "关于我打印稿小票：纸色不随主题切换，等宽字体，顶部虚线撕边。",
+      "html": "<div class=\"ds-receipt\"><div class=\"ds-receipt__row\"><span>2023—至今</span><span>独立工程实践</span></div><div class=\"ds-receipt__row\"><span>2020—2023</span><span>某科技公司 · 资深工程师</span></div></div>",
+      "css": ".ds-receipt { background:#f8f8f8; border-top:1px dashed #b8b8ba; color:#1c1c1e; font:12px/1.7 ui-monospace,SFMono-Regular,Menlo,monospace; padding:14px 12px; }.ds-receipt__row { display:grid; grid-template-columns:auto 1fr; gap:12px; }.ds-receipt__row span:last-child { text-align:right; }"
     }
   ],
   "narrative": {
     "northStar": "运行中的工程档案",
-    "overview": "A flat, high-contrast personal engineering site. The profile rail remains stable while curation entries and long-form detail create a continuous reading flow.",
+    "overview": "这是一个以个人工程身份为锚点、以每日判断为主内容的桌面优先站点。页面不把内容包进卡片，也不使用营销式 hero；身份信息作为始终可见的左侧轨道，策展和文章作为右侧连续阅读流。\n\n视觉参考来自 Ample Studio 的克制、轻量和留白节奏，但内容与交互服务于 Agent 工程实践：信号场传达技术广度，逐字叙事传达个人履历，策展流传达持续输入与判断。",
     "keyCharacteristics": [
-      "desktop-first split layout",
-      "flat editorial stream",
-      "monochrome post-loader surface",
-      "sparse technical signal field",
-      "one-time bilingual profile motion"
+      "高对比黑白灰为主体；绿色只属于 Loading 动画，不进入常规页面。",
+      "平面、细分割线、连续流；不要用卡片堆叠制造层级。",
+      "桌面两栏是主布局；窄屏才收敛为单栏。"
     ],
     "rules": [
       {
-        "name": "Monochrome After Loading",
-        "body": "Loader Green ends with the loading sequence; content pages use black, white, and gray.",
+        "name": "单色优先规则",
+        "body": "除 Loading 绿外，不以黄色、渐变或高饱和点缀争夺内容注意力。",
         "section": "colors"
       },
       {
-        "name": "Flat By Default",
-        "body": "Use separators and whitespace rather than cards and shadows.",
+        "name": "语义字号规则",
+        "body": "内容页面的标题不使用 display 级别——长标题在超大字号下会失控；display 档仅保留给开屏等非内容场景。首页内容通过粗细、留白和分隔线建立层级，不依赖超大标题。",
+        "section": "typography"
+      },
+      {
+        "name": "字号阶梯",
+        "body": "frontmatter 的 typography.scale 是全站允许的字号清单（caption 0.67–0.76 / 正文 0.78–0.96 / Markdown 1–1.4 / 详情与信息流标题档）；新增字号先进清单再进代码，探测器以此为准。",
+        "section": "typography"
+      },
+      {
+        "name": "平面优先规则",
+        "body": "除媒体缩放、主题按钮 hover 与必要的状态反馈外，不为“看起来高级”添加阴影、描边加阴影组合或装饰性背景。",
         "section": "elevation"
       }
     ],
     "dos": [
-      "Use the identity rail plus continuous content flow.",
-      "Keep profile copy full-width inside the rail.",
-      "Honor reduced-motion preferences."
+      "以 .curation-home 的“身份轨 + 内容流”作为新页面的默认骨架。",
+      "在内容区使用连续分隔线、语义标题与真实元信息表达层级。",
+      "将新的技术词、简介内容与策展条目放进既有组件和数据模型，而不是另建展示壳。",
+      "为新的动效补齐 prefers-reduced-motion 的静态或即时状态。",
+      "先在桌面宽度验证两栏节奏、词节点不重叠、正文不留无意义右侧空白。"
     ],
     "donts": [
-      "Do not restore knowledge-base workspace UI.",
-      "Do not use card grids or decorative color accents.",
-      "Do not let signal terms overlap."
+      "恢复知识库、语雀同步、工作台表格或旧 WorkspaceFrame 视觉结构。",
+      "用卡片网格、玻璃拟态、大阴影或高饱和装饰色承载策展内容。",
+      "将 Loading 的绿色或此前试验的黄色扩散到加载完成后的页面。",
+      "为技术感滥用等宽字体；等宽字体只属于技术信号场与代码语义。",
+      "让技术节点、正文文本或详情标题溢出、堆叠或破坏两栏阅读线。"
     ]
   }
 }

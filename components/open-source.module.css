@@ -5,27 +5,30 @@
 .filters {
   display: flex;
   width: 100%;
-  align-items: center;
+  align-items: baseline;
   flex-wrap: wrap;
-  gap: .2rem .8rem;
-  border-bottom: 1px solid var(--line);
-  padding: 0 0 .5rem;
+  padding: .9rem 0 0;
 }
 
 .filter {
-  position: relative;
   display: inline-flex;
   min-height: 1.9rem;
   flex: 0 0 auto;
   align-items: center;
   border: 0;
   background: transparent;
-  color: #77777a;
+  color: var(--quiet);
   cursor: pointer;
   font-size: .74rem;
   gap: .28rem;
-  padding: .25rem 0 .42rem;
+  padding: .25rem 0;
   transition: color 180ms ease;
+}
+
+.filter + .filter::before {
+  margin: 0 .55rem;
+  color: #a9a9a9;
+  content: "·";
 }
 
 .filterCount {
@@ -42,23 +45,6 @@
 
 .filter[aria-pressed="true"] .filterCount {
   color: #6f6f72;
-}
-
-.filter::after {
-  position: absolute;
-  right: 0;
-  bottom: 0;
-  left: 0;
-  height: 1px;
-  background: currentColor;
-  content: "";
-  transform: scaleX(0);
-  transform-origin: left center;
-  transition: transform 220ms cubic-bezier(.16, 1, .3, 1);
-}
-
-.filter[aria-pressed="true"]::after {
-  transform: scaleX(1);
 }
 
 .filter:hover {
@@ -322,6 +308,14 @@
 
 @keyframes repository-browser-spin { to { transform: rotate(360deg); } }
 
+:global(html[data-curation-theme="dark"]) .filter {
+  color: #999;
+}
+
+:global(html[data-curation-theme="dark"]) .filter + .filter::before {
+  color: #545454;
+}
+
 :global(html[data-curation-theme="dark"]) .filter[aria-pressed="true"],
 :global(html[data-curation-theme="dark"]) .filter:hover,
 :global(html[data-curation-theme="dark"]) .filter:focus-visible,
@@ -388,6 +382,10 @@
 }
 
 @media (max-width: 560px) {
+  .filter {
+    min-height: 2.2rem;
+  }
+
   .stream a {
     grid-template-columns: 1fr 1.25rem;
   }

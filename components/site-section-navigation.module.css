@@ -11,13 +11,46 @@
 
 .contentNavigation {
   display: flex;
-  align-items: center;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 1rem;
   border-bottom: 1px solid var(--line);
   background: #fff;
   position: sticky;
   z-index: 1;
   top: 0;
   padding: 2rem 0 0.78rem;
+}
+
+.current {
+  color: var(--ink);
+  font-size: 0.95rem;
+  font-weight: 620;
+  letter-spacing: -0.035em;
+  line-height: 1.15;
+}
+
+.siblings {
+  display: flex;
+  align-items: baseline;
+  gap: 1rem;
+}
+
+.siblingLink {
+  display: inline-flex;
+  min-height: 2rem;
+  align-items: center;
+  color: var(--quiet);
+  font-size: 0.78rem;
+  line-height: 1;
+  text-decoration: none;
+  transition: color 180ms ease;
+}
+
+.siblingLink:hover,
+.siblingLink:focus-visible,
+.siblingLink[data-transitioning="true"] {
+  color: var(--ink);
 }
 
 .link {
@@ -82,7 +115,22 @@
 }
 
 :global(html[data-curation-theme="dark"]) .contentNavigation {
+  border-color: #333;
   background: #181818;
+}
+
+:global(html[data-curation-theme="dark"]) .current {
+  color: #f4f4f4;
+}
+
+:global(html[data-curation-theme="dark"]) .siblingLink {
+  color: #999;
+}
+
+:global(html[data-curation-theme="dark"]) .siblingLink:hover,
+:global(html[data-curation-theme="dark"]) .siblingLink:focus-visible,
+:global(html[data-curation-theme="dark"]) .siblingLink[data-transitioning="true"] {
+  color: #f4f4f4;
 }
 
 :global(html[data-curation-theme="dark"]) .mobileNavigation {
@@ -149,7 +197,8 @@
 
 @media (prefers-reduced-motion: reduce) {
   .link,
-  .link::after {
+  .link::after,
+  .siblingLink {
     transition: none;
   }
 }

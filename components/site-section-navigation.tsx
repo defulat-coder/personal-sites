@@ -55,10 +55,31 @@ export function MobileSectionNavigation({ current }: Pick<SiteSectionNavigationP
   );
 }
 
+// 桌面刊头：当前版块是 Title 档刊名，兄弟版块收为 quiet 同行链接，
+// 整个头部共享一条细线——导航不再使用 tab 语法。
 export function ContentSectionNavigation({ current }: Pick<SiteSectionNavigationProps, "current">) {
+  const allSections = [homeSection, ...contentSections];
+  const currentSection = allSections.find((section) => section.id === current) ?? contentSections[0];
+  const siblings = contentSections.filter((section) => section.id !== currentSection.id);
   return (
-    <div className={styles.contentNavigation}>
-      <SiteSectionNavigation current={current} />
-    </div>
+    <nav aria-label="内容导航" className={styles.contentNavigation}>
+      <span aria-current="page" className={styles.current}>
+        {currentSection.label}
+      </span>
+      <div className={styles.siblings}>
+        {siblings.map((section) => (
+          <SectionNavigationLink
+            className={styles.siblingLink}
+            from={current}
+            href={section.href}
+            key={`${current}-${section.id}`}
+            to={section.id}
+            transition={getTransition(current, section.id)}
+          >
+            {section.label}
+          </SectionNavigationLink>
+        ))}
+      </div>
+    </nav>
   );
 }
