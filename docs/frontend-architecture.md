@@ -12,7 +12,10 @@ RootLayout
 └─ 路由页面
    ├─ /                         首页（ISR，revalidate = 300）
    │  ├─ Profile rail（sticky）
-   │  └─ 桌面默认每日动态；移动端默认显示个人首页；?view= 由客户端 HomeView 读取
+   │  └─ 今日快照；遗留 ?view= 仅作旧链接兼容，由客户端 HomeView 读取
+   ├─ /ai-news                  每日动态版块（ISR，revalidate = 300）
+   ├─ /curation                 推特点赞版块（ISR，revalidate = 300）
+   ├─ /open-source              开源关注版块（ISR，revalidate = 300）
    ├─ /ask                      问一问
    │  ├─ Profile rail（与首页相同）
    │  └─ 内容导航 + 公开资料问答（指纹与 Markdown 渲染按需加载）
@@ -32,7 +35,8 @@ RootLayout
 | 区域 | 主文件 | 责任 | 不应承担的责任 |
 |---|---|---|---|
 | 全局壳 | `app/layout.tsx` | metadata、全局 CSS、Loading 注入 | 路由内容或业务数据 |
-| 首页 | `app/page.tsx` | ISR 静态壳 + `HomeView`/`HomeMain` 编排、策展条目入口 | 详情内容渲染；`?view=` 不进服务端 |
+| 首页 | `app/page.tsx` | ISR 静态壳 + `HomeView`/`HomeMain` 编排、策展条目入口 | 详情内容渲染；遗留 `?view=` 不进服务端 |
+| 版块页 | `app/ai-news/page.tsx`、`app/curation/page.tsx`、`app/open-source/page.tsx` | 单版块的 ISR 列表页，复用身份轨与刊头 | 第二套侧栏语言 |
 | 详情页 | `app/curation/[id]/page.tsx` | 条目元信息、原文、媒体、解析、来源 | 第二套个人侧栏 |
 | Loading | `components/opening-loader.tsx` | 加载阶段、滚动锁定、向上揭幕；sessionStorage 标记 + `<html>` data 属性预隐藏，水合后移除 | 常规页面配色；重复访问不遮挡内容 |
 | 个人简介 | `components/profile-introduction.tsx` | 双语逐字输入/删除、最终中文正文与多语言标题轮换 | 静态履历数据源 |

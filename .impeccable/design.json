@@ -1,6 +1,6 @@
 {
   "schemaVersion": 2,
-  "generatedAt": "2026-08-15T03:05:00Z",
+  "generatedAt": "2026-08-15T00:37:39Z",
   "title": "Design System: 陈远｜每日关注",
   "extensions": {
     "colorMeta": {
@@ -251,12 +251,12 @@
       {
         "name": "loader-reveal",
         "value": "cubic-bezier(.76,0,.24,1)",
-        "purpose": "One-time upward Loading reveal."
+        "purpose": "一次性首访仪式：固定 5 秒电池充电序列后向上揭幕，不与真实加载进度挂钩；reduced-motion 约 160ms。"
       },
       {
-        "name": "signal-float",
-        "value": "cubic-bezier(.45,0,.2,1)",
-        "purpose": "Low-amplitude technical signal motion."
+        "name": "signal-marquee",
+        "value": "technical-term-marquee linear 20–27s（各轨错开负延迟）",
+        "purpose": "技术信号场的从右向左弹幕滚动；词条在两侧被渐隐遮罩裁切是有意语义；reduced-motion 下为静态 3×4 网格。"
       },
       {
         "name": "content-typing",
@@ -289,8 +289,8 @@
       "name": "Section Masthead",
       "kind": "nav",
       "refersTo": "content-navigation",
-      "description": "桌面内容区刊头：Title 档刊名居左，quiet 兄弟版块链接居右，共享唯一一条细线。",
-      "html": "<nav class=\"ds-masthead\"><span class=\"ds-masthead__current\">每日动态</span><span class=\"ds-masthead__siblings\"><a href=\"#\">推特点赞</a><a href=\"#\">开源关注</a><a href=\"#\">问一问</a></span></nav>",
+      "description": "桌面内容区刊头：Title 档刊名居左，quiet 兄弟版块链接居右，共享唯一一条细线；问一问是动作不进入刊头序列。各阅读版块有独立路径（/ai-news、/curation、/open-source、/works）。",
+      "html": "<nav class=\"ds-masthead\"><span class=\"ds-masthead__current\">每日动态</span><span class=\"ds-masthead__siblings\"><a href=\"#\">推特点赞</a><a href=\"#\">开源关注</a><a href=\"#\">构建</a></span></nav>",
       "css": ".ds-masthead { display:flex; align-items:baseline; justify-content:space-between; gap:16px; border-bottom:1px solid #eee; padding:12px 0; font-family:-apple-system,BlinkMacSystemFont,Arial,sans-serif; }.ds-masthead__current { color:#1c1c1e; font-size:15px; font-weight:620; letter-spacing:-.035em; }.ds-masthead__siblings { display:flex; gap:16px; }.ds-masthead__siblings a { color:#767676; font-size:12px; text-decoration:none; transition:color 180ms ease; }.ds-masthead__siblings a:hover,.ds-masthead__siblings a:focus-visible { color:#1c1c1e; outline:0; }"
     },
     {
@@ -329,7 +329,7 @@
       "name": "Technical Signal",
       "kind": "custom",
       "refersTo": "signal",
-      "description": "点阵画布上错落排布的技术词节点，不是标签云。",
+      "description": "点阵画布上从右向左滚动的技术词弹幕（固定种子 12 词）；两侧渐隐裁切是有意语义，reduced-motion 下为静态 3×4 网格。不是标签云。",
       "html": "<div class=\"ds-signal\"><span>agent.runtime</span><span>mcp.protocol</span><span>workflow.graph</span></div>",
       "css": ".ds-signal { display:flex; flex-wrap:wrap; gap:18px 32px; min-height:96px; background-image:radial-gradient(circle,rgba(28,28,30,.27) 1px,transparent 1.15px); background-size:9px 9px; padding:18px; }.ds-signal span { border:1px solid rgba(28,28,30,.22); background:rgba(255,255,255,.94); color:rgba(28,28,30,.88); font:650 10px/1 ui-monospace,SFMono-Regular,Menlo,monospace; padding:7px 9px; }"
     },
@@ -337,8 +337,8 @@
       "name": "About Receipt",
       "kind": "custom",
       "refersTo": "about-receipt",
-      "description": "关于我打印稿小票：纸色不随主题切换，等宽字体，顶部虚线撕边。",
-      "html": "<div class=\"ds-receipt\"><div class=\"ds-receipt__row\"><span>2023—至今</span><span>独立工程实践</span></div><div class=\"ds-receipt__row\"><span>2020—2023</span><span>某科技公司 · 资深工程师</span></div></div>",
+      "description": "关于我打印稿：全屏弹层里的拟物打印机（全站唯一受控拟物例外）把小票从出纸口逐段送出；纸色不随主题切换，等宽字体，顶部虚线撕边、底部锯齿边。",
+      "html": "<div class=\"ds-receipt\"><div class=\"ds-receipt__row\"><span>喜马拉雅</span><span>3 年</span></div><div class=\"ds-receipt__row\"><span>PayerMax</span><span>至今</span></div></div>",
       "css": ".ds-receipt { background:#f8f8f8; border-top:1px dashed #b8b8ba; color:#1c1c1e; font:12px/1.7 ui-monospace,SFMono-Regular,Menlo,monospace; padding:14px 12px; }.ds-receipt__row { display:grid; grid-template-columns:auto 1fr; gap:12px; }.ds-receipt__row span:last-child { text-align:right; }"
     }
   ],
@@ -368,8 +368,23 @@
       },
       {
         "name": "平面优先规则",
-        "body": "除媒体缩放、主题按钮 hover 与必要的状态反馈外，不为“看起来高级”添加阴影、描边加阴影组合或装饰性背景。",
+        "body": "除媒体缩放、主题按钮 hover 与必要的状态反馈外，不为“看起来高级”添加阴影、描边加阴影组合或装饰性背景。唯一例外是关于我打印稿的打印机机身（受控拟物例外）。",
         "section": "elevation"
+      },
+      {
+        "name": "受控拟物例外",
+        "body": "打印机的渐变机身、噪声纹理与多重阴影是全站唯一登记的拟物/阴影语言——它模拟真实打印的触觉仪式，纯平面规则只在这一台机器上让位；机器之外的任何界面元素不得援引此例外。",
+        "section": "elevation"
+      },
+      {
+        "name": "首访仪式规则",
+        "body": "Loading 是固定 5 秒的刻意仪式，不与真实加载进度挂钩、不提供跳过；reduced-motion 下约 160ms 直接揭幕；每个会话仅一次（sessionStorage），回访零成本。双语简介打字机同属仪式，不可跳过或快进。",
+        "section": "motion"
+      },
+      {
+        "name": "信号场弹幕规则",
+        "body": "技术信号场是从右向左的弹幕：词条经过容器两侧被渐隐遮罩裁切属弹幕语义，是有意设计；prefers-reduced-motion 的静态终态为 3×4 规则网格（登记例外），两形态不要求布局同构。",
+        "section": "motion"
       }
     ],
     "dos": [
