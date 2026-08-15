@@ -1,5 +1,4 @@
-import { BookOpen, GitBranch, MessageCircle } from "lucide-react";
-import Link from "next/link";
+import { BookOpen, GitBranch } from "lucide-react";
 import Image from "next/image";
 
 import { AboutPrint } from "@/components/about-print";
@@ -56,10 +55,6 @@ export function SiteProfile({ animateOnFirstHomeVisit = false, mobileSection }: 
               <BookOpen aria-hidden="true" />
               语雀
             </a>
-            <Link href="/ask">
-              <MessageCircle aria-hidden="true" />
-              问一问
-            </Link>
             <AboutPrint />
           </nav>
         </div>

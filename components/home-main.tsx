@@ -1,5 +1,4 @@
 import { FocusStream, type FocusView } from "@/components/focus-stream";
-import type { HomeSnapshotNewsItem } from "@/components/home-snapshot";
 import { SectionMotionLifecycle } from "@/components/section-motion-lifecycle";
 import type { SiteSection } from "@/components/site-section-navigation";
 import { SiteProfile } from "@/components/site-profile";
@@ -10,7 +9,6 @@ import type { OpenSourceListEntry } from "@/lib/open-source-types";
 export type HomeStreamData = {
   aiNewsHasMore: boolean;
   aiNewsItems: AiNewsListItem[];
-  aiNewsSnapshotItems: HomeSnapshotNewsItem[];
   initialHasMore: boolean;
   initialItems: CurationListItem[];
   openSourceEntries: OpenSourceListEntry[];
@@ -22,7 +20,7 @@ type HomeMainProps = HomeStreamData & {
 };
 
 // 首页主体结构在服务端（静态/ISR）与客户端（读取遗留 ?view=）之间共享。
-export function HomeMain({ aiNewsHasMore, aiNewsItems, aiNewsSnapshotItems, initialHasMore, initialItems, initialView, mobileSection, openSourceEntries }: HomeMainProps) {
+export function HomeMain({ aiNewsHasMore, aiNewsItems, initialHasMore, initialItems, initialView, mobileSection, openSourceEntries }: HomeMainProps) {
   return (
     <main className={`curation-home${mobileSection === "home" ? " curation-home--mobile-home" : ""}`} id="site-main" tabIndex={-1}>
       <SiteProfile animateOnFirstHomeVisit mobileSection={mobileSection} />
@@ -30,7 +28,6 @@ export function HomeMain({ aiNewsHasMore, aiNewsItems, aiNewsSnapshotItems, init
       <FocusStream
         aiNewsHasMore={aiNewsHasMore}
         aiNewsItems={aiNewsItems}
-        aiNewsSnapshotItems={aiNewsSnapshotItems}
         initialHasMore={initialHasMore}
         initialItems={initialItems}
         initialView={initialView}

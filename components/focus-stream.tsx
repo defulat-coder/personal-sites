@@ -1,18 +1,16 @@
 import { AiNewsStream } from "@/components/ai-news-stream";
 import { CurationStream } from "@/components/curation-stream";
-import { HomeSnapshot, type HomeSnapshotNewsItem } from "@/components/home-snapshot";
 import { OpenSourceStream } from "@/components/open-source-stream";
 import { ContentSectionNavigation } from "@/components/site-section-navigation";
 import type { AiNewsListItem } from "@/lib/ai-news-types";
 import type { CurationListItem } from "@/lib/curation-types";
 import type { OpenSourceListEntry } from "@/lib/open-source-types";
 
-export type FocusView = "home" | "ai-news" | "daily" | "open-source";
+export type FocusView = "ai-news" | "daily" | "open-source";
 
 type FocusStreamProps = {
   aiNewsHasMore: boolean;
   aiNewsItems: AiNewsListItem[];
-  aiNewsSnapshotItems: HomeSnapshotNewsItem[];
   initialHasMore: boolean;
   initialItems: CurationListItem[];
   initialView: FocusView | null;
@@ -20,7 +18,6 @@ type FocusStreamProps = {
 };
 
 const viewLabels: Record<FocusView, string> = {
-  home: "今日快照",
   "ai-news": "每日动态",
   daily: "推特点赞",
   "open-source": "开源关注",
@@ -37,15 +34,13 @@ function FeedSkeleton() {
   );
 }
 
-export function FocusStream({ aiNewsHasMore, aiNewsItems, aiNewsSnapshotItems, initialHasMore, initialItems, initialView, openSourceEntries }: FocusStreamProps) {
+// 桌面右侧默认每日动态：/ 不再设独立的「首页」视图，移动端首页仍是展开的个人资料。
+export function FocusStream({ aiNewsHasMore, aiNewsItems, initialHasMore, initialItems, initialView, openSourceEntries }: FocusStreamProps) {
   return (
     <section aria-label={initialView ? viewLabels[initialView] : "内容"} className="curation-home__feed site-section-motion">
-      <ContentSectionNavigation current={initialView ?? "home"} />
+      <ContentSectionNavigation current={initialView ?? "ai-news"} />
 
       {initialView === null ? <FeedSkeleton /> : null}
-      {initialView === "home"
-        ? <HomeSnapshot aiNewsItems={aiNewsSnapshotItems} curationItems={initialItems} openSourceEntries={openSourceEntries} />
-        : null}
       {initialView === "ai-news" ? <AiNewsStream initialHasMore={aiNewsHasMore} initialItems={aiNewsItems} /> : null}
       {initialView === "daily"
         ? <CurationStream initialHasMore={initialHasMore} initialItems={initialItems} />

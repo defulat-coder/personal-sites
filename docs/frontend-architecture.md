@@ -12,7 +12,7 @@ RootLayout
 └─ 路由页面
    ├─ /                         首页（ISR，revalidate = 300）
    │  ├─ Profile rail（sticky）
-   │  └─ 今日快照；遗留 ?view= 仅作旧链接兼容，由客户端 HomeView 读取
+   │  └─ 右侧默认每日动态；遗留 ?view= 仅作旧链接兼容，由客户端 HomeView 读取
    ├─ /ai-news                  每日动态版块（ISR，revalidate = 300）
    ├─ /curation                 推特点赞版块（ISR，revalidate = 300）
    ├─ /open-source              开源关注版块（ISR，revalidate = 300）
@@ -35,7 +35,7 @@ RootLayout
 | 区域 | 主文件 | 责任 | 不应承担的责任 |
 |---|---|---|---|
 | 全局壳 | `app/layout.tsx` | metadata、全局 CSS、Loading 注入 | 路由内容或业务数据 |
-| 首页 | `app/page.tsx` | ISR 静态壳 + `HomeView`/`HomeMain` 编排、策展条目入口 | 详情内容渲染；遗留 `?view=` 不进服务端 |
+| 首页 | `app/page.tsx` | ISR 静态壳 + `HomeView`/`HomeMain` 编排，右侧默认每日动态 | 详情内容渲染；遗留 `?view=` 不进服务端 |
 | 版块页 | `app/ai-news/page.tsx`、`app/curation/page.tsx`、`app/open-source/page.tsx` | 单版块的 ISR 列表页，复用身份轨与刊头 | 第二套侧栏语言 |
 | 详情页 | `app/curation/[id]/page.tsx` | 条目元信息、原文、媒体、解析、来源 | 第二套个人侧栏 |
 | Loading | `components/opening-loader.tsx` | 加载阶段、滚动锁定、向上揭幕；每次完整页面加载都播放，水合后移除 | 常规页面配色 |
@@ -83,6 +83,22 @@ RootLayout
 3. 新增动效必须具备终态、可中断清理和 reduced-motion 方案；动效不能把正文留在空白状态。
 4. 调整左栏文本时同时检查可用宽度、长文本换行和词节点碰撞；不能只看单一静态截图。
 5. 详情页若新增内容区，只能接在文章顺序中，并继续使用 `.curation-detail__section` / `.curation-detail__sources` 的分隔结构。
+
+## 动效技术分层
+
+新增动效先归入以下三层之一，不为迁移而迁移：
+
+| 层 | 适用场景 | 现有示例 |
+|---|---|---|
+| CSS keyframes / transitions | 声明式简单动效、无限循环、hover/focus 过渡 | 进出场 stagger、shimmer、marquee、状态脉冲、开屏 Loading |
+| Motion（`motion/react`） | JS 调度的状态驱动动效：值动画、序列、挂载/卸载进出场 | 双语简介打字序列（`profile-introduction.tsx`）、问一问消息进出场与清屏（`ask-chat.tsx`） |
+| 原生 WAAPI / CSS scroll-driven | Motion 无法等价覆盖的场景 | `profile-transition-bridge.tsx` 的 FLIP 覆盖层无缝接管、`feed-print.tsx` 的合成器驱动滚动打印 |
+
+约束：
+
+- CSS 能表达的简单动效不引入 Motion；FLIP 与 scroll-driven 场景不反向迁回 Motion（主线程 rAF 属于降级）。
+- Motion 只驱动 transform/opacity/clip-path 及小面积一次性 filter，禁止持续驱动布局属性或大面积绘制属性。
+- 各层都必须保留 `prefers-reduced-motion` 终态路径（变更准则 3 不变）。
 
 ## 当前对齐结论
 

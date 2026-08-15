@@ -72,39 +72,6 @@ export async function getAiNewsPage(offset = 0, limit = AI_NEWS_LIST_LIMIT): Pro
   return getCachedAiNewsPage(offset, limit);
 }
 
-// 今日快照专用：最近若干天的轻量投影（不含摘要与出处），
-// 避免首页首屏被单日动态的体量挤满、看不到前几天的条目。
-const AI_NEWS_SNAPSHOT_DAYS = 7;
-
-const aiNewsSnapshotRowSchema = z.object({
-  id: z.string().min(1),
-  publishedAt: z.string().nullable(),
-  selected: z.boolean(),
-  title: z.string().min(1),
-});
-
-export type AiNewsSnapshotItem = z.infer<typeof aiNewsSnapshotRowSchema>;
-
-const getCachedAiNewsSnapshotItems = unstable_cache(
-  async (): Promise<AiNewsSnapshotItem[]> => {
-    const client = getPublicAiNewsClient();
-    const cutoff = new Date(Date.now() - AI_NEWS_SNAPSHOT_DAYS * 86_400_000).toISOString();
-    const { data, error } = await client
-      .from("ai_news_public_items")
-      .select("id,publishedAt:content->>publishedAt,selected,title:content->>title")
-      .gte("published_at", cutoff)
-      .order("published_at", { ascending: false, nullsFirst: false });
-    if (error) throw new Error(`读取 Supabase 每日动态快照失败：${error.message}`);
-    return z.array(aiNewsSnapshotRowSchema).parse(data);
-  },
-  ["public-ai-news-snapshot-v1"],
-  { revalidate: 240, tags: ["public-ai-news"] },
-);
-
-export async function getAiNewsSnapshotItems(): Promise<AiNewsSnapshotItem[]> {
-  return getCachedAiNewsSnapshotItems();
-}
-
 const getCachedAiNewsItem = unstable_cache(
   async (id: string): Promise<AiNewsItem | null> => {
     const client = getPublicAiNewsClient();

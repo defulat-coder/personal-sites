@@ -11,15 +11,14 @@ type SiteSectionNavigationProps = {
   includeHome?: boolean;
 };
 
-// 阅读版块（名词）与问一问（动作）分置：问一问归入身份轨，不占用刊头与版块序列。
-const siblingSections: Array<{ href: Route; id: Exclude<SiteSection, "home" | "ask">; label: string }> = [
+// 问一问与阅读版块同为右侧内容入口，共享刊头与版块序列；作为对话式入口排在序列末位。
+const siblingSections: Array<{ href: Route; id: Exclude<SiteSection, "home">; label: string }> = [
   { href: "/ai-news", id: "ai-news", label: "每日动态" },
   { href: "/curation", id: "daily", label: "推特点赞" },
   { href: "/open-source", id: "open-source", label: "开源关注" },
   { href: "/works", id: "works", label: "我的作品" },
+  { href: "/ask", id: "ask", label: "问一问" },
 ];
-
-const askSection = { href: "/ask" as Route, id: "ask" as const, label: "问一问" };
 
 const homeSection = { href: "/" as Route, id: "home" as const, label: "首页" };
 
@@ -59,12 +58,11 @@ export function MobileSectionNavigation({ current }: Pick<SiteSectionNavigationP
 }
 
 // 桌面刊头：当前版块是 Title 档刊名，兄弟版块收为 quiet 同行链接，
-// 整个头部共享一条细线——导航不再使用 tab 语法。
+// 整个头部共享一条细线——导航不再使用 tab 语法。桌面无独立「首页」：/ 的右侧即每日动态，
+// 「首页」只保留在移动端导航（回到展开的个人资料）。
 export function ContentSectionNavigation({ current }: Pick<SiteSectionNavigationProps, "current">) {
-  const allSections = [homeSection, ...siblingSections, askSection];
-  const currentSection = allSections.find((section) => section.id === current) ?? siblingSections[0];
-  // 非首页页面的兄弟链接首位放「首页」：全路径路由下，版块页必须有回到今日快照的入口。
-  const siblings = [homeSection, ...siblingSections].filter((section) => section.id !== currentSection.id);
+  const currentSection = siblingSections.find((section) => section.id === current) ?? siblingSections[0];
+  const siblings = siblingSections.filter((section) => section.id !== currentSection.id);
   return (
     <nav aria-label="内容导航" className={styles.contentNavigation}>
       <span aria-current="page" className={styles.current}>
