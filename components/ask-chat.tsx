@@ -139,6 +139,7 @@ const AskMessageItem = memo(function AskMessageItem({ isStreamingPlaceholder, me
 export function AskChat() {
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [question, setQuestion] = useState("");
+  const [usedSuggestions, setUsedSuggestions] = useState<string[]>([]);
   const [scope, setScope] = useState<AskScope>("all");
   const [visitorId, setVisitorId] = useState<string | null>(null);
   const [isStreaming, setIsStreaming] = useState(false);
@@ -217,6 +218,9 @@ export function AskChat() {
 
     const userId = crypto.randomUUID();
     const assistantId = crypto.randomUUID();
+    if (suggestedQuestions.includes(trimmedQuestion)) {
+      setUsedSuggestions((current) => [...current, trimmedQuestion]);
+    }
     shouldFollowLatest.current = true;
     setQuestion("");
     setIsStreaming(true);
@@ -282,6 +286,16 @@ export function AskChat() {
 
   const canSubmit = Boolean(question.trim() && visitorId !== "unavailable" && !isStreaming);
 
+  // 追问引导：回答完成后给出还没用过的建议问题，沿用空态的细线行语言；
+  // 点击只填入组合器并聚焦，是否发送仍由访客决定。
+  const lastMessage = messages[messages.length - 1];
+  const followUpQuestions = suggestedQuestions.filter((item) => !usedSuggestions.includes(item));
+  const showFollowUps = !isStreaming
+    && lastMessage?.role === "assistant"
+    && lastMessage.isComplete
+    && Boolean(lastMessage.content)
+    && followUpQuestions.length > 0;
+
   return (
     <section aria-label="问一问" className={`curation-home__feed ${styles.root} site-section-motion`}>
       <ContentSectionNavigation current="ask" />
@@ -335,6 +349,28 @@ export function AskChat() {
                   message={message}
                 />
               ))}
+              {showFollowUps ? (
+                <div className={styles.followups}>
+                  <p className={styles.followupsLabel}>继续问</p>
+                  <div className={styles.suggestions}>
+                    {followUpQuestions.slice(0, 2).map((suggestion) => (
+                      <Button
+                        key={suggestion}
+                        onClick={() => {
+                          setQuestion(suggestion);
+                          textareaRef.current?.focus();
+                        }}
+                        size="sm"
+                        type="button"
+                        variant="ghost"
+                      >
+                        {suggestion}
+                        <ArrowUpRight data-icon="inline-end" />
+                      </Button>
+                    ))}
+                  </div>
+                </div>
+              ) : null}
             </MessageScrollerContent>
           </MessageScrollerViewport>
           <MessageScrollerButton
