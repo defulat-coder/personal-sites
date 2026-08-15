@@ -15,3 +15,5 @@ related_targets: ["components/works-stream.tsx","components/works.module.css","l
 - 演进：作品数 ≥3 且每件都有样张时，可评估升级为「全宽展廊」；登记行是其天然降级形态。
 - 未决：深色主题样张目前沿用浅色截图（媒体不随主题换色，与打印稿纸色同理）；如需深色样张再议。
 - 2026-08-16 增补：样张可点击开灯箱（原生 dialog，Esc/背板/按钮退出，图源 2400w 与样张同源）；frontmatter `url` 渲染为底栏「在线访问」出口。
+- 2026-08-16 增补：样张带横向滚动联动中心强调（Motion `useTransform`，居中样张 opacity/scale 满值、两侧收敛至 0.6/0.96）；悬停样张带时纵向滚轮转横向滚动（原生非 passive wheel 监听，滚到两端放行页面纵向滚动）；reduced-motion 下不挂监听、强制满值静态呈现。
+- 2026-08-16 增补：样张带自动漂移横滚（rAF，24px/s，到端点折返；悬停/聚焦暂停，手动滚动后 2.6s 恢复）。注意：`scrollLeft` 读回取整，亚像素位移必须自维护逻辑位置再 `Math.round` 写入，否则漂移卡死。
