@@ -1,5 +1,7 @@
 import type { CSSProperties } from "react";
 
+import { DotFieldParallax } from "@/components/dot-field-parallax";
+
 export const TECHNICAL_TERM_SETS = [
   [
     "agent.runtime", "multi.agent", "workflow.graph", "tool.call()",
@@ -90,7 +92,7 @@ export function InteractiveDotField() {
       className="interactive-dot-field"
       role="img"
     >
-      <div aria-hidden="true" className="interactive-dot-field__signals">
+      <DotFieldParallax>
         {SELECTED_TERMS.map((term, index) => (
           <span
             className="interactive-dot-field__track"
@@ -100,7 +102,7 @@ export function InteractiveDotField() {
             <span className="interactive-dot-field__term">{term}</span>
           </span>
         ))}
-      </div>
+      </DotFieldParallax>
     </div>
   );
 }

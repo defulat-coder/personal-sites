@@ -1,6 +1,7 @@
 "use client";
 
 import { Moon, Sun } from "lucide-react";
+import { AnimatePresence, motion, useReducedMotion } from "motion/react";
 import { useSyncExternalStore } from "react";
 
 function getThemeSnapshot() {
@@ -18,6 +19,7 @@ function subscribeToTheme(onStoreChange: () => void) {
 
 export function ThemeToggle() {
   const dark = useSyncExternalStore(subscribeToTheme, getThemeSnapshot, () => false);
+  const reduceMotion = useReducedMotion();
 
   const toggle = () => {
     const next = !dark;
@@ -44,7 +46,19 @@ export function ThemeToggle() {
 
   return (
     <button aria-label={dark ? "切换为浅色主题" : "切换为深色主题"} className="curation-theme-toggle" onClick={toggle} type="button">
-      {dark ? <Sun key="sun" aria-hidden="true" /> : <Moon key="moon" aria-hidden="true" />}
+      {/* 图标旋转入场由 Motion 接管：mode="wait" 保证旧图标先退场再轮换。 */}
+      <AnimatePresence initial={false} mode="wait">
+        <motion.span
+          animate={{ opacity: 1, rotate: 0, scale: 1 }}
+          exit={{ opacity: 0, rotate: 50, scale: 0.55 }}
+          initial={{ opacity: 0, rotate: -50, scale: 0.55 }}
+          key={dark ? "sun" : "moon"}
+          style={{ display: "grid", placeItems: "center" }}
+          transition={{ duration: reduceMotion ? 0 : 0.32, ease: [0.16, 1, 0.3, 1] }}
+        >
+          {dark ? <Sun aria-hidden="true" /> : <Moon aria-hidden="true" />}
+        </motion.span>
+      </AnimatePresence>
     </button>
   );
 }

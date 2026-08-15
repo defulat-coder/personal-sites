@@ -1,3 +1,5 @@
+import { animate } from "motion/react";
+
 export type ProfileTransitionKind = "collapse" | "expand";
 
 type ProfileTransitionBox = {
@@ -34,17 +36,27 @@ const driftByKind: Record<ProfileTransitionKind, { scale: number; y: number }> =
 // 导航提交前让 ghost 先朝飞行终点方向缓慢漂移，避免点击后到飞行动画启动之间
 // 出现“冻结帧”。桥段（ProfileTransitionBridge）会从 ghost 的实时位置接续飞行，
 // 两段运动在数学上无缝衔接。duration 需覆盖 /ask 等真实路由切换的 RSC 等待。
+// 漂移由 Motion 驱动；桥段启动飞行前通过 stopProfileGhostDrift 停掉漂移，
+// 防止两个动画同时写 transform。
+const driftControls = new WeakMap<HTMLElement, ReturnType<typeof animate>>();
+
 function driftGhost(ghost: HTMLElement, kind: ProfileTransitionKind, withScale: boolean) {
   const drift = driftByKind[kind];
-  const from = withScale ? "translate3d(0, 0, 0) scale(1, 1)" : "translate3d(0, 0, 0)";
-  const to = withScale
-    ? `translate3d(0, ${drift.y}px, 0) scale(${drift.scale}, ${drift.scale})`
-    : `translate3d(0, ${drift.y}px, 0)`;
-  ghost.animate([{ transform: from }, { transform: to }], {
-    duration: 600,
-    easing: "cubic-bezier(.3, .8, .5, 1)",
-    fill: "forwards",
-  });
+  const controls = animate(
+    ghost,
+    withScale
+      ? { scale: [1, drift.scale], y: [0, drift.y] }
+      : { y: [0, drift.y] },
+    { duration: 0.6, ease: [0.3, 0.8, 0.5, 1] },
+  );
+  driftControls.set(ghost, controls);
+}
+
+export function stopProfileGhostDrift(ghost: HTMLElement) {
+  const controls = driftControls.get(ghost);
+  if (!controls) return;
+  controls.stop();
+  driftControls.delete(ghost);
 }
 
 export function beginProfileTransition(from: string, to: string) {

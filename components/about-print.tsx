@@ -1,11 +1,11 @@
 "use client";
 
 import { CircleCheck, LoaderCircle, Printer, X } from "lucide-react";
+import { AnimatePresence, motion, useReducedMotion } from "motion/react";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 
 const PRINT_DURATION = 2_400;
-const CLOSE_DURATION = 180;
 
 const TOOTH_COUNT = 36;
 const TOOTH_DEPTH = 5;
@@ -23,14 +23,13 @@ const receiptItems = [
   { company: "PayerMax", meta: "2026— · OPT · 端到端交付", years: "至今" },
 ];
 
-function prefersReducedMotion() {
-  return window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-}
-
 export function AboutPrint() {
   const [open, setOpen] = useState(false);
+  // portal 常驻到退场动画播完：open 只控制 AnimatePresence 的 presence，
+  // 退场结束（onExitComplete）后才卸载 portal，避免退出动画被中途裁掉。
+  const [portalActive, setPortalActive] = useState(false);
   const [printing, setPrinting] = useState(false);
-  const [closing, setClosing] = useState(false);
+  const reduceMotion = useReducedMotion();
   const timersRef = useRef<number[]>([]);
   const triggerRef = useRef<HTMLButtonElement>(null);
   const dialogRef = useRef<HTMLDivElement>(null);
@@ -41,12 +40,7 @@ export function AboutPrint() {
 
   const close = useCallback(() => {
     setPrinting(false);
-    setClosing(true);
-    timersRef.current.push(window.setTimeout(() => {
-      setOpen(false);
-      setClosing(false);
-      triggerRef.current?.focus();
-    }, prefersReducedMotion() ? 0 : CLOSE_DURATION));
+    setOpen(false);
   }, []);
 
   useEffect(() => {
@@ -68,11 +62,10 @@ export function AboutPrint() {
   }, [open, close]);
 
   const openModal = () => {
+    setPortalActive(true);
     setOpen(true);
-    setClosing(false);
-    const reduced = prefersReducedMotion();
-    setPrinting(!reduced);
-    if (!reduced) {
+    setPrinting(!reduceMotion);
+    if (!reduceMotion) {
       timersRef.current.push(window.setTimeout(() => setPrinting(false), PRINT_DURATION));
     }
   };
@@ -90,71 +83,93 @@ export function AboutPrint() {
         关于我
       </button>
 
-      {open ? createPortal(
-        <div className={`about-modal${closing ? " is-closing" : ""}`}>
-          <button
-            aria-label="关闭"
-            className="about-modal__backdrop"
-            onClick={close}
-            tabIndex={-1}
-            type="button"
-          />
-          <div
-            aria-label="关于我：个人经历打印稿"
-            aria-modal="true"
-            className="about-modal__dialog"
-            ref={dialogRef}
-            role="dialog"
-            tabIndex={-1}
-          >
-            <div className={`about-printer${printing ? " is-printing" : ""}`}>
-              <div className="about-printer__machine">
-                <div className="about-printer__screen">
-                  {printing ? (
-                    <LoaderCircle aria-hidden="true" className="is-spinning" />
-                  ) : (
-                    <CircleCheck aria-hidden="true" />
-                  )}
-                  <span aria-live="polite" role="status">
-                    {printing ? "正在打印个人经历…" : "打印完成 · 请取走小票"}
-                  </span>
-                  <button aria-label="关闭" className="about-modal__close" onClick={close} type="button">
-                    <X aria-hidden="true" />
-                  </button>
-                </div>
-                <div aria-hidden="true" className="about-printer__slot" />
-              </div>
+      {portalActive ? createPortal(
+        <AnimatePresence
+          onExitComplete={() => {
+            setPortalActive(false);
+            triggerRef.current?.focus();
+          }}
+        >
+          {open ? (
+            <div className="about-modal">
+              <motion.button
+                animate={{ opacity: 1 }}
+                aria-label="关闭"
+                className="about-modal__backdrop"
+                exit={{ opacity: 0 }}
+                initial={{ opacity: 0 }}
+                onClick={close}
+                tabIndex={-1}
+                transition={{ duration: reduceMotion ? 0 : 0.2, ease: "easeOut" }}
+                type="button"
+              />
+              <motion.div
+                animate={{ opacity: 1, scale: 1, y: 0 }}
+                aria-label="关于我：个人经历打印稿"
+                aria-modal="true"
+                className="about-modal__dialog"
+                exit={{
+                  opacity: 0,
+                  scale: 0.99,
+                  y: "0.4rem",
+                  transition: { duration: reduceMotion ? 0 : 0.18, ease: "easeIn" },
+                }}
+                initial={{ opacity: 0, scale: 0.98, y: "0.6rem" }}
+                ref={dialogRef}
+                role="dialog"
+                tabIndex={-1}
+                transition={{ duration: reduceMotion ? 0 : 0.28, ease: [0.16, 1, 0.3, 1] }}
+              >
+                <div className={`about-printer${printing ? " is-printing" : ""}`}>
+                  <div className="about-printer__machine">
+                    <div className="about-printer__screen">
+                      {printing ? (
+                        <LoaderCircle aria-hidden="true" className="is-spinning" />
+                      ) : (
+                        <CircleCheck aria-hidden="true" />
+                      )}
+                      <span aria-live="polite" role="status">
+                        {printing ? "正在打印个人经历…" : "打印完成 · 请取走小票"}
+                      </span>
+                      <button aria-label="关闭" className="about-modal__close" onClick={close} type="button">
+                        <X aria-hidden="true" />
+                      </button>
+                    </div>
+                    <div aria-hidden="true" className="about-printer__slot" />
+                  </div>
 
-              <div className="about-printer__output">
-                <article className="about-printer__paper" style={{ clipPath: receiptClipPath }}>
-                  <header className="about-receipt__header">
-                    <p className="about-receipt__title">陈远 / CHEN YUAN</p>
-                    <p className="about-receipt__sub">个人经历 · CAREER RECEIPT</p>
-                  </header>
-                  <hr className="about-receipt__rule" />
-                  <ul className="about-receipt__items">
-                    {receiptItems.map((item) => (
-                      <li key={item.company}>
-                        <span className="about-receipt__line">
-                          <span>{item.company}</span>
-                          <span>{item.years}</span>
-                        </span>
-                        <span className="about-receipt__meta">{item.meta}</span>
-                      </li>
-                    ))}
-                  </ul>
-                  <hr className="about-receipt__rule" />
-                  <p className="about-receipt__total">
-                    <span>合计 TOTAL</span>
-                    <strong>12 年</strong>
-                  </p>
-                  <p className="about-receipt__foot">十二年 · 四段路 · 仍在增长</p>
-                  <div aria-hidden="true" className="about-receipt__barcode" />
-                </article>
-              </div>
+                  <div className="about-printer__output">
+                    <article className="about-printer__paper" style={{ clipPath: receiptClipPath }}>
+                      <header className="about-receipt__header">
+                        <p className="about-receipt__title">陈远 / CHEN YUAN</p>
+                        <p className="about-receipt__sub">个人经历 · CAREER RECEIPT</p>
+                      </header>
+                      <hr className="about-receipt__rule" />
+                      <ul className="about-receipt__items">
+                        {receiptItems.map((item) => (
+                          <li key={item.company}>
+                            <span className="about-receipt__line">
+                              <span>{item.company}</span>
+                              <span>{item.years}</span>
+                            </span>
+                            <span className="about-receipt__meta">{item.meta}</span>
+                          </li>
+                        ))}
+                      </ul>
+                      <hr className="about-receipt__rule" />
+                      <p className="about-receipt__total">
+                        <span>合计 TOTAL</span>
+                        <strong>12 年</strong>
+                      </p>
+                      <p className="about-receipt__foot">十二年 · 四段路 · 仍在增长</p>
+                      <div aria-hidden="true" className="about-receipt__barcode" />
+                    </article>
+                  </div>
+                </div>
+              </motion.div>
             </div>
-          </div>
-        </div>,
+          ) : null}
+        </AnimatePresence>,
         document.body,
       ) : null}
     </>

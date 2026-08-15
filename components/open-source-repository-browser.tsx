@@ -1,6 +1,7 @@
 "use client";
 
 import { ChevronDown, ChevronRight, ExternalLink, FileCode2, Folder, FolderOpen, LoaderCircle } from "lucide-react";
+import { AnimatePresence, motion, useReducedMotion } from "motion/react";
 import { useEffect, useRef, useState } from "react";
 
 import styles from "@/components/open-source.module.css";
@@ -54,6 +55,8 @@ function RepositoryTreeRows({
   onToggleDirectory: (path: string) => void;
   selectedPath: string | null;
 }) {
+  const reduceMotion = useReducedMotion();
+
   return (
     <ul className={styles.repositoryTree}>
       {nodes.map((node) => {
@@ -76,15 +79,29 @@ function RepositoryTreeRows({
               <span>{node.name}</span>
               {!isDirectory && node.size !== undefined ? <small>{formatFileSize(node.size)}</small> : null}
             </button>
-            {isDirectory && isExpanded ? (
-              <RepositoryTreeRows
-                depth={depth + 1}
-                expanded={expanded}
-                nodes={node.children}
-                onOpenFile={onOpenFile}
-                onToggleDirectory={onToggleDirectory}
-                selectedPath={selectedPath}
-              />
+            {/* 目录展开/收起用高度动画过渡层级跳动，reduced-motion 下时长归零。 */}
+            {isDirectory ? (
+              <AnimatePresence initial={false}>
+                {isExpanded ? (
+                  <motion.div
+                    animate={{ height: "auto", opacity: 1 }}
+                    exit={{ height: 0, opacity: 0 }}
+                    initial={{ height: 0, opacity: 0 }}
+                    key="children"
+                    style={{ overflow: "hidden" }}
+                    transition={{ duration: reduceMotion ? 0 : 0.24, ease: [0.16, 1, 0.3, 1] }}
+                  >
+                    <RepositoryTreeRows
+                      depth={depth + 1}
+                      expanded={expanded}
+                      nodes={node.children}
+                      onOpenFile={onOpenFile}
+                      onToggleDirectory={onToggleDirectory}
+                      selectedPath={selectedPath}
+                    />
+                  </motion.div>
+                ) : null}
+              </AnimatePresence>
             ) : null}
           </li>
         );

@@ -1,19 +1,14 @@
 .root {
-  --ask-measure: 42rem;
   display: flex;
   width: 100%;
   min-width: 0;
   min-height: 0;
   flex-direction: column;
-  align-items: center;
 }
 
-/* 问一问是聚焦的单一任务面：刊头、消息列与组合器共享同一根居中的 42rem 栏，
-   三者的左右缘完全对齐，宽屏下的留白均分到两侧。 */
-.root > * {
-  width: 100%;
-  max-width: var(--ask-measure);
-}
+/* 问一问与其他页面共享同一内容框架（.root 同时带 curation-home__feed，
+   50rem 栏、左缘对齐全站内容轴）。框架元素（组合器、建议与引用的分隔线）
+   撑满整栏；仅回答正文收敛到与文章一致的 40rem 行宽。 */
 
 .scroller {
   flex: 1;
@@ -93,7 +88,7 @@
 
 .suggestions {
   width: 100%;
-  max-width: var(--ask-measure) !important;
+  max-width: none !important;
   align-items: stretch !important;
   gap: 0 !important;
 }
@@ -119,7 +114,6 @@
 
 .followups {
   width: 100%;
-  max-width: var(--ask-measure);
 }
 
 .followupsLabel {
@@ -141,49 +135,6 @@
 .messageItem {
   contain-intrinsic-size: auto;
   content-visibility: visible;
-  animation: message-enter 240ms cubic-bezier(0.16, 1, 0.3, 1);
-}
-
-/* 清空时的逐条收没：mask 过渡带自下而上吃掉内容，轻微模糊上浮，
-   --clear-order 由父组件按"最新先走"注入阶梯延迟。 */
-.clearingItem {
-  animation: message-clear-wipe 420ms cubic-bezier(0.5, 0, 0.75, 0.4) both;
-  animation-delay: calc(var(--clear-order) * 70ms);
-  -webkit-mask-image: linear-gradient(to top, transparent 42%, #000 58%);
-  mask-image: linear-gradient(to top, transparent 42%, #000 58%);
-  -webkit-mask-size: 100% 260%;
-  mask-size: 100% 260%;
-  pointer-events: none;
-}
-
-@keyframes message-clear-wipe {
-  0% {
-    opacity: 1;
-    filter: blur(0);
-    transform: translateY(0);
-    -webkit-mask-position: 0 0;
-    mask-position: 0 0;
-  }
-
-  100% {
-    opacity: 0;
-    filter: blur(3px);
-    transform: translateY(-0.4rem);
-    -webkit-mask-position: 0 100%;
-    mask-position: 0 100%;
-  }
-}
-
-/* 清空完成后空态淡入，衔接收没的节奏 */
-.emptyItem {
-  animation: message-enter 320ms cubic-bezier(0.16, 1, 0.3, 1);
-}
-
-@keyframes message-enter {
-  from {
-    opacity: 0;
-    transform: translate3d(0, 0.4rem, 0);
-  }
 }
 
 @keyframes status-pulse {
@@ -208,7 +159,7 @@
 }
 
 .assistantBubble {
-  max-width: var(--ask-measure);
+  max-width: 40rem;
 }
 
 .status {
@@ -228,7 +179,6 @@
 .sources {
   display: block !important;
   width: 100%;
-  max-width: var(--ask-measure);
   padding: 0.5rem 0 0 !important;
 }
 
@@ -283,11 +233,11 @@
   bottom: 0;
   background: var(--surface);
   padding-top: 0.75rem;
+  padding-right: 0.75rem;
   padding-bottom: env(safe-area-inset-bottom, 0px);
 }
 
 .composer {
-  max-width: var(--ask-measure);
   min-height: 0;
   border: 1px solid #dedee1 !important;
   border-radius: 0.75rem !important;
@@ -387,42 +337,10 @@
   opacity: 1 !important;
 }
 
-/* 发送反馈：飞机先从按钮里向后蓄势，再抬头沿弧线加速飞出、缩小淡出，
+/* 发送反馈：飞机轨迹由 Motion 驱动（见 ask-chat.tsx launchPlane），
    动画落定后由流式状态接管按钮槽位。 */
 .sendLaunching {
   pointer-events: none;
-}
-
-.sendLaunching svg {
-  animation: plane-launch 520ms cubic-bezier(0.45, 0, 0.75, 0.4) forwards;
-  transform-origin: center;
-}
-
-@keyframes plane-launch {
-  0% {
-    opacity: 1;
-    transform: translate3d(0, 0, 0) rotate(0deg) scale(1);
-  }
-
-  16% {
-    opacity: 1;
-    transform: translate3d(-0.14rem, 0.1rem, 0) rotate(10deg) scale(0.9);
-  }
-
-  34% {
-    opacity: 1;
-    transform: translate3d(0.1rem, -0.12rem, 0) rotate(-10deg) scale(1.04);
-  }
-
-  62% {
-    opacity: 1;
-    transform: translate3d(0.9rem, -0.85rem, 0) rotate(-18deg) scale(0.94);
-  }
-
-  100% {
-    opacity: 0;
-    transform: translate3d(2.6rem, -2.4rem, 0) rotate(-26deg) scale(0.55);
-  }
 }
 
 .scopeMenu {
@@ -587,9 +505,7 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .messageItem,
-  .status :global(svg),
-  .sendLaunching svg {
+  .status :global(svg) {
     animation: none;
   }
 
@@ -617,6 +533,11 @@
 
   .viewport {
     padding: 1rem 0 0.5rem;
+  }
+
+  /* 移动端滚动区无右侧滚动条留白，组合器同步去掉，保持与消息列同宽。 */
+  .form {
+    padding-right: 0;
   }
 
   /* 输入框保持 sticky 停靠底部，移动端永不滚走；iOS 输入字号 ≥16px 防止聚焦缩放。 */

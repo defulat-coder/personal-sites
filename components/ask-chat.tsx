@@ -37,10 +37,13 @@ import {
 import { ContentSectionNavigation } from "@/components/site-section-navigation";
 import type { AskScope, AskSource } from "@/lib/ask-types";
 import { ArrowUpRight, ChevronDown, Search, SendHorizontal, Square, Trash2 } from "lucide-react";
+import { AnimatePresence, animate, motion } from "motion/react";
 import dynamic from "next/dynamic";
-import { memo, useCallback, useEffect, useRef, useState, type CSSProperties } from "react";
+import { memo, useCallback, useEffect, useRef, useState } from "react";
 
 import styles from "./ask-chat.module.css";
+
+const MotionMessageScrollerItem = motion.create(MessageScrollerItem);
 
 // react-markdown 生态只在收到第一条回答时才需要，按需加载。
 const AskAnswerMarkdown = dynamic(() => import("@/components/ask-answer-markdown").then((module) => module.AskAnswerMarkdown));
@@ -84,62 +87,106 @@ function parseEvents(buffer: string) {
 
 // 单条消息气泡独立 memo：流式 delta 只更新目标 message 对象引用，
 // 历史消息引用保持不变即可整体跳过重渲染（含其中的 Markdown 解析）。
-const AskMessageItem = memo(function AskMessageItem({ clearOrder, isStreamingPlaceholder, message }: {
-  clearOrder: number | null;
+const AskMessageBubble = memo(function AskMessageBubble({ isStreamingPlaceholder, message, prefersReducedMotion }: {
   isStreamingPlaceholder: boolean;
   message: ChatMessage;
+  prefersReducedMotion: boolean;
 }) {
   return (
-    <MessageScrollerItem
-      className={`${styles.messageItem} ${clearOrder !== null ? styles.clearingItem : ""}`}
-      messageId={message.id}
-      scrollAnchor={message.role === "user"}
-      style={clearOrder !== null ? { "--clear-order": clearOrder } as CSSProperties : undefined}
-    >
-      <Message align={message.role === "user" ? "end" : "start"} className={styles.message}>
-        <MessageContent>
-          {/* 对齐方向已表达说话人；铭牌只保留给读屏，不占垂直节奏。 */}
-          <MessageHeader className="sr-only">
-            {message.role === "user" ? "你" : "归档助手"}
-          </MessageHeader>
-          {message.content ? (
-            <Bubble align={message.role === "user" ? "end" : "start"} variant={message.role === "user" ? "default" : "ghost"}>
-              <BubbleContent aria-live={message.role === "assistant" ? "polite" : undefined} className={`${styles.bubble} ${message.role === "user" ? styles.userBubble : styles.assistantBubble}`}>
-                {message.role === "assistant" ? <AskAnswerMarkdown source={message.content} /> : message.content}
-              </BubbleContent>
-            </Bubble>
-          ) : isStreamingPlaceholder ? (
-            <Marker className={styles.status} role="status">
-              <MarkerIcon><Search /></MarkerIcon>
-              <MarkerContent>
-                {message.citations.length > 0
-                  ? "已检索公开资料，正在生成回答…"
-                  : "正在检索公开资料…"}
-              </MarkerContent>
-            </Marker>
-          ) : null}
-          {message.role === "assistant" && message.isComplete && message.content && message.citations.length > 0 ? (
-            <MessageFooter className={styles.sources}>
-              <ol aria-label="回答来源" className={styles.citations}>
-                {message.citations.map((source, sourceIndex) => (
-                  <li key={source.id}>
-                    <a className={styles.citation} href={source.sourceUrl}>
-                      <span>【{sourceIndex + 1}】{source.title}{source.section ? ` · ${source.section}` : ""}</span>
-                      <ArrowUpRight aria-hidden="true" />
-                    </a>
-                  </li>
-                ))}
-              </ol>
-            </MessageFooter>
-          ) : null}
-        </MessageContent>
-      </Message>
-    </MessageScrollerItem>
+    <Message align={message.role === "user" ? "end" : "start"} className={styles.message}>
+      <MessageContent>
+        {/* 对齐方向已表达说话人；铭牌只保留给读屏，不占垂直节奏。 */}
+        <MessageHeader className="sr-only">
+          {message.role === "user" ? "你" : "归档助手"}
+        </MessageHeader>
+        {message.content ? (
+          <Bubble align={message.role === "user" ? "end" : "start"} variant={message.role === "user" ? "default" : "ghost"}>
+            <BubbleContent aria-live={message.role === "assistant" ? "polite" : undefined} className={`${styles.bubble} ${message.role === "user" ? styles.userBubble : styles.assistantBubble}`}>
+              {message.role === "assistant" ? <AskAnswerMarkdown source={message.content} /> : message.content}
+            </BubbleContent>
+          </Bubble>
+        ) : isStreamingPlaceholder ? (
+          <Marker className={styles.status} role="status">
+            <MarkerIcon><Search /></MarkerIcon>
+            <MarkerContent>
+              {message.citations.length > 0
+                ? "已检索公开资料，正在生成回答…"
+                : "正在检索公开资料…"}
+            </MarkerContent>
+          </Marker>
+        ) : null}
+        {message.role === "assistant" && message.isComplete && message.content && message.citations.length > 0 ? (
+          <MessageFooter className={styles.sources}>
+            {/* 回答落定后来源逐条阶梯入场；减少动态时直接静态呈现。 */}
+            <ol aria-label="回答来源" className={styles.citations}>
+              {message.citations.map((source, sourceIndex) => (
+                <motion.li
+                  animate={{ opacity: 1, y: 0 }}
+                  initial={prefersReducedMotion ? false : { opacity: 0, y: "0.3rem" }}
+                  key={source.id}
+                  transition={{
+                    delay: prefersReducedMotion ? 0 : sourceIndex * 0.045,
+                    duration: 0.22,
+                    ease: MESSAGE_ENTER_EASE,
+                  }}
+                >
+                  <a className={styles.citation} href={source.sourceUrl}>
+                    <span>【{sourceIndex + 1}】{source.title}{source.section ? ` · ${source.section}` : ""}</span>
+                    <ArrowUpRight aria-hidden="true" />
+                  </a>
+                </motion.li>
+              ))}
+            </ol>
+          </MessageFooter>
+        ) : null}
+      </MessageContent>
+    </Message>
   );
 });
 
-const CLEAR_ITEM_DURATION = 420;
-const CLEAR_STAGGER = 70;
+const MESSAGE_ENTER_DURATION = 0.24;
+const EMPTY_ENTER_DURATION = 0.32;
+const MESSAGE_ENTER_EASE: [number, number, number, number] = [0.16, 1, 0.3, 1];
+const CLEAR_ITEM_DURATION = 0.42;
+const CLEAR_STAGGER = 0.07;
+const CLEAR_EXIT_EASE: [number, number, number, number] = [0.5, 0, 0.75, 0.4];
+const PLANE_LAUNCH_DURATION = 0.52;
+const PLANE_LAUNCH_EASE: [number, number, number, number] = [0.45, 0, 0.75, 0.4];
+const PLANE_LAUNCH_TIMES = [0, 0.16, 0.34, 0.62, 1];
+
+// 进出场由 Motion 驱动：enter 复刻旧 message-enter（240ms 上浮淡入），
+// exit 复刻旧 message-clear-wipe（420ms 自下而上收没 + 模糊），
+// exitOrder 按"最新先走"注入阶梯延迟；减少动态时进出场都立即落定。
+function AskMessageItem({ exitOrder, isStreamingPlaceholder, message, prefersReducedMotion }: {
+  exitOrder: number;
+  isStreamingPlaceholder: boolean;
+  message: ChatMessage;
+  prefersReducedMotion: boolean;
+}) {
+  return (
+    <MotionMessageScrollerItem
+      animate={{ clipPath: "inset(0% 0% 0% 0%)", filter: "blur(0px)", opacity: 1, y: "0rem" }}
+      className={styles.messageItem}
+      exit={{
+        clipPath: "inset(100% 0% 0% 0%)",
+        filter: "blur(3px)",
+        opacity: 0,
+        transition: prefersReducedMotion
+          ? { duration: 0 }
+          : { delay: exitOrder * CLEAR_STAGGER, duration: CLEAR_ITEM_DURATION, ease: CLEAR_EXIT_EASE },
+        y: "-0.4rem",
+      }}
+      initial={prefersReducedMotion
+        ? false
+        : { clipPath: "inset(0% 0% 0% 0%)", filter: "blur(0px)", opacity: 0, y: "0.4rem" }}
+      messageId={message.id}
+      scrollAnchor={message.role === "user"}
+      transition={{ duration: MESSAGE_ENTER_DURATION, ease: MESSAGE_ENTER_EASE }}
+    >
+      <AskMessageBubble isStreamingPlaceholder={isStreamingPlaceholder} message={message} prefersReducedMotion={prefersReducedMotion} />
+    </MotionMessageScrollerItem>
+  );
+}
 
 export function AskChat() {
   const [messages, setMessages] = useState<ChatMessage[]>([]);
@@ -152,8 +199,8 @@ export function AskChat() {
   const [isClearing, setIsClearing] = useState(false);
   const [prefersReducedMotion, setPrefersReducedMotion] = useState(false);
   const requestController = useRef<AbortController | null>(null);
-  const launchTimeout = useRef<ReturnType<typeof setTimeout> | null>(null);
-  const clearTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const planeRef = useRef<SVGSVGElement | null>(null);
+  const planeControls = useRef<ReturnType<typeof animate> | null>(null);
   const shouldFollowLatest = useRef(true);
   const isProgrammaticScroll = useRef(false);
   const textareaRef = useRef<HTMLTextAreaElement | null>(null);
@@ -187,28 +234,27 @@ export function AskChat() {
   }, []);
 
   useEffect(() => () => {
-    if (launchTimeout.current) clearTimeout(launchTimeout.current);
-    if (clearTimeoutRef.current) clearTimeout(clearTimeoutRef.current);
+    planeControls.current?.stop();
   }, []);
 
-  // 清空对话：每条气泡自下而上被 mask 收没（最新一条先走，逐条阶梯推进），
-  // 全部收没后再真正重置状态；减少动态时立即清空。
+  // 清空对话：移除消息触发 AnimatePresence 逐条收没（最新一条先走，阶梯延迟由
+  // exitOrder 注入），全部收没后由 onExitComplete 重置剩余状态；减少动态时立即清空。
   const clearChat = () => {
     if (isClearing || messages.length === 0) return;
     requestController.current?.abort();
+    setMessages([]);
     if (prefersReducedMotion) {
-      setMessages([]);
       setUsedSuggestions([]);
       return;
     }
     setIsClearing(true);
-    const totalDuration = CLEAR_ITEM_DURATION + CLEAR_STAGGER * (messages.length - 1);
-    clearTimeoutRef.current = setTimeout(() => {
-      setMessages([]);
-      setUsedSuggestions([]);
-      setIsClearing(false);
-    }, totalDuration);
   };
+
+  // 全部气泡收没后才真正重置对话状态，替代原先与 CSS 时长手工对齐的 setTimeout。
+  const handleMessagesExitComplete = useCallback(() => {
+    setUsedSuggestions([]);
+    setIsClearing(false);
+  }, []);
 
   useEffect(() => {
     const textarea = textareaRef.current;
@@ -243,6 +289,28 @@ export function AskChat() {
     setMessages((current) => current.map((message) => message.id === id ? update(message) : message));
   };
 
+  // 发送反馈：轨迹逐段复刻旧 CSS plane-launch 关键帧——先后蓄势、抬头，
+  // 再沿弧线加速飞出、缩小淡出；控件挂在 ref 上，组件卸载时统一停止。
+  const launchPlane = async () => {
+    const plane = planeRef.current;
+    if (!plane) return;
+    const controls = animate(plane, {
+      opacity: [1, 1, 1, 1, 0],
+      rotate: [0, 10, -10, -18, -26],
+      scale: [1, 0.9, 1.04, 0.94, 0.55],
+      transformOrigin: "center",
+      x: ["0rem", "-0.14rem", "0.1rem", "0.9rem", "2.6rem"],
+      y: ["0rem", "0.1rem", "-0.12rem", "-0.85rem", "-2.4rem"],
+    }, {
+      duration: PLANE_LAUNCH_DURATION,
+      ease: PLANE_LAUNCH_EASE,
+      times: PLANE_LAUNCH_TIMES,
+    });
+    planeControls.current = controls;
+    // 卸载时 stop() 会中断等待，静默即可。
+    await controls.then(() => undefined, () => undefined);
+  };
+
   const submit = async () => {
     const trimmedQuestion = question.trim();
     if (!trimmedQuestion || isStreaming || isLaunching || visitorId === "unavailable") return;
@@ -250,9 +318,7 @@ export function AskChat() {
     // 发送反馈：纸飞机先蓄势起飞，动画落定后再进入流式流程；减少动态时跳过。
     if (!prefersReducedMotion) {
       setIsLaunching(true);
-      await new Promise<void>((resolve) => {
-        launchTimeout.current = setTimeout(resolve, 520);
-      });
+      await launchPlane();
       setIsLaunching(false);
     }
 
@@ -367,35 +433,64 @@ export function AskChat() {
             }}
             ref={viewportRef}
           >
-            <MessageScrollerContent aria-busy={isStreaming} className={styles.messages}>
-              {messages.length === 0 ? (
-                <MessageScrollerItem className={styles.emptyItem} messageId="ask-empty-state">
+            <MessageScrollerContent
+              aria-busy={isStreaming}
+              className={styles.messages}
+              style={isClearing ? { pointerEvents: "none" } : undefined}
+            >
+              {messages.length === 0 && !isClearing ? (
+                <MotionMessageScrollerItem
+                  animate={{ opacity: 1, y: "0rem" }}
+                  className={styles.emptyItem}
+                  initial={prefersReducedMotion ? false : { opacity: 0, y: "0.4rem" }}
+                  messageId="ask-empty-state"
+                  transition={{ duration: EMPTY_ENTER_DURATION, ease: MESSAGE_ENTER_EASE }}
+                >
                   <Empty className={styles.empty}>
                     <EmptyHeader>
                       <EmptyTitle>从公开资料开始</EmptyTitle>
                       <EmptyDescription>我不会补充未公开的资料，也不会把猜测写成结论。</EmptyDescription>
                     </EmptyHeader>
                     <EmptyContent className={styles.suggestions}>
-                      {suggestedQuestions.map((suggestion) => (
-                        <Button key={suggestion} onClick={() => setQuestion(suggestion)} size="sm" type="button" variant="ghost">
-                          {suggestion}
-                          <ArrowUpRight data-icon="inline-end" />
-                        </Button>
+                      {suggestedQuestions.map((suggestion, suggestionIndex) => (
+                        <motion.span
+                          animate={{ opacity: 1, y: 0 }}
+                          initial={prefersReducedMotion ? false : { opacity: 0, y: "0.3rem" }}
+                          key={suggestion}
+                          transition={{
+                            delay: prefersReducedMotion ? 0 : 0.15 + suggestionIndex * 0.05,
+                            duration: 0.24,
+                            ease: MESSAGE_ENTER_EASE,
+                          }}
+                        >
+                          <Button onClick={() => setQuestion(suggestion)} size="sm" type="button" variant="ghost">
+                            {suggestion}
+                            <ArrowUpRight data-icon="inline-end" />
+                          </Button>
+                        </motion.span>
                       ))}
                     </EmptyContent>
                   </Empty>
-                </MessageScrollerItem>
+                </MotionMessageScrollerItem>
               ) : null}
-              {messages.map((message, index) => (
-                <AskMessageItem
-                  clearOrder={isClearing ? messages.length - 1 - index : null}
-                  isStreamingPlaceholder={isStreaming && index === messages.length - 1}
-                  key={message.id}
-                  message={message}
-                />
-              ))}
+              <AnimatePresence onExitComplete={handleMessagesExitComplete}>
+                {messages.map((message, index) => (
+                  <AskMessageItem
+                    exitOrder={messages.length - 1 - index}
+                    isStreamingPlaceholder={isStreaming && index === messages.length - 1}
+                    key={message.id}
+                    message={message}
+                    prefersReducedMotion={prefersReducedMotion}
+                  />
+                ))}
+              </AnimatePresence>
               {showFollowUps ? (
-                <div className={styles.followups}>
+                <motion.div
+                  animate={{ opacity: 1, y: 0 }}
+                  className={styles.followups}
+                  initial={prefersReducedMotion ? false : { opacity: 0, y: "0.3rem" }}
+                  transition={{ duration: 0.24, ease: MESSAGE_ENTER_EASE }}
+                >
                   <p className={styles.followupsLabel}>继续问</p>
                   <div className={styles.suggestions}>
                     {followUpQuestions.slice(0, 2).map((suggestion) => (
@@ -414,7 +509,7 @@ export function AskChat() {
                       </Button>
                     ))}
                   </div>
-                </div>
+                </motion.div>
               ) : null}
             </MessageScrollerContent>
           </MessageScrollerViewport>
@@ -513,7 +608,7 @@ export function AskChat() {
                 type="submit"
                 variant="ghost"
               >
-                <SendHorizontal aria-hidden="true" />
+                <SendHorizontal aria-hidden="true" ref={planeRef} />
               </InputGroupButton>
             )}
           </InputGroupAddon>

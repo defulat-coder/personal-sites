@@ -1,10 +1,12 @@
 "use client";
 
+import { animate } from "motion/react";
 import { useLayoutEffect } from "react";
 
 import {
   clearProfileTransition,
   readProfileTransition,
+  stopProfileGhostDrift,
 } from "@/components/profile-transition-state";
 
 type ProfileTransitionBridgeProps = {
@@ -31,12 +33,12 @@ export function ProfileTransitionBridge({ section }: ProfileTransitionBridgeProp
     }
 
     profile.dataset.profileBridging = "true";
-    // 先测 ghost 的实时位置（可能已被点击时的 drift 动画推移），再取消 drift，
+    // 先停掉漂移动画（保留当前视觉位置对应的内联样式），再测 ghost 的实时位置，
     // 让飞行动画从当前视觉位置起步，两段运动之间没有跳变。
+    stopProfileGhostDrift(avatarGhost);
+    stopProfileGhostDrift(summaryGhost);
     const avatarGhostBox = avatarGhost.getBoundingClientRect();
     const summaryGhostBox = summaryGhost.getBoundingClientRect();
-    avatarGhost.getAnimations().forEach((animation) => animation.cancel());
-    summaryGhost.getAnimations().forEach((animation) => animation.cancel());
 
     const avatarTargetBox = avatarTarget.getBoundingClientRect();
     const summaryTargetBox = summaryTarget.getBoundingClientRect();
@@ -50,7 +52,7 @@ export function ProfileTransitionBridge({ section }: ProfileTransitionBridgeProp
     const avatarScale = avatarTargetBox.width / transition.avatar.width;
     const summaryTranslateX = summaryTargetBox.left - transition.summary.left;
     const summaryTranslateY = summaryTargetBox.top - transition.summary.top;
-    const duration = durationByKind[transition.kind];
+    const duration = durationByKind[transition.kind] / 1000;
     let cancelled = false;
 
     const finish = () => {
@@ -59,31 +61,27 @@ export function ProfileTransitionBridge({ section }: ProfileTransitionBridgeProp
       clearProfileTransition();
     };
 
-    const avatarAnimation = avatarGhost.animate([
+    // 飞行由 Motion 关键帧驱动：显式 from/to 取自实时测量，不依赖漂移的残留状态。
+    const avatarAnimation = animate(
+      avatarGhost,
       {
-        opacity: 1,
-        transform: `translate3d(${avatarStartX}px, ${avatarStartY}px, 0) scale(${avatarStartScale}, ${avatarStartScale})`,
+        scale: [avatarStartScale, avatarScale],
+        x: [avatarStartX, avatarTranslateX],
+        y: [avatarStartY, avatarTranslateY],
       },
+      { duration, ease: [0.16, 1, 0.3, 1] },
+    );
+
+    const summaryAnimation = animate(
+      summaryGhost,
       {
-        opacity: 1,
-        transform: `translate3d(${avatarTranslateX}px, ${avatarTranslateY}px, 0) scale(${avatarScale}, ${avatarScale})`,
+        x: [summaryStartX, summaryTranslateX],
+        y: [summaryStartY, summaryTranslateY],
       },
-    ], {
-      duration,
-      easing: "cubic-bezier(.16, 1, .3, 1)",
-      fill: "forwards",
-    });
+      { duration, ease: [0.16, 1, 0.3, 1] },
+    );
 
-    const summaryAnimation = summaryGhost.animate([
-      { opacity: 1, transform: `translate3d(${summaryStartX}px, ${summaryStartY}px, 0)` },
-      { opacity: 1, transform: `translate3d(${summaryTranslateX}px, ${summaryTranslateY}px, 0)` },
-    ], {
-      duration,
-      easing: "cubic-bezier(.16, 1, .3, 1)",
-      fill: "forwards",
-    });
-
-    void Promise.allSettled([avatarAnimation.finished, summaryAnimation.finished]).then(finish, finish);
+    void Promise.allSettled([avatarAnimation, summaryAnimation]).then(finish, finish);
 
     // 飞行已交给合成器，两个帧后解除内容流的渲染暂停——长列表的布局成本
     // 与 ghost 飞行并行执行，不再阻塞飞行启动，也不会造成可见闪烁（内容区
