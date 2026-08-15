@@ -6,7 +6,7 @@ import { ThemeToggle } from "@/components/theme-toggle";
 
 export default function CurationEntryLoading() {
   return (
-    <main className="curation-home curation-detail" id="site-main" tabIndex={-1}>
+    <main className="curation-home curation-detail curation-detail--spread" id="site-main" tabIndex={-1}>
       <SiteProfile />
 
       <article aria-busy="true" aria-live="polite" className="curation-detail__article">
@@ -23,14 +23,24 @@ export default function CurationEntryLoading() {
           <span aria-hidden="true" className={styles.loadingTitle} />
         </header>
 
-        <section aria-label="正在读取内容" className="curation-detail__section">
-          <h2 className="curation-detail__eyebrow">正在读取内容</h2>
-          <div className={styles.loadingDocument}>
-            <span aria-hidden="true" className={styles.loadingLine} />
-            <span aria-hidden="true" className={`${styles.loadingLine} ${styles.loadingLineMedium}`} />
-            <span aria-hidden="true" className={`${styles.loadingLine} ${styles.loadingLineShort}`} />
-          </div>
-        </section>
+        <div className="curation-detail__body">
+          <section aria-label="正在读取原推" className="curation-detail__evidence">
+            <h2 className="curation-detail__eyebrow">原推剪报</h2>
+            <div className={styles.loadingDocument}>
+              <span aria-hidden="true" className={styles.loadingLine} />
+              <span aria-hidden="true" className={`${styles.loadingLine} ${styles.loadingLineMedium}`} />
+              <span aria-hidden="true" className={`${styles.loadingLine} ${styles.loadingLineShort}`} />
+            </div>
+          </section>
+          <section aria-label="正在读取解析" className="curation-detail__reading">
+            <h2 className="curation-detail__eyebrow">深度解析</h2>
+            <div className={styles.loadingDocument}>
+              <span aria-hidden="true" className={styles.loadingLine} />
+              <span aria-hidden="true" className={`${styles.loadingLine} ${styles.loadingLineMedium}`} />
+              <span aria-hidden="true" className={`${styles.loadingLine} ${styles.loadingLineShort}`} />
+            </div>
+          </section>
+        </div>
       </article>
     </main>
   );

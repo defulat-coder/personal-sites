@@ -1,11 +1,21 @@
 "use client";
 
+/*
+ * 推特点赞 · 剪报簿（方向契约，种子 8999beeb）
+ * THESIS: 每条目把判断（题名+解析）与证据（原推剪报摘录+附件登记+标签）贴在同一行登记簿里，拒绝"链接列表"式信息流。
+ * OWN-WORLD: 沿用全站单色黑白灰与 1px 细线登记栏；剪报只用 1px 左引线与降调灰阶区分"原文声音"，不新增颜色、容器或阴影。
+ * STORY: 访客在列表里同时读到他赞了什么与他怎么判断；进详情后原推以样张贴片完整呈现，读完解析顺势翻向相邻剪报。
+ * FIRST VIEWPORT: 刊头下第一行即是完整样张——左列登记（收录日期/作者/附件），右列判断标题、解析、剪报摘录、标签行。
+ * FORM: 剪报样张（dealt #3；dealt #6 作者回廊、#5 月度合订因削弱判断流主角而落选；auto 模式下代用户锁定）。
+ * FINISH: unreviewed and undocumented is unfinished; this build ends with the finish review, the verdict, and DESIGN.md.
+ */
+
 import { motion, useReducedMotion } from "motion/react";
 import type { Route } from "next";
 import Link from "next/link";
 import { useCallback, useEffect, useRef, useState } from "react";
 
-import { formatCurationDate } from "@/lib/curation-format";
+import { formatCurationClip, formatCurationDate } from "@/lib/curation-format";
 import type { CurationListItem } from "@/lib/curation-types";
 
 import { observeCurationScrollEnd } from "./curation-scroll";
@@ -82,10 +92,19 @@ export function CurationStream({ active = true, initialHasMore, initialItems }: 
             <div className="curation-home__stream-meta">
               <time dateTime={item.collectedAt ?? item.publishedAt ?? undefined}>{formatCurationDate(item)}</time>
               <span>@{item.author.handle}</span>
+              {item.attachments.length > 0 ? <span>{item.attachments.join(" · ")}</span> : null}
             </div>
             <div className="curation-home__stream-copy">
               <h3>{item.title}</h3>
               <p>{item.summary}</p>
+              {item.text.trim() ? (
+                <blockquote className="curation-home__stream-clip">
+                  <p>{formatCurationClip(item.text)}</p>
+                </blockquote>
+              ) : null}
+              {item.tags.length > 0 ? (
+                <p className="curation-home__stream-tags">{item.tags.join(" · ")}</p>
+              ) : null}
             </div>
           </Link>
         </motion.li>

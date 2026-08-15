@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import type { Route } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { ArrowLeft, ArrowUpRight, Play } from "lucide-react";
@@ -10,6 +11,7 @@ import { XAppLink } from "@/components/x-app-link";
 import { XVideoPlayer } from "@/components/x-video-player";
 import {
   findCurationItem,
+  getCurationNeighbors,
 } from "@/lib/curation";
 import { formatCurationDate, formatOriginalPublicationDate } from "@/lib/curation-format";
 import type { CurationItem } from "@/lib/curation-types";
@@ -32,7 +34,7 @@ function linkifyText(text: string, links: CurationItem["links"]) {
       .map((link) => [link.shortUrl as string, link.url]),
   );
   return text.split(/(\s+)/u).map((part, index) => {
-    const match = /^(https?:\/\/t\.co\/\w+)([.,;:!?）)]*)$/u.exec(part);
+    const match = /^(https?:\/\/t\.co\/\w+)([.,;:!?）)…]*)$/u.exec(part);
     if (!match) return part;
     const [, shortUrl, suffix] = match;
     return (
@@ -58,11 +60,12 @@ export async function generateMetadata({
 export default async function CurationEntryPage({
   params,
 }: CurationEntryPageProps) {
-  const item = await findCurationItem((await params).id);
+  const id = (await params).id;
+  const [item, neighbors] = await Promise.all([findCurationItem(id), getCurationNeighbors(id)]);
   if (!item) notFound();
 
   return (
-    <main className="curation-home curation-detail" id="site-main" tabIndex={-1}>
+    <main className="curation-home curation-detail curation-detail--spread" id="site-main" tabIndex={-1}>
       <SiteProfile />
 
       <article className="curation-detail__article" data-content-id={item.id}>
@@ -75,43 +78,47 @@ export default async function CurationEntryPage({
         </nav>
 
         <header className="curation-detail__header">
-          <div className="curation-detail__context">
-            <div className="curation-detail__meta">
-              <time dateTime={item.collectedAt ?? item.publishedAt ?? undefined}>
-                {formatCurationDate(item)}
-              </time>
-              <span>来自 @{item.author.handle}（{item.author.name}）</span>
-              <span>原推发布于 {formatOriginalPublicationDate(item)}</span>
-            </div>
-            <div className="curation-detail__tags">
-              {item.tags.map((tag) => (
-                <em key={tag}>{tag}</em>
-              ))}
-            </div>
+          <div className="curation-detail__meta">
+            <time dateTime={item.collectedAt ?? item.publishedAt ?? undefined}>
+              {formatCurationDate(item)}
+            </time>
           </div>
           <div className="curation-detail__intro">
             <h1>{item.title}</h1>
             <p>{item.summary}</p>
           </div>
+          {item.tags.length > 0 ? (
+            <div className="curation-detail__tags">
+              {item.tags.map((tag) => (
+                <em key={tag}>{tag}</em>
+              ))}
+            </div>
+          ) : null}
         </header>
 
-        <section aria-label="原始内容" className="curation-detail__section curation-detail__original">
-          <h2 className="curation-detail__eyebrow">原始内容</h2>
-          <blockquote>
-            <p>{linkifyText(item.text, item.links)}</p>
-            <footer>
-              — @{item.author.handle}（{item.author.name}）
-            </footer>
-          </blockquote>
-          {item.quoteContext ? (
-            <blockquote className="curation-detail__quote">
-              <p>{linkifyText(item.quoteContext.text, item.links)}</p>
-              <footer>
-                — @{item.quoteContext.author}（{item.quoteContext.authorName}）的引用原文
-              </footer>
+        <div className="curation-detail__body">
+          <section aria-label="原推剪报" className="curation-detail__evidence curation-detail__original">
+            <h2 className="curation-detail__eyebrow">原推剪报</h2>
+            <figure className="curation-detail__specimen">
+            <figcaption className="curation-detail__specimen-byline">
+              <strong>{item.author.name}</strong>
+              <span>@{item.author.handle}</span>
+              <time dateTime={item.publishedAt ?? undefined}>
+                原推发布于 {formatOriginalPublicationDate(item)}
+              </time>
+            </figcaption>
+            <blockquote>
+              <p>{linkifyText(item.text, item.links)}</p>
             </blockquote>
-          ) : null}
-          {item.media.length > 0 ? (
+            {item.quoteContext ? (
+              <blockquote className="curation-detail__quote">
+                <p>{linkifyText(item.quoteContext.text, item.links)}</p>
+                <footer>
+                  — @{item.quoteContext.author}（{item.quoteContext.authorName}）的引用原文
+                </footer>
+              </blockquote>
+            ) : null}
+            {item.media.length > 0 ? (
             <div className="curation-detail__media">
               {item.media.map((media) =>
                 media.type === "photo" ? (
@@ -161,12 +168,14 @@ export default async function CurationEntryPage({
               )}
             </div>
           ) : null}
-        </section>
+            </figure>
+          </section>
 
-        <section aria-label="深度解析" className="curation-detail__section curation-detail__analysis">
-          <h2 className="curation-detail__eyebrow">深度解析</h2>
-          <ArticleMarkdown source={item.analysis} />
-        </section>
+          <section aria-label="深度解析" className="curation-detail__reading">
+            <h2 className="curation-detail__eyebrow">深度解析</h2>
+            <ArticleMarkdown source={item.analysis} />
+          </section>
+        </div>
 
         <footer className="curation-detail__sources" aria-label="原始链接">
           <h2 className="curation-detail__eyebrow">原始来源</h2>
@@ -187,6 +196,23 @@ export default async function CurationEntryPage({
             ))}
           </ul>
         </footer>
+
+        {neighbors.newer || neighbors.older ? (
+          <nav aria-label="相邻剪报" className="curation-detail__neighbors">
+            {neighbors.newer ? (
+              <Link data-dir="newer" href={`/curation/${neighbors.newer.id}` as Route}>
+                <span>上一则 · 较新收录</span>
+                <strong>{neighbors.newer.title}</strong>
+              </Link>
+            ) : null}
+            {neighbors.older ? (
+              <Link data-dir="older" href={`/curation/${neighbors.older.id}` as Route}>
+                <span>下一则 · 较早收录</span>
+                <strong>{neighbors.older.title}</strong>
+              </Link>
+            ) : null}
+          </nav>
+        ) : null}
       </article>
     </main>
   );
