@@ -2,8 +2,8 @@ name: AI news sync
 
 on:
   schedule:
-    # 增量同步（24h 窗口），每小时一次（错开整点，避开 GitHub 调度高峰）
-    - cron: "13 * * * *"
+    # 增量同步（24h 窗口），每 5 分钟一次（GitHub cron 的最小间隔；高负载时可能延迟）
+    - cron: "*/5 * * * *"
     # 回填（7d 窗口），每天 20:17 UTC = 北京时间 04:17
     - cron: "17 20 * * *"
   workflow_dispatch:

@@ -14,15 +14,20 @@
 1. 通过 `pnpm supabase:push` 应用 [迁移](../supabase/migrations/20260814130000_ai_news_storage.sql)（先 `--dry-run` 预演）。
 2. 手动执行一次 `pnpm ai-news:sync`（增量）和 `pnpm ai-news:backfill`（7 天回填）验证。
 3. 定时任务（首选 GitHub Actions，本机 launchd 为可选兜底）：
-   - `.github/workflows/ai-news-sync.yml`：每小时跑增量（24h 窗口，错开整点），每天 20:17 UTC（北京时间 04:17）跑 7 天回填；手动触发支持 `backfill` 输入。需在仓库 Settings → Secrets and variables → Actions 配置 `SUPABASE_URL` 与 `SUPABASE_SERVICE_ROLE_KEY`。同步完成后会追加执行 `node scripts/ask-reindex.mjs` 重建公开问答全文索引（含每日动态语料），无需单独调度。
+   - `.github/workflows/ai-news-sync.yml`：每 5 分钟跑增量（24h 窗口，GitHub cron 的最小间隔，高负载时可能延迟），每天 20:17 UTC（北京时间 04:17）跑 7 天回填；手动触发支持 `backfill` 输入。需在仓库 Settings → Secrets and variables → Actions 配置 `SUPABASE_URL` 与 `SUPABASE_SERVICE_ROLE_KEY`。同步完成后会追加执行 `node scripts/ask-reindex.mjs` 重建公开问答全文索引（含每日动态语料），无需单独调度。
    - Actions 环境无持久磁盘，ETag 条件请求状态（`var/ai-news/sync-state.json`）不跨运行保留，每次运行按全量 upsert 处理（幂等，按 id 冲突覆盖）。
-   - 注意私有仓库 Actions 免费额度为每月 2000 分钟；每小时一次约消耗 720~1440 分钟/月，额度内可跑满整月。仓库 60 天无活动时 GitHub 会暂停 scheduled workflow，需到 Actions 页手动恢复。
-   - 本机 launchd 兜底（plist 模板在 `config/` 下，含本机 nvm 的 Node 绝对路径，Node 大版本升级后需同步更新）：
+   - 公开仓库的 Actions 不计私有额度，频率不受分钟数限制；但 GitHub cron 最小间隔为 5 分钟且不保证准点，仓库 60 天无活动时 scheduled workflow 会被自动暂停，需到 Actions 页手动恢复。
+   - 本机 launchd 兜底（plist 模板在 `config/` 下，仓库内不含本机路径，安装前需替换占位符）：
      - `ai-news-sync.launchd.plist`：每 5 分钟跑增量（24h 窗口），日志 `var/ai-news/sync.log`；
      - `ai-news-backfill.launchd.plist`：每天 04:17 跑 7 天回填，日志 `var/ai-news/backfill.log`。
 
      ```bash
-     cp config/ai-news-*.launchd.plist ~/Library/LaunchAgents/
+     # 先替换占位符：__NODE_BIN__ 为本机 node 所在目录（nvm 路径含版本号，Node 大版本升级后需更新），
+     # __REPO_ROOT__ 为仓库绝对路径
+     for f in config/ai-news-*.launchd.plist; do
+       sed -e "s|__NODE_BIN__|$(dirname "$(command -v node)")|g" \
+           -e "s|__REPO_ROOT__|$PWD|g" "$f" > ~/Library/LaunchAgents/"$(basename "$f")"
+     done
      launchctl bootstrap gui/$(id -u) ~/Library/LaunchAgents/site.personal.ai-news-sync.plist
      launchctl bootstrap gui/$(id -u) ~/Library/LaunchAgents/site.personal.ai-news-backfill.plist
      # 卸载：launchctl bootout gui/$(id -u)/site.personal.ai-news-sync（backfill 同理）
