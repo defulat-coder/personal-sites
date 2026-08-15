@@ -61,7 +61,7 @@ RootLayout
 | `ContentSectionNavigation` | 每日动态、推特点赞、开源关注、问一问共享等权内容入口；导航即栏目页头 | 使用站内链接与 `aria-current`，不得伪装为同页 Tab |
 | `.curation-detail__article` | 最大 `50rem`，承接右栏阅读 | 详情结构沿用首页的留白与分隔节奏 |
 | `.curation-home__bio` | `width: 100%` | 简介正文撑满身份轨，不再限制 `max-width` |
-| `.interactive-dot-field` | `11.5rem` 高点阵画布 | AI 术语 12 词 + 技术栈 26 词按 6 条泳道滚动，泳道参数由组件按索引确定性内联，同泳道等相位差不重叠 |
+| `.interactive-dot-field` | `11.5rem` 高点阵画布 | AI 术语 12 词 + 技术栈 25 词按 6 条泳道滚动，泳道内分 3 组轮换入场保持稀疏；参数由组件按索引确定性内联，同屏词条互不重叠 |
 
 `900px` 以下收为单列；`560px` 以下策展元信息转为同一行。此项目的评审重点仍是桌面版，两栏首屏优先。
 
