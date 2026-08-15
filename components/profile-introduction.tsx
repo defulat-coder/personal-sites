@@ -35,7 +35,6 @@ const GREETINGS = [
   "مرحبًا،",
   "สวัสดีครับ,",
 ];
-const INTRODUCTION_ANIMATION_SESSION_KEY = "curation-profile-introduction-played-v3";
 
 type DisplayPhase = "english" | "erasing" | "chinese" | "complete";
 
@@ -60,11 +59,7 @@ export function ProfileIntroduction({
   const [hasCompletedInitialSequence, setHasCompletedInitialSequence] = useState(
     () => !animateOnFirstHomeVisit,
   );
-  const [shouldAnimateInitialVisit] = useState(
-    () => animateOnFirstHomeVisit
-      && typeof window !== "undefined"
-      && !window.sessionStorage.getItem(INTRODUCTION_ANIMATION_SESSION_KEY),
-  );
+  const [shouldAnimateInitialVisit] = useState(() => animateOnFirstHomeVisit);
 
   useEffect(() => {
     let cancelled = false;
@@ -253,8 +248,6 @@ export function ProfileIntroduction({
       showAll();
       return;
     }
-
-    window.sessionStorage.setItem(INTRODUCTION_ANIMATION_SESSION_KEY, "true");
 
     if (document.querySelector(".opening-loader")) {
       observer = new MutationObserver(() => {

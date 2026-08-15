@@ -8,7 +8,7 @@
 
 ```text
 RootLayout
-├─ OpeningLoader（全屏遮罩，每个浏览器会话只播放一次）
+├─ OpeningLoader（全屏遮罩，每次完整页面加载都会播放）
 └─ 路由页面
    ├─ /                         首页（ISR，revalidate = 300）
    │  ├─ Profile rail（sticky）
@@ -38,8 +38,8 @@ RootLayout
 | 首页 | `app/page.tsx` | ISR 静态壳 + `HomeView`/`HomeMain` 编排、策展条目入口 | 详情内容渲染；遗留 `?view=` 不进服务端 |
 | 版块页 | `app/ai-news/page.tsx`、`app/curation/page.tsx`、`app/open-source/page.tsx` | 单版块的 ISR 列表页，复用身份轨与刊头 | 第二套侧栏语言 |
 | 详情页 | `app/curation/[id]/page.tsx` | 条目元信息、原文、媒体、解析、来源 | 第二套个人侧栏 |
-| Loading | `components/opening-loader.tsx` | 加载阶段、滚动锁定、向上揭幕；sessionStorage 标记 + `<html>` data 属性预隐藏，水合后移除 | 常规页面配色；重复访问不遮挡内容 |
-| 个人简介 | `components/profile-introduction.tsx` | 双语逐字输入/删除、最终中文正文与多语言标题轮换 | 静态履历数据源 |
+| Loading | `components/opening-loader.tsx` | 加载阶段、滚动锁定、向上揭幕；每次完整页面加载都播放，水合后移除 | 常规页面配色 |
+| 个人简介 | `components/profile-introduction.tsx` | 双语逐字输入/删除、最终中文正文与多语言标题轮换；每次进入首页都播放 | 静态履历数据源 |
 | 内容导航 | `components/site-section-navigation.tsx` | 统一内容入口（每日动态、推特点赞、开源关注、问一问）的路由跳转与当前页面状态；导航即栏目页头，不重复显示标题与说明 | 外部链接或同页 Tab 语义 |
 | 技术信号场 | `components/interactive-dot-field.tsx` | 技术词词库与稀疏视觉表达 | 标签过滤或导航 |
 | 策展数据 | `lib/curation.ts` | Zod 校验、查询、日期格式化 | 页面布局 |

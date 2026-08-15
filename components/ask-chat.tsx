@@ -36,9 +36,9 @@ import {
 } from "@/components/ui/message-scroller";
 import { ContentSectionNavigation } from "@/components/site-section-navigation";
 import type { AskScope, AskSource } from "@/lib/ask-types";
-import { ArrowUpRight, ChevronDown, Search, SendHorizontal, Square } from "lucide-react";
+import { ArrowUpRight, ChevronDown, Search, SendHorizontal, Square, Trash2 } from "lucide-react";
 import dynamic from "next/dynamic";
-import { memo, useCallback, useEffect, useRef, useState } from "react";
+import { memo, useCallback, useEffect, useRef, useState, type CSSProperties } from "react";
 
 import styles from "./ask-chat.module.css";
 
@@ -84,15 +84,17 @@ function parseEvents(buffer: string) {
 
 // 单条消息气泡独立 memo：流式 delta 只更新目标 message 对象引用，
 // 历史消息引用保持不变即可整体跳过重渲染（含其中的 Markdown 解析）。
-const AskMessageItem = memo(function AskMessageItem({ isStreamingPlaceholder, message }: {
+const AskMessageItem = memo(function AskMessageItem({ clearOrder, isStreamingPlaceholder, message }: {
+  clearOrder: number | null;
   isStreamingPlaceholder: boolean;
   message: ChatMessage;
 }) {
   return (
     <MessageScrollerItem
-      className={styles.messageItem}
+      className={`${styles.messageItem} ${clearOrder !== null ? styles.clearingItem : ""}`}
       messageId={message.id}
       scrollAnchor={message.role === "user"}
+      style={clearOrder !== null ? { "--clear-order": clearOrder } as CSSProperties : undefined}
     >
       <Message align={message.role === "user" ? "end" : "start"} className={styles.message}>
         <MessageContent>
@@ -136,6 +138,9 @@ const AskMessageItem = memo(function AskMessageItem({ isStreamingPlaceholder, me
   );
 });
 
+const CLEAR_ITEM_DURATION = 420;
+const CLEAR_STAGGER = 70;
+
 export function AskChat() {
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [question, setQuestion] = useState("");
@@ -143,8 +148,12 @@ export function AskChat() {
   const [scope, setScope] = useState<AskScope>("all");
   const [visitorId, setVisitorId] = useState<string | null>(null);
   const [isStreaming, setIsStreaming] = useState(false);
+  const [isLaunching, setIsLaunching] = useState(false);
+  const [isClearing, setIsClearing] = useState(false);
   const [prefersReducedMotion, setPrefersReducedMotion] = useState(false);
   const requestController = useRef<AbortController | null>(null);
+  const launchTimeout = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const clearTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const shouldFollowLatest = useRef(true);
   const isProgrammaticScroll = useRef(false);
   const textareaRef = useRef<HTMLTextAreaElement | null>(null);
@@ -176,6 +185,30 @@ export function AskChat() {
     media.addEventListener("change", updatePreference);
     return () => media.removeEventListener("change", updatePreference);
   }, []);
+
+  useEffect(() => () => {
+    if (launchTimeout.current) clearTimeout(launchTimeout.current);
+    if (clearTimeoutRef.current) clearTimeout(clearTimeoutRef.current);
+  }, []);
+
+  // 清空对话：每条气泡自下而上被 mask 收没（最新一条先走，逐条阶梯推进），
+  // 全部收没后再真正重置状态；减少动态时立即清空。
+  const clearChat = () => {
+    if (isClearing || messages.length === 0) return;
+    requestController.current?.abort();
+    if (prefersReducedMotion) {
+      setMessages([]);
+      setUsedSuggestions([]);
+      return;
+    }
+    setIsClearing(true);
+    const totalDuration = CLEAR_ITEM_DURATION + CLEAR_STAGGER * (messages.length - 1);
+    clearTimeoutRef.current = setTimeout(() => {
+      setMessages([]);
+      setUsedSuggestions([]);
+      setIsClearing(false);
+    }, totalDuration);
+  };
 
   useEffect(() => {
     const textarea = textareaRef.current;
@@ -212,7 +245,17 @@ export function AskChat() {
 
   const submit = async () => {
     const trimmedQuestion = question.trim();
-    if (!trimmedQuestion || isStreaming || visitorId === "unavailable") return;
+    if (!trimmedQuestion || isStreaming || isLaunching || visitorId === "unavailable") return;
+
+    // 发送反馈：纸飞机先蓄势起飞，动画落定后再进入流式流程；减少动态时跳过。
+    if (!prefersReducedMotion) {
+      setIsLaunching(true);
+      await new Promise<void>((resolve) => {
+        launchTimeout.current = setTimeout(resolve, 520);
+      });
+      setIsLaunching(false);
+    }
+
     const session = await (visitorSessionPromise.current ?? ensureVisitorSession());
     if (session.visitorId === "unavailable") return;
 
@@ -284,13 +327,14 @@ export function AskChat() {
     }
   };
 
-  const canSubmit = Boolean(question.trim() && visitorId !== "unavailable" && !isStreaming);
+  const canSubmit = Boolean(question.trim() && visitorId !== "unavailable" && !isStreaming && !isLaunching && !isClearing);
 
   // 追问引导：回答完成后给出还没用过的建议问题，沿用空态的细线行语言；
   // 点击只填入组合器并聚焦，是否发送仍由访客决定。
   const lastMessage = messages[messages.length - 1];
   const followUpQuestions = suggestedQuestions.filter((item) => !usedSuggestions.includes(item));
   const showFollowUps = !isStreaming
+    && !isClearing
     && lastMessage?.role === "assistant"
     && lastMessage.isComplete
     && Boolean(lastMessage.content)
@@ -344,6 +388,7 @@ export function AskChat() {
               ) : null}
               {messages.map((message, index) => (
                 <AskMessageItem
+                  clearOrder={isClearing ? messages.length - 1 - index : null}
                   isStreamingPlaceholder={isStreaming && index === messages.length - 1}
                   key={message.id}
                   message={message}
@@ -434,6 +479,20 @@ export function AskChat() {
                 </DropdownMenuGroup>
               </DropdownMenuContent>
             </DropdownMenu>
+            {messages.length > 0 && !isStreaming ? (
+              <InputGroupButton
+                aria-label="清空对话"
+                className={styles.clear}
+                disabled={isClearing}
+                onClick={clearChat}
+                size="icon-sm"
+                title="清空对话"
+                type="button"
+                variant="ghost"
+              >
+                <Trash2 aria-hidden="true" />
+              </InputGroupButton>
+            ) : null}
             {isStreaming ? (
               <InputGroupButton
                 aria-label="停止生成"
@@ -446,7 +505,14 @@ export function AskChat() {
                 <Square aria-hidden="true" />
               </InputGroupButton>
             ) : (
-              <InputGroupButton aria-label="发送问题" className={styles.send} disabled={!canSubmit} size="icon-sm" type="submit" variant="ghost">
+              <InputGroupButton
+                aria-label="发送问题"
+                className={`${styles.send} ${isLaunching ? styles.sendLaunching : ""}`}
+                disabled={!canSubmit && !isLaunching}
+                size="icon-sm"
+                type="submit"
+                variant="ghost"
+              >
                 <SendHorizontal aria-hidden="true" />
               </InputGroupButton>
             )}

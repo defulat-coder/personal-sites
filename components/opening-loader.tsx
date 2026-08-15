@@ -5,28 +5,12 @@ import { useCallback, useEffect, useState, useSyncExternalStore } from "react";
 
 type LoaderPhase = "preparing" | "playing" | "leaving" | "complete";
 
-const LOADER_SESSION_KEY = "opening-loader-played-v1";
-const LOADER_REPLAY_PARAM = "loader";
 const subscribeToNothing = () => () => {};
-
-// 带 ?loader 访问时强制重播开场加载层，忽略本会话已看过的标记。
-const shouldReplayLoader = () =>
-  new URLSearchParams(window.location.search).has(LOADER_REPLAY_PARAM);
 
 export function OpeningLoader() {
   const [phase, setPhase] = useState<LoaderPhase>("preparing");
 
-  // 已看过的会话：首帧由 html[data-opening-loader-seen] 的 CSS 隐藏加载层；
-  // 水合时先按服务端快照渲染，随后 useSyncExternalStore 切换到已看过并移除遮罩。
-  const seen = useSyncExternalStore(
-    subscribeToNothing,
-    () =>
-      window.sessionStorage.getItem(LOADER_SESSION_KEY) !== null && !shouldReplayLoader(),
-    () => false,
-  );
-
-  // 角色序列图约 440KB(gzip)，只在挂载后且确实要播放时才渲染 <img>，
-  // 避免 SSR HTML 里的 img/preload 让已看过的会话也下载整份序列。
+  // 角色序列图约 440KB(gzip)，水合后再渲染 <img>，避免拖慢 SSR 首帧。
   const mounted = useSyncExternalStore(subscribeToNothing, () => true, () => false);
 
   const start = useCallback(() => {
@@ -34,34 +18,31 @@ export function OpeningLoader() {
   }, []);
 
   useEffect(() => {
-    if (phase !== "preparing" || seen) return;
+    if (phase !== "preparing") return;
     const fallback = window.setTimeout(start, 1_200);
     return () => window.clearTimeout(fallback);
-  }, [phase, seen, start]);
+  }, [phase, start]);
 
   useEffect(() => {
-    if (phase !== "playing" || seen) return;
+    if (phase !== "playing") return;
     const prefersReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
     const reveal = window.setTimeout(
-      () => {
-        window.sessionStorage.setItem(LOADER_SESSION_KEY, "true");
-        setPhase("leaving");
-      },
+      () => setPhase("leaving"),
       prefersReducedMotion ? 160 : 5_000,
     );
     return () => window.clearTimeout(reveal);
-  }, [phase, seen]);
+  }, [phase]);
 
   useEffect(() => {
-    if (phase === "complete" || seen) return;
+    if (phase === "complete") return;
     const originalOverflow = document.documentElement.style.overflow;
     document.documentElement.style.overflow = "hidden";
     return () => {
       document.documentElement.style.overflow = originalOverflow;
     };
-  }, [phase, seen]);
+  }, [phase]);
 
-  if (phase === "complete" || seen) return null;
+  if (phase === "complete") return null;
 
   return (
     <div

@@ -144,6 +144,41 @@
   animation: message-enter 240ms cubic-bezier(0.16, 1, 0.3, 1);
 }
 
+/* 清空时的逐条收没：mask 过渡带自下而上吃掉内容，轻微模糊上浮，
+   --clear-order 由父组件按"最新先走"注入阶梯延迟。 */
+.clearingItem {
+  animation: message-clear-wipe 420ms cubic-bezier(0.5, 0, 0.75, 0.4) both;
+  animation-delay: calc(var(--clear-order) * 70ms);
+  -webkit-mask-image: linear-gradient(to top, transparent 42%, #000 58%);
+  mask-image: linear-gradient(to top, transparent 42%, #000 58%);
+  -webkit-mask-size: 100% 260%;
+  mask-size: 100% 260%;
+  pointer-events: none;
+}
+
+@keyframes message-clear-wipe {
+  0% {
+    opacity: 1;
+    filter: blur(0);
+    transform: translateY(0);
+    -webkit-mask-position: 0 0;
+    mask-position: 0 0;
+  }
+
+  100% {
+    opacity: 0;
+    filter: blur(3px);
+    transform: translateY(-0.4rem);
+    -webkit-mask-position: 0 100%;
+    mask-position: 0 100%;
+  }
+}
+
+/* 清空完成后空态淡入，衔接收没的节奏 */
+.emptyItem {
+  animation: message-enter 320ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+
 @keyframes message-enter {
   from {
     opacity: 0;
@@ -318,6 +353,27 @@
   color: #fff !important;
 }
 
+/* 清空对话：弱化的幽灵图标按钮，悬停才转深 */
+.clear {
+  width: 1.75rem !important;
+  height: 1.75rem !important;
+  margin-left: auto;
+  border-radius: 0.375rem !important;
+  color: #6f6f72 !important;
+}
+
+.clear:hover,
+.clear:focus-visible {
+  background: #f0f0f1 !important;
+  color: var(--ink) !important;
+  transform: none !important;
+}
+
+/* 清空按钮与发送按钮同槽右侧：发送按钮保持最右 */
+.clear ~ .send {
+  margin-left: 0.25rem;
+}
+
 .send:hover,
 .send:focus-visible {
   background: #3a3a3d !important;
@@ -329,6 +385,44 @@
   background: var(--quiet) !important;
   color: #fff !important;
   opacity: 1 !important;
+}
+
+/* 发送反馈：飞机先从按钮里向后蓄势，再抬头沿弧线加速飞出、缩小淡出，
+   动画落定后由流式状态接管按钮槽位。 */
+.sendLaunching {
+  pointer-events: none;
+}
+
+.sendLaunching svg {
+  animation: plane-launch 520ms cubic-bezier(0.45, 0, 0.75, 0.4) forwards;
+  transform-origin: center;
+}
+
+@keyframes plane-launch {
+  0% {
+    opacity: 1;
+    transform: translate3d(0, 0, 0) rotate(0deg) scale(1);
+  }
+
+  16% {
+    opacity: 1;
+    transform: translate3d(-0.14rem, 0.1rem, 0) rotate(10deg) scale(0.9);
+  }
+
+  34% {
+    opacity: 1;
+    transform: translate3d(0.1rem, -0.12rem, 0) rotate(-10deg) scale(1.04);
+  }
+
+  62% {
+    opacity: 1;
+    transform: translate3d(0.9rem, -0.85rem, 0) rotate(-18deg) scale(0.94);
+  }
+
+  100% {
+    opacity: 0;
+    transform: translate3d(2.6rem, -2.4rem, 0) rotate(-26deg) scale(0.55);
+  }
 }
 
 .scopeMenu {
@@ -471,6 +565,16 @@
   color: #181818 !important;
 }
 
+:global(html[data-curation-theme="dark"]) .clear {
+  color: #999 !important;
+}
+
+:global(html[data-curation-theme="dark"]) .clear:hover,
+:global(html[data-curation-theme="dark"]) .clear:focus-visible {
+  background: #353535 !important;
+  color: #f4f4f4 !important;
+}
+
 :global(html[data-curation-theme="dark"]) .send:hover,
 :global(html[data-curation-theme="dark"]) .send:focus-visible {
   background: #d8d8d8 !important;
@@ -484,7 +588,8 @@
 
 @media (prefers-reduced-motion: reduce) {
   .messageItem,
-  .status :global(svg) {
+  .status :global(svg),
+  .sendLaunching svg {
     animation: none;
   }
 
