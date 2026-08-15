@@ -2,6 +2,7 @@ import { describe, expect, it } from "vitest";
 
 import {
   TECHNICAL_TERM_SETS,
+  TECH_STACK_TERMS,
   selectTechnicalTerms,
 } from "../components/interactive-dot-field";
 
@@ -18,5 +19,10 @@ describe("selectTechnicalTerms", () => {
     expect(selectTechnicalTerms(Number.NaN)).toBe(TECHNICAL_TERM_SETS[0]);
     expect(selectTechnicalTerms(1)).toBe(TECHNICAL_TERM_SETS[3]);
     expect(TECHNICAL_TERM_SETS.every((terms) => terms.length === 12)).toBe(true);
+  });
+
+  it("keeps the tech-stack terms unique and non-empty", () => {
+    expect(TECH_STACK_TERMS.length).toBeGreaterThan(0);
+    expect(new Set(TECH_STACK_TERMS).size).toBe(TECH_STACK_TERMS.length);
   });
 });

@@ -41,7 +41,7 @@ RootLayout
 | Loading | `components/opening-loader.tsx` | 加载阶段、滚动锁定、向上揭幕；每次完整页面加载都播放，水合后移除 | 常规页面配色 |
 | 个人简介 | `components/profile-introduction.tsx` | 双语逐字输入/删除、最终中文正文与多语言标题轮换；每次进入首页都播放 | 静态履历数据源 |
 | 内容导航 | `components/site-section-navigation.tsx` | 统一内容入口（每日动态、推特点赞、开源关注、问一问）的路由跳转与当前页面状态；导航即栏目页头，不重复显示标题与说明 | 外部链接或同页 Tab 语义 |
-| 技术信号场 | `components/interactive-dot-field.tsx` | 技术词词库与稀疏视觉表达 | 标签过滤或导航 |
+| 技术信号场 | `components/interactive-dot-field.tsx` | AI 术语与技术栈词库、稀疏视觉表达 | 标签过滤或导航 |
 | 策展数据 | `lib/curation.ts` | Zod 校验、查询、日期格式化 | 页面布局 |
 
 ## 桌面布局契约
@@ -61,7 +61,7 @@ RootLayout
 | `ContentSectionNavigation` | 每日动态、推特点赞、开源关注、问一问共享等权内容入口；导航即栏目页头 | 使用站内链接与 `aria-current`，不得伪装为同页 Tab |
 | `.curation-detail__article` | 最大 `50rem`，承接右栏阅读 | 详情结构沿用首页的留白与分隔节奏 |
 | `.curation-home__bio` | `width: 100%` | 简介正文撑满身份轨，不再限制 `max-width` |
-| `.interactive-dot-field` | `10rem` 高点阵画布 | 默认 12 个词可见，位置不可重叠 |
+| `.interactive-dot-field` | `11.5rem` 高点阵画布 | AI 术语 12 词 + 技术栈 26 词按 6 条泳道滚动，泳道参数由组件按索引确定性内联，同泳道等相位差不重叠 |
 
 `900px` 以下收为单列；`560px` 以下策展元信息转为同一行。此项目的评审重点仍是桌面版，两栏首屏优先。
 
