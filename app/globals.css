@@ -10,6 +10,10 @@ a { color:inherit; }
 button,input,textarea { font:inherit; }
 img { display:block; }
 
+/* sr-only 钉到页面原点：否则它绝对定位的静态位置会落在内部滚动栏深处，
+   包含块是 body、逃逸 100dvh 外壳的裁剪，把整页撑出一块空白滚动区。 */
+.sr-only { top: 0; left: 0; }
+
 html[data-section-transition^="leaving-"] .site-section-motion {
   animation-duration: 130ms;
   animation-fill-mode: both;
