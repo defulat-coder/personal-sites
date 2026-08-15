@@ -6,12 +6,12 @@
   <string>site.personal.ai-news-backfill</string>
   <key>ProgramArguments</key>
   <array>
-    <string>/Users/xbjt/.nvm/versions/node/v24.18.0/bin/node</string>
-    <string>/Users/xbjt/Documents/myself/personal-sites/scripts/ai-news-sync.mjs</string>
+    <string>__NODE_BIN__/node</string>
+    <string>__REPO_ROOT__/scripts/ai-news-sync.mjs</string>
     <string>--backfill</string>
   </array>
   <key>WorkingDirectory</key>
-  <string>/Users/xbjt/Documents/myself/personal-sites</string>
+  <string>__REPO_ROOT__</string>
   <key>StartCalendarInterval</key>
   <dict>
     <key>Hour</key>
@@ -22,8 +22,8 @@
   <key>RunAtLoad</key>
   <false/>
   <key>StandardOutPath</key>
-  <string>/Users/xbjt/Documents/myself/personal-sites/var/ai-news/backfill.log</string>
+  <string>__REPO_ROOT__/var/ai-news/backfill.log</string>
   <key>StandardErrorPath</key>
-  <string>/Users/xbjt/Documents/myself/personal-sites/var/ai-news/backfill.log</string>
+  <string>__REPO_ROOT__/var/ai-news/backfill.log</string>
 </dict>
 </plist>
