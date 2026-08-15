@@ -2,21 +2,23 @@ import { Suspense } from "react";
 
 import { HomeMain, type HomeStreamData } from "@/components/home-main";
 import { HomeView } from "@/components/home-view";
-import { getAiNewsPage, AI_NEWS_LIST_LIMIT } from "@/lib/ai-news";
+import { getAiNewsPage, getAiNewsSnapshotItems, AI_NEWS_LIST_LIMIT } from "@/lib/ai-news";
 import { getCurationPage } from "@/lib/curation";
 import { getOpenSourceListEntries } from "@/lib/open-source";
 
 export const revalidate = 300;
 
 export default async function HomePage() {
-  const [aiNewsPage, curationPage, openSourceEntries] = await Promise.all([
+  const [aiNewsPage, aiNewsSnapshotItems, curationPage, openSourceEntries] = await Promise.all([
     getAiNewsPage(0, AI_NEWS_LIST_LIMIT),
+    getAiNewsSnapshotItems(),
     getCurationPage(),
     getOpenSourceListEntries(),
   ]);
   const streamData: HomeStreamData = {
     aiNewsHasMore: aiNewsPage.hasMore,
     aiNewsItems: aiNewsPage.items,
+    aiNewsSnapshotItems,
     initialHasMore: curationPage.hasMore,
     initialItems: curationPage.items,
     openSourceEntries,

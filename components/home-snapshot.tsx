@@ -6,6 +6,10 @@ import type { AiNewsListItem } from "@/lib/ai-news-types";
 import type { CurationListItem } from "@/lib/curation-types";
 import type { OpenSourceListEntry } from "@/lib/open-source-types";
 
+// 快照只需要动态的这几个字段；轻量投影从 lib/ai-news 的 getAiNewsSnapshotItems 来，
+// 不能 import 它的 server-only 模块（本组件会进客户端 bundle），结构类型在此声明。
+export type HomeSnapshotNewsItem = Pick<AiNewsListItem, "id" | "publishedAt" | "selected" | "title">;
+
 type SnapshotKind = "ai-news" | "daily" | "open-source";
 
 type SnapshotEntry = {
@@ -45,7 +49,7 @@ function capSnapshotDay(entries: SnapshotEntry[]) {
 }
 
 type HomeSnapshotProps = {
-  aiNewsItems: AiNewsListItem[];
+  aiNewsItems: HomeSnapshotNewsItem[];
   curationItems: CurationListItem[];
   openSourceEntries: OpenSourceListEntry[];
 };
@@ -63,7 +67,8 @@ export function HomeSnapshot({ aiNewsItems, curationItems, openSourceEntries }: 
       ts: toTimestamp(item.publishedAt),
     })),
     ...curationItems.map((item) => {
-      const publishedAt = item.publishedAt ?? item.collectedAt ?? null;
+      // 快照证明的是"他每天都在场"：点赞按收录时间归档，而不是原推的发布时间。
+      const publishedAt = item.collectedAt ?? item.publishedAt ?? null;
       return {
         href: `/curation/${item.id}` as Route,
         id: `daily-${item.id}`,

@@ -1,6 +1,6 @@
 import { AiNewsStream } from "@/components/ai-news-stream";
 import { CurationStream } from "@/components/curation-stream";
-import { HomeSnapshot } from "@/components/home-snapshot";
+import { HomeSnapshot, type HomeSnapshotNewsItem } from "@/components/home-snapshot";
 import { OpenSourceStream } from "@/components/open-source-stream";
 import { ContentSectionNavigation } from "@/components/site-section-navigation";
 import type { AiNewsListItem } from "@/lib/ai-news-types";
@@ -12,6 +12,7 @@ export type FocusView = "home" | "ai-news" | "daily" | "open-source";
 type FocusStreamProps = {
   aiNewsHasMore: boolean;
   aiNewsItems: AiNewsListItem[];
+  aiNewsSnapshotItems: HomeSnapshotNewsItem[];
   initialHasMore: boolean;
   initialItems: CurationListItem[];
   initialView: FocusView | null;
@@ -36,14 +37,14 @@ function FeedSkeleton() {
   );
 }
 
-export function FocusStream({ aiNewsHasMore, aiNewsItems, initialHasMore, initialItems, initialView, openSourceEntries }: FocusStreamProps) {
+export function FocusStream({ aiNewsHasMore, aiNewsItems, aiNewsSnapshotItems, initialHasMore, initialItems, initialView, openSourceEntries }: FocusStreamProps) {
   return (
     <section aria-label={initialView ? viewLabels[initialView] : "内容"} className="curation-home__feed site-section-motion">
       <ContentSectionNavigation current={initialView ?? "home"} />
 
       {initialView === null ? <FeedSkeleton /> : null}
       {initialView === "home"
-        ? <HomeSnapshot aiNewsItems={aiNewsItems} curationItems={initialItems} openSourceEntries={openSourceEntries} />
+        ? <HomeSnapshot aiNewsItems={aiNewsSnapshotItems} curationItems={initialItems} openSourceEntries={openSourceEntries} />
         : null}
       {initialView === "ai-news" ? <AiNewsStream initialHasMore={aiNewsHasMore} initialItems={aiNewsItems} /> : null}
       {initialView === "daily"
