@@ -1,0 +1,24 @@
+import { chromium } from "@playwright/test";
+
+const executablePath = "/Users/xbjt/Library/Caches/ms-playwright/chromium_headless_shell-1228/chrome-headless-shell-mac-arm64/chrome-headless-shell";
+const browser = await chromium.launch({ executablePath });
+const page = await browser.newPage({ viewport: { width: 1440, height: 900 } });
+await page.goto("http://127.0.0.1:7100/", { waitUntil: "networkidle" });
+await page.waitForTimeout(9000);
+await page.goto("http://127.0.0.1:7100/works", { waitUntil: "networkidle" });
+await page.waitForTimeout(1500);
+await page.screenshot({ path: "var/works-desktop.png" });
+await page.goto("http://127.0.0.1:7100/works/personal-site", { waitUntil: "networkidle" });
+await page.waitForTimeout(1200);
+await page.screenshot({ path: "var/works-detail-desktop.png", fullPage: true });
+const mobile = await browser.newPage({ viewport: { width: 390, height: 844 } });
+await mobile.goto("http://127.0.0.1:7100/", { waitUntil: "networkidle" });
+await mobile.waitForTimeout(9000);
+await mobile.goto("http://127.0.0.1:7100/works", { waitUntil: "networkidle" });
+await mobile.waitForTimeout(1500);
+await mobile.screenshot({ path: "var/works-mobile.png" });
+await mobile.goto("http://127.0.0.1:7100/works/personal-site", { waitUntil: "networkidle" });
+await mobile.waitForTimeout(1200);
+await mobile.screenshot({ path: "var/works-detail-mobile.png" });
+await browser.close();
+console.log("done");

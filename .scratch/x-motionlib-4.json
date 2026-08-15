@@ -1,0 +1,296 @@
+[
+  {
+    "id": "2046265960383033825",
+    "text": "Meet Kimi K2.6 agent - Video hero section, WebGL shaders, real backends. From one prompt.\n\n🔹 Video hero sections - cinematic aesthetic, auto-composited \n🔹 WebGL shader animations - native GLSL / WGSL, liquid metal, caustics, raymarching \n🔹 Motion design - GSAP + Framer Motion \n🔹 Backend database: Kimi wires up auth + database + backend in one pass. \n🔹 Website stack - React 19 + TypeScript + Vite + Tailwind + shadcn/ui \n🔹 3D w/ physically-based lighting - Three.js + React Three Fiber",
+    "createdAt": "Mon Apr 20 16:33:17 +0000 2026",
+    "replyCount": 104,
+    "retweetCount": 404,
+    "likeCount": 4865,
+    "conversationId": "2046265960383033825",
+    "author": {
+      "username": "Kimi_Moonshot",
+      "name": "Kimi.ai"
+    },
+    "authorId": "1863959670169501696",
+    "media": [
+      {
+        "type": "video",
+        "url": "https://pbs.twimg.com/amplify_video_thumb/2046263820600082432/img/xglCOQdVjPwjJgua.jpg",
+        "width": 1920,
+        "height": 1080,
+        "previewUrl": "https://pbs.twimg.com/amplify_video_thumb/2046263820600082432/img/xglCOQdVjPwjJgua.jpg:small",
+        "videoUrl": "https://video.twimg.com/amplify_video/2046263820600082432/vid/avc1/1920x1080/b9ZhVjIJVhlmDegw.mp4?tag=21",
+        "durationMs": 43943
+      }
+    ]
+  },
+  {
+    "id": "2024892115101028615",
+    "text": "Opus 4.6 vs Gemini 3.1 Pro (2/9)\n\nprompt: Build a premium Vite + React landing page for Aether, an AI creative studio, with dark-mode design, high-end animations (Framer Motion), and conversion-focused sections (hero, features, demo, pricing, testimonials).\n\nWhilst I think gemini is overall better at design, the model often struggles with syntax issues, tool calling and thinking for 2-3 times the amount of opus.",
+    "createdAt": "Fri Feb 20 17:01:15 +0000 2026",
+    "replyCount": 33,
+    "retweetCount": 38,
+    "likeCount": 671,
+    "conversationId": "2024892115101028615",
+    "author": {
+      "username": "developedbyed",
+      "name": "Dev Ed"
+    },
+    "authorId": "1069636036291112960",
+    "media": [
+      {
+        "type": "video",
+        "url": "https://pbs.twimg.com/amplify_video_thumb/2024891486052012032/img/1bvdc2yP0hz_w2K6.jpg",
+        "width": 2048,
+        "height": 1152,
+        "previewUrl": "https://pbs.twimg.com/amplify_video_thumb/2024891486052012032/img/1bvdc2yP0hz_w2K6.jpg:small",
+        "videoUrl": "https://video.twimg.com/amplify_video/2024891486052012032/vid/avc1/3840x2160/sR5rt6LrDzX303DM.mp4?tag=21",
+        "durationMs": 23018
+      }
+    ]
+  },
+  {
+    "id": "2022461932759060993",
+    "text": "Use this prompt in OpenClaw to create your own AI agent command center that syncs up your life like Tony Stark's Jarvis in Iron Man. Adapt the specifics (agent names, data sources, branding) below to your own setup.\n\nPrompt: Build me a mission control dashboard for my OpenClaw AI agent system.\n\nStack: Next.js 15 (App Router) + Convex (real-time backend) + Tailwind CSS v4 + Framer Motion + ShadCN UI + Lucide icons. TypeScript throughout.\n\nThis is the command center where I monitor and control my autonomous AI agent(s) running on OpenClaw. The agent operates 24/7 on a Mac Mini, connected to Telegram/Discord, running cron jobs, spawning sub-agents, and reading/writing to a filesystem-based memory and state system.\n\nDark mode only. Ultra-premium aesthetic, think Iron Man's JARVIS HUD meets a Bloomberg terminal. Subtle glass effects (backdrop-blur-xl, bg-white/[0.03]), no heavy gradients or glow. Rounded corners (16-20px on cards). Framer Motion for page transitions, stagger animations on card grids, spring physics on interactions. Mobile-first responsive. Never cookie-cutter.\n\n## Architecture\n\nThe dashboard reads live data from TWO sources:\n1. **Convex**: real-time database for structured data (tasks, contacts, content drafts, calendar events, activity logs)\n2. **Local API routes** (`/api/*`): read files from the agent's workspace filesystem at `~/.openclaw/workspace/` and return JSON. This is how live system state flows into the dashboard.\n\n## Pages & Views (8 nav items, some with tab sub-views)\n\n### 1. HOME (`/`)\nDashboard overview. Grid of live status cards:\n- **System Health**: read from `/api/system-state` (parses `state/servers.json`). Show each service with UP/DOWN indicator, port, last check time.\n- **Agent Status**: read from `/api/agents` (parses `agents/registry.json` + agent workspace files). Show active agent count, healthy/unhealthy ratio, active sub-agent count from OpenClaw sessions API.\n- **Cron Health**: read from `/api/cron-health` (parses `state/crons.json`). Table of all scheduled jobs with name, schedule, last status (green/red dot), consecutive errors.\n- **Revenue Tracker**: read from `/api/revenue` (parses `state/revenue.json`). Current revenue, monthly burn, net.\n- **Content Pipeline**: read from `/api/content-pipeline` (parses `content/queue.md`). Kanban-style: Draft | Review | Approved | Published counts.\n- **Quick Stats**: total tasks, pending approvals, active sessions, uptime.\nAll panels auto-refresh every 15 seconds. Live indicator dot + \"AUTO 15S\" badge in header.\n### 2. OPS (`/ops`) with 3 tabs: Operations | Tasks | Calendar\n**Operations tab:** Full operational view. Server health table, branch status (from `state/branch-check.json`), observations feed (from `state/observations.md`), system priorities (from `shared-context/priorities.md`).\n**Tasks tab:** Strategic task suggestion system. API route `/api/suggested-tasks` reads/writes `state/suggested-tasks.json`. Cards grouped by category (Revenue, Product, Community, Content, Operations, Clients, Trading, Brand) with emoji headers. Each card shows title, reasoning, next action, priority badge, effort badge, approve/reject buttons. Filter bar by status and category.\n**Calendar tab:** Weekly calendar view from Convex `calendarEvents` table. Drag-to-create, color-coded by type, time slots.\n### 3. AGENTS (`/agents`) with 2 tabs: Agents | Models\n**Agents tab:** Card grid of all registered agents from `/api/agents`. Each card shows name, role, model, level (L1-L4), status. Cards are CLICKABLE: expanding into a detail panel showing:\n- Agent personality (reads their SOUL .md)\n\n- Capabilities and rules (reads their RULES .md)\n\n- Sub-agents they can spawn\n- Recent outputs (reads from `shared-context/agent-outputs/`)\n**Models tab:** Model inventory table showing all available models, their routing (which tasks go to which model), costs, and failover chains.\n### 4. CHAT (`/chat`): 2 tabs: Chat | Command\n**Chat tab:** Chat interface to communicate with the agent. Left sidebar shows session list (from `/api/chat-history` reading .jsonl transcript files). Main area shows messages with role-aligned bubbles (user right, assistant left), date separators, channel badges (telegram/discord/webchat). Input bar with send button + voice input (Web Speech API with SpeechRecognition). Messages sent via `/api/chat-send` which queues to a file the agent reads.\n\n**Command tab:** Quick command interface for common operations.\n\n### 5. CONTENT (`/content`)\n\nContent pipeline management. Read from Convex `contentDrafts` table AND `/api/content-pipeline`. Show drafts in kanban columns. Each card shows title, platform target, draft text preview, status, created date. Edit/approve/reject actions.\n### 6. COMMS (`/comms`) with 2 tabs: Comms | CRM\n**Comms tab:** Communication hub showing recent Discord digest, Telegram messages, notification history.\n**CRM tab:** Client pipeline kanban (Prospect → Contacted → Meeting → Proposal → Active). API route `/api/clients` reads markdown files from `clients/` directory. Each card shows client name, status, contacts, last interaction, next action.\n### 7. KNOWLEDGE (`/knowledge`) with 2 tabs: Knowledge | Ecosystem\n**Knowledge tab:** Searchable knowledge base. Global search across all workspace files using `/api/knowledge` endpoint.\n**Ecosystem tab:** Product grid showing all products/apps in the ecosystem. Each card shows product name, status (Active/Development/Concept), health indicator, key metrics. Cards link to `/ecosystem/[slug]` detail pages with tabbed views (Overview, Brand, Community, Content, Legal, Product, Website, Actions). Detail pages read from `/api/ecosystem/[slug]` which parses workspace memory files.\n### 8. CODE (`/code`)\n\nCode pipeline view. Shows repositories from `/api/repos` (scans ~/Desktop/Projects/ for git repos). Each repo card shows name, branch, last commit, dirty file count, language breakdown. Detail view at `/api/repos/detail` shows recent commits, file tree, open PRs.\n## Navigation\n\nTop horizontal nav bar, NOT sidebar. All 8 items visible at all viewport widths. Use `flex` layout with `flex-1` items. Text size uses `clamp(0.45rem, 0.75vw, 0.6875rem)` for fluid scaling. Active item gets `text-primary bg-primary/[0.06]` static highlight (no sliding animation). Agent/app name visible at md+ breakpoints (`hidden md:inline`).\nTab sub-views use a reusable `TabBar` component with pill/glass styling and Framer Motion `layoutId` transitions. Tab state stored in URL via `?tab=` search params.\n## API Routes (all under `src/app/api/`)\nEach API route reads from the agent's workspace filesystem and returns JSON:\n\n- `/api/system-state` → reads `state/servers.json`, `state/branch-check.json`\n\n- `/api/agents` → reads `agents/registry.json`, agent SOUL .md files\n- `/api/agents/[id]` → reads specific agent's SOUL .md, RULES .md, outputs\n\n- `/api/cron-health` → reads `state/crons.json`\n- `/api/revenue` → reads `state/revenue.json`\n- `/api/content-pipeline` → parses `content/queue.md` (markdown with status markers)\n\n- `/api/suggested-tasks` → GET (read) / POST (approve/reject) on `state/suggested-tasks.json`\n\n- `/api/observations` → reads `state/observations.md`\n- `/api/priorities` → reads `shared-context/priorities.md`\n- `/api/chat-history` → reads .jsonl transcript files with pagination/search/channel filter\n\n- `/api/chat-send` → writes to queue file\n\n- `/api/clients` → reads markdown files from `clients/` directory\n- `/api/ecosystem/[slug]` → reads memory files for specific ecosystem\n\n- `/api/repos` → scans project directories for git repos\n- `/api/health` → returns status, uptime, memory usage, Convex connectivity\n\nAll filesystem paths should be configurable via environment variable (default: `~/.openclaw/workspace/`).\n\n## Convex Schema\nDefine tables for: activities, calendarEvents, tasks, contacts, contentDrafts, ecosystemProducts. Include seed scripts (`convex/seed.ts`) to populate initial data.\n## Key Design Rules\n- Mobile-first, test at 320px minimum\n- Font sizes 10-14px for body text, everything must fit naturally at small viewports\n- Cards use consistent border radius (16-20px)\n- Glass cards: `bg-white/[0.03] backdrop-blur-xl border border-white/[0.06]`\n- No heavy blur blobs or grain overlays\n- Stagger animations on card grids (0.05s delay per item)\n- Skeleton loading states for all async data\n- Custom scrollbar styling\n- Empty states with helpful messaging\n- All text must use Inter or system font stack\n- Never mix sharp and rounded corners in the same view\n- Premium = lighter feel, more whitespace, less visual noise\n## File Structure\n```\n\nsrc/\n\napp/\npage.tsx, layout.tsx, providers.tsx\n\nagents/page.tsx\ncalendar/page.tsx\nchat/page.tsx\ncode/page.tsx\ncomms/page.tsx\ncontent/page.tsx\necosystem/page.tsx, ecosystem/[slug]/page.tsx\nknowledge/page.tsx\nops/page.tsx\napi/[...all routes above]\ncomponents/\nnav.tsx\ntab-bar.tsx\n\ndashboard-overview.tsx\nops-view.tsx, suggested-tasks-view.tsx\nagents-view.tsx, models-view.tsx\nchat-center-view.tsx, voice-input.tsx\ncontent-view.tsx\ncomms-view.tsx, crm-view.tsx\nknowledge-base.tsx, ecosystem-view.tsx\ncode-pipeline.tsx\nactivity-feed.tsx, calendar-view.tsx\nui/ (ShadCN primitives)\nhooks/\nlib/\nconvex/\nschema.ts\nfunctions for each table\nseed.ts\n```\nBuild the complete application. Every component, every API route, every Convex function. Production-quality code and premium design, not stubs. Dark mode only. Make it look incredibly beautiful and premium, no cookie cutter UI / AI slop.",
+    "createdAt": "Sat Feb 14 00:04:34 +0000 2026",
+    "replyCount": 90,
+    "retweetCount": 135,
+    "likeCount": 1509,
+    "conversationId": "2022461932759060993",
+    "author": {
+      "username": "kloss_xyz",
+      "name": "klöss"
+    },
+    "authorId": "1470503969789251589",
+    "quotedTweet": {
+      "id": "2020738433724137694",
+      "text": "8 prompts for @openclaw.\n\nTo help it understand you. \n\n1) Brain: maps you\n2) Muscles: routes AI models\n3) Bones: ingests codebases\n4) DNA: behavioral protocols\n5) Soul: personality you want\n6) Eyes: activation triggers\n7) Heartbeat: evolution/learning\n8) Nerves: context efficiency",
+      "createdAt": "Mon Feb 09 05:56:00 +0000 2026",
+      "replyCount": 63,
+      "retweetCount": 118,
+      "likeCount": 1173,
+      "conversationId": "2020738433724137694",
+      "author": {
+        "username": "kloss_xyz",
+        "name": "klöss"
+      },
+      "authorId": "1470503969789251589",
+      "media": [
+        {
+          "type": "photo",
+          "url": "https://pbs.twimg.com/media/HAr-Mhob0AAMFzA.jpg",
+          "width": 1639,
+          "height": 2048,
+          "previewUrl": "https://pbs.twimg.com/media/HAr-Mhob0AAMFzA.jpg:small"
+        },
+        {
+          "type": "photo",
+          "url": "https://pbs.twimg.com/media/HAr-NHdbQAAYXO_.jpg",
+          "width": 1639,
+          "height": 2048,
+          "previewUrl": "https://pbs.twimg.com/media/HAr-NHdbQAAYXO_.jpg:small"
+        },
+        {
+          "type": "photo",
+          "url": "https://pbs.twimg.com/media/HAr-N2jakAAVsEW.jpg",
+          "width": 1639,
+          "height": 2048,
+          "previewUrl": "https://pbs.twimg.com/media/HAr-N2jakAAVsEW.jpg:small"
+        },
+        {
+          "type": "photo",
+          "url": "https://pbs.twimg.com/media/HAr-OoqbgAAVwKi.jpg",
+          "width": 1639,
+          "height": 2048,
+          "previewUrl": "https://pbs.twimg.com/media/HAr-OoqbgAAVwKi.jpg:small"
+        }
+      ]
+    },
+    "media": [
+      {
+        "type": "video",
+        "url": "https://pbs.twimg.com/amplify_video_thumb/2022461533629091841/img/ccYthyhazjUQDwn3.jpg",
+        "width": 2048,
+        "height": 953,
+        "previewUrl": "https://pbs.twimg.com/amplify_video_thumb/2022461533629091841/img/ccYthyhazjUQDwn3.jpg:small",
+        "videoUrl": "https://video.twimg.com/amplify_video/2022461533629091841/vid/avc1/2320x1080/uUr4-nitQoS6aS6_.mp4?tag=21",
+        "durationMs": 74532
+      }
+    ]
+  },
+  {
+    "id": "1875410761444675734",
+    "text": "using my website now to dump my current music rotation and other random little things that bring me joy - built with next &amp; framer motion :)\nhttps://t.co/xeOfnNm2XJ https://t.co/VllmqPvSVe",
+    "createdAt": "Sat Jan 04 05:15:43 +0000 2025",
+    "replyCount": 64,
+    "retweetCount": 85,
+    "likeCount": 1491,
+    "conversationId": "1875410761444675734",
+    "author": {
+      "username": "seoyemilk",
+      "name": "yeji-쥐 🐁"
+    },
+    "authorId": "1741028783719596032",
+    "media": [
+      {
+        "type": "video",
+        "url": "https://pbs.twimg.com/ext_tw_video_thumb/1875409595021103104/pu/img/5AyFED3CFvjnnEVq.jpg",
+        "width": 1688,
+        "height": 1080,
+        "previewUrl": "https://pbs.twimg.com/ext_tw_video_thumb/1875409595021103104/pu/img/5AyFED3CFvjnnEVq.jpg:small",
+        "videoUrl": "https://video.twimg.com/ext_tw_video/1875409595021103104/pu/vid/avc1/1124x720/MQHKvoTynEhN0W3D.mp4?tag=12",
+        "durationMs": 28883
+      }
+    ]
+  },
+  {
+    "id": "1842393172766494852",
+    "text": "前几天看到一个非常丝滑的动画效果，MotionNumber\nhttps://t.co/tvutcTziOF\n\n很常见，之前看到很多网站都在用，就是数字在切换的时候会有一个滚动的效果，层级自己写了一个在切换的时候发现没有这个那么顺滑。\n\n这个非常适合用到 landing page 上，展示各种数据等等的场景，它是用 Framer Motion 编写的，抽象成了一个 React 组件，我觉得这种效果很值得收藏未来是用一下。\n\nGithub 地址在这里：https://t.co/ICc37dgoM7",
+    "createdAt": "Sat Oct 05 02:35:37 +0000 2024",
+    "replyCount": 11,
+    "retweetCount": 150,
+    "likeCount": 904,
+    "conversationId": "1842393172766494852",
+    "author": {
+      "username": "vikingmute",
+      "name": "Viking"
+    },
+    "authorId": "296593919",
+    "media": [
+      {
+        "type": "video",
+        "url": "https://pbs.twimg.com/ext_tw_video_thumb/1842392873507102720/pu/img/qB0Z4AauV0xbkWLv.jpg",
+        "width": 2048,
+        "height": 1334,
+        "previewUrl": "https://pbs.twimg.com/ext_tw_video_thumb/1842392873507102720/pu/img/qB0Z4AauV0xbkWLv.jpg:small",
+        "videoUrl": "https://video.twimg.com/ext_tw_video/1842392873507102720/pu/vid/avc1/1104x720/0JYWlJ265oGw5gWl.mp4?tag=12",
+        "durationMs": 10166
+      }
+    ]
+  },
+  {
+    "id": "1833173518751555629",
+    "text": "A playful carousel for my new portfolio, built with framer motion https://t.co/KpoXVaCrKg",
+    "createdAt": "Mon Sep 09 16:00:00 +0000 2024",
+    "replyCount": 36,
+    "retweetCount": 59,
+    "likeCount": 1387,
+    "conversationId": "1833173518751555629",
+    "author": {
+      "username": "daniel__designs",
+      "name": "Daniel Destefanis"
+    },
+    "authorId": "1138984421917220864",
+    "media": [
+      {
+        "type": "video",
+        "url": "https://pbs.twimg.com/ext_tw_video_thumb/1832975628124999680/pu/img/GP5tLj60SCoSJw2Q.jpg",
+        "width": 1080,
+        "height": 1080,
+        "previewUrl": "https://pbs.twimg.com/ext_tw_video_thumb/1832975628124999680/pu/img/GP5tLj60SCoSJw2Q.jpg:small",
+        "videoUrl": "https://video.twimg.com/ext_tw_video/1832975628124999680/pu/vid/avc1/1080x1080/Wb95FEZJCKaShlbS.mp4?tag=14",
+        "durationMs": 13700
+      }
+    ]
+  },
+  {
+    "id": "1793401212114801097",
+    "text": "✨ Introducing Magic UI 🪄\n\nA UI library of animated components to build beautiful landing pages.\n\nBuilt using @reactjs, @tailwindcss and @framer motion.\n\n100% Free and Open Source.\n\nhttps://t.co/9hmZ6EZV0L https://t.co/zTbLkqUd1t",
+    "createdAt": "Wed May 22 21:59:03 +0000 2024",
+    "replyCount": 154,
+    "retweetCount": 346,
+    "likeCount": 3702,
+    "conversationId": "1793401212114801097",
+    "author": {
+      "username": "dillionverma",
+      "name": "Dillion"
+    },
+    "authorId": "3519187576",
+    "media": [
+      {
+        "type": "video",
+        "url": "https://pbs.twimg.com/ext_tw_video_thumb/1793401180556820480/pu/img/HbrlqQe3zxtV9-Nj.jpg",
+        "width": 1920,
+        "height": 1080,
+        "previewUrl": "https://pbs.twimg.com/ext_tw_video_thumb/1793401180556820480/pu/img/HbrlqQe3zxtV9-Nj.jpg:small",
+        "videoUrl": "https://video.twimg.com/ext_tw_video/1793401180556820480/pu/vid/avc1/1280x720/Nw9CeC7hSU1_qrMs.mp4?tag=12",
+        "durationMs": 17118
+      }
+    ]
+  },
+  {
+    "id": "1683882802977312770",
+    "text": "I recreated the iOS list view with React Aria Components and Framer Motion! It has fluid swipe gestures, layout animations, multiple selection mode, and even keyboard support. The code is remarkably small for that much functionality too. Check it out! 🤩\n\nhttps://t.co/ZzLiclJ33p https://t.co/XVS9F23vYS",
+    "createdAt": "Tue Jul 25 16:51:59 +0000 2023",
+    "replyCount": 18,
+    "retweetCount": 79,
+    "likeCount": 805,
+    "conversationId": "1683882802977312770",
+    "author": {
+      "username": "devongovett",
+      "name": "Devon Govett"
+    },
+    "authorId": "15687937",
+    "media": [
+      {
+        "type": "video",
+        "url": "https://pbs.twimg.com/ext_tw_video_thumb/1683702224336355328/pu/img/zd45l5d_xZZ_Ibs4.jpg",
+        "width": 1670,
+        "height": 2048,
+        "previewUrl": "https://pbs.twimg.com/ext_tw_video_thumb/1683702224336355328/pu/img/zd45l5d_xZZ_Ibs4.jpg:small",
+        "videoUrl": "https://video.twimg.com/ext_tw_video/1683702224336355328/pu/vid/720x882/2a8T_mPUwAsw4kH3.mp4?tag=12",
+        "durationMs": 21088
+      }
+    ]
+  },
+  {
+    "id": "1629155223414665217",
+    "text": "Recreated @family's whimsical number input today using Framer Motion. Check it out:\n\nhttps://t.co/clt9ZMqXW1\n\nShort tutorial below. https://t.co/t1xadArJBo",
+    "createdAt": "Fri Feb 24 16:24:08 +0000 2023",
+    "replyCount": 19,
+    "retweetCount": 77,
+    "likeCount": 1079,
+    "conversationId": "1629155223414665217",
+    "author": {
+      "username": "nandafyi",
+      "name": "nanda"
+    },
+    "authorId": "1153352959234719745",
+    "media": [
+      {
+        "type": "video",
+        "url": "https://pbs.twimg.com/ext_tw_video_thumb/1629155204787752960/pu/img/___4zaipNrIDnAL9.jpg",
+        "width": 1124,
+        "height": 632,
+        "previewUrl": "https://pbs.twimg.com/ext_tw_video_thumb/1629155204787752960/pu/img/___4zaipNrIDnAL9.jpg:small",
+        "videoUrl": "https://video.twimg.com/ext_tw_video/1629155204787752960/pu/vid/1124x632/pCg6qmF9qltvtnDf.mp4?tag=12",
+        "durationMs": 12316
+      }
+    ]
+  },
+  {
+    "id": "1448836110923169792",
+    "text": "New video(ﾟ∀ﾟ)  How to build a portfolio website using Next.js by @vercel, Chakra UI @thesegunadebayo, Framer Motion @framer, and Three.js @threejs! Featuring @lkgglass\n👉 https://t.co/KsQ02pCsth https://t.co/KzLYf7evlI",
+    "createdAt": "Fri Oct 15 02:20:21 +0000 2021",
+    "replyCount": 22,
+    "retweetCount": 64,
+    "likeCount": 521,
+    "conversationId": "1448836110923169792",
+    "author": {
+      "username": "inkdrop_app",
+      "name": "Takuya 🐾 devaslife"
+    },
+    "authorId": "720084689579417600",
+    "media": [
+      {
+        "type": "video",
+        "url": "https://pbs.twimg.com/ext_tw_video_thumb/1448835963862409219/pu/img/GbMingpk0EgCgmrD.jpg",
+        "width": 640,
+        "height": 360,
+        "previewUrl": "https://pbs.twimg.com/ext_tw_video_thumb/1448835963862409219/pu/img/GbMingpk0EgCgmrD.jpg:small",
+        "videoUrl": "https://video.twimg.com/ext_tw_video/1448835963862409219/pu/vid/640x360/V_ik8MXjE83huSwD.mp4?tag=12",
+        "durationMs": 64937
+      }
+    ]
+  }
+]

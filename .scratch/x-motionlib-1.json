@@ -1,0 +1,734 @@
+[
+  {
+    "id": "2088454639524229346",
+    "text": "Slow - Motion\n\nOne of my favourite performance by DEXX https://t.co/a7AsFjbGD0",
+    "createdAt": "Sat Aug 15 02:36:02 +0000 2026",
+    "replyCount": 0,
+    "retweetCount": 223,
+    "likeCount": 1339,
+    "conversationId": "2088454639524229346",
+    "author": {
+      "username": "mawiicherry",
+      "name": "Cherry 🌸 ^᪲ ♡˚"
+    },
+    "authorId": "1568516891395915777",
+    "media": [
+      {
+        "type": "video",
+        "url": "https://pbs.twimg.com/ext_tw_video_thumb/2037843654828855296/pu/img/0MFCUcspIvwWTtkn.jpg",
+        "width": 1280,
+        "height": 720,
+        "previewUrl": "https://pbs.twimg.com/ext_tw_video_thumb/2037843654828855296/pu/img/0MFCUcspIvwWTtkn.jpg:small",
+        "videoUrl": "https://video.twimg.com/ext_tw_video/2037843654828855296/pu/vid/avc1/1280x720/C9ysSt5U-G9t8Bmt.mp4?tag=19",
+        "durationMs": 244718
+      }
+    ]
+  },
+  {
+    "id": "2085821925775843431",
+    "text": "Websites for Design Engineers\n\n1. https://t.co/KCSRFSCVuk\n2. https://t.co/VpCRUEVsep\n3. https://t.co/EeSoktVuFx\n4. https://t.co/bCeNmGc795\n5. https://t.co/2yVYEcQdg3\n\nSave for Later. https://t.co/ELNpHAaHQW",
+    "createdAt": "Fri Aug 07 20:14:34 +0000 2026",
+    "replyCount": 23,
+    "retweetCount": 172,
+    "likeCount": 2121,
+    "conversationId": "2085821925775843431",
+    "author": {
+      "username": "noahelhadedy",
+      "name": "𝐍𝐨𝐚𝐡"
+    },
+    "authorId": "1675456073375920129",
+    "media": [
+      {
+        "type": "photo",
+        "url": "https://pbs.twimg.com/media/HPJTksEXwAA3wAe.png",
+        "width": 1080,
+        "height": 1440,
+        "previewUrl": "https://pbs.twimg.com/media/HPJTksEXwAA3wAe.png:small"
+      },
+      {
+        "type": "photo",
+        "url": "https://pbs.twimg.com/media/HPJTkr0XkAAdsa5.jpg",
+        "width": 1080,
+        "height": 1440,
+        "previewUrl": "https://pbs.twimg.com/media/HPJTkr0XkAAdsa5.jpg:small"
+      },
+      {
+        "type": "photo",
+        "url": "https://pbs.twimg.com/media/HPJTkrzXMAADMTi.jpg",
+        "width": 1080,
+        "height": 1440,
+        "previewUrl": "https://pbs.twimg.com/media/HPJTkrzXMAADMTi.jpg:small"
+      },
+      {
+        "type": "photo",
+        "url": "https://pbs.twimg.com/media/HPJTktMXMAAxYJr.jpg",
+        "width": 1080,
+        "height": 1440,
+        "previewUrl": "https://pbs.twimg.com/media/HPJTktMXMAAxYJr.jpg:small"
+      }
+    ]
+  },
+  {
+    "id": "2085426327755038987",
+    "text": "This works by using:\n- normal border-radius\n- a ::before pseudo-element for the tab\n- Framer Motion to handle the drag interaction\n- a tiny distance-to-progress calculation that updates the border radii https://t.co/lG4OiyaZd3",
+    "createdAt": "Thu Aug 06 18:02:36 +0000 2026",
+    "replyCount": 40,
+    "retweetCount": 110,
+    "likeCount": 2793,
+    "conversationId": "2085426327755038987",
+    "author": {
+      "username": "k_grajeda",
+      "name": "Kevin Grajeda"
+    },
+    "authorId": "489883098",
+    "quotedTweet": {
+      "id": "2085149632615592445",
+      "text": "smart corner morph animation https://t.co/VxKFWyrW4v",
+      "createdAt": "Wed Aug 05 23:43:07 +0000 2026",
+      "replyCount": 39,
+      "retweetCount": 23,
+      "likeCount": 1257,
+      "conversationId": "2085149632615592445",
+      "author": {
+        "username": "k_grajeda",
+        "name": "Kevin Grajeda"
+      },
+      "authorId": "489883098",
+      "media": [
+        {
+          "type": "video",
+          "url": "https://pbs.twimg.com/amplify_video_thumb/2085149463488659456/img/rUkW_aG3OHavIpu1.jpg",
+          "width": 1644,
+          "height": 1080,
+          "previewUrl": "https://pbs.twimg.com/amplify_video_thumb/2085149463488659456/img/rUkW_aG3OHavIpu1.jpg:small",
+          "videoUrl": "https://video.twimg.com/amplify_video/2085149463488659456/vid/avc1/1644x1080/RLHnEZaAo93GamCk.mp4?tag=29",
+          "durationMs": 20583
+        }
+      ]
+    },
+    "media": [
+      {
+        "type": "video",
+        "url": "https://pbs.twimg.com/amplify_video_thumb/2085425136711168000/img/usfU4QQsSZSTYnVV.jpg",
+        "width": 1640,
+        "height": 1080,
+        "previewUrl": "https://pbs.twimg.com/amplify_video_thumb/2085425136711168000/img/usfU4QQsSZSTYnVV.jpg:small",
+        "videoUrl": "https://video.twimg.com/amplify_video/2085425136711168000/vid/avc1/1640x1080/1tUFLHEDmLIySe9A.mp4?tag=29",
+        "durationMs": 21033
+      }
+    ]
+  },
+  {
+    "id": "2076080314586468615",
+    "text": "🚨CONQUERED - ANOTHER U.S. CITY HAS FALLEN TO ISLAM!  \n\nThey are renaming our streets - and our country!  \n\nIn Bridgeview, Illinois, a city I have long warned is being completely taken over by jihadis, the community gathered at 87th Street and Harlem Avenue for the official unveiling of 'Little Palestine Way' along Harlem Avenue and 'Wadea Al-Fayoume Way.'  \n\nThis wasn’t some organic grassroots moment. It was the culmination of years of organized Islamic and Marxist efforts: legislation pushed through the Illinois House and Senate, HJR0046, designating a major stretch of road in one of America’s largest Palestinian enclaves as an official “Little Palestine Way.  \n\nFor years I have documented how communists and their ideological allies rewrite history by changing street names, tearing down monuments, and erasing the identity of the nations they target.   \n\nThey did it in every country they infiltrated. Now the same tactic is being used here - but with an Islamic twist.  This is not random. This is coordinated.  \n\nThe Muslim Brotherhood’s “The Project” - the 1982 strategic document exposed years ago - laid out the plan clearly: gradual Islamization of the West through infiltration of institutions, creation of enclaves, dawah, and parallel societies.   \n\nThe Palestinian cause was always central to that strategy, a unifying banner to radicalize Muslims, recruit Western leftists, and pressure governments.  Today we are watching the convergence in real time.  \n\nMarxist groups and Islamic networks are running parallel operations with the same goal: to undermine the Constitution, erode our culture, and capture our children and institutions.   \n\nThey target schools, local governments, churches, and law enforcement. They change the names on our streets. They turn neighborhoods into ideological strongholds. Bridgeview is just one more data point in a national pattern.  \n\n🚨And right in the middle of it sits American Muslims for Palestine (AMP).   \n\nAMP leader and terror-tied radical Nida Sahouri took to the stage to show her Palestinian/Jihadi pride and essentially boast about the Islamic takeover. Notice she says she JUST came from \"Palestine\".....  AMP has deep ties to the old Hamas-support network in America. \n\nAMP emerged after the Holy Land Foundation and Islamic Association of Palestine were shut down or exposed.   \n\nMany of its leaders, board members, and speakers came directly from those groups, the same networks convicted or designated for providing material support to Hamas.  \n\nAMP pushes the same propaganda, the same “resistance” rhetoric, the same conferences, and the same fundraising ecosystem. They spend most of their days whining about Jews and fighting to make America, Gaza....  \n\nThey are not some mainstream civil rights group. It is part of the infrastructure built to advance the Brotherhood’s agenda on American soil.  This is how they do it:  \n\n•  They build enclaves.  \n\n•  They get politicians to rename streets and pass symbolic resolutions. \n\n •  They use the Palestinian cause to glue together Marxists, Muslims, and useful idiots.  \n\n•  They scream “Islamophobia” or “racism” the moment anyone notices.  \n\n•  And when the signs don’t go up on their timeline, they accuse everyone else of interference while the real subversion continues. \n\n We are not watching isolated cultural events. We are watching a civilizational replacement operation in slow motion, one street sign, one school board, one city council at a time.  \n\nBridgeview is a warning. So is every other place where these networks have embedded themselves.  \n\nThe same forces that spent decades changing names and rewriting history in communist countries are now doing it here, allied with an ideology that is fundamentally incompatible with Western civilization. \n\nI have been saying this for fifteen years. The evidence keeps piling up, and our Republican government is doing NOTHING to stop this takeover.   \n\nIt is time to stop pretending this is normal. It is time to call it what it is.  They are not just changing street names.  \n\nThey are changing the country. They are making America Islamic....  \n\nAnd they will not stop until we stop them.",
+    "createdAt": "Sat Jul 11 23:04:53 +0000 2026",
+    "replyCount": 1817,
+    "retweetCount": 8728,
+    "likeCount": 13360,
+    "conversationId": "2076080314586468615",
+    "author": {
+      "username": "AmyMek",
+      "name": "Amy Mek"
+    },
+    "authorId": "954124423",
+    "quotedTweet": {
+      "id": "2037478064494690514",
+      "text": "CAPTURED: ISLAMIZED ILLINOIS.....\n\nAmerica, our leaders keep saying: “We don’t want to become Europe…”\n\nPro-tip: We are ALREADY there.\n\nOn March 20, 2026, the Mosque Foundation (Bridgeview Mosque) in Illinois drew nearly 30,000 worshippers for Eid prayers at SeatGeek Stadium.\n\nThe Mosque leadership has a documented history that should alarm every American concerned about national security and integration:\n\nImam Jamal Said (since 1985) was an unindicted co-conspirator in the Holy Land Foundation trial — the largest terror-financing case in U.S. history. HLF sent $12+ million to Hamas. Said approved mosque donations to HLF and spoke at events for the Islamic Association for Palestine (a Hamas propaganda arm).\n\nFormer imam Kifah Mustapha was also an unindicted co-conspirator. He admitted raising money for HLF as their registered agent in Illinois and was tied to the Muslim Brotherhood’s Palestine Committee.\n\nA 2004 Chicago Tribune investigation revealed how Muslim Brotherhood hard-liners seized control of the mosque in the 1980s from those less dangerous, sparking disputes and driving many out.\n\nTens of thousands flock to institutions with this history right now, while politicians think Europe’s nightmare hasn't already happened here.\n\nThe transformation is already massively underway...",
+      "createdAt": "Fri Mar 27 10:33:19 +0000 2026",
+      "replyCount": 252,
+      "retweetCount": 2227,
+      "likeCount": 3235,
+      "conversationId": "2037478064494690514",
+      "author": {
+        "username": "AmyMek",
+        "name": "Amy Mek"
+      },
+      "authorId": "954124423",
+      "media": [
+        {
+          "type": "video",
+          "url": "https://pbs.twimg.com/amplify_video_thumb/2037476824968781824/img/VjvwbPZtSSoAS0c1.jpg",
+          "width": 1280,
+          "height": 720,
+          "previewUrl": "https://pbs.twimg.com/amplify_video_thumb/2037476824968781824/img/VjvwbPZtSSoAS0c1.jpg:small",
+          "videoUrl": "https://video.twimg.com/amplify_video/2037476824968781824/vid/avc1/1280x720/dk9tI1vqkCJHfjLR.mp4?tag=21",
+          "durationMs": 132317
+        }
+      ]
+    },
+    "media": [
+      {
+        "type": "video",
+        "url": "https://pbs.twimg.com/amplify_video_thumb/2076080067952971776/img/9OfCTlc3s0_Mnvns.jpg",
+        "width": 720,
+        "height": 1280,
+        "previewUrl": "https://pbs.twimg.com/amplify_video_thumb/2076080067952971776/img/9OfCTlc3s0_Mnvns.jpg:small",
+        "videoUrl": "https://video.twimg.com/amplify_video/2076080067952971776/vid/avc1/720x1280/QQ9En1KvPdDEgTF6.mp4?tag=28",
+        "durationMs": 552798
+      }
+    ]
+  },
+  {
+    "id": "2069489677501907038",
+    "text": "Motion and animation tools worth checking out:\n\n1. Jitter\nhttps://t.co/nvZjcjgPyo\n2. Rive\nhttps://t.co/IFbsOGkc5B\n3. Lottielab\nhttps://t.co/LKVmTR1m1h\n4. Spline\nhttps://t.co/XBLyOVdEGA\n5. Motion\nhttps://t.co/fe7vmU5dSp\n6. LottieFiles\nhttps://t.co/bYhXz0jXKE\n7. Adobe After Effects\nhttps://t.co/RREEwn2e0c\n8. GSAP\nhttps://t.co/9ammK6uQFG\n\nSave for later.",
+    "createdAt": "Tue Jun 23 18:36:03 +0000 2026",
+    "replyCount": 8,
+    "retweetCount": 62,
+    "likeCount": 589,
+    "conversationId": "2069489677501907038",
+    "author": {
+      "username": "noahelhadedy",
+      "name": "𝐍𝐨𝐚𝐡"
+    },
+    "authorId": "1675456073375920129",
+    "media": [
+      {
+        "type": "photo",
+        "url": "https://pbs.twimg.com/media/HLhN2mpWEAAnUM1.jpg",
+        "width": 1536,
+        "height": 2048,
+        "previewUrl": "https://pbs.twimg.com/media/HLhN2mpWEAAnUM1.jpg:small"
+      },
+      {
+        "type": "photo",
+        "url": "https://pbs.twimg.com/media/HLhN2kTWcAAK5Bz.jpg",
+        "width": 1536,
+        "height": 2048,
+        "previewUrl": "https://pbs.twimg.com/media/HLhN2kTWcAAK5Bz.jpg:small"
+      },
+      {
+        "type": "photo",
+        "url": "https://pbs.twimg.com/media/HLhN2mTbsAEwHCk.jpg",
+        "width": 1536,
+        "height": 2048,
+        "previewUrl": "https://pbs.twimg.com/media/HLhN2mTbsAEwHCk.jpg:small"
+      },
+      {
+        "type": "photo",
+        "url": "https://pbs.twimg.com/media/HLhN2iOXsAAWpyw.jpg",
+        "width": 1536,
+        "height": 2048,
+        "previewUrl": "https://pbs.twimg.com/media/HLhN2iOXsAAWpyw.jpg:small"
+      }
+    ]
+  },
+  {
+    "id": "2067852539228225842",
+    "text": "Must-know open-source tools for coders\n\nhttps://t.co/j2KJi9rKSM - terminal UIs in React\nhttps://t.co/A1spHKbCyw - copy/paste CSS/React transitions\nhttps://t.co/YYMB3BXIzG - React funnel charts\nhttps://t.co/aS01DNYOur - Javascript/React animation library\nhttps://t.co/ztpcshhRM1 - open-source headless cms",
+    "createdAt": "Fri Jun 19 06:10:38 +0000 2026",
+    "replyCount": 35,
+    "retweetCount": 107,
+    "likeCount": 1212,
+    "conversationId": "2067852539228225842",
+    "author": {
+      "username": "csaba_kissi",
+      "name": "Csaba Kissi"
+    },
+    "authorId": "703528675271176192",
+    "media": [
+      {
+        "type": "video",
+        "url": "https://pbs.twimg.com/amplify_video_thumb/2067852378183725057/img/_pmUJaF_KrrDXm6y.jpg",
+        "width": 1920,
+        "height": 1080,
+        "previewUrl": "https://pbs.twimg.com/amplify_video_thumb/2067852378183725057/img/_pmUJaF_KrrDXm6y.jpg:small",
+        "videoUrl": "https://video.twimg.com/amplify_video/2067852378183725057/vid/avc1/1920x1080/RYYjtrFiQWVMoyfo.mp4?tag=28",
+        "durationMs": 28000
+      }
+    ]
+  },
+  {
+    "id": "2065477359042740530",
+    "text": "First illus of 2026 i guess😵‍💫\nActually i wanna make a motion one for it but i’m still learning so maybe next one ill try.\nI put random plushies on the table😋\n#fengqing #风情 https://t.co/vFMIyZ6cnG",
+    "createdAt": "Fri Jun 12 16:52:31 +0000 2026",
+    "replyCount": 17,
+    "retweetCount": 299,
+    "likeCount": 1484,
+    "conversationId": "2065477359042740530",
+    "author": {
+      "username": "M_Z0509",
+      "name": "Molly🍵"
+    },
+    "authorId": "1439913951706288131",
+    "media": [
+      {
+        "type": "photo",
+        "url": "https://pbs.twimg.com/media/HKoMsx3bIAAESP3.jpg",
+        "width": 1024,
+        "height": 682,
+        "previewUrl": "https://pbs.twimg.com/media/HKoMsx3bIAAESP3.jpg:small"
+      }
+    ]
+  },
+  {
+    "id": "2065148658392166861",
+    "text": "“Silence underwater. Chaos in slow motion. One perfect shot.” 🌊⏱️🔫 https://t.co/6SDZaxFsDU",
+    "createdAt": "Thu Jun 11 19:06:23 +0000 2026",
+    "replyCount": 63,
+    "retweetCount": 204,
+    "likeCount": 2953,
+    "conversationId": "2065148658392166861",
+    "author": {
+      "username": "Raphenol",
+      "name": "Sparkplug102👌"
+    },
+    "authorId": "167374397",
+    "media": [
+      {
+        "type": "video",
+        "url": "https://pbs.twimg.com/amplify_video_thumb/2065148297803657216/img/6lIyFgQCki4K0w4M.jpg",
+        "width": 1080,
+        "height": 1080,
+        "previewUrl": "https://pbs.twimg.com/amplify_video_thumb/2065148297803657216/img/6lIyFgQCki4K0w4M.jpg:small",
+        "videoUrl": "https://video.twimg.com/amplify_video/2065148297803657216/vid/avc1/1080x1080/DTEtee6T9sJ7J7JG.mp4?tag=27",
+        "durationMs": 92166
+      }
+    ]
+  },
+  {
+    "id": "2064412407288705256",
+    "text": "the way this real time kiss is even more passionate than that slow motion one  https://t.co/5lzFV5DS4z",
+    "createdAt": "Tue Jun 09 18:20:47 +0000 2026",
+    "replyCount": 6,
+    "retweetCount": 333,
+    "likeCount": 3002,
+    "conversationId": "2064412407288705256",
+    "author": {
+      "username": "freenxbecbec",
+      "name": "panchhi 🌷🦦"
+    },
+    "authorId": "1657250616941637632",
+    "media": [
+      {
+        "type": "video",
+        "url": "https://pbs.twimg.com/ext_tw_video_thumb/2064322821270929408/pu/img/w4_7xPzMrG3aVGYM.jpg",
+        "width": 1080,
+        "height": 1080,
+        "previewUrl": "https://pbs.twimg.com/ext_tw_video_thumb/2064322821270929408/pu/img/w4_7xPzMrG3aVGYM.jpg:small",
+        "videoUrl": "https://video.twimg.com/ext_tw_video/2064322821270929408/pu/vid/avc1/1080x1080/waIaIRaADBUGEmBW.mp4?tag=25",
+        "durationMs": 10758
+      }
+    ]
+  },
+  {
+    "id": "2059671308162498867",
+    "text": "I’m sorry I truly picked the right person to root for. I’m so happy for her. Imagine having this kind of motion one year later?  And it’s only going to keep getting better 🥰 https://t.co/FjFJDmS3Eu",
+    "createdAt": "Wed May 27 16:21:21 +0000 2026",
+    "replyCount": 3,
+    "retweetCount": 95,
+    "likeCount": 839,
+    "conversationId": "2059671308162498867",
+    "author": {
+      "username": "FilmTVRants",
+      "name": "Film&TV Rants"
+    },
+    "authorId": "864906814898319361",
+    "media": [
+      {
+        "type": "photo",
+        "url": "https://pbs.twimg.com/media/HJVsI9PWkAEP41_.jpg",
+        "width": 1206,
+        "height": 1534,
+        "previewUrl": "https://pbs.twimg.com/media/HJVsI9PWkAEP41_.jpg:small"
+      }
+    ]
+  },
+  {
+    "id": "2055900931452280888",
+    "text": "Today is the beginning of Adhik Maas.\n\nAncient Indian astronomers realized that the lunar year is ~11 days shorter than the solar year. Without correction, festivals and seasons would slowly drift apart.\n\nTheir solution was Adhik Maas, an extra month added roughly every 32.5 months to create a self-correcting calendar system based on actual celestial motion.\n\nOne of the world’s oldest living examples of scientific timekeeping integrated with civilizational life.",
+    "createdAt": "Sun May 17 06:39:13 +0000 2026",
+    "replyCount": 37,
+    "retweetCount": 833,
+    "likeCount": 2749,
+    "conversationId": "2055900931452280888",
+    "author": {
+      "username": "shobweet",
+      "name": "shobhit mathur"
+    },
+    "authorId": "83333951",
+    "media": [
+      {
+        "type": "photo",
+        "url": "https://pbs.twimg.com/media/HIgG_TKboAACTtT.jpg",
+        "width": 1402,
+        "height": 1122,
+        "previewUrl": "https://pbs.twimg.com/media/HIgG_TKboAACTtT.jpg:small"
+      }
+    ]
+  },
+  {
+    "id": "2051261067339157657",
+    "text": "In 13 mins, this video course will teach you how to build 3D websites for businesses in just 10 mins.\n\nthese websites sell for up to $10k. bookmark this, watch, build, and sell.\n\nyou’ll be using:\n• claude code\n• nano banana (free trial available)\n\nthe article below gives a step-by-step guide on how to use framer motion",
+    "createdAt": "Mon May 04 11:22:03 +0000 2026",
+    "replyCount": 18,
+    "retweetCount": 93,
+    "likeCount": 697,
+    "conversationId": "2051261067339157657",
+    "author": {
+      "username": "exploraX_",
+      "name": "m0h"
+    },
+    "authorId": "1168877404598808577",
+    "quotedTweet": {
+      "id": "2051240544043504028",
+      "text": "claude code + framer motion: how to build $10k animated websites for businesses in 30 mins.",
+      "createdAt": "Mon May 04 10:00:30 +0000 2026",
+      "replyCount": 12,
+      "retweetCount": 30,
+      "likeCount": 277,
+      "conversationId": "2051240544043504028",
+      "author": {
+        "username": "exploraX_",
+        "name": "m0h"
+      },
+      "authorId": "1168877404598808577",
+      "article": {
+        "title": "claude code + framer motion: how to build $10k animated websites for businesses in 30 mins.",
+        "previewText": "this is the definitive step-by-step guide to building high-motion animated websites for businesses using claude code and free tools, no prior skill or coding knowledge required.\nhey, i'm m0h, I"
+      }
+    },
+    "media": [
+      {
+        "type": "video",
+        "url": "https://pbs.twimg.com/amplify_video_thumb/2051260245238837249/img/MxgByYTTMzHr9vXW.jpg",
+        "width": 1206,
+        "height": 652,
+        "previewUrl": "https://pbs.twimg.com/amplify_video_thumb/2051260245238837249/img/MxgByYTTMzHr9vXW.jpg:small",
+        "videoUrl": "https://video.twimg.com/amplify_video/2051260245238837249/vid/avc1/1206x652/Meg-AoINzztE1SPN.mp4?tag=27",
+        "durationMs": 668176
+      }
+    ]
+  },
+  {
+    "id": "2051211717166916020",
+    "text": "The Goats off every field the dominance they do in field just pure cinematic to watch \n\nGPT Image 2.0 on ChatGPT.\n\nPrompt ⤵️ \n\nCreate a hyper-detailed artistic sports poster in a sketch + watercolor splash style.\nSubject:\n[type here] wearing national team jersey ([number]), athletic build, sharp facial features, styled hair. Expression intense and focused, looking slightly upward or to the side.\nPose & Composition:\nHalf-body portrait (chest-up)\nSlight diagonal angle for dynamic motion\nOne hand in action (grip / relaxed / flexed based on sport)\nStrong, confident posture\nArt Style:\nHand-drawn ink sketch lines mixed with watercolor textures\nPaint splashes, ink drops, abstract brush strokes\nRough, energetic strokes around body\nRealistic face detailing with slight gritty texture\nBackground:\nClean white background\nAbstract splashes based on team colors\nBalanced chaos, not too cluttered\nTypography Elements:\nText: “[type here]” in bold handwritten style\nJersey number “[number]”\nMotivational line: “[type here]”\nSmall crown or graphic doodles\nExtra Details:\nSubtle gold accents\nSignature-style text at bottom: “[type here]”\nLight grunge texture overlay\nMood:\nPowerful, iconic, poster-worthy.",
+    "createdAt": "Mon May 04 08:05:57 +0000 2026",
+    "replyCount": 57,
+    "retweetCount": 101,
+    "likeCount": 742,
+    "conversationId": "2051211717166916020",
+    "author": {
+      "username": "xRahultripathi",
+      "name": "Rossy"
+    },
+    "authorId": "1761750420513333248",
+    "media": [
+      {
+        "type": "photo",
+        "url": "https://pbs.twimg.com/media/HHdeLmoa4AAEZjB.jpg",
+        "width": 853,
+        "height": 1844,
+        "previewUrl": "https://pbs.twimg.com/media/HHdeLmoa4AAEZjB.jpg:small"
+      },
+      {
+        "type": "photo",
+        "url": "https://pbs.twimg.com/media/HHdeLt9aoAAnT74.jpg",
+        "width": 1024,
+        "height": 1536,
+        "previewUrl": "https://pbs.twimg.com/media/HHdeLt9aoAAnT74.jpg:small"
+      },
+      {
+        "type": "photo",
+        "url": "https://pbs.twimg.com/media/HHdeLyQbYAA3WY8.jpg",
+        "width": 1024,
+        "height": 1536,
+        "previewUrl": "https://pbs.twimg.com/media/HHdeLyQbYAA3WY8.jpg:small"
+      },
+      {
+        "type": "photo",
+        "url": "https://pbs.twimg.com/media/HHdeL5WaoAAr6S8.jpg",
+        "width": 1024,
+        "height": 1536,
+        "previewUrl": "https://pbs.twimg.com/media/HHdeL5WaoAAr6S8.jpg:small"
+      }
+    ]
+  },
+  {
+    "id": "2050987391620669600",
+    "text": "🚨WTF?!? Meet Judge Amy Meachum: the activist in a black robe who just ruled in favor of building a 402-acre Islamic city in the heart of Texas.\n\nOver 1,000 homes, a massive mosque, K-12 Islamic school, and whatever else they want… all so this enclave can “govern itself” under its own rules.\n\nThis isn’t housing. This is importing a parallel society and planting a foothold for something that looks a hell of a lot like Sharia in slow motion.\n\nOne rogue judge in Travis County is trying to override the will of Texas voters and Governor Abbott.\n\nAbbott and Paxton need to nuke this thing in appeals yesterday. \n\nNo Islamic enclaves on Texas soil. Period. This is BULLSHIT!!!",
+    "createdAt": "Sun May 03 17:14:34 +0000 2026",
+    "replyCount": 594,
+    "retweetCount": 862,
+    "likeCount": 1176,
+    "conversationId": "2050987391620669600",
+    "author": {
+      "username": "Jamesjonesik8",
+      "name": "James"
+    },
+    "authorId": "1968982310298030080",
+    "media": [
+      {
+        "type": "photo",
+        "url": "https://pbs.twimg.com/media/HHaSKdwbAAATWrP.jpg",
+        "width": 447,
+        "height": 447,
+        "previewUrl": "https://pbs.twimg.com/media/HHaSKdwbAAATWrP.jpg:small"
+      }
+    ]
+  },
+  {
+    "id": "2050013000644632580",
+    "text": "🚨WTF?!? Meet Judge Amy Meachum: the activist in a black robe who just ruled in favor of building a 402-acre Islamic city in the heart of Texas.\n\nOver 1,000 homes, a massive mosque, K-12 Islamic school, and whatever else they want… all so this enclave can “govern itself” under its own rules.\n\nThis isn’t housing. This is importing a parallel society and planting a foothold for something that looks a hell of a lot like Sharia in slow motion.\n\nOne rogue judge in Travis County is trying to override the will of Texas voters and Governor Abbott.\n\nAbbott and Paxton need to nuke this thing in appeals yesterday. \n\nNo Islamic enclaves on Texas soil. Period. This is BULLSHIT!!!",
+    "createdAt": "Fri May 01 00:42:41 +0000 2026",
+    "replyCount": 3524,
+    "retweetCount": 9875,
+    "likeCount": 14663,
+    "conversationId": "2050013000644632580",
+    "author": {
+      "username": "BethanyForTruth",
+      "name": "Bethany O’Leary 🇺🇸 🦅"
+    },
+    "authorId": "1873816363103641606",
+    "media": [
+      {
+        "type": "photo",
+        "url": "https://pbs.twimg.com/media/HHMb9U6WcAEm6bv.jpg",
+        "width": 447,
+        "height": 447,
+        "previewUrl": "https://pbs.twimg.com/media/HHMb9U6WcAEm6bv.jpg:small"
+      }
+    ]
+  },
+  {
+    "id": "2048399699363987471",
+    "text": "On this day in 1991, a single U.S. senator walked into the heart of a collapsing African dictatorship — and quietly set in motion one of the most breathtaking Jewish rescues since the Exodus.\n\nWhile the world watched Ethiopia’s brutal civil war and the worst famine in its history devour lives by the hundreds of thousands, Israel was already executing a shadow war of its own. In the early 1980s, Mossad agents had turned an abandoned Sudanese beach resort — the Arous Holiday Village on the Red Sea — into an elaborate cover. By day they poured cocktails for European scuba tourists. By night they smuggled desperate Ethiopian Jews (the Beta Israel) out of refugee camps, loading groups of 100–150 onto small boats that met Israeli Navy vessels in international waters.\n\nThey faced Sudanese patrols, armed soldiers on the beach, and the constant risk of exposure in an enemy country. One night, four Mossad operatives were surrounded by 20 armed guards just as refugees were about to board. An agent bluffed furiously about “defenseless tourists on a night dive.” The confused soldiers backed off. The operation — codenamed “Brothers” — saved roughly 6,000 souls before it was compromised.\n\nThat daring groundwork paved the way for Operations Moses and Joshua in 1984–85, which airlifted another 10,000 Ethiopian Jews to Israel under the noses of Sudanese authorities.\n\nBut the greatest chapter was still to come.\n\nOn April 26, 1991, President George H.W. Bush’s special emissary, Senator Rudy Boschwitz, arrived in Addis Ababa amid chaos. Mengistu Haile Mariam’s regime was collapsing. Rebel forces were closing in. Thousands of Ethiopian Jews were trapped in the capital, facing massacre or starvation.\n\nBoschwitz’s quiet diplomacy, delivered under intense time pressure as the regime crumbled, unlocked the gates. Followed swiftly by President Bush’s direct letter on May 22 to Acting President Tesfaye Gebre-Kidan, the pressure worked. On May 24, the emergency airlift began at 7 a.m. Washington time. In just 36 hours, 35 Israeli aircraft (including jumbo jets stripped of seats) flew 14,325 Ethiopian Jews to safety in non-stop sorties — the largest single-day aliyah operation in history. Prime Minister Yitzhak Shamir personally called Bush to thank him.\n\nNo other nation on Earth could have — or would have — mounted such an operation for its distant brethren.\n\nBecause when Jews have sovereignty, we don’t wait for permission. We don’t beg for rescue. We act.\n\nWe bring our people home.",
+    "createdAt": "Sun Apr 26 13:52:00 +0000 2026",
+    "replyCount": 14,
+    "retweetCount": 282,
+    "likeCount": 985,
+    "conversationId": "2048399699363987471",
+    "author": {
+      "username": "CptAllenHistory",
+      "name": "Captain Allen"
+    },
+    "authorId": "1685683396331106304",
+    "media": [
+      {
+        "type": "video",
+        "url": "https://pbs.twimg.com/amplify_video_thumb/2048380637212450816/img/g21MXFBtGHNP7Ezt.jpg",
+        "width": 2048,
+        "height": 945,
+        "previewUrl": "https://pbs.twimg.com/amplify_video_thumb/2048380637212450816/img/g21MXFBtGHNP7Ezt.jpg:small",
+        "videoUrl": "https://video.twimg.com/amplify_video/2048380637212450816/vid/avc1/2796x1290/9bgvPO_4gcuZilEZ.mp4?tag=21",
+        "durationMs": 85520
+      }
+    ]
+  },
+  {
+    "id": "2048243988151615664",
+    "text": "Rules were made for breaking.\n\nGPT IMAGE 2 on @ChatGPTapp \n\nPrompt\n\n4:5 vertical poster, ultra high resolution, 8K, luxury fashion campaign, editorial + commercial hybrid, print-ready sharpness\nCORE IDEA:\nA bold, disruptive fashion statement where movement is exaggerated and dominant, but still feels controlled, raw, and premium.\nThe subject doesn’t just move —\nthey impose presence through scale and perspective.\nSCENE / ENVIRONMENT:\nIndustrial warehouse loft (Colors shifted)\nBackground:\nExposed aged terracotta brick walls\nLarge factory windows with patinaed brass frames (blurry, cinematic background)\nEnvironment:\nDistressed concrete floor with cracks (retains gray but with a slightly warmer, dusty cast)\nWarm-toned, diffused natural light filtering in (creating a soft contrast)\nMood:\nMix of realism + high-energy campaign aesthetic\nSUBJECT:\nFemale fashion model in customized Miu Miu utility streetwear (Colors shifted)\nOutfit:\nOversized cropped technical jacket in a deep, muted rust-red (Miu Miu branding subtle but present, perhaps in a gold thread)\nExtremely baggy multi-pocket cargo pants in a dusty olive green (replacing dark grey)\nPlatform Miu Miu loafers in a warm, textured caramel-brown leather (replacing chunky black)\nOpaque cream socks (replacing sheer black)\nPose:\nMid-stride dynamic jump motion\nOne platform loafer extremely close to camera (hero perspective)\nBody twisting dynamically\nHair flying (messy but controlled)\nConfident smirk, gazing away from camera\nPRODUCT FOCUS:\nPlatform loafer dominates foreground\nUltra detailed textures (chunky leather, shiny buckles in brass, heavy wear, reflections)\nGlossy + matte material contrast\nPerspective distortion exaggerates size\nFront shoe = tack sharp\nBackground shoe slightly softer\nTYPOGRAPHY: (Colors shifted)\nPrimary Headline:\nRULES\nARE\nOBSOLETE.\nLayout:\nRight-aligned stacked text\n“OBSOLETE.” large and aggressive\nSlight overlap with subject\nFont:\nAggressive block sans-serif\nUrban stencil texture\nColor:\nWarm cream for main text (replacing silver)\nAccent word “OBSOLETE.” in bold painted deep crimson brush style (replacing electric blue)\nSECONDARY TEXT: (Colors shifted)\nPlaced bottom-right:\n“ENGINEERING DISSIDENCE.\nNOT CONFORMITY.” (Text remains same)\nSmall icon row (minimal, premium feel):\nBuilt to Last\nRules Don’t Apply\nCreate Danger\nParis France\nBRANDING: (Colors shifted)\nTop-right:\nMIU MIU (clean, minimal, perhaps in gold)\nBottom-left:\nMIUMIU®\nAW24 Collection (in warm cream)\nBottom-right:\nmiumiu (in warm cream)\nCOLOR GRADING:\nWarm, earthy urban palette\nSoft shadows + deep crimsons/rusts\nWarm highlights from window light\nSlight cinematic tone\nLIGHTING:\nNatural window daylight\nHard shadows for depth\nSpecular highlights on leather and buckles\nCAMERA:\nUltra wide-angle (18–24mm)\nVery low angle (ground level)\nForced perspective exaggeration\nDepth:\nForeground sharp\nBackground slightly blurred\nTEXTURE / FINISH:\nSubtle grain (2–3%)\nSlight sharpening on product\nMicro contrast boost\nClean but not overly polished\nDESIGN INTENT (IMPORTANT):\nFeels like Y-3 utility + Miu Miu playfulness hybrid\nBold enough for social media\nPremium enough for billboard\nImmediate scroll-stopping impact\n\nGive me hook captions for this",
+    "createdAt": "Sun Apr 26 03:33:15 +0000 2026",
+    "replyCount": 76,
+    "retweetCount": 70,
+    "likeCount": 581,
+    "conversationId": "2048243988151615664",
+    "author": {
+      "username": "Just_sharon7",
+      "name": "Sharon Riley"
+    },
+    "authorId": "1516124892718002178",
+    "media": [
+      {
+        "type": "photo",
+        "url": "https://pbs.twimg.com/media/HGzTCmXaYAAfWjm.jpg",
+        "width": 1365,
+        "height": 2048,
+        "previewUrl": "https://pbs.twimg.com/media/HGzTCmXaYAAfWjm.jpg:small"
+      }
+    ]
+  },
+  {
+    "id": "2048221462650142905",
+    "text": "Devs que usan shadcn/ui y siguen perdiendo horas en landings...\n\nOlvídate de armar todo desde cero.\n\n[UI TripleD]\n\n- Bloques y páginas completas production-ready\n- Landing Page Builder con drag & drop real\n- Background Builder con auroras y shaders animados que parecen de otro planeta\n- Grid Generator para Tailwind perfecto\n- Todo potenciado con animaciones brutales de Framer Motion\n\nDeja de sufrir.\n\nREPOOO👇",
+    "createdAt": "Sun Apr 26 02:03:45 +0000 2026",
+    "replyCount": 3,
+    "retweetCount": 40,
+    "likeCount": 539,
+    "conversationId": "2048221462650142905",
+    "author": {
+      "username": "ErickSky",
+      "name": "Erick"
+    },
+    "authorId": "52955938",
+    "media": [
+      {
+        "type": "video",
+        "url": "https://pbs.twimg.com/amplify_video_thumb/2048221294655860736/img/RqOfu0E9oysh5Cql.jpg",
+        "width": 1900,
+        "height": 982,
+        "previewUrl": "https://pbs.twimg.com/amplify_video_thumb/2048221294655860736/img/RqOfu0E9oysh5Cql.jpg:small",
+        "videoUrl": "https://video.twimg.com/amplify_video/2048221294655860736/vid/avc1/1900x982/c2YtFMGAOUQOvO31.mp4?tag=21",
+        "durationMs": 14592
+      }
+    ]
+  },
+  {
+    "id": "2046975077325881394",
+    "text": "💣 Si eres developer, builder de agentes, automatizas workflows, haces devops, frontend heavy o simplemente te encanta tener el control total de tu AI… este es el anuncio que estabas esperando.\n\n@UnslothAI lo acaba de hacer realidad el sueño de tener Kimi K2.6 de Moonshot AI, un modelo de 1 TRILLÓN de parámetros corriendo LOCALMENTE en tu PC… y a más de 40 tokens/segundo.\n\nEl monstruo open-source que estaba rompiendo todos los benchmarks de coding y agentes ya fue cuantizado con su nueva tecnología Dynamic GGUFs v2.0.\n\nAlgunos datos sobre Kimi K2.6:\n\n- Líder open-source en coding: SWE-Bench Verified 76.8, Multilingual 73.0, BrowseComp 74.9, DeepSearchQA 77.1…\n\n- Agentes de largo plazo reales: más de 4.000 tool calls seguidos y 12+ horas de ejecución sin parar.\n\n- Soporta de todo: Rust, Go, Python, frontend con videos, WebGL, shaders, Framer Motion, Three.js…\n\n- Swarm de agentes nivel dios: hasta 300 sub-agentes paralelos trabajando al mismo tiempo.\n\n- Agentes proactivos 24/7, Claw Groups (traes tus propios agents + humanos + bots en loop infinito)…\n\nUsando Dynamic GGUFs v2.0 no cuantizaron todo por igual (como hacen los demás).\n\nUpcastean dinámicamente las capas clave de razonamiento y coding, mientras comprimen el resto. \n\nResultado: mantienes casi toda la inteligencia del modelo full-precision… pero ahora pesa solo 340GB.\n\nLas specs:\n\n- 340GB → más de 40 tokens/segundo en configuraciones de ~350GB (CPU/GPU/SSD)\n\n- Versión full precision: 610GB\n\n- Corre en CPU, GPU o incluso streaming desde SSD\n\nEl open-source oficialmente ha alcanzado (y superado) al closed-source.\n\nENLACES👇",
+    "createdAt": "Wed Apr 22 15:31:04 +0000 2026",
+    "replyCount": 18,
+    "retweetCount": 65,
+    "likeCount": 540,
+    "conversationId": "2046975077325881394",
+    "author": {
+      "username": "ErickSky",
+      "name": "Erick"
+    },
+    "authorId": "52955938",
+    "media": [
+      {
+        "type": "photo",
+        "url": "https://pbs.twimg.com/media/HGhKXJiW0AAnleg.png",
+        "width": 631,
+        "height": 680,
+        "previewUrl": "https://pbs.twimg.com/media/HGhKXJiW0AAnleg.png:small"
+      }
+    ]
+  },
+  {
+    "id": "2046913992363528201",
+    "text": "Roadmap เรียนฟรี จาก Designer → UX/UI Engineer เรียบร้อยแล้วครับ\n\nใครที่เคยเห็นโพสต์ก่อนหน้านี้ที่บอกว่า “UX/UI ปี 2026 ต้องรู้โค้ดฝั่ง Frontend” นี่แหละคือคำตอบที่รอคอย 😎\n\n✅ เรียนฟรี 100%  \n✅ ไม่ต้องมีพื้นฐาน Programming  \n✅ 6 บทเรียน + 6 โปรเจกต์จริง (ทำแล้ว Deploy ได้เลย)  \n✅ เรียนรู้ HTML, CSS, JavaScript, Tailwind + shadcn/ui, React, Framer Motion  \n✅ เน้น “เข้าใจโค้ดพอใช้งานจริง” + ใช้ AI ช่วยเขียนโค้ด  \n✅ เราจะ Vibe Coding แล้วต่อยอดงานจาก AI ได้  \n✅ เรียนจบ = สื่อสารกับ Dev Team ได้ลื่นไหล เข้าใจ limitation ของทั้ง Tech และ Design\n\nเหมาะมากสำหรับ  \n• Graphic Designer / UX/UI Designer ที่อยากอัปสกิล  \n• คนที่อยากทำ Prototype เอง ไม่ต้องรอ Dev  \n• คนที่อยากเพิ่มมูลค่าให้ตัวเองในตลาดงานปี 2026  \n\nลองเข้าไปดู Roadmap ได้เลยครับ 👇  \n#UXUIEngineer #เรียนฟรี #DesignerToEngineer #FrontendForDesigner #Upskill",
+    "createdAt": "Wed Apr 22 11:28:20 +0000 2026",
+    "replyCount": 16,
+    "retweetCount": 811,
+    "likeCount": 1377,
+    "conversationId": "2046913992363528201",
+    "author": {
+      "username": "0xaranz",
+      "name": "Aran"
+    },
+    "authorId": "400798874",
+    "media": [
+      {
+        "type": "photo",
+        "url": "https://pbs.twimg.com/media/HGgZbF1asAAaARg.jpg",
+        "width": 1280,
+        "height": 725,
+        "previewUrl": "https://pbs.twimg.com/media/HGgZbF1asAAaARg.jpg:small"
+      }
+    ]
+  },
+  {
+    "id": "2046265960383033825",
+    "text": "Meet Kimi K2.6 agent - Video hero section, WebGL shaders, real backends. From one prompt.\n\n🔹 Video hero sections - cinematic aesthetic, auto-composited \n🔹 WebGL shader animations - native GLSL / WGSL, liquid metal, caustics, raymarching \n🔹 Motion design - GSAP + Framer Motion \n🔹 Backend database: Kimi wires up auth + database + backend in one pass. \n🔹 Website stack - React 19 + TypeScript + Vite + Tailwind + shadcn/ui \n🔹 3D w/ physically-based lighting - Three.js + React Three Fiber",
+    "createdAt": "Mon Apr 20 16:33:17 +0000 2026",
+    "replyCount": 104,
+    "retweetCount": 404,
+    "likeCount": 4865,
+    "conversationId": "2046265960383033825",
+    "author": {
+      "username": "Kimi_Moonshot",
+      "name": "Kimi.ai"
+    },
+    "authorId": "1863959670169501696",
+    "media": [
+      {
+        "type": "video",
+        "url": "https://pbs.twimg.com/amplify_video_thumb/2046263820600082432/img/xglCOQdVjPwjJgua.jpg",
+        "width": 1920,
+        "height": 1080,
+        "previewUrl": "https://pbs.twimg.com/amplify_video_thumb/2046263820600082432/img/xglCOQdVjPwjJgua.jpg:small",
+        "videoUrl": "https://video.twimg.com/amplify_video/2046263820600082432/vid/avc1/1920x1080/b9ZhVjIJVhlmDegw.mp4?tag=21",
+        "durationMs": 43943
+      }
+    ]
+  },
+  {
+    "id": "2046249571882500354",
+    "text": "Meet Kimi K2.6: Advancing Open-Source Coding\n\n🔹Open-source SOTA on HLE w/ tools (54.0), SWE-Bench Pro (58.6), SWE-bench Multilingual (76.7), BrowseComp (83.2), Toolathlon (50.0), Charxiv w/ python(86.7), Math Vision w/ python (93.2)\n\nWhat's new:\n🔹Long-horizon coding  - 4,000+ tool calls, over 12 hours of continuous execution, with generalization across languages (Rust, Go, Python) and tasks (frontend, devops, perf optimization).\n🔹Motion-rich frontend - Videos in hero sections, WebGL shaders, GSAP + Framer Motion, Three.js 3D.\n🔹Agent Swarms, elevated - 300 parallel sub-agents × 4,000 steps per run (up from K2.5's 100 / 1,500). One prompt, 100+ files. \n🔹Proactive Agents - K2.6 model powers OpenClaw, Hermes Agent, etc for 24/7 autonomous ops.  \n🔹Claw Groups (research preview) - bring your own agents, command your friends', bots & humans in the loop.\n-\nK2.6 is now live on https://t.co/YutVbwktG0 in chat mode and agent mode. \nFor production-grade coding, pair K2.6 with Kimi Code: https://t.co/uvoSJKyGCY\n- \n🔗 API: https://t.co/EOZkbOwCN4\n🔗 Tech blog: https://t.co/9wWvgIQSS3\n🔗 Weights & code: https://t.co/Be0hjs2RTP",
+    "createdAt": "Mon Apr 20 15:28:10 +0000 2026",
+    "replyCount": 935,
+    "retweetCount": 2353,
+    "likeCount": 17972,
+    "conversationId": "2046249571882500354",
+    "author": {
+      "username": "Kimi_Moonshot",
+      "name": "Kimi.ai"
+    },
+    "authorId": "1863959670169501696",
+    "media": [
+      {
+        "type": "photo",
+        "url": "https://pbs.twimg.com/media/HGW6gWGbQAE_zIX.jpg",
+        "width": 2048,
+        "height": 1149,
+        "previewUrl": "https://pbs.twimg.com/media/HGW6gWGbQAE_zIX.jpg:small"
+      }
+    ]
+  },
+  {
+    "id": "2046230159146000485",
+    "text": "Muchos usan shadcn/ui pero pocos saben todo lo que puedes hacer con él hoy.\n\nY es que no es solo \"copy-paste de componentes\", sino que ahora tienes IA, constructor visual de temas, temas completos creados por la comunidad, integraciones con servicios como ElevenLabs, MapLibre y hasta kits de Figma oficiales. Te dejo mis recursos favoritos del ecosistema 👇\n\n🔹 The Gridcn — tema Tron https://t.co/jfmrYekgmp \nUn tema inspirado en Tron: Ares con 6 variantes (Tron, Ares, Clu, Athena, Aphrodite, Poseidon), efectos 3D con Three.js, glows neón y 50+ componentes. Perfecto para proyectos con identidad fuerte.\n\n🔹 Glitchcn/ui — estética cyberpunk/hacker https://t.co/asI9qdifYH \nComponentes con scanlines animados, bordes que emiten luz cyan/emerald y tipografía monospace. Ideal para portfolios dev, dashboards técnicos o cualquier cosa que quiera verse como un terminal hackeado.\n\n🔹 ElevenLabs UI — componentes para apps con IA y audio https://t.co/h1blrQAShK \nSi estás construyendo chats tipo ChatGPT, voice agents o interfaces de audio: acá tienes waveforms en tiempo real, agent orbs con estados (idle/listening/talking), voice fill, reproductores. Open source y basado en shadcn.\n\n🔹 UI TripleD — shadcn + Framer Motion https://t.co/ymKIvALN7E\n100+ bloques y páginas completas con animaciones listas. Incluye un Builder drag-and-drop para armar landings visualmente antes de copiar el código. Muy útil para prototipar MVPs.\n\n🔹 mapcn — mapas estilo shadcn https://t.co/IVGSLbNfGo\nComponentes de mapa para React construidos sobre MapLibre y estilizados con Tailwind. Se sienten parte del mismo design system. Si alguna vez peleaste con Google Maps en un dashboard, esto te va a gustar.\n\n🔹 shadcn/ui kit de Figma (shadcndesign) https://t.co/mLidTdXFN6\nKit de Figma pixel-perfect + plugin que convierte diseños de Figma a código shadcn/ui real. Incluso tiene Agent Skills para que Claude, Cursor o Codex generen componentes desde un frame de Figma. El propio shadcn lo endorsó.\n\n🔹 tweakcn — editor visual de temas https://t.co/8oYSK8uycE\nEl problema clásico: \"todas las apps con shadcn se ven igual\". tweakcn lo soluciona. \nEs un editor no-code donde customizas colores, tipografía, border radius, sombras y transiciones con preview en tiempo real, y exporta las variables CSS listas para Tailwind v3 o v4. Viene con presets hermosos para arrancar rápido y son Open source.\n\nshadcn dejó de ser una librería y se convirtió en una plataforma de distribución de código. Entre registries de terceros, MCP servers, builder visual y kits de diseño, hoy puedes armar una app completa sin salir del ecosistema.\n\n¿Cuál me falta? Dejen sus favoritos 👇",
+    "createdAt": "Mon Apr 20 14:11:01 +0000 2026",
+    "replyCount": 5,
+    "retweetCount": 170,
+    "likeCount": 1494,
+    "conversationId": "2046230159146000485",
+    "author": {
+      "username": "FaztTech",
+      "name": "Fazt"
+    },
+    "authorId": "3407656973",
+    "media": [
+      {
+        "type": "video",
+        "url": "https://pbs.twimg.com/amplify_video_thumb/2046230060936450048/img/mbqo7HJzAYiYln4q.jpg",
+        "width": 1920,
+        "height": 1080,
+        "previewUrl": "https://pbs.twimg.com/amplify_video_thumb/2046230060936450048/img/mbqo7HJzAYiYln4q.jpg:small",
+        "videoUrl": "https://video.twimg.com/amplify_video/2046230060936450048/vid/avc1/1920x1080/jisVFdOY_YT8sTeh.mp4?tag=21",
+        "durationMs": 27946
+      }
+    ]
+  },
+  {
+    "id": "2045158176199205141",
+    "text": "\"Poetry in motion”\n\nOne of my all-time favourite Derby goals and moments. Divock Origi, rising in the 94th minute to snatch glorious winner at Anfield.  Priceless! \n\n#LFC https://t.co/2AEnAIUNvL",
+    "createdAt": "Fri Apr 17 15:11:21 +0000 2026",
+    "replyCount": 54,
+    "retweetCount": 183,
+    "likeCount": 2742,
+    "conversationId": "2045158176199205141",
+    "author": {
+      "username": "l4pablo",
+      "name": "Paul🥷"
+    },
+    "authorId": "1704684429669523456",
+    "media": [
+      {
+        "type": "video",
+        "url": "https://pbs.twimg.com/amplify_video_thumb/2045158119207030784/img/VSANaHOOZ58cL1Hq.jpg",
+        "width": 576,
+        "height": 576,
+        "previewUrl": "https://pbs.twimg.com/amplify_video_thumb/2045158119207030784/img/VSANaHOOZ58cL1Hq.jpg:small",
+        "videoUrl": "https://video.twimg.com/amplify_video/2045158119207030784/vid/avc1/576x576/cSKzkrUCRLO9UGNg.mp4?tag=21",
+        "durationMs": 27466
+      }
+    ]
+  },
+  {
+    "id": "2041342878115360939",
+    "text": "Our lawsuit against the FSMB and 6 state medical boards is finally in motion! One board is refusing to respond, another one blew off the judge but just came around, and the other four are begrudgingly complying. https://t.co/vxcLmEPC6R",
+    "createdAt": "Tue Apr 07 02:30:43 +0000 2026",
+    "replyCount": 40,
+    "retweetCount": 435,
+    "likeCount": 1891,
+    "conversationId": "2041342878115360939",
+    "author": {
+      "username": "MaryBowdenMD",
+      "name": "Mary Talley Bowden MD"
+    },
+    "authorId": "1139217161275101184",
+    "media": [
+      {
+        "type": "video",
+        "url": "https://pbs.twimg.com/amplify_video_thumb/2041342807995027456/img/elorhAhC8XWofqp0.jpg",
+        "width": 958,
+        "height": 622,
+        "previewUrl": "https://pbs.twimg.com/amplify_video_thumb/2041342807995027456/img/elorhAhC8XWofqp0.jpg:small",
+        "videoUrl": "https://video.twimg.com/amplify_video/2041342807995027456/vid/avc1/958x622/-RS3fKdRtHRtTw8O.mp4?tag=21",
+        "durationMs": 39633
+      }
+    ]
+  }
+]

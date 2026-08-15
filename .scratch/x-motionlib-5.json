@@ -1,0 +1,623 @@
+[
+  {
+    "id": "2084610106138726659",
+    "text": "We had this long-standing papercut at Linear where the menu items overflow their outer container.\n\nIt was hard to fix, or so I thought, because the structure is pretty complicated given all the design details, so a simple overflow: hidden wouldn’t work as it would break the animation.  \n\nBut today I had an epiphany that we could just use a simple CSS mask and fade the items out.\n\nHere’s a before & after with a zoom on the problem, look at the left edge:",
+    "createdAt": "Tue Aug 04 11:59:14 +0000 2026",
+    "replyCount": 38,
+    "retweetCount": 23,
+    "likeCount": 1794,
+    "conversationId": "2084610106138726659",
+    "author": {
+      "username": "emilkowalski",
+      "name": "Emil Kowalski"
+    },
+    "authorId": "1255500442898964481",
+    "media": [
+      {
+        "type": "video",
+        "url": "https://pbs.twimg.com/amplify_video_thumb/2084609940178477056/img/JjZ2SOA2BrYRgG6j.jpg",
+        "width": 2048,
+        "height": 958,
+        "previewUrl": "https://pbs.twimg.com/amplify_video_thumb/2084609940178477056/img/JjZ2SOA2BrYRgG6j.jpg:small",
+        "videoUrl": "https://video.twimg.com/amplify_video/2084609940178477056/vid/avc1/3782x1770/sHMRWI5LMucpeGp0.mp4?tag=29",
+        "durationMs": 15816
+      }
+    ]
+  },
+  {
+    "id": "2066933374883688910",
+    "text": "There’s no right or wrong when it comes to intro animations, but the way we did this at Linear is we animate based on importance.\n\nh1 → description → product → changelog\n\nChangelog sits higher on the page than the product demo, but it’s less important, so it comes in later. https://t.co/9zfQwiZpkx",
+    "createdAt": "Tue Jun 16 17:18:12 +0000 2026",
+    "replyCount": 18,
+    "retweetCount": 16,
+    "likeCount": 813,
+    "conversationId": "2066933374883688910",
+    "author": {
+      "username": "emilkowalski",
+      "name": "Emil Kowalski"
+    },
+    "authorId": "1255500442898964481",
+    "media": [
+      {
+        "type": "video",
+        "url": "https://pbs.twimg.com/amplify_video_thumb/2066932575872995328/img/tokwGNzNK41dLfZM.jpg",
+        "width": 2048,
+        "height": 1163,
+        "previewUrl": "https://pbs.twimg.com/amplify_video_thumb/2066932575872995328/img/tokwGNzNK41dLfZM.jpg:small",
+        "videoUrl": "https://video.twimg.com/amplify_video/2066932575872995328/vid/avc1/3736x2122/3WrEipJVcV5kQnFp.mp4?tag=28",
+        "durationMs": 4236
+      }
+    ]
+  },
+  {
+    "id": "2061426518333571576",
+    "text": "To get good animations from an AI you need to get good at telling it what you want:\n\n- \"stagger this list of items\"\n- \"make this animation direction-aware\"\n- \"spacial consistency\", \"crossfade\", \"layout animation\", \n\nI made a motion vocabulary for this:\nhttps://t.co/ExAxpr31no https://t.co/SQXn2piA6r",
+    "createdAt": "Mon Jun 01 12:35:56 +0000 2026",
+    "replyCount": 81,
+    "retweetCount": 419,
+    "likeCount": 5315,
+    "conversationId": "2061426518333571576",
+    "author": {
+      "username": "emilkowalski",
+      "name": "Emil Kowalski"
+    },
+    "authorId": "1255500442898964481",
+    "media": [
+      {
+        "type": "video",
+        "url": "https://pbs.twimg.com/amplify_video_thumb/2061426386775023617/img/KYq0t8zGeEXQBTq8.jpg",
+        "width": 2048,
+        "height": 1015,
+        "previewUrl": "https://pbs.twimg.com/amplify_video_thumb/2061426386775023617/img/KYq0t8zGeEXQBTq8.jpg:small",
+        "videoUrl": "https://video.twimg.com/amplify_video/2061426386775023617/vid/avc1/2716x1346/8WsXVLOONZNgveTb.mp4?tag=27",
+        "durationMs": 7424
+      }
+    ]
+  },
+  {
+    "id": "2054264701790421135",
+    "text": "Don’t animate keyboard-initiated actions.\n\nAs an example, I use Raycast hundreds of times a day. If it animated every time I opened it, it would make it feel slow, delayed, and disconnected from my actions.\n\nBut there’s no animation at all. That’s the optimal experience. https://t.co/ZPvGyDEjvD",
+    "createdAt": "Tue May 12 18:17:25 +0000 2026",
+    "replyCount": 47,
+    "retweetCount": 57,
+    "likeCount": 2127,
+    "conversationId": "2054264701790421135",
+    "author": {
+      "username": "emilkowalski",
+      "name": "Emil Kowalski"
+    },
+    "authorId": "1255500442898964481",
+    "media": [
+      {
+        "type": "video",
+        "url": "https://pbs.twimg.com/amplify_video_thumb/2054264526439137280/img/vYJguiLM8UMqLIGr.jpg",
+        "width": 2048,
+        "height": 1649,
+        "previewUrl": "https://pbs.twimg.com/amplify_video_thumb/2054264526439137280/img/vYJguiLM8UMqLIGr.jpg:small",
+        "videoUrl": "https://video.twimg.com/amplify_video/2054264526439137280/vid/avc1/2608x2100/ApWBpMkiF3pvGlBa.mp4?tag=27",
+        "durationMs": 10160
+      }
+    ]
+  },
+  {
+    "id": "2045160980955398157",
+    "text": "Few quick animation decisions: https://t.co/zM7hdSlfuk",
+    "createdAt": "Fri Apr 17 15:22:29 +0000 2026",
+    "replyCount": 10,
+    "retweetCount": 60,
+    "likeCount": 1637,
+    "conversationId": "2045160980955398157",
+    "author": {
+      "username": "emilkowalski",
+      "name": "Emil Kowalski"
+    },
+    "authorId": "1255500442898964481",
+    "media": [
+      {
+        "type": "photo",
+        "url": "https://pbs.twimg.com/media/HGHe9xGXIAAAlKO.jpg",
+        "width": 1730,
+        "height": 620,
+        "previewUrl": "https://pbs.twimg.com/media/HGHe9xGXIAAAlKO.jpg:small"
+      }
+    ]
+  },
+  {
+    "id": "2044755413019554161",
+    "text": "Quick demo of the https://t.co/RP4FIdUrS8 skill file. \n\nImprove any animation based on my knowledge and experience gathered over the years: https://t.co/zNhVD6Akxm",
+    "createdAt": "Thu Apr 16 12:30:54 +0000 2026",
+    "replyCount": 22,
+    "retweetCount": 35,
+    "likeCount": 1223,
+    "conversationId": "2044755413019554161",
+    "author": {
+      "username": "emilkowalski",
+      "name": "Emil Kowalski"
+    },
+    "authorId": "1255500442898964481",
+    "media": [
+      {
+        "type": "video",
+        "url": "https://pbs.twimg.com/amplify_video_thumb/2044712722030325760/img/jP89LE-rHqXRUsuR.jpg",
+        "width": 2048,
+        "height": 1339,
+        "previewUrl": "https://pbs.twimg.com/amplify_video_thumb/2044712722030325760/img/jP89LE-rHqXRUsuR.jpg:small",
+        "videoUrl": "https://video.twimg.com/amplify_video/2044712722030325760/vid/avc1/3302x2160/ey_OKGKb2j_sqQ2-.mp4?tag=21",
+        "durationMs": 31197
+      }
+    ]
+  },
+  {
+    "id": "2044037117408334109",
+    "text": "You can enroll in my animation course for the next 10 days!\n\nIt’s the perfect way to learn the theory behind great animations, but also how to build them in code.\n\nNow with a skill file for coding agents.\n\nWe’ll cover all of these components and more, source code included. https://t.co/EPpXkSIDMf",
+    "createdAt": "Tue Apr 14 12:56:39 +0000 2026",
+    "replyCount": 31,
+    "retweetCount": 40,
+    "likeCount": 844,
+    "conversationId": "2044037117408334109",
+    "author": {
+      "username": "emilkowalski",
+      "name": "Emil Kowalski"
+    },
+    "authorId": "1255500442898964481",
+    "media": [
+      {
+        "type": "video",
+        "url": "https://pbs.twimg.com/amplify_video_thumb/2044036058069848065/img/MRPBVko9P84o_FT_.jpg",
+        "width": 1280,
+        "height": 720,
+        "previewUrl": "https://pbs.twimg.com/amplify_video_thumb/2044036058069848065/img/MRPBVko9P84o_FT_.jpg:small",
+        "videoUrl": "https://video.twimg.com/amplify_video/2044036058069848065/vid/avc1/1280x720/jafx9DmHHuqIQM9Y.mp4?tag=21",
+        "durationMs": 82216
+      }
+    ]
+  },
+  {
+    "id": "2043666802404696483",
+    "text": "Animation duration should scale with the size of the animated element.\n\nSmall UI elements like dropdowns can feel great under ~200ms.\n\nBut large transitions, like full-screen menus, need more time to avoid feeling abrupt since they feel “heavier”.\n\nHere’s 150ms vs 300ms: https://t.co/0vdcncXVEj",
+    "createdAt": "Mon Apr 13 12:25:09 +0000 2026",
+    "replyCount": 16,
+    "retweetCount": 21,
+    "likeCount": 822,
+    "conversationId": "2043666802404696483",
+    "author": {
+      "username": "emilkowalski",
+      "name": "Emil Kowalski"
+    },
+    "authorId": "1255500442898964481",
+    "media": [
+      {
+        "type": "video",
+        "url": "https://pbs.twimg.com/amplify_video_thumb/2043666628207165440/img/GrXDCjY4mNu2zvBK.jpg",
+        "width": 2048,
+        "height": 1219,
+        "previewUrl": "https://pbs.twimg.com/amplify_video_thumb/2043666628207165440/img/GrXDCjY4mNu2zvBK.jpg:small",
+        "videoUrl": "https://video.twimg.com/amplify_video/2043666628207165440/vid/avc1/2876x1712/Au_kFdceQQUdnNVu.mp4?tag=21",
+        "durationMs": 9836
+      }
+    ]
+  },
+  {
+    "id": "2041501257290969441",
+    "text": "New lesson for upcoming https://t.co/RP4FIdUrS8 enrollment.\n\nIt’s about training your judgement. You’ll see two versions of the same animation, your job is to choose one and explain why it’s better.\n\nA great skill to have when working with coding agents like Claude Code and Codex https://t.co/mkS83rtM8V",
+    "createdAt": "Tue Apr 07 13:00:03 +0000 2026",
+    "replyCount": 23,
+    "retweetCount": 19,
+    "likeCount": 927,
+    "conversationId": "2041501257290969441",
+    "author": {
+      "username": "emilkowalski",
+      "name": "Emil Kowalski"
+    },
+    "authorId": "1255500442898964481",
+    "media": [
+      {
+        "type": "video",
+        "url": "https://pbs.twimg.com/amplify_video_thumb/2041429649964822528/img/nibDvzhuOgL6f74G.jpg",
+        "width": 2048,
+        "height": 1901,
+        "previewUrl": "https://pbs.twimg.com/amplify_video_thumb/2041429649964822528/img/nibDvzhuOgL6f74G.jpg:small",
+        "videoUrl": "https://video.twimg.com/amplify_video/2041429649964822528/vid/avc1/2326x2160/YbSbgzZpn94IuiWd.mp4?tag=21",
+        "durationMs": 34601
+      }
+    ]
+  },
+  {
+    "id": "2028843378582991203",
+    "text": "Interaction for Linear’s homepage using motion/react’s `useSpring`, quite fun to play with https://t.co/rRLdQb70GE",
+    "createdAt": "Tue Mar 03 14:42:10 +0000 2026",
+    "replyCount": 28,
+    "retweetCount": 43,
+    "likeCount": 1406,
+    "conversationId": "2028843378582991203",
+    "author": {
+      "username": "emilkowalski",
+      "name": "Emil Kowalski"
+    },
+    "authorId": "1255500442898964481",
+    "media": [
+      {
+        "type": "video",
+        "url": "https://pbs.twimg.com/amplify_video_thumb/2028843058343686144/img/vOLYRiEP594vHVqu.jpg",
+        "width": 1074,
+        "height": 800,
+        "previewUrl": "https://pbs.twimg.com/amplify_video_thumb/2028843058343686144/img/vOLYRiEP594vHVqu.jpg:small",
+        "videoUrl": "https://video.twimg.com/amplify_video/2028843058343686144/vid/avc1/1074x800/Z7eRKYJF5Nb_b9b1.mp4?tag=21",
+        "durationMs": 9512
+      }
+    ]
+  },
+  {
+    "id": "2028470888090280392",
+    "text": "If you tried a few different easings and timings for your animation and something about it still feels off, try adding a bit of blur to mask those imperfections.\n\nHere’s a before/after using `filter: blur(2px)` (+ a subtle scale down on press): https://t.co/SlaiLH6YSw",
+    "createdAt": "Mon Mar 02 14:02:01 +0000 2026",
+    "replyCount": 16,
+    "retweetCount": 79,
+    "likeCount": 1660,
+    "conversationId": "2028470888090280392",
+    "author": {
+      "username": "emilkowalski",
+      "name": "Emil Kowalski"
+    },
+    "authorId": "1255500442898964481",
+    "media": [
+      {
+        "type": "video",
+        "url": "https://pbs.twimg.com/amplify_video_thumb/2028470650306973696/img/oEFE8DgKGcYlP0D9.jpg",
+        "width": 1276,
+        "height": 718,
+        "previewUrl": "https://pbs.twimg.com/amplify_video_thumb/2028470650306973696/img/oEFE8DgKGcYlP0D9.jpg:small",
+        "videoUrl": "https://video.twimg.com/amplify_video/2028470650306973696/vid/avc1/1276x718/ymzi02leSL5L-B_q.mp4?tag=21",
+        "durationMs": 5310
+      }
+    ]
+  },
+  {
+    "id": "2027020838340370727",
+    "text": "A few interactive demos from a recent addition to my animation course:\n\nA six-part module on SVG animations where you’ll learn about the coordinate system, path syntax, stroke properties, and more.\n\nWe’ll end up building some of the illustrations from the course’s homepage. https://t.co/0FpouUTHfK",
+    "createdAt": "Thu Feb 26 14:00:02 +0000 2026",
+    "replyCount": 22,
+    "retweetCount": 38,
+    "likeCount": 856,
+    "conversationId": "2027020838340370727",
+    "author": {
+      "username": "emilkowalski",
+      "name": "Emil Kowalski"
+    },
+    "authorId": "1255500442898964481",
+    "media": [
+      {
+        "type": "video",
+        "url": "https://pbs.twimg.com/amplify_video_thumb/2026994995857854464/img/kN6dSdnLCzdyyA-I.jpg",
+        "width": 1920,
+        "height": 1080,
+        "previewUrl": "https://pbs.twimg.com/amplify_video_thumb/2026994995857854464/img/kN6dSdnLCzdyyA-I.jpg:small",
+        "videoUrl": "https://video.twimg.com/amplify_video/2026994995857854464/vid/avc1/1920x1080/r54PAmuAUrZJ16mH.mp4?tag=21",
+        "durationMs": 56039
+      }
+    ]
+  },
+  {
+    "id": "2016136390178636051",
+    "text": "You might’ve seen this bug before where the hover state keeps flickering.  \n\nThe fix is to separate the trigger from the effect.  Listen for hovers on the parent, but animate a child element instead. \n\nThis ensures that the hover area stays consistent. https://t.co/05i5ynVphq",
+    "createdAt": "Tue Jan 27 13:09:08 +0000 2026",
+    "replyCount": 67,
+    "retweetCount": 240,
+    "likeCount": 6660,
+    "conversationId": "2016136390178636051",
+    "author": {
+      "username": "emilkowalski",
+      "name": "Emil Kowalski"
+    },
+    "authorId": "1255500442898964481",
+    "media": [
+      {
+        "type": "video",
+        "url": "https://pbs.twimg.com/amplify_video_thumb/2016136331907194880/img/KQoSy5uIVOYalI_5.jpg",
+        "width": 1822,
+        "height": 1226,
+        "previewUrl": "https://pbs.twimg.com/amplify_video_thumb/2016136331907194880/img/KQoSy5uIVOYalI_5.jpg:small",
+        "videoUrl": "https://video.twimg.com/amplify_video/2016136331907194880/vid/avc1/1822x1226/uvsVOt9LiNDomaF1.mp4?tag=21",
+        "durationMs": 17770
+      }
+    ]
+  },
+  {
+    "id": "2014707054175211743",
+    "text": "There’s a fun little easter egg in my animation course:\n\nAs enrollment gets closer to closing, the butter cube melts more with each hour by animating the svg paths. https://t.co/MkaMq6y7tG",
+    "createdAt": "Fri Jan 23 14:29:27 +0000 2026",
+    "replyCount": 26,
+    "retweetCount": 23,
+    "likeCount": 1151,
+    "conversationId": "2014707054175211743",
+    "author": {
+      "username": "emilkowalski",
+      "name": "Emil Kowalski"
+    },
+    "authorId": "1255500442898964481",
+    "media": [
+      {
+        "type": "video",
+        "url": "https://pbs.twimg.com/amplify_video_thumb/2014705160035991552/img/4bWMiju3HGCp3aAN.jpg",
+        "width": 1618,
+        "height": 1548,
+        "previewUrl": "https://pbs.twimg.com/amplify_video_thumb/2014705160035991552/img/4bWMiju3HGCp3aAN.jpg:small",
+        "videoUrl": "https://video.twimg.com/amplify_video/2014705160035991552/vid/avc1/1618x1548/kLPBlzcgP48MfUuc.mp4?tag=21",
+        "durationMs": 11126
+      }
+    ]
+  },
+  {
+    "id": "2014043025408758254",
+    "text": "Setting up my Motion Passport. https://t.co/xGAVRDjU9m",
+    "createdAt": "Wed Jan 21 18:30:51 +0000 2026",
+    "replyCount": 44,
+    "retweetCount": 33,
+    "likeCount": 905,
+    "conversationId": "2014043025408758254",
+    "author": {
+      "username": "emilkowalski",
+      "name": "Emil Kowalski"
+    },
+    "authorId": "1255500442898964481",
+    "media": [
+      {
+        "type": "video",
+        "url": "https://pbs.twimg.com/amplify_video_thumb/2014042918344904704/img/7QnRRxQ523PrJ7cW.jpg",
+        "width": 2048,
+        "height": 1264,
+        "previewUrl": "https://pbs.twimg.com/amplify_video_thumb/2014042918344904704/img/7QnRRxQ523PrJ7cW.jpg:small",
+        "videoUrl": "https://video.twimg.com/amplify_video/2014042918344904704/vid/avc1/3474x2144/sEh5ue2bWNYJVs3F.mp4?tag=21",
+        "durationMs": 8149
+      }
+    ]
+  },
+  {
+    "id": "2013612851961770228",
+    "text": "You can enroll in my animation course for the next 10 days!\n\nIt's the perfect way to learn the theory behind great animations, but also how to build them in code.\n\nNow with a skill file for agents.\n\nWe'll cover all of these components and more, source code included. https://t.co/RvK4piO5QQ",
+    "createdAt": "Tue Jan 20 14:01:29 +0000 2026",
+    "replyCount": 72,
+    "retweetCount": 121,
+    "likeCount": 2038,
+    "conversationId": "2013612851961770228",
+    "author": {
+      "username": "emilkowalski",
+      "name": "Emil Kowalski"
+    },
+    "authorId": "1255500442898964481",
+    "media": [
+      {
+        "type": "video",
+        "url": "https://pbs.twimg.com/amplify_video_thumb/2013612053039071232/img/PM71UfZYqiKZ3iv0.jpg",
+        "width": 1280,
+        "height": 720,
+        "previewUrl": "https://pbs.twimg.com/amplify_video_thumb/2013612053039071232/img/PM71UfZYqiKZ3iv0.jpg:small",
+        "videoUrl": "https://video.twimg.com/amplify_video/2013612053039071232/vid/avc1/1280x720/r00lqi_WPWaYpcXK.mp4?tag=21",
+        "durationMs": 65350
+      }
+    ]
+  },
+  {
+    "id": "2013265945792315695",
+    "text": "A demo of the animations[.]dev skill file using Claude Code.\n\nIt can review your animations, suggest improvements, and basically answer all your motion-related questions based on my experience gathered over the years. https://t.co/8LBsYRu6Qp",
+    "createdAt": "Mon Jan 19 15:03:00 +0000 2026",
+    "replyCount": 61,
+    "retweetCount": 66,
+    "likeCount": 1967,
+    "conversationId": "2013265945792315695",
+    "author": {
+      "username": "emilkowalski",
+      "name": "Emil Kowalski"
+    },
+    "authorId": "1255500442898964481",
+    "media": [
+      {
+        "type": "video",
+        "url": "https://pbs.twimg.com/amplify_video_thumb/2013265676425699328/img/G03RoNRkuzO6tJgi.jpg",
+        "width": 2048,
+        "height": 1412,
+        "previewUrl": "https://pbs.twimg.com/amplify_video_thumb/2013265676425699328/img/G03RoNRkuzO6tJgi.jpg:small",
+        "videoUrl": "https://video.twimg.com/amplify_video/2013265676425699328/vid/avc1/2758x1902/6CR0TX-UAS2NiEyv.mp4?tag=21",
+        "durationMs": 36369
+      }
+    ]
+  },
+  {
+    "id": "2011453254622990779",
+    "text": "Working on agent skills for https://t.co/RP4FIdUZHG.\n\nIt’ll contain all the animation frameworks I teach, from choosing the right duration to keeping animations performant.\n\nHere’s a small snippet of the skill[.]md file on picking the right easing: https://t.co/phslu7otUo",
+    "createdAt": "Wed Jan 14 15:00:01 +0000 2026",
+    "replyCount": 58,
+    "retweetCount": 71,
+    "likeCount": 2171,
+    "conversationId": "2011453254622990779",
+    "author": {
+      "username": "emilkowalski",
+      "name": "Emil Kowalski"
+    },
+    "authorId": "1255500442898964481",
+    "media": [
+      {
+        "type": "photo",
+        "url": "https://pbs.twimg.com/media/G-oOb9UWQAApXHp.jpg",
+        "width": 1200,
+        "height": 745,
+        "previewUrl": "https://pbs.twimg.com/media/G-oOb9UWQAApXHp.jpg:small"
+      }
+    ]
+  },
+  {
+    "id": "2010728482528182425",
+    "text": "Notice how in the correct example chips move instantly to their new position when a chip is removed.\n\nThat’s because of the `popLayout` mode on AnimatePresence in motion/react which creates a smoother, faster transition when removing an element. https://t.co/9tzCWi8oOl",
+    "createdAt": "Mon Jan 12 15:00:02 +0000 2026",
+    "replyCount": 29,
+    "retweetCount": 60,
+    "likeCount": 1816,
+    "conversationId": "2010728482528182425",
+    "author": {
+      "username": "emilkowalski",
+      "name": "Emil Kowalski"
+    },
+    "authorId": "1255500442898964481",
+    "media": [
+      {
+        "type": "video",
+        "url": "https://pbs.twimg.com/amplify_video_thumb/2010723300905820160/img/2BP6EjedpMa8cXK1.jpg",
+        "width": 2048,
+        "height": 873,
+        "previewUrl": "https://pbs.twimg.com/amplify_video_thumb/2010723300905820160/img/2BP6EjedpMa8cXK1.jpg:small",
+        "videoUrl": "https://video.twimg.com/amplify_video/2010723300905820160/vid/avc1/2158x920/dKoEzvELlk44cgiP.mp4?tag=21",
+        "durationMs": 7641
+      }
+    ]
+  },
+  {
+    "id": "2004576783476355243",
+    "text": "final tip for 2025:\nfix the animation logic for your menu components. it makes the whole experience feel so much faster https://t.co/QDgkHrWKnu",
+    "createdAt": "Fri Dec 26 15:35:23 +0000 2025",
+    "replyCount": 23,
+    "retweetCount": 3,
+    "likeCount": 583,
+    "conversationId": "2004576783476355243",
+    "author": {
+      "username": "pqoqubbw",
+      "name": "dmytro"
+    },
+    "authorId": "1631693682549112833",
+    "media": [
+      {
+        "type": "video",
+        "url": "https://pbs.twimg.com/amplify_video_thumb/2004576198894972928/img/KMcp1YgRLG6NpDue.jpg",
+        "width": 960,
+        "height": 832,
+        "previewUrl": "https://pbs.twimg.com/amplify_video_thumb/2004576198894972928/img/KMcp1YgRLG6NpDue.jpg:small",
+        "videoUrl": "https://video.twimg.com/amplify_video/2004576198894972928/vid/avc1/960x832/XszxfnSLiSu6HY2P.mp4?tag=21",
+        "durationMs": 14358
+      }
+    ]
+  },
+  {
+    "id": "1987892934587412676",
+    "text": "An intro animation I made a while back at Linear. \n\nIt consists of a 4px blur, Y transform, and a subtle stagger. https://t.co/xXFfELqexr",
+    "createdAt": "Mon Nov 10 14:39:43 +0000 2025",
+    "replyCount": 29,
+    "retweetCount": 24,
+    "likeCount": 1328,
+    "conversationId": "1987892934587412676",
+    "author": {
+      "username": "emilkowalski",
+      "name": "Emil Kowalski"
+    },
+    "authorId": "1255500442898964481",
+    "media": [
+      {
+        "type": "video",
+        "url": "https://pbs.twimg.com/amplify_video_thumb/1987892362811416576/img/PMhD28y3KMT_6WnZ.jpg",
+        "width": 2048,
+        "height": 1157,
+        "previewUrl": "https://pbs.twimg.com/amplify_video_thumb/1987892362811416576/img/PMhD28y3KMT_6WnZ.jpg:small",
+        "videoUrl": "https://video.twimg.com/amplify_video/1987892362811416576/vid/avc1/3024x1708/LPIu2om15j8wShPO.mp4?tag=21",
+        "durationMs": 9433
+      }
+    ]
+  },
+  {
+    "id": "1981352193262256182",
+    "text": "If you ever notice a 1px shift at the end of your animation, use `will-change: transform`.\n\nThis will let the GPU handle the animation and prevent any inconsistencies. https://t.co/6AkxL8Touo",
+    "createdAt": "Thu Oct 23 13:29:09 +0000 2025",
+    "replyCount": 23,
+    "retweetCount": 61,
+    "likeCount": 1782,
+    "conversationId": "1981352193262256182",
+    "author": {
+      "username": "emilkowalski",
+      "name": "Emil Kowalski"
+    },
+    "authorId": "1255500442898964481",
+    "media": [
+      {
+        "type": "video",
+        "url": "https://pbs.twimg.com/amplify_video_thumb/1981352117630644225/img/VpgOoOWkYcmUCifu.jpg",
+        "width": 2048,
+        "height": 1201,
+        "previewUrl": "https://pbs.twimg.com/amplify_video_thumb/1981352117630644225/img/VpgOoOWkYcmUCifu.jpg:small",
+        "videoUrl": "https://video.twimg.com/amplify_video/1981352117630644225/vid/avc1/2360x1384/IA8TYp4M1KU0VnOu.mp4?tag=21",
+        "durationMs": 6814
+      }
+    ]
+  },
+  {
+    "id": "1975546287744503852",
+    "text": "You can enroll in my animation course for the next 10 days!\n\nIt's the perfect way to learn the theory behind great animations, but also how to build them in code.\n\nWe'll cover all of these components and more, source code included. https://t.co/fqRiAPR4L2",
+    "createdAt": "Tue Oct 07 12:58:33 +0000 2025",
+    "replyCount": 41,
+    "retweetCount": 76,
+    "likeCount": 1873,
+    "conversationId": "1975546287744503852",
+    "author": {
+      "username": "emilkowalski",
+      "name": "Emil Kowalski"
+    },
+    "authorId": "1255500442898964481",
+    "media": [
+      {
+        "type": "video",
+        "url": "https://pbs.twimg.com/amplify_video_thumb/1975544159768395776/img/a0xGQ50UHJIResK3.jpg",
+        "width": 1280,
+        "height": 720,
+        "previewUrl": "https://pbs.twimg.com/amplify_video_thumb/1975544159768395776/img/a0xGQ50UHJIResK3.jpg:small",
+        "videoUrl": "https://video.twimg.com/amplify_video/1975544159768395776/vid/avc1/1280x720/neHrEBVMr1RpF-AS.mp4?tag=21",
+        "durationMs": 37016
+      }
+    ]
+  },
+  {
+    "id": "1965344575507365926",
+    "text": "4 levels of motion choreography  \n\n1. Confusing overlapping layers \n2. Blocking delay to avoid overlap \n3. Blur filter to blend layers \n4. Staggered blur fade https://t.co/jhQfefg7Wi",
+    "createdAt": "Tue Sep 09 09:20:35 +0000 2025",
+    "replyCount": 27,
+    "retweetCount": 22,
+    "likeCount": 940,
+    "conversationId": "1965344575507365926",
+    "author": {
+      "username": "raunofreiberg",
+      "name": "rauno"
+    },
+    "authorId": "1069665489968947206",
+    "media": [
+      {
+        "type": "video",
+        "url": "https://pbs.twimg.com/amplify_video_thumb/1965344415259533312/img/z8scRlaAYsn4HaXv.jpg",
+        "width": 2048,
+        "height": 1097,
+        "previewUrl": "https://pbs.twimg.com/amplify_video_thumb/1965344415259533312/img/z8scRlaAYsn4HaXv.jpg:small",
+        "videoUrl": "https://video.twimg.com/amplify_video/1965344415259533312/vid/avc1/3820x2046/4B8xqcMjjF-vECFd.mp4?tag=21",
+        "durationMs": 8458
+      }
+    ]
+  },
+  {
+    "id": "1962500739336462340",
+    "text": "Tooltips tip:\n\nTooltips should have a delay before appearing to prevent accidental activation. Once a tooltip is open, hovering over other tooltips should open them with no delay and no animation.\n\nThis feels faster without defeating the purpose of the initial delay. https://t.co/nmwtBtvrU8",
+    "createdAt": "Mon Sep 01 13:00:12 +0000 2025",
+    "replyCount": 34,
+    "retweetCount": 114,
+    "likeCount": 3547,
+    "conversationId": "1962500739336462340",
+    "author": {
+      "username": "emilkowalski",
+      "name": "Emil Kowalski"
+    },
+    "authorId": "1255500442898964481",
+    "media": [
+      {
+        "type": "video",
+        "url": "https://pbs.twimg.com/amplify_video_thumb/1962499823954767872/img/31oddssw0wDaKBUq.jpg",
+        "width": 1386,
+        "height": 560,
+        "previewUrl": "https://pbs.twimg.com/amplify_video_thumb/1962499823954767872/img/31oddssw0wDaKBUq.jpg:small",
+        "videoUrl": "https://video.twimg.com/amplify_video/1962499823954767872/vid/avc1/1386x560/1rZyKBijbh4uXg6c.mp4?tag=21",
+        "durationMs": 7725
+      }
+    ]
+  }
+]

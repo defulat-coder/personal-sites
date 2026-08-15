@@ -1,0 +1,617 @@
+[
+  {
+    "id": "1967851812956131376",
+    "text": "I've scrolled through miles of posts talking about the thousands of work hours Apple seems to have put into finding a local maximum of legibility for liquid glass. \n\nBut broken transitions like this leaves the whole thing feeling like WindowBlinds. https://t.co/UdVAvaYuOM",
+    "createdAt": "Tue Sep 16 07:23:27 +0000 2025",
+    "replyCount": 28,
+    "retweetCount": 14,
+    "likeCount": 337,
+    "conversationId": "1967851812956131376",
+    "author": {
+      "username": "mattgperry",
+      "name": "Matt Perry"
+    },
+    "authorId": "795570324532326400",
+    "media": [
+      {
+        "type": "video",
+        "url": "https://pbs.twimg.com/amplify_video_thumb/1967850135678865408/img/na4V1PFHSI5AoWJ-.jpg",
+        "width": 960,
+        "height": 720,
+        "previewUrl": "https://pbs.twimg.com/amplify_video_thumb/1967850135678865408/img/na4V1PFHSI5AoWJ-.jpg:small",
+        "videoUrl": "https://video.twimg.com/amplify_video/1967850135678865408/vid/avc1/960x720/qbzKIROXLPZ20g-G.mp4?tag=21",
+        "durationMs": 9500
+      }
+    ]
+  },
+  {
+    "id": "1948012473317285963",
+    "text": "Introducing Motion+ Typewriter.\n\nThis tiny component creates natural typing animations by mimicking how a human speeds up and down depending on what they're typing.\n\nFaster during short words and in the middle of words, slower at the start/end and when using punctuation. https://t.co/o78eCzKeI0",
+    "createdAt": "Wed Jul 23 13:29:00 +0000 2025",
+    "replyCount": 14,
+    "retweetCount": 12,
+    "likeCount": 318,
+    "conversationId": "1948012473317285963",
+    "author": {
+      "username": "mattgperry",
+      "name": "Matt Perry"
+    },
+    "authorId": "795570324532326400",
+    "media": [
+      {
+        "type": "video",
+        "url": "https://pbs.twimg.com/amplify_video_thumb/1947995977014534144/img/DUAybAyOaKl0ZaJ4.jpg",
+        "width": 960,
+        "height": 720,
+        "previewUrl": "https://pbs.twimg.com/amplify_video_thumb/1947995977014534144/img/DUAybAyOaKl0ZaJ4.jpg:small",
+        "videoUrl": "https://video.twimg.com/amplify_video/1947995977014534144/vid/avc1/960x720/ag24zIYW32nWOr8h.mp4?tag=21",
+        "durationMs": 40633
+      }
+    ]
+  },
+  {
+    "id": "1941131795581608349",
+    "text": "🎨 Motion Studio is in development.\n\nThe landing page is a proper CSS &amp; Motion transition editor, built using the upcoming Motion Studio SDK.\n\nChanges are saved via the URL, so you can bookmark your faves!\n\nBuild your transitions now: https://t.co/8AXNWopwdX https://t.co/165f0AX0Jy",
+    "createdAt": "Fri Jul 04 13:47:39 +0000 2025",
+    "replyCount": 6,
+    "retweetCount": 36,
+    "likeCount": 354,
+    "conversationId": "1941131795581608349",
+    "author": {
+      "username": "mattgperry",
+      "name": "Matt Perry"
+    },
+    "authorId": "795570324532326400",
+    "media": [
+      {
+        "type": "video",
+        "url": "https://pbs.twimg.com/amplify_video_thumb/1941130671096791040/img/Ws6ZB93Op7mYlsVJ.jpg",
+        "width": 960,
+        "height": 720,
+        "previewUrl": "https://pbs.twimg.com/amplify_video_thumb/1941130671096791040/img/Ws6ZB93Op7mYlsVJ.jpg:small",
+        "videoUrl": "https://video.twimg.com/amplify_video/1941130671096791040/vid/avc1/960x720/a9V0SSWHmNZ1lEZc.mp4?tag=21",
+        "durationMs": 19650
+      }
+    ]
+  },
+  {
+    "id": "1934974240765128711",
+    "text": "Level up your animations in @code with the new Motion for VS Code extension!\n\n📚 Add Motion docs to Copilot\n🤖 Generate CSS springs\n🤫 More non-AI dev tools coming soon\n\n🔗 https://t.co/1OD6jGVg8n https://t.co/AKfA5miKvA",
+    "createdAt": "Tue Jun 17 13:59:43 +0000 2025",
+    "replyCount": 5,
+    "retweetCount": 27,
+    "likeCount": 379,
+    "conversationId": "1934974240765128711",
+    "author": {
+      "username": "mattgperry",
+      "name": "Matt Perry"
+    },
+    "authorId": "795570324532326400",
+    "media": [
+      {
+        "type": "photo",
+        "url": "https://pbs.twimg.com/media/GtposhkWgAAX_tc.jpg",
+        "width": 1200,
+        "height": 630,
+        "previewUrl": "https://pbs.twimg.com/media/GtposhkWgAAX_tc.jpg:small"
+      }
+    ]
+  },
+  {
+    "id": "1932776126314918020",
+    "text": "🤖 Introducing Motion for AI\n\nSupercharge your LLM with the new Motion MCP:\n• Generate CSS spring and bounce easings\n• Spring and easing visualisations\n• Documentation\n\nPlus Motion+ Rules and vibe coding guides for @framer, @v0, and @figma https://t.co/rgwXVtuP84",
+    "createdAt": "Wed Jun 11 12:25:12 +0000 2025",
+    "replyCount": 16,
+    "retweetCount": 34,
+    "likeCount": 518,
+    "conversationId": "1932776126314918020",
+    "author": {
+      "username": "mattgperry",
+      "name": "Matt Perry"
+    },
+    "authorId": "795570324532326400",
+    "media": [
+      {
+        "type": "photo",
+        "url": "https://pbs.twimg.com/media/GtKZlbXXcAA3fB-.jpg",
+        "width": 1200,
+        "height": 630,
+        "previewUrl": "https://pbs.twimg.com/media/GtKZlbXXcAA3fB-.jpg:small"
+      }
+    ]
+  },
+  {
+    "id": "1922256887715610984",
+    "text": "🧲 Introducing cursor zones and magnetic cursors, now in Motion+ Cursor.\n\nIt's easier than ever to adapt your cursor to your content - and your content to your cursor! All powered with Motion's spring and layout animations.\n\nRead the announcement: https://t.co/Cgr7y1CjJs https://t.co/dRoPOfZ97f",
+    "createdAt": "Tue May 13 11:45:30 +0000 2025",
+    "replyCount": 4,
+    "retweetCount": 46,
+    "likeCount": 827,
+    "conversationId": "1922256887715610984",
+    "author": {
+      "username": "mattgperry",
+      "name": "Matt Perry"
+    },
+    "authorId": "795570324532326400",
+    "media": [
+      {
+        "type": "video",
+        "url": "https://pbs.twimg.com/amplify_video_thumb/1922255123268411392/img/vEHVymuo_DaRCz8w.jpg",
+        "width": 960,
+        "height": 720,
+        "previewUrl": "https://pbs.twimg.com/amplify_video_thumb/1922255123268411392/img/vEHVymuo_DaRCz8w.jpg:small",
+        "videoUrl": "https://video.twimg.com/amplify_video/1922255123268411392/vid/avc1/960x720/pRUR39WhwxqTgAjt.mp4?tag=21",
+        "durationMs": 14583
+      }
+    ]
+  },
+  {
+    "id": "1920852288366616842",
+    "text": "🕵️‍♂️ Sneak peek at magnetic cursors coming to Motion Cursor next week! https://t.co/s6YEXgn3mO",
+    "createdAt": "Fri May 09 14:44:07 +0000 2025",
+    "replyCount": 22,
+    "retweetCount": 45,
+    "likeCount": 1271,
+    "conversationId": "1920852288366616842",
+    "author": {
+      "username": "mattgperry",
+      "name": "Matt Perry"
+    },
+    "authorId": "795570324532326400",
+    "media": [
+      {
+        "type": "video",
+        "url": "https://pbs.twimg.com/amplify_video_thumb/1920851981234491392/img/ceocgfSdC5sFMwS1.jpg",
+        "width": 956,
+        "height": 720,
+        "previewUrl": "https://pbs.twimg.com/amplify_video_thumb/1920851981234491392/img/ceocgfSdC5sFMwS1.jpg:small",
+        "videoUrl": "https://video.twimg.com/amplify_video/1920851981234491392/vid/avc1/956x720/GjzVJur9jFpZ7xdn.mp4?tag=21",
+        "durationMs": 8233
+      }
+    ]
+  },
+  {
+    "id": "1915758398500483503",
+    "text": "🚀 Introducing Motion's reactive APIs, now in early access.\n\nThis suite of functions brings the power of Motion for React's motion values to all JS users.\n\nCompose chains of values with transformValue and mapValue, and performantly render them with the new styleEffect. https://t.co/mYA3MOLF3O",
+    "createdAt": "Fri Apr 25 13:22:49 +0000 2025",
+    "replyCount": 4,
+    "retweetCount": 22,
+    "likeCount": 372,
+    "conversationId": "1915758398500483503",
+    "author": {
+      "username": "mattgperry",
+      "name": "Matt Perry"
+    },
+    "authorId": "795570324532326400",
+    "media": [
+      {
+        "type": "video",
+        "url": "https://pbs.twimg.com/amplify_video_thumb/1915753989993324545/img/9UidNMbag0QBLhkP.jpg",
+        "width": 960,
+        "height": 716,
+        "previewUrl": "https://pbs.twimg.com/amplify_video_thumb/1915753989993324545/img/9UidNMbag0QBLhkP.jpg:small",
+        "videoUrl": "https://video.twimg.com/amplify_video/1915753989993324545/vid/avc1/960x716/PVpOpFMlKasJV0jL.mp4?tag=16",
+        "durationMs": 9433
+      }
+    ]
+  },
+  {
+    "id": "1912862648254751050",
+    "text": "Warp overlay inspired by @trpfsu, recreated in Motion for React https://t.co/of4RawhQSt",
+    "createdAt": "Thu Apr 17 13:36:09 +0000 2025",
+    "replyCount": 22,
+    "retweetCount": 43,
+    "likeCount": 1038,
+    "conversationId": "1912862648254751050",
+    "author": {
+      "username": "mattgperry",
+      "name": "Matt Perry"
+    },
+    "authorId": "795570324532326400",
+    "media": [
+      {
+        "type": "video",
+        "url": "https://pbs.twimg.com/amplify_video_thumb/1912859266928525313/img/yT1Q5FAblSD6gsJm.jpg",
+        "width": 960,
+        "height": 720,
+        "previewUrl": "https://pbs.twimg.com/amplify_video_thumb/1912859266928525313/img/yT1Q5FAblSD6gsJm.jpg:small",
+        "videoUrl": "https://video.twimg.com/amplify_video/1912859266928525313/vid/avc1/960x720/LcJz-Ew05QtMnrYN.mp4?tag=16",
+        "durationMs": 11416
+      }
+    ]
+  },
+  {
+    "id": "1904547112831844428",
+    "text": "🚀 Motion's view function is now animateView, introducing a new \"wait\" interrupt mode.\n\nIf a View Transition is interrupted, it snaps to the end before starting the next animation. animateView fixes this by waiting until the current one is finished.\n\nBefore/after: https://t.co/DTHBIu9ILL",
+    "createdAt": "Tue Mar 25 14:53:11 +0000 2025",
+    "replyCount": 5,
+    "retweetCount": 14,
+    "likeCount": 339,
+    "conversationId": "1904547112831844428",
+    "author": {
+      "username": "mattgperry",
+      "name": "Matt Perry"
+    },
+    "authorId": "795570324532326400",
+    "media": [
+      {
+        "type": "video",
+        "url": "https://pbs.twimg.com/ext_tw_video_thumb/1904544834049703936/pu/img/TTgsF2gY8uvZoWoZ.jpg",
+        "width": 960,
+        "height": 720,
+        "previewUrl": "https://pbs.twimg.com/ext_tw_video_thumb/1904544834049703936/pu/img/TTgsF2gY8uvZoWoZ.jpg:small",
+        "videoUrl": "https://video.twimg.com/ext_tw_video/1904544834049703936/pu/vid/avc1/960x720/J_R_aBGHTM8SeqqQ.mp4?tag=12",
+        "durationMs": 10466
+      }
+    ]
+  },
+  {
+    "id": "1902362516824502454",
+    "text": "🚀 Introducing Motion for @vuejs — A feature-complete port of Motion for React (prev Framer Motion).\n\nSprings, scroll, AnimatePresence, gestures, and yes, layout animations. All that and more, powered by Motion's unique hybrid engine, wrapped up with its simple API. https://t.co/zBqnKL6ICg",
+    "createdAt": "Wed Mar 19 14:12:22 +0000 2025",
+    "replyCount": 36,
+    "retweetCount": 126,
+    "likeCount": 1087,
+    "conversationId": "1902362516824502454",
+    "author": {
+      "username": "mattgperry",
+      "name": "Matt Perry"
+    },
+    "authorId": "795570324532326400",
+    "media": [
+      {
+        "type": "video",
+        "url": "https://pbs.twimg.com/ext_tw_video_thumb/1902317167171006464/pu/img/c12m5-Zx_8GgOXiq.jpg",
+        "width": 1186,
+        "height": 936,
+        "previewUrl": "https://pbs.twimg.com/ext_tw_video_thumb/1902317167171006464/pu/img/c12m5-Zx_8GgOXiq.jpg:small",
+        "videoUrl": "https://video.twimg.com/ext_tw_video/1902317167171006464/pu/vid/avc1/912x720/0UFUd2_fuC4TJlqO.mp4?tag=12",
+        "durationMs": 8809
+      }
+    ]
+  },
+  {
+    "id": "1896587730391613821",
+    "text": "🎓 New example: Physical stagger\n\nStagger animations based on physical distance from an origin point.\n\nhttps://t.co/eLg3NuaLTM https://t.co/lWEBggEhvK",
+    "createdAt": "Mon Mar 03 15:45:26 +0000 2025",
+    "replyCount": 6,
+    "retweetCount": 14,
+    "likeCount": 360,
+    "conversationId": "1896587730391613821",
+    "author": {
+      "username": "mattgperry",
+      "name": "Matt Perry"
+    },
+    "authorId": "795570324532326400",
+    "media": [
+      {
+        "type": "video",
+        "url": "https://pbs.twimg.com/ext_tw_video_thumb/1896586761511333888/pu/img/1irU1XdpbLDciMkv.jpg",
+        "width": 960,
+        "height": 720,
+        "previewUrl": "https://pbs.twimg.com/ext_tw_video_thumb/1896586761511333888/pu/img/1irU1XdpbLDciMkv.jpg:small",
+        "videoUrl": "https://video.twimg.com/ext_tw_video/1896586761511333888/pu/vid/avc1/960x720/sdP1yXtjxjQ70iFS.mp4?tag=12",
+        "durationMs": 9183
+      }
+    ]
+  },
+  {
+    "id": "1894748962076217648",
+    "text": "🚀 Introducing Split Text for Motion+\n\nA 0.7kb vanilla JS function for creating beautiful and playful text animations.\n\nSplit text into chars, words and lines and animate with Motion, CSS, or anything else. https://t.co/Cz6ydrCyic",
+    "createdAt": "Wed Feb 26 13:58:49 +0000 2025",
+    "replyCount": 14,
+    "retweetCount": 27,
+    "likeCount": 439,
+    "conversationId": "1894748962076217648",
+    "author": {
+      "username": "mattgperry",
+      "name": "Matt Perry"
+    },
+    "authorId": "795570324532326400",
+    "media": [
+      {
+        "type": "video",
+        "url": "https://pbs.twimg.com/ext_tw_video_thumb/1894745915870613505/pu/img/5Wn4J8OOD_6jeB6b.jpg",
+        "width": 960,
+        "height": 716,
+        "previewUrl": "https://pbs.twimg.com/ext_tw_video_thumb/1894745915870613505/pu/img/5Wn4J8OOD_6jeB6b.jpg:small",
+        "videoUrl": "https://video.twimg.com/ext_tw_video/1894745915870613505/pu/vid/avc1/960x716/RL63wuCz1Az5Q76H.mp4?tag=12",
+        "durationMs": 7416
+      }
+    ]
+  },
+  {
+    "id": "1892939449303994791",
+    "text": "🎨 Did you know that Motion interpolates RGB colors differently to browsers?\n\nBecause of the way RGB colors are stored, straight interpolation will lead to dips in brightness. Motion instead mixes the square of the color, which avoids this dip. https://t.co/4A3ve4ZHAs",
+    "createdAt": "Fri Feb 21 14:08:28 +0000 2025",
+    "replyCount": 9,
+    "retweetCount": 14,
+    "likeCount": 400,
+    "conversationId": "1892939449303994791",
+    "author": {
+      "username": "mattgperry",
+      "name": "Matt Perry"
+    },
+    "authorId": "795570324532326400",
+    "media": [
+      {
+        "type": "video",
+        "url": "https://pbs.twimg.com/ext_tw_video_thumb/1892936037795586048/pu/img/bfONJtGjikjdlDeX.jpg",
+        "width": 956,
+        "height": 720,
+        "previewUrl": "https://pbs.twimg.com/ext_tw_video_thumb/1892936037795586048/pu/img/bfONJtGjikjdlDeX.jpg:small",
+        "videoUrl": "https://video.twimg.com/ext_tw_video/1892936037795586048/pu/vid/avc1/956x720/ctBYzr-U02F9p3rB.mp4?tag=12",
+        "durationMs": 3983
+      }
+    ]
+  },
+  {
+    "id": "1887523897773596721",
+    "text": "🚀 Introducing usePresenceData: Pass props and state through AnimatePresence to exiting components.\n\nI don't know why this hook didn't exist before. Sorry? It makes it super easy to animate elements out based on the latest state, like direction here: https://t.co/KIBx50x5FW",
+    "createdAt": "Thu Feb 06 15:29:00 +0000 2025",
+    "replyCount": 13,
+    "retweetCount": 13,
+    "likeCount": 383,
+    "conversationId": "1887523897773596721",
+    "author": {
+      "username": "mattgperry",
+      "name": "Matt Perry"
+    },
+    "authorId": "795570324532326400",
+    "media": [
+      {
+        "type": "video",
+        "url": "https://pbs.twimg.com/ext_tw_video_thumb/1887435022371561473/pu/img/3jweU6dadu9WreGq.jpg",
+        "width": 960,
+        "height": 720,
+        "previewUrl": "https://pbs.twimg.com/ext_tw_video_thumb/1887435022371561473/pu/img/3jweU6dadu9WreGq.jpg:small",
+        "videoUrl": "https://video.twimg.com/ext_tw_video/1887435022371561473/pu/vid/avc1/960x720/TENE1_bLsgmDWBCA.mp4?tag=12",
+        "durationMs": 6783
+      }
+    ]
+  },
+  {
+    "id": "1884956325949391251",
+    "text": "🚀 Take @radix_ui to the next level with the official Motion x Radix integration guide! Featuring recommended patterns for exit and layout animations, and a slew of fresh Motion+ examples.\n\nWhich component library would you like to see next? https://t.co/n6Omx2KWFO",
+    "createdAt": "Thu Jan 30 13:26:23 +0000 2025",
+    "replyCount": 17,
+    "retweetCount": 25,
+    "likeCount": 471,
+    "conversationId": "1884956325949391251",
+    "author": {
+      "username": "mattgperry",
+      "name": "Matt Perry"
+    },
+    "authorId": "795570324532326400",
+    "media": [
+      {
+        "type": "video",
+        "url": "https://pbs.twimg.com/ext_tw_video_thumb/1884931239196405761/pu/img/1-pmooN8KMUKp4iX.jpg",
+        "width": 960,
+        "height": 720,
+        "previewUrl": "https://pbs.twimg.com/ext_tw_video_thumb/1884931239196405761/pu/img/1-pmooN8KMUKp4iX.jpg:small",
+        "videoUrl": "https://video.twimg.com/ext_tw_video/1884931239196405761/pu/vid/avc1/960x720/BearxlYqc5NCkm3I.mp4?tag=12",
+        "durationMs": 19950
+      }
+    ]
+  },
+  {
+    "id": "1884240152333279363",
+    "text": "🚀 Introducing &lt;AnimateNumber /&gt;\n\nA Motion+ React component for making beautiful number animations. Based on @MBarvian's NumberFlow, this version is built entirely on Motion, so existing users can use it for just +2.5kb.\n\nhttps://t.co/HabpP7wV0i https://t.co/aRGrB89bsm",
+    "createdAt": "Tue Jan 28 14:00:34 +0000 2025",
+    "replyCount": 24,
+    "retweetCount": 72,
+    "likeCount": 1376,
+    "conversationId": "1884240152333279363",
+    "author": {
+      "username": "mattgperry",
+      "name": "Matt Perry"
+    },
+    "authorId": "795570324532326400",
+    "media": [
+      {
+        "type": "video",
+        "url": "https://pbs.twimg.com/ext_tw_video_thumb/1884239739840024576/pu/img/F4qNv4W5muEzRCk0.jpg",
+        "width": 960,
+        "height": 720,
+        "previewUrl": "https://pbs.twimg.com/ext_tw_video_thumb/1884239739840024576/pu/img/F4qNv4W5muEzRCk0.jpg:small",
+        "videoUrl": "https://video.twimg.com/ext_tw_video/1884239739840024576/pu/vid/avc1/960x720/wmSeOTMqB26qsApq.mp4?tag=12",
+        "durationMs": 21633
+      }
+    ]
+  },
+  {
+    "id": "1878819817039523854",
+    "text": "🕵️‍♂️ Revealed: React's experimental animations API.\n\nYes, React is getting its first native animations component. Discover &lt;ViewTransition /&gt; in my new post, with live demos, copy/pasteable code, and a full examples minisite. https://t.co/CwJF8vt6aJ",
+    "createdAt": "Mon Jan 13 15:02:05 +0000 2025",
+    "replyCount": 6,
+    "retweetCount": 27,
+    "likeCount": 327,
+    "conversationId": "1878819817039523854",
+    "author": {
+      "username": "mattgperry",
+      "name": "Matt Perry"
+    },
+    "authorId": "795570324532326400",
+    "media": [
+      {
+        "type": "video",
+        "url": "https://pbs.twimg.com/ext_tw_video_thumb/1878819295649538048/pu/img/isrTq3R662cARUCm.jpg",
+        "width": 1746,
+        "height": 1150,
+        "previewUrl": "https://pbs.twimg.com/ext_tw_video_thumb/1878819295649538048/pu/img/isrTq3R662cARUCm.jpg:small",
+        "videoUrl": "https://video.twimg.com/ext_tw_video/1878819295649538048/pu/vid/avc1/1092x720/3G6SRqXwuvfnmdkE.mp4?tag=12",
+        "durationMs": 7532
+      }
+    ]
+  },
+  {
+    "id": "1876621824752296253",
+    "text": "🚀 Introducing Motion view animations, the View Transition API for the rest of us.\n\nNow in Motion+ early access, view() is the easiest way to create view animations. Play, pause, scrub, scroll, and spring. And this is just the start.\n\n🧵 For live demos and docs https://t.co/a1NJPe4KTG",
+    "createdAt": "Tue Jan 07 13:28:03 +0000 2025",
+    "replyCount": 10,
+    "retweetCount": 25,
+    "likeCount": 350,
+    "conversationId": "1876621824752296253",
+    "author": {
+      "username": "mattgperry",
+      "name": "Matt Perry"
+    },
+    "authorId": "795570324532326400",
+    "media": [
+      {
+        "type": "video",
+        "url": "https://pbs.twimg.com/ext_tw_video_thumb/1876620247458803712/pu/img/nKUd_uuBBxEnbTfB.jpg",
+        "width": 1280,
+        "height": 720,
+        "previewUrl": "https://pbs.twimg.com/ext_tw_video_thumb/1876620247458803712/pu/img/nKUd_uuBBxEnbTfB.jpg:small",
+        "videoUrl": "https://video.twimg.com/ext_tw_video/1876620247458803712/pu/vid/avc1/1280x720/JUuZXWNL1ub7UH4J.mp4?tag=12",
+        "durationMs": 8950
+      }
+    ]
+  },
+  {
+    "id": "1876270894060032089",
+    "text": "The Motion @vuejs integration guide is now available to everyone!\n\nThe guide covers:\n- Enter and exit animations\n- Timeline sequences\n- Viewport detection\n- Scroll animations\nAnd more! https://t.co/OiABJlSTJB",
+    "createdAt": "Mon Jan 06 14:13:35 +0000 2025",
+    "replyCount": 11,
+    "retweetCount": 53,
+    "likeCount": 523,
+    "conversationId": "1876270894060032089",
+    "author": {
+      "username": "mattgperry",
+      "name": "Matt Perry"
+    },
+    "authorId": "795570324532326400",
+    "media": [
+      {
+        "type": "photo",
+        "url": "https://pbs.twimg.com/media/GgnaWkFW8AAeSxL.jpg",
+        "width": 1200,
+        "height": 630,
+        "previewUrl": "https://pbs.twimg.com/media/GgnaWkFW8AAeSxL.jpg:small"
+      }
+    ]
+  },
+  {
+    "id": "1875176041842647286",
+    "text": "🤖 Jump into Motion with @v0!\n\nNow, every React example can now be opened straight in v0. It's the perfect way to dip into the Motion API.\n\nEdit the code directly, or ask v0 to \"make it slower\", \"use a spring instead\", or \"make me a cuppa\", and it'll show you how! https://t.co/NuEahhL87L",
+    "createdAt": "Fri Jan 03 13:43:02 +0000 2025",
+    "replyCount": 10,
+    "retweetCount": 41,
+    "likeCount": 648,
+    "conversationId": "1875176041842647286",
+    "author": {
+      "username": "mattgperry",
+      "name": "Matt Perry"
+    },
+    "authorId": "795570324532326400",
+    "media": [
+      {
+        "type": "video",
+        "url": "https://pbs.twimg.com/ext_tw_video_thumb/1875172212094676992/pu/img/e2XgVWkfm91o8y1X.jpg",
+        "width": 1920,
+        "height": 1080,
+        "previewUrl": "https://pbs.twimg.com/ext_tw_video_thumb/1875172212094676992/pu/img/e2XgVWkfm91o8y1X.jpg:small",
+        "videoUrl": "https://video.twimg.com/ext_tw_video/1875172212094676992/pu/vid/avc1/1280x720/dLCZqxfKSTm-U2Uk.mp4?tag=12",
+        "durationMs": 11116
+      }
+    ]
+  },
+  {
+    "id": "1874101908472029687",
+    "text": "📢 Introducing Motion's latest sponsor, @Vercel! \n\nVercel have long used Motion in their dashboard, and across their award-winning landing pages.\n\nFans of @v0, watch this space 👀 https://t.co/f53A76GBqX",
+    "createdAt": "Tue Dec 31 14:34:48 +0000 2024",
+    "replyCount": 20,
+    "retweetCount": 9,
+    "likeCount": 684,
+    "conversationId": "1874101908472029687",
+    "author": {
+      "username": "mattgperry",
+      "name": "Matt Perry"
+    },
+    "authorId": "795570324532326400",
+    "media": [
+      {
+        "type": "photo",
+        "url": "https://pbs.twimg.com/media/GgIlwMsWoAA0M_n.jpg",
+        "width": 1200,
+        "height": 630,
+        "previewUrl": "https://pbs.twimg.com/media/GgIlwMsWoAA0M_n.jpg:small"
+      }
+    ]
+  },
+  {
+    "id": "1869761398223634733",
+    "text": "📢 Introducing Motion's latest sponsor: @Figma!\n\nFor years, Figma has been using Motion to drive delightful animations throughout their site, core product, and now FigJam too.\n\nSo it’s awesome to have them support Motion and help make 2025 a huge year for UI animation! https://t.co/XhEyqhysQx",
+    "createdAt": "Thu Dec 19 15:07:10 +0000 2024",
+    "replyCount": 19,
+    "retweetCount": 11,
+    "likeCount": 479,
+    "conversationId": "1869761398223634733",
+    "author": {
+      "username": "mattgperry",
+      "name": "Matt Perry"
+    },
+    "authorId": "795570324532326400",
+    "media": [
+      {
+        "type": "photo",
+        "url": "https://pbs.twimg.com/media/GfK6FPqWQAACL-h.jpg",
+        "width": 1200,
+        "height": 630,
+        "previewUrl": "https://pbs.twimg.com/media/GfK6FPqWQAACL-h.jpg:small"
+      }
+    ]
+  },
+  {
+    "id": "1869032614629384497",
+    "text": "🚀 Introducing the new Motion examples minisite!\n\nThis is the new home for Motion examples. This is just the first version but it already has most of the introductory Motion for React examples. Much more to come.\n\n1/3 🧵 https://t.co/gbZPNyhTJV",
+    "createdAt": "Tue Dec 17 14:51:14 +0000 2024",
+    "replyCount": 14,
+    "retweetCount": 15,
+    "likeCount": 374,
+    "conversationId": "1869032614629384497",
+    "author": {
+      "username": "mattgperry",
+      "name": "Matt Perry"
+    },
+    "authorId": "795570324532326400",
+    "media": [
+      {
+        "type": "video",
+        "url": "https://pbs.twimg.com/ext_tw_video_thumb/1869031776414208000/pu/img/XSSsm2UfxYDALcfz.jpg",
+        "width": 1916,
+        "height": 1080,
+        "previewUrl": "https://pbs.twimg.com/ext_tw_video_thumb/1869031776414208000/pu/img/XSSsm2UfxYDALcfz.jpg:small",
+        "videoUrl": "https://video.twimg.com/ext_tw_video/1869031776414208000/pu/vid/avc1/1276x720/3QjZIPB9f0hOpMRe.mp4?tag=12",
+        "durationMs": 8700
+      }
+    ]
+  },
+  {
+    "id": "1867558422079471661",
+    "text": "Recreating this iOS cursor effect for a 🕵️‍♂️ sneak preview of the next Motion Cursor update: Magnetic cursors! https://t.co/tN7iiIRYJK",
+    "createdAt": "Fri Dec 13 13:13:20 +0000 2024",
+    "replyCount": 7,
+    "retweetCount": 6,
+    "likeCount": 406,
+    "conversationId": "1867558422079471661",
+    "author": {
+      "username": "mattgperry",
+      "name": "Matt Perry"
+    },
+    "authorId": "795570324532326400",
+    "media": [
+      {
+        "type": "video",
+        "url": "https://pbs.twimg.com/ext_tw_video_thumb/1867557067927474176/pu/img/DrpGQk5wNqWL_A52.jpg",
+        "width": 1920,
+        "height": 1080,
+        "previewUrl": "https://pbs.twimg.com/ext_tw_video_thumb/1867557067927474176/pu/img/DrpGQk5wNqWL_A52.jpg:small",
+        "videoUrl": "https://video.twimg.com/ext_tw_video/1867557067927474176/pu/vid/avc1/1280x720/bBaMfI30ucRmMZJJ.mp4?tag=12",
+        "durationMs": 8483
+      }
+    ]
+  }
+]
