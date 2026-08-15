@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { ArrowLeft } from "lucide-react";
+import { ArrowLeft, ArrowUpRight } from "lucide-react";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 
@@ -40,7 +40,7 @@ export default async function OpenSourceEntryPage({ params }: OpenSourceEntryPag
 
       <article className="curation-detail__article curation-open-source__article">
         <nav aria-label="返回" className="curation-detail__back">
-          <Link href="/?view=open-source">
+          <Link href="/open-source">
             <ArrowLeft aria-hidden="true" />
             返回开源关注
           </Link>
@@ -51,6 +51,13 @@ export default async function OpenSourceEntryPage({ params }: OpenSourceEntryPag
           <h1>{entry.repository}</h1>
         </header>
 
+        {entry.personalNote ? (
+          <section aria-label="判读" className="curation-detail__section curation-detail__note">
+            <h2 className="curation-detail__eyebrow">判读</h2>
+            <p>{entry.personalNote}</p>
+          </section>
+        ) : null}
+
         <OpenSourceDocumentTabs
           parsedMarkdown={entry.parsedMarkdown ?? ""}
           readingSource={entry.readingSource ?? "kimi-translation"}
@@ -60,6 +67,14 @@ export default async function OpenSourceEntryPage({ params }: OpenSourceEntryPag
           slug={entry.slug}
           sourceUrl={entry.evidence.url}
         />
+
+        <footer aria-label="来源" className="curation-detail__section curation-detail__source">
+          <a className="curation-detail__cta" href={entry.repositoryUrl} rel="noreferrer" target="_blank">
+            在 GitHub 查看仓库
+            <ArrowUpRight aria-hidden="true" />
+          </a>
+          <span className="curation-detail__cta-host">{new URL(entry.repositoryUrl).host}</span>
+        </footer>
       </article>
     </main>
   );

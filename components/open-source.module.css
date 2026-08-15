@@ -138,6 +138,7 @@
 }
 
 .source {
+  max-width: 38rem;
   margin-top: .5rem !important;
   color: #3f3f42;
   font-size: .82rem;
