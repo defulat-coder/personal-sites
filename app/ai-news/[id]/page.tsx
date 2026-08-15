@@ -1,5 +1,4 @@
 import type { Metadata } from "next";
-import type { Route } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { ArrowLeft, ArrowUpRight } from "lucide-react";
@@ -43,7 +42,7 @@ export default async function AiNewsDetailPage({ params }: AiNewsDetailPageProps
 
       <article className="ai-news-detail__article" data-content-id={item.id}>
         <nav aria-label="返回" className="ai-news-detail__topbar">
-          <Link className="ai-news-detail__back" href={"/?view=ai-news" as Route}>
+          <Link className="ai-news-detail__back" href="/ai-news">
             <ArrowLeft aria-hidden="true" />
             返回每日动态
           </Link>

@@ -67,7 +67,7 @@ export default async function CurationEntryPage({
 
       <article className="curation-detail__article" data-content-id={item.id}>
         <nav aria-label="返回" className="curation-detail__back">
-          <Link href="/">
+          <Link href="/curation">
             <ArrowLeft aria-hidden="true" />
             返回推特点赞
           </Link>

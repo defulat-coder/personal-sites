@@ -13,10 +13,10 @@ type SiteSectionNavigationProps = {
 
 // 阅读版块（名词）与问一问（动作）分置：问一问归入身份轨，不占用刊头与版块序列。
 const siblingSections: Array<{ href: Route; id: Exclude<SiteSection, "home" | "ask">; label: string }> = [
-  { href: "/?view=ai-news" as Route, id: "ai-news", label: "每日动态" },
-  { href: "/?view=daily" as Route, id: "daily", label: "推特点赞" },
-  { href: "/?view=open-source" as Route, id: "open-source", label: "开源关注" },
-  { href: "/works" as Route, id: "works", label: "构建" },
+  { href: "/ai-news", id: "ai-news", label: "每日动态" },
+  { href: "/curation", id: "daily", label: "推特点赞" },
+  { href: "/open-source", id: "open-source", label: "开源关注" },
+  { href: "/works", id: "works", label: "构建" },
 ];
 
 const askSection = { href: "/ask" as Route, id: "ask" as const, label: "问一问" };
@@ -63,7 +63,8 @@ export function MobileSectionNavigation({ current }: Pick<SiteSectionNavigationP
 export function ContentSectionNavigation({ current }: Pick<SiteSectionNavigationProps, "current">) {
   const allSections = [homeSection, ...siblingSections, askSection];
   const currentSection = allSections.find((section) => section.id === current) ?? siblingSections[0];
-  const siblings = siblingSections.filter((section) => section.id !== currentSection.id);
+  // 非首页页面的兄弟链接首位放「首页」：全路径路由下，版块页必须有回到今日快照的入口。
+  const siblings = [homeSection, ...siblingSections].filter((section) => section.id !== currentSection.id);
   return (
     <nav aria-label="内容导航" className={styles.contentNavigation}>
       <span aria-current="page" className={styles.current}>
