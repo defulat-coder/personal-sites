@@ -3,7 +3,7 @@ import path from "node:path";
 
 import { z } from "zod";
 
-import type { Work, WorkEntry } from "@/lib/works-types";
+import type { Work, WorkEntry, WorkShot } from "@/lib/works-types";
 
 // 构建版块的内容由作者亲手维护、随仓库发布，不走 Supabase 管线——
 // 内容与代码同库本身就是「内容即证据」的一部分。
@@ -18,8 +18,30 @@ const frontmatterSchema = z.object({
   summary: z.string().min(1),
   title: z.string().min(1),
   repo: z.string().optional(),
+  shots: z.string().optional(),
   url: z.string().optional(),
 });
+
+/** 解析 `shots` 字段：逗号分隔的 `标注|图片路径` 对，路径必须是站内绝对路径。 */
+function parseShots(raw: string | undefined): WorkShot[] {
+  if (!raw) return [];
+  return raw
+    .split(/[,，]/u)
+    .map((pair) => pair.trim())
+    .filter(Boolean)
+    .map((pair) => {
+      const separator = pair.indexOf("|");
+      if (separator <= 0) {
+        throw new Error(`shots 条目缺少「标注|路径」格式: ${pair}`);
+      }
+      const label = pair.slice(0, separator).trim();
+      const src = pair.slice(separator + 1).trim();
+      if (!label || !src.startsWith("/")) {
+        throw new Error(`shots 条目非法: ${pair}`);
+      }
+      return { label, src };
+    });
+}
 
 /** 解析单篇构建文档：frontmatter 只支持单行 `key: value`，正文为 Markdown。 */
 export function parseWorkDocument(slug: string, raw: string): Work {
@@ -40,6 +62,7 @@ export function parseWorkDocument(slug: string, raw: string): Work {
     order: frontmatter.order,
     period: frontmatter.period,
     role: frontmatter.role,
+    shots: parseShots(frontmatter.shots),
     slug,
     stack: frontmatter.stack.split(/[,，]/u).map((item) => item.trim()).filter(Boolean),
     status: frontmatter.status,

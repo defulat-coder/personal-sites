@@ -1,10 +1,12 @@
 ---
 title: 这个站点本身
-period: 2025 — 至今
+period: 2026 — 至今
 status: 持续维护
 role: 独立设计与开发
 summary: 你正在浏览的这个站，是我最完整的一件在役作品：三条数据管线每日流入，AI 负责策展与判读，公开投影与隐私数据严格隔离，问一问可以直接检索站内的一切。
 stack: Next.js, React, TypeScript, Tailwind CSS, Supabase, Kimi, PGroonga, Vercel
+url: https://default-coder.lovemyrmb.cn/
+shots: 每日动态|/images/works/personal-site/feed.jpg, 推特点赞|/images/works/personal-site/curation.jpg, 开源关注|/images/works/personal-site/open-source.jpg, 问一问|/images/works/personal-site/ask.jpg
 order: 1
 ---
 

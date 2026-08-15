@@ -21,7 +21,7 @@ export async function generateStaticParams() {
 export async function generateMetadata({ params }: WorkPageProps): Promise<Metadata> {
   const work = await getWork((await params).slug);
   return work
-    ? { description: work.summary, title: `${work.title}｜构建` }
+    ? { description: work.summary, title: `${work.title}｜我的作品` }
     : {};
 }
 
@@ -37,7 +37,7 @@ export default async function WorkPage({ params }: WorkPageProps) {
         <nav aria-label="返回" className="curation-detail__back">
           <Link href="/works">
             <ArrowLeft aria-hidden="true" />
-            返回构建
+            返回我的作品
           </Link>
           <ThemeToggle />
         </nav>

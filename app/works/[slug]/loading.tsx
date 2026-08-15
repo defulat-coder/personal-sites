@@ -13,7 +13,7 @@ export default function WorkLoading() {
         <nav aria-label="返回" className="curation-detail__back">
           <span className={styles.loadingBack}>
             <ArrowLeft aria-hidden="true" />
-            返回构建
+            返回我的作品
           </span>
           <ThemeToggle />
         </nav>

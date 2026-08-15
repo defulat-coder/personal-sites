@@ -26,7 +26,8 @@
   }
 }
 
-.stream a {
+/* 登记行：无样张的作品保持紧凑登记簿行。 */
+.row {
   display: grid;
   grid-template-columns: minmax(7rem, 8.5rem) minmax(0, 1fr);
   column-gap: clamp(1.25rem, 2.5vw, 2rem);
@@ -61,8 +62,8 @@
   transition: color 180ms ease;
 }
 
-.stream a:hover h2,
-.stream a:focus-visible h2 {
+.row:hover h2,
+.row:focus-visible h2 {
   color: var(--ink);
 }
 
@@ -88,9 +89,287 @@
   content: "·";
 }
 
+/* 案头卷宗：带样张的作品摊开勘验——题名定位居上，页面样张横排成带。 */
+.dossier {
+  padding: clamp(2.1rem, 3.2vw, 2.9rem) 0;
+}
+
+.dossierHead {
+  max-width: 40rem;
+}
+
+.dossierIntro h2,
+.dossierIntro p {
+  margin: 0;
+}
+
+.dossierIntro h2 {
+  max-width: 40rem;
+  color: #262629;
+  font-size: 1.4rem;
+  font-weight: 610;
+  letter-spacing: -.026em;
+  line-height: 1.28;
+  text-wrap: balance;
+}
+
+.dossierIntro h2 a {
+  color: inherit;
+  text-decoration: none;
+  transition: color 180ms ease;
+}
+
+.dossierIntro h2 a:hover,
+.dossierIntro h2 a:focus-visible {
+  color: var(--ink);
+}
+
+.dossierIntro .summary {
+  max-width: 38rem;
+  margin-top: .6rem !important;
+  color: #3f3f42;
+  font-size: .82rem;
+  line-height: 1.55;
+  text-wrap: pretty;
+}
+
+.dossierFootMeta .meta {
+  flex-direction: row;
+  flex-wrap: wrap;
+  gap: .25rem .55rem;
+  margin-bottom: 0;
+  padding-top: 0;
+}
+
+.dossierFootMeta .meta span:has(+ span)::after {
+  margin-left: .55rem;
+  content: "·";
+}
+
+.strip {
+  display: flex;
+  gap: .9rem;
+  margin-top: 1.5rem;
+  overflow-x: auto;
+  padding-bottom: .55rem;
+  scrollbar-color: var(--line) transparent;
+  scrollbar-width: thin;
+}
+
+.strip figure {
+  flex: 0 0 auto;
+  margin: 0;
+}
+
+.shotButton {
+  display: block;
+  margin: 0;
+  border: 0;
+  background: transparent;
+  cursor: zoom-in;
+  padding: 0;
+}
+
+.shotButton:focus-visible {
+  outline: 2px solid var(--ink);
+  outline-offset: 3px;
+  border-radius: .75rem;
+}
+
+.strip img {
+  display: block;
+  width: auto;
+  height: clamp(11rem, 22vw, 13.5rem);
+  border: 1px solid var(--line);
+  border-radius: .75rem;
+  transition: transform 250ms ease;
+}
+
+.strip figure:hover img {
+  transform: scale(1.015);
+}
+
+/* 样张灯箱：点击截图全屏看大图，Esc / 背板 / 关闭按钮退出。 */
+.shotDialog {
+  margin: auto;
+  border: 0;
+  background: transparent;
+  padding: 0;
+  max-width: none;
+  max-height: none;
+}
+
+.shotDialog::backdrop {
+  background: rgb(0 0 0 / 72%);
+}
+
+.shotDialog figure {
+  margin: 0;
+}
+
+.shotDialog img {
+  display: block;
+  width: auto;
+  height: auto;
+  max-width: 92vw;
+  max-height: 84dvh;
+  border-radius: .75rem;
+}
+
+.shotDialog figcaption {
+  margin-top: .7rem;
+  color: rgb(255 255 255 / 72%);
+  font-size: .74rem;
+  line-height: 1.4;
+  text-align: center;
+}
+
+.shotDialogClose {
+  position: fixed;
+  top: 1.4rem;
+  right: 1.4rem;
+  display: grid;
+  width: 2.2rem;
+  height: 2.2rem;
+  place-items: center;
+  border: 0;
+  border-radius: 999px;
+  background: rgb(255 255 255 / 12%);
+  color: #fff;
+  cursor: pointer;
+  transition: background 180ms ease;
+}
+
+.shotDialogClose:hover,
+.shotDialogClose:focus-visible {
+  background: rgb(255 255 255 / 24%);
+}
+
+.shotDialogClose svg {
+  width: 1rem;
+  height: 1rem;
+  stroke-width: 1.8;
+}
+
+.shotDialogNav {
+  position: fixed;
+  top: 50%;
+  display: grid;
+  width: 2.2rem;
+  height: 2.2rem;
+  place-items: center;
+  border: 0;
+  border-radius: 999px;
+  background: rgb(255 255 255 / 12%);
+  color: #fff;
+  cursor: pointer;
+  transform: translateY(-50%);
+  transition: background 180ms ease;
+}
+
+.shotDialogNav:hover,
+.shotDialogNav:focus-visible {
+  background: rgb(255 255 255 / 24%);
+}
+
+.shotDialogNav svg {
+  width: 1.05rem;
+  height: 1.05rem;
+  stroke-width: 1.8;
+}
+
+.shotDialogPrev {
+  left: 1.4rem;
+}
+
+.shotDialogNext {
+  right: 1.4rem;
+}
+
+.shotDialogCount {
+  margin-left: .6rem;
+  color: rgb(255 255 255 / 48%);
+  font-variant-numeric: tabular-nums;
+}
+
+.shotDialogCount::before {
+  margin-right: .6rem;
+  content: "·";
+}
+
+@media (max-width: 900px) {
+  .shotDialogPrev {
+    left: .7rem;
+  }
+
+  .shotDialogNext {
+    right: .7rem;
+  }
+}
+
+.strip figcaption {
+  margin-top: .55rem;
+  color: #767676;
+  font-size: .72rem;
+  line-height: 1.4;
+}
+
+.dossierFoot {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: .5rem 1.25rem;
+  margin-top: .6rem;
+}
+
+.dossierFoot .stack {
+  margin-top: 0;
+}
+
+.dossierFootMeta .stack {
+  margin-top: .35rem;
+}
+
+.links {
+  display: flex;
+  align-items: center;
+  gap: .8rem;
+}
+
+.links a {
+  display: inline-flex;
+  align-items: center;
+  color: #6f6f72;
+  font-size: .76rem;
+  font-weight: 500;
+  line-height: 1;
+  padding: .25rem 0;
+  text-decoration: none;
+  transition: color 180ms ease, transform 180ms ease;
+}
+
+.links a + a {
+  border-left: 1px solid var(--line);
+  padding-left: .8rem;
+}
+
+.links a:hover,
+.links a:focus-visible {
+  color: var(--ink);
+  transform: translateX(.1rem);
+}
+
 @media (prefers-reduced-motion: reduce) {
   .stream li {
     animation: none;
+    transition: none;
+  }
+
+  .strip img,
+  .links a,
+  .shotDialogClose,
+  .shotDialogNav {
     transition: none;
   }
 }
@@ -103,19 +382,47 @@
   color: #f4f4f4;
 }
 
-:global(html[data-curation-theme="dark"]) .stream a:hover h2,
-:global(html[data-curation-theme="dark"]) .stream a:focus-visible h2 {
+:global(html[data-curation-theme="dark"]) .row:hover h2,
+:global(html[data-curation-theme="dark"]) .row:focus-visible h2 {
+  color: #b8b8bb;
+}
+
+:global(html[data-curation-theme="dark"]) .dossierIntro h2,
+:global(html[data-curation-theme="dark"]) .dossierIntro h2 a:hover,
+:global(html[data-curation-theme="dark"]) .dossierIntro h2 a:focus-visible {
+  color: #f4f4f4;
+}
+
+:global(html[data-curation-theme="dark"]) .dossierIntro .summary {
   color: #b8b8bb;
 }
 
 :global(html[data-curation-theme="dark"]) .summary,
 :global(html[data-curation-theme="dark"]) .meta,
-:global(html[data-curation-theme="dark"]) .stack {
+:global(html[data-curation-theme="dark"]) .stack,
+:global(html[data-curation-theme="dark"]) .strip figcaption {
   color: #999;
 }
 
+:global(html[data-curation-theme="dark"]) .strip img {
+  border-color: #333;
+}
+
+:global(html[data-curation-theme="dark"]) .links a {
+  color: #b8b8bb;
+}
+
+:global(html[data-curation-theme="dark"]) .links a + a {
+  border-color: #404040;
+}
+
+:global(html[data-curation-theme="dark"]) .links a:hover,
+:global(html[data-curation-theme="dark"]) .links a:focus-visible {
+  color: #f4f4f4;
+}
+
 @media (max-width: 900px) {
-  .stream a {
+  .row {
     grid-template-columns: minmax(0, 1fr);
   }
 
@@ -130,5 +437,19 @@
   .meta span:has(+ span)::after {
     margin-left: .55rem;
     content: "·";
+  }
+
+  .strip {
+    margin-top: 1.15rem;
+  }
+
+  .strip img {
+    width: 66vw;
+    height: auto;
+  }
+
+  .dossierFoot {
+    flex-direction: column;
+    align-items: flex-start;
   }
 }

@@ -50,4 +50,25 @@ describe("parseWorkDocument", () => {
     const raw = validDocument.replace("summary: 一句话定位。\n", "");
     expect(() => parseWorkDocument("broken", raw)).toThrow();
   });
+
+  it("parses shots as label|path pairs and defaults to an empty list", () => {
+    expect(parseWorkDocument("personal-site", validDocument).shots).toEqual([]);
+
+    const raw = validDocument.replace(
+      "order: 1",
+      "shots: 每日动态|/images/works/demo/feed.png, 问一问|/images/works/demo/ask.png\norder: 1",
+    );
+    expect(parseWorkDocument("personal-site", raw).shots).toEqual([
+      { label: "每日动态", src: "/images/works/demo/feed.png" },
+      { label: "问一问", src: "/images/works/demo/ask.png" },
+    ]);
+  });
+
+  it("rejects shots entries without a label|path shape or a site-absolute path", () => {
+    const missingSeparator = validDocument.replace("order: 1", "shots: 只有标注\norder: 1");
+    expect(() => parseWorkDocument("broken", missingSeparator)).toThrow(/shots/u);
+
+    const externalSrc = validDocument.replace("order: 1", "shots: 外部|https://example.com/a.png\norder: 1");
+    expect(() => parseWorkDocument("broken", externalSrc)).toThrow(/shots/u);
+  });
 });

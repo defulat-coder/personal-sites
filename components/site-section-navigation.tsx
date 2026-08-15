@@ -16,7 +16,7 @@ const siblingSections: Array<{ href: Route; id: Exclude<SiteSection, "home" | "a
   { href: "/ai-news", id: "ai-news", label: "每日动态" },
   { href: "/curation", id: "daily", label: "推特点赞" },
   { href: "/open-source", id: "open-source", label: "开源关注" },
-  { href: "/works", id: "works", label: "构建" },
+  { href: "/works", id: "works", label: "我的作品" },
 ];
 
 const askSection = { href: "/ask" as Route, id: "ask" as const, label: "问一问" };
