@@ -10,6 +10,8 @@ This block is written and re-added by `next dev` — verify at `node_modules/nex
 
 # Project Instructions
 
+- Unless explicitly requested, do not preserve backward compatibility: replace old APIs and data structures directly, without compatibility layers, migration bridges, or fallback branches.
+
 ## Runtime and Checks
 
 - Use `pnpm` with Node.js `>=22.19.0`; the package manager is pinned in `package.json`.
