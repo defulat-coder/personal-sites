@@ -74,6 +74,177 @@
   line-height: 1.45;
 }
 
+.empty {
+  margin: 0;
+  border-bottom: 1px solid var(--line);
+  color: #6f6f72;
+  font-size: .82rem;
+  line-height: 1.55;
+  padding: 2rem 0;
+}
+
+.recordPreview {
+  margin-top: 1rem;
+  border-top: 1px solid var(--line);
+  padding-top: .75rem;
+}
+
+.focus {
+  display: grid;
+  grid-template-columns: minmax(5.5rem, 7rem) minmax(0, 1fr);
+  gap: .75rem;
+  margin: 0 !important;
+  color: #4f4f52;
+  font-size: .76rem;
+  line-height: 1.48;
+}
+
+.focus span {
+  color: #767676;
+}
+
+.recordPreview ol {
+  margin: .65rem 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.recordPreview li {
+  display: grid;
+  grid-template-columns: minmax(5.5rem, 7rem) minmax(0, 1fr) auto;
+  gap: .75rem;
+  border-top: 1px solid var(--line);
+  animation: none;
+  padding: .55rem 0;
+}
+
+.recordPreview li:last-child {
+  border-bottom: 0;
+}
+
+.recordPreview li span,
+.recordPreview li small {
+  color: #767676;
+  font-size: .68rem;
+  font-weight: 400;
+  line-height: 1.4;
+}
+
+.recordPreview li strong {
+  color: #3f3f42;
+  font-size: .74rem;
+  font-weight: 500;
+  line-height: 1.4;
+}
+
+.detailIndex {
+  display: flex;
+  flex-wrap: wrap;
+  gap: .3rem .8rem;
+  border-top: 1px solid var(--line);
+  padding: 1rem 0;
+}
+
+.detailIndex a {
+  color: #767676;
+  font-size: .72rem;
+  line-height: 1.4;
+  text-decoration: none;
+  transition: color 180ms ease;
+}
+
+.detailIndex a:hover,
+.detailIndex a:focus-visible {
+  color: var(--ink);
+}
+
+.focusSection p {
+  max-width: 42rem;
+  margin: 0;
+  color: #3f3f42;
+  font-size: .9rem;
+  line-height: 1.65;
+  text-wrap: pretty;
+}
+
+.detailRecords {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.detailRecords > li {
+  display: grid;
+  grid-template-columns: minmax(7rem, 8.5rem) minmax(0, 1fr);
+  gap: clamp(1.25rem, 2.5vw, 2rem);
+  border-top: 1px solid var(--line);
+  padding: 1.35rem 0;
+  scroll-margin-top: 2rem;
+}
+
+.detailRecords > li:last-child {
+  border-bottom: 1px solid var(--line);
+}
+
+.recordMeta {
+  display: flex;
+  flex-direction: column;
+  gap: .25rem;
+  color: #767676;
+  font-size: .7rem;
+  line-height: 1.4;
+}
+
+.recordCopy h3,
+.recordCopy p {
+  margin: 0;
+}
+
+.recordCopy h3 {
+  color: var(--ink);
+  font-size: .95rem;
+  font-weight: 610;
+  letter-spacing: -.02em;
+  line-height: 1.35;
+  text-wrap: pretty;
+}
+
+.recordCopy > p {
+  margin-top: .45rem;
+  color: #4f4f52;
+  font-size: .82rem;
+  line-height: 1.58;
+  text-wrap: pretty;
+}
+
+.recordEvidence {
+  display: flex;
+  flex-wrap: wrap;
+  gap: .35rem .8rem;
+  margin-top: .75rem;
+}
+
+.recordEvidence a,
+.recordEvidence span {
+  display: inline-flex;
+  align-items: center;
+  gap: .2rem;
+  color: #767676;
+  font-size: .68rem;
+  line-height: 1.4;
+  text-decoration: none;
+}
+
+.recordEvidence a:hover,
+.recordEvidence a:focus-visible {
+  color: var(--ink);
+}
+
+.recordEvidence svg {
+  width: .72rem;
+  height: .72rem;
+}
+
 .stack {
   display: flex;
   flex-wrap: wrap;
@@ -421,6 +592,31 @@
   color: #f4f4f4;
 }
 
+:global(html[data-curation-theme="dark"]) .empty,
+:global(html[data-curation-theme="dark"]) .focus span,
+:global(html[data-curation-theme="dark"]) .recordPreview li span,
+:global(html[data-curation-theme="dark"]) .recordPreview li small,
+:global(html[data-curation-theme="dark"]) .detailIndex a,
+:global(html[data-curation-theme="dark"]) .recordMeta,
+:global(html[data-curation-theme="dark"]) .recordEvidence a,
+:global(html[data-curation-theme="dark"]) .recordEvidence span {
+  color: #999;
+}
+
+:global(html[data-curation-theme="dark"]) .focus,
+:global(html[data-curation-theme="dark"]) .recordPreview li strong,
+:global(html[data-curation-theme="dark"]) .focusSection p,
+:global(html[data-curation-theme="dark"]) .recordCopy > p {
+  color: #b8b8bb;
+}
+
+:global(html[data-curation-theme="dark"]) .detailIndex a:hover,
+:global(html[data-curation-theme="dark"]) .detailIndex a:focus-visible,
+:global(html[data-curation-theme="dark"]) .recordEvidence a:hover,
+:global(html[data-curation-theme="dark"]) .recordEvidence a:focus-visible {
+  color: #f4f4f4;
+}
+
 @media (max-width: 900px) {
   .row {
     grid-template-columns: minmax(0, 1fr);
@@ -451,5 +647,29 @@
   .dossierFoot {
     flex-direction: column;
     align-items: flex-start;
+  }
+
+  .focus,
+  .recordPreview li,
+  .detailRecords > li {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .recordPreview li {
+    gap: .2rem;
+  }
+
+  .recordPreview li small {
+    display: none;
+  }
+
+  .recordMeta {
+    flex-direction: row;
+    gap: .4rem;
+  }
+
+  .recordMeta span + span::before {
+    margin-right: .4rem;
+    content: "·";
   }
 }

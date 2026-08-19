@@ -4,9 +4,12 @@ import { notFound } from "next/navigation";
 import { ArrowLeft, ArrowUpRight } from "lucide-react";
 
 import { ArticleMarkdown } from "@/components/article-markdown";
+import styles from "@/components/works.module.css";
 import { SiteProfile } from "@/components/site-profile";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { getWork, listWorks } from "@/lib/works";
+import { workRecordKindLabels } from "@/lib/works-types";
+import type { WorkRecordKind } from "@/lib/works-types";
 
 type WorkPageProps = { params: Promise<{ slug: string }> };
 
@@ -21,8 +24,15 @@ export async function generateStaticParams() {
 export async function generateMetadata({ params }: WorkPageProps): Promise<Metadata> {
   const work = await getWork((await params).slug);
   return work
-    ? { description: work.summary, title: `${work.title}｜我的作品` }
+    ? { description: work.summary, title: `${work.title}｜构建` }
     : {};
+}
+
+const sectionOrder: WorkRecordKind[] = ["capability", "experiment", "decision", "practice", "milestone"];
+
+function formatDate(value: string | null | undefined) {
+  if (!value) return null;
+  return new Intl.DateTimeFormat("zh-CN", { day: "2-digit", month: "2-digit", year: "numeric" }).format(new Date(value));
 }
 
 export default async function WorkPage({ params }: WorkPageProps) {
@@ -37,7 +47,7 @@ export default async function WorkPage({ params }: WorkPageProps) {
         <nav aria-label="返回" className="curation-detail__back">
           <Link href="/works">
             <ArrowLeft aria-hidden="true" />
-            返回我的作品
+            返回构建
           </Link>
           <ThemeToggle />
         </nav>
@@ -48,6 +58,7 @@ export default async function WorkPage({ params }: WorkPageProps) {
               <span>{work.period}</span>
               <span>{work.status}</span>
               <span>{work.role}</span>
+              {work.sourceObservedAt ? <span>资料截至 {formatDate(work.sourceObservedAt)}</span> : null}
             </div>
             <div className="curation-detail__tags">
               {work.stack.map((item) => (
@@ -61,10 +72,58 @@ export default async function WorkPage({ params }: WorkPageProps) {
           </div>
         </header>
 
-        <section aria-label="构建笔记" className="curation-detail__section">
-          <h2 className="curation-detail__eyebrow">构建笔记</h2>
-          <ArticleMarkdown source={work.body} />
+        <nav aria-label="项目档案索引" className={styles.detailIndex}>
+          <a href="#project-focus">正在验证</a>
+          {sectionOrder.filter((kind) => work.records?.some((record) => record.kind === kind)).map((kind) => (
+            <a href={`#${kind}`} key={kind}>{workRecordKindLabels[kind]}</a>
+          ))}
+          {work.body ? <a href="#project-story">项目脉络</a> : null}
+        </nav>
+
+        <section className={`curation-detail__section ${styles.focusSection}`} id="project-focus">
+          <h2 className="curation-detail__eyebrow">正在验证</h2>
+          <p>{work.currentFocus}</p>
         </section>
+
+        {sectionOrder.map((kind) => {
+          const records = work.records?.filter((record) => record.kind === kind) ?? [];
+          if (records.length === 0) return null;
+          return (
+            <section className="curation-detail__section" id={kind} key={kind}>
+              <h2 className="curation-detail__eyebrow">{workRecordKindLabels[kind]}</h2>
+              <ol className={styles.detailRecords}>
+                {records.map((record) => (
+                  <li id={record.id} key={record.id}>
+                    <div className={styles.recordMeta}>
+                      <span>{formatDate(record.occurredAt) ?? "持续记录"}</span>
+                      <span>{record.status}</span>
+                    </div>
+                    <div className={styles.recordCopy}>
+                      <h3>{record.title}</h3>
+                      <p>{record.summary}</p>
+                      {record.bodyMarkdown ? <ArticleMarkdown source={record.bodyMarkdown} /> : null}
+                      <div aria-label="证据" className={styles.recordEvidence}>
+                        {record.evidence.map((evidence) => evidence.url ? (
+                          <a href={evidence.url} key={evidence.id} rel="noreferrer" target="_blank">
+                            {evidence.label}
+                            <ArrowUpRight aria-hidden="true" />
+                          </a>
+                        ) : <span key={evidence.id}>{evidence.label}</span>)}
+                      </div>
+                    </div>
+                  </li>
+                ))}
+              </ol>
+            </section>
+          );
+        })}
+
+        {work.body ? (
+          <section aria-label="项目脉络" className="curation-detail__section" id="project-story">
+            <h2 className="curation-detail__eyebrow">项目脉络</h2>
+            <ArticleMarkdown source={work.body} />
+          </section>
+        ) : null}
 
         {work.repo || work.url ? (
           <footer aria-label="相关链接" className="curation-detail__sources">

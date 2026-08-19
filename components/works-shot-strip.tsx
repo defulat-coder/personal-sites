@@ -64,6 +64,7 @@ function StripShot({ index, onOpen, scrollTick, shot, stripRef, workTitle }: Str
         <Image
           alt={`${workTitle} · ${shot.label}`}
           height={1500}
+          loading={index === 0 ? "eager" : "lazy"}
           sizes="(max-width: 900px) 66vw, 38rem"
           src={shot.src}
           width={2400}
@@ -245,7 +246,7 @@ export function WorksShotStrip({ shots, workTitle }: WorksShotStripProps) {
             <Image
               alt={`${workTitle} · ${active.label}`}
               height={1500}
-              priority
+              loading="eager"
               sizes="92vw"
               src={active.src}
               width={2400}

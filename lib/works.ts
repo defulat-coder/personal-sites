@@ -1,100 +1,120 @@
-import { readdir, readFile } from "node:fs/promises";
-import path from "node:path";
+import { createClient } from "@supabase/supabase-js";
+import { unstable_cache } from "next/cache";
+import { cache } from "react";
 
 import { z } from "zod";
 
-import type { Work, WorkEntry, WorkShot } from "@/lib/works-types";
+import type { Work, WorkEntry } from "@/lib/works-types";
 
-// 构建版块的内容由作者亲手维护、随仓库发布，不走 Supabase 管线——
-// 内容与代码同库本身就是「内容即证据」的一部分。
-const worksDirectory = path.join(process.cwd(), "content", "works");
-
-const frontmatterSchema = z.object({
-  order: z.coerce.number().int().default(100),
-  period: z.string().min(1),
-  role: z.string().min(1),
-  stack: z.string().min(1),
-  status: z.string().min(1),
-  summary: z.string().min(1),
-  title: z.string().min(1),
-  repo: z.string().optional(),
-  shots: z.string().optional(),
-  url: z.string().optional(),
+const workEvidenceSchema = z.object({
+  id: z.string(),
+  kind: z.enum(["commit", "document", "private-verification"]),
+  label: z.string(),
+  occurredAt: z.string().nullable(),
+  url: z.string().url().optional(),
+  verifiedAt: z.string().nullable().optional(),
 });
 
-/** 解析 `shots` 字段：逗号分隔的 `标注|图片路径` 对，路径必须是站内绝对路径。 */
-function parseShots(raw: string | undefined): WorkShot[] {
-  if (!raw) return [];
-  return raw
-    .split(/[,，]/u)
-    .map((pair) => pair.trim())
-    .filter(Boolean)
-    .map((pair) => {
-      const separator = pair.indexOf("|");
-      if (separator <= 0) {
-        throw new Error(`shots 条目缺少「标注|路径」格式: ${pair}`);
-      }
-      const label = pair.slice(0, separator).trim();
-      const src = pair.slice(separator + 1).trim();
-      if (!label || !src.startsWith("/")) {
-        throw new Error(`shots 条目非法: ${pair}`);
-      }
-      return { label, src };
-    });
+const workRecordSchema = z.object({
+  bodyMarkdown: z.string().optional(),
+  evidence: z.array(workEvidenceSchema),
+  id: z.string(),
+  kind: z.enum(["capability", "experiment", "decision", "practice", "milestone"]),
+  occurredAt: z.string().nullable().optional(),
+  relatedRecordIds: z.array(z.string()),
+  status: z.string(),
+  summary: z.string(),
+  title: z.string(),
+  topics: z.array(z.string()),
+  updatedAt: z.string(),
+});
+
+const publicWorkSnapshotSchema = z.object({
+  bodyMarkdown: z.string().optional(),
+  currentFocus: z.string(),
+  period: z.string(),
+  projectId: z.string(),
+  records: z.array(workRecordSchema),
+  repo: z.string().url().optional(),
+  role: z.string(),
+  shots: z.array(z.object({ label: z.string(), src: z.string() })),
+  slug: z.string(),
+  sourceObservedAt: z.string().nullable(),
+  stack: z.array(z.string()),
+  status: z.string(),
+  summary: z.string(),
+  title: z.string(),
+  url: z.string().url().optional(),
+  version: z.literal(1),
+});
+
+const workRowSchema = z.object({
+  display_order: z.number(),
+  published_at: z.string(),
+  snapshot: publicWorkSnapshotSchema,
+});
+
+function requiredEnvironment(key: "SUPABASE_PUBLISHABLE_KEY" | "SUPABASE_URL") {
+  const value = process.env[key];
+  if (!value) throw new Error(`缺少 ${key}；构建版块只能从 Supabase 公开项目投影读取。`);
+  return value;
 }
 
-/** 解析单篇构建文档：frontmatter 只支持单行 `key: value`，正文为 Markdown。 */
-export function parseWorkDocument(slug: string, raw: string): Work {
-  const match = /^---\n([\s\S]*?)\n---\n?([\s\S]*)$/u.exec(raw);
-  if (!match) {
-    throw new Error(`构建条目 ${slug} 缺少 frontmatter`);
-  }
-  const [, frontmatterBlock, body] = match;
-  const fields: Record<string, string> = {};
-  for (const line of frontmatterBlock.split("\n")) {
-    const separator = line.indexOf(":");
-    if (separator <= 0) continue;
-    fields[line.slice(0, separator).trim()] = line.slice(separator + 1).trim();
-  }
-  const frontmatter = frontmatterSchema.parse(fields);
+function getPublicWorksClient() {
+  return createClient(
+    requiredEnvironment("SUPABASE_URL"),
+    requiredEnvironment("SUPABASE_PUBLISHABLE_KEY"),
+    { auth: { autoRefreshToken: false, persistSession: false } },
+  );
+}
+
+function toWork(row: z.infer<typeof workRowSchema>): Work {
+  const snapshot = row.snapshot;
   return {
-    body: body.trim(),
-    order: frontmatter.order,
-    period: frontmatter.period,
-    role: frontmatter.role,
-    shots: parseShots(frontmatter.shots),
-    slug,
-    stack: frontmatter.stack.split(/[,，]/u).map((item) => item.trim()).filter(Boolean),
-    status: frontmatter.status,
-    summary: frontmatter.summary,
-    title: frontmatter.title,
-    ...(frontmatter.repo ? { repo: frontmatter.repo } : {}),
-    ...(frontmatter.url ? { url: frontmatter.url } : {}),
+    body: snapshot.bodyMarkdown ?? "",
+    currentFocus: snapshot.currentFocus,
+    order: row.display_order,
+    period: snapshot.period,
+    publishedAt: row.published_at,
+    records: snapshot.records,
+    ...(snapshot.repo ? { repo: snapshot.repo } : {}),
+    role: snapshot.role,
+    shots: snapshot.shots,
+    slug: snapshot.slug,
+    sourceObservedAt: snapshot.sourceObservedAt,
+    stack: snapshot.stack,
+    status: snapshot.status,
+    summary: snapshot.summary,
+    title: snapshot.title,
+    ...(snapshot.url ? { url: snapshot.url } : {}),
   };
 }
 
+const getCachedWorks = unstable_cache(
+  async (): Promise<Work[]> => {
+    const { data, error } = await getPublicWorksClient()
+      .from("project_public_snapshots")
+      .select("display_order,published_at,snapshot")
+      .order("display_order", { ascending: true })
+      .order("published_at", { ascending: false });
+    if (error) throw new Error(`读取 Supabase 项目列表失败：${error.message}`);
+    return z.array(workRowSchema).parse(data).map(toWork);
+  },
+  ["public-project-snapshots-v2"],
+  { revalidate: 240, tags: ["public-projects"] },
+);
+
 export async function listWorks(): Promise<WorkEntry[]> {
-  const files = await readdir(worksDirectory);
-  const entries = await Promise.all(
-    files
-      .filter((file) => file.endsWith(".md"))
-      .map(async (file) => {
-        const raw = await readFile(path.join(worksDirectory, file), "utf8");
-        const { body, ...entry } = parseWorkDocument(file.replace(/\.md$/u, ""), raw);
-        void body;
-        return entry;
-      }),
-  );
-  return entries.sort((a, b) => a.order - b.order || a.slug.localeCompare(b.slug));
+  return getCachedWorks();
 }
 
-export async function getWork(slug: string): Promise<Work | null> {
+export const getWork = cache(async (slug: string): Promise<Work | null> => {
   if (!/^[\w-]+$/u.test(slug)) return null;
-  try {
-    const raw = await readFile(path.join(worksDirectory, `${slug}.md`), "utf8");
-    return parseWorkDocument(slug, raw);
-  } catch (error) {
-    if ((error as NodeJS.ErrnoException).code === "ENOENT") return null;
-    throw error;
-  }
-}
+  const { data, error } = await getPublicWorksClient()
+    .from("project_public_snapshots")
+    .select("display_order,published_at,snapshot")
+    .eq("slug", slug)
+    .maybeSingle();
+  if (error) throw new Error(`读取 Supabase 项目详情失败：${error.message}`);
+  return data ? toWork(workRowSchema.parse(data)) : null;
+});
