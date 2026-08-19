@@ -22,7 +22,19 @@ KIMI_API_KEY=<kimi-key>
 
 ## 初始化与同步
 
-1. 执行 `pnpm curation:sync`：抓取、解析、本地敏感生成备份、`data/curation.sqlite` 生成。可用 `--engine codex-cli --model gpt-5.6-luna --reasoning-effort max` 显式改走单并发 Codex CLI。
+两类同步使用同一套 X 抓取、敏感备份和 SQLite 发布流程，仅解析引擎不同：
+
+```bash
+# Pi Coding Agent + Kimi（默认 15 并发）
+pnpm curation:sync:kimi
+
+# Codex CLI + GPT-5.6 Luna（Max，固定单并发）
+pnpm curation:sync:luna
+```
+
+两个命令都可以在 `--` 后继续传 `--source`、`--limit` 或 `--media` 等公共参数，例如 `pnpm curation:sync:luna -- --source bookmarks --limit 20`。
+
+1. 执行其中一个同步命令：抓取、解析、本地敏感生成备份、`data/curation.sqlite` 生成。底层仍保留 `pnpm curation:sync -- --engine pi|codex-cli`，用于需要自定义模型或推理等级的场景。
 2. 只暂存 `data/curation.sqlite` 与本次明确的代码/文档变更，运行 `pnpm git:safety` 后提交并推送；Vercel 的 Git 集成会创建新部署。
 3. `pnpm curation:publish` 只重建 SQLite，不会访问远端数据库。
 

@@ -102,6 +102,10 @@ function readSmaugCredentials(configPath) {
 function printUsage() {
   console.log(`用法：pnpm curation:sync -- [选项]
 
+快捷入口：
+  pnpm curation:sync:kimi -- [选项]  Pi Coding Agent + Kimi
+  pnpm curation:sync:luna -- [选项]  Codex CLI + GPT-5.6 Luna（Max）
+
 选项：
   --source bookmarks|likes|both  抓取来源，默认 both
   --limit <n>                    最多交给解析器处理 n 条条目
