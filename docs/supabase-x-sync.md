@@ -1,32 +1,33 @@
-# X 同步与 Supabase
+# X 同步与本地 SQLite
 
-`modules/x-sync/` 是 X 数据同步的独立模块，包含抓取/导入后的编排、公开投影和 Supabase 写入。它不替代本地备份：本机仍保留原始抓取文件、策展队列和生成后的 JSON，全部位于被 Git 忽略的 `data/sensitive/x-curation/`。
+`modules/x-sync/` 是 X 数据同步的独立模块，包含抓取/导入后的编排和公开 SQLite 投影生成。它不替代本地备份：本机仍保留原始抓取文件、策展队列和生成后的 JSON，全部位于被 Git 忽略的 `data/sensitive/x-curation/`。
 
 同步后的职责如下：
 
-| 数据 | 本地 | Supabase | 网站读取 |
+| 数据 | 本地 | Git | 网站读取 |
 | --- | --- | --- | --- |
-| 原始 X 抓取与完整队列 | 敏感备份 | `public.x_sync_items`（RLS 私有表） | 否 |
-| Pi/Kimi 生成结果 | 敏感备份 | 私有记录的 `generated_payload` | 否 |
-| 已完成解析的公开策展内容 | `generated/curation.json` 备份 | `public.x_curation_items` | 是 |
+| 原始 X 抓取与完整队列 | `data/sensitive/x-curation/` | 禁止 | 否 |
+| Pi/Kimi 或 Codex CLI 生成结果 | `data/sensitive/x-curation/` | 禁止 | 否 |
+| 已完成解析且已公开的策展内容 | `data/curation.sqlite` | 提交 | 是 |
 
 ## 配置
 
-在被 Git 忽略的 `.env.local` 中配置：
+在被 Git 忽略的 `.env.local` 中配置 Kimi（默认路径）与本地 X 抓取凭据。显式使用 Codex CLI 时复用本机 Codex 登录态；X SQLite 流程不需要任何 Supabase 凭据：
 
 ```bash
-SUPABASE_URL=https://<project-ref>.supabase.co
-SUPABASE_PUBLISHABLE_KEY=<publishable-key>
-SUPABASE_SERVICE_ROLE_KEY=<service-role-key>
-SUPABASE_DB_URL=postgresql://<pooler-user>:<database-password>@<pooler-host>:5432/postgres
+KIMI_API_KEY=<kimi-key>
 ```
 
-`SUPABASE_SERVICE_ROLE_KEY` 只能由 `modules/x-sync/` 通过 `scripts/x-curation-publish-supabase.mjs` 使用，绝不能放入 `NEXT_PUBLIC_*` 环境变量，也不能给浏览器。`public.x_sync_items` 虽处于 Data API schema，但它启用 RLS、撤销了 anon/authenticated 的全部权限，且没有任何读取策略；因此仅 service role 可访问。
+`data/curation.sqlite` 只能由本机 `scripts/build-curation-sqlite.mjs` 通过 `better-sqlite3` 从敏感队列生成。它是只读公开投影，不包含抓取快照、游标或凭据；Vercel 在部署中随 Git 文件读取，运行时不写入它。
 
 ## 初始化与同步
 
-1. 通过 `pnpm supabase:push` 将 [迁移](../supabase/migrations/20260809032951_create_x_sync_storage.sql) 应用到远端。先用 `pnpm supabase:push -- --dry-run` 预演时，不会写入数据库。
-2. 执行 `pnpm curation:publish`，将本地队列 upsert 到 Supabase。
-3. 日常执行 `pnpm curation:sync`：抓取、Pi 解析、本地生成备份、Supabase 同步。
+1. 执行 `pnpm curation:sync`：抓取、解析、本地敏感生成备份、`data/curation.sqlite` 生成。可用 `--engine codex-cli --model gpt-5.6-luna --reasoning-effort max` 显式改走单并发 Codex CLI。
+2. 只暂存 `data/curation.sqlite` 与本次明确的代码/文档变更，运行 `pnpm git:safety` 后提交并推送；Vercel 的 Git 集成会创建新部署。
+3. `pnpm curation:publish` 只重建 SQLite，不会访问远端数据库。
 
-前端只在服务端从 `public.x_curation_items` 读取，缺少 Supabase 读取配置时会明确报错，不会回退到本地 JSON。`public.x_sync_items` 与 `public.x_curation_items` 都开启 RLS：前者没有 anon/authenticated 权限或策略，仅 service role 可写；后者仅允许公开只读。
+前端只在 Node.js 服务端从 SQLite 读取，绝不向浏览器暴露数据库文件。`next.config.ts` 的输出文件追踪会将它随每个函数部署；Edge Runtime 不支持这一读取路径。
+
+## 迁移后的远端清理
+
+确认 SQLite 版本已在 Vercel 正常部署并可读后，可一次性执行 `pnpm curation:purge:supabase`，删除旧的 `x_sync_items`、`x_curation_items` 与 `daily` 问答索引副本。该命令不可逆，不能在新部署验证之前执行。

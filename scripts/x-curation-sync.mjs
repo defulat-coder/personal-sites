@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 /**
  * Fetch X bookmarks/likes with the local smaug installation, move only the
- * result into the ignored sensitive queue, then analyze it with Pi Coding Agent.
+ * result into the ignored sensitive queue, then analyze it with the selected local model runtime.
  */
 
 import { execFile } from "node:child_process";
@@ -33,6 +33,9 @@ export function parseSyncArgs(args) {
     media: false,
     fetchOnly: false,
     history: false,
+    engine: "pi",
+    codexModel: "gpt-5.6-luna",
+    reasoningEffort: "max",
   };
 
   for (let index = 0; index < args.length; index += 1) {
@@ -49,6 +52,15 @@ export function parseSyncArgs(args) {
       index += 1;
     } else if (arg.startsWith("--limit=")) {
       options.limit = Number.parseInt(arg.slice("--limit=".length), 10);
+    } else if (arg === "--engine") {
+      options.engine = requireValue(args, index, "--engine");
+      index += 1;
+    } else if (arg === "--model") {
+      options.codexModel = requireValue(args, index, "--model");
+      index += 1;
+    } else if (arg === "--reasoning-effort") {
+      options.reasoningEffort = requireValue(args, index, "--reasoning-effort");
+      index += 1;
     } else if (arg === "--media") {
       options.media = true;
     } else if (arg === "--fetch-only") {
@@ -68,6 +80,12 @@ export function parseSyncArgs(args) {
   if (options.limit !== null && (!Number.isInteger(options.limit) || options.limit <= 0)) {
     throw new Error("--limit 必须是正整数。");
   }
+  if (!new Set(["pi", "codex-cli"]).has(options.engine)) {
+    throw new Error("--engine 仅支持 pi 或 codex-cli。");
+  }
+  if (!new Set(["none", "low", "medium", "high", "xhigh", "max"]).has(options.reasoningEffort)) {
+    throw new Error("--reasoning-effort 仅支持 none、low、medium、high、xhigh 或 max。");
+  }
   return options;
 }
 
@@ -86,9 +104,12 @@ function printUsage() {
 
 选项：
   --source bookmarks|likes|both  抓取来源，默认 both
-  --limit <n>                    最多交给 Pi Agent 解析 n 条条目
+  --limit <n>                    最多交给解析器处理 n 条条目
+  --engine pi|codex-cli          解析器，默认 pi；codex-cli 单并发执行
+  --model <name>                 Codex CLI 模型，默认 gpt-5.6-luna
+  --reasoning-effort <level>     Codex CLI 推理等级，默认 max
   --media                        同时抓取媒体元数据
-  --fetch-only                   只抓取并写入策展队列，不调用 Pi Agent
+  --fetch-only                   只抓取并写入策展队列，不调用模型
   --history                      全量抓取历史书签与点赞并导入策展队列
 `);
 }
@@ -142,7 +163,7 @@ async function main() {
     const curationConfig = JSON.parse(readFileSync(path.join(repoRoot, "config/x-curation.json"), "utf8"));
     await mkdir(path.join(repoRoot, curationConfig.rawDir), { recursive: true });
     const birdPath = process.env.BIRD_PATH ?? path.join(repoRoot, "node_modules/.bin/bird");
-    console.log("开始导入全部历史 X 书签与点赞（不调用 Pi Agent）。");
+    console.log("开始导入全部历史 X 书签与点赞（不调用模型）。");
     await runHistoryPipeline({
       repoRoot,
       birdPath,
@@ -152,14 +173,18 @@ async function main() {
   }
 
   if (!options.fetchOnly) {
-    const model = resolvePiModelConfig({ env: process.env });
-    if (!process.env.KIMI_API_KEY) {
-      throw new Error("缺少 KIMI_API_KEY（可写入本项目被忽略的 .env.local）。");
+    if (options.engine === "pi") {
+      const model = resolvePiModelConfig({ env: process.env });
+      if (!process.env.KIMI_API_KEY) {
+        throw new Error("缺少 KIMI_API_KEY（可写入本项目被忽略的 .env.local）。");
+      }
+      console.log(`解析运行时：Pi Coding Agent / ${model.provider}/${model.model}`);
+    } else {
+      console.log(`解析运行时：Codex CLI / ${options.codexModel}（推理 ${options.reasoningEffort}）`);
     }
-    console.log(`解析运行时：Pi Coding Agent / ${model.provider}/${model.model}`);
   }
 
-  console.log(`开始 X 策展同步：${options.source}${options.fetchOnly ? "（仅抓取）" : "（抓取、Pi Agent 解析并自动公开）"}`);
+  console.log(`开始 X 策展同步：${options.source}${options.fetchOnly ? "（仅抓取）" : "（抓取、解析并生成公开 SQLite）"}`);
   const birdPath = process.env.BIRD_PATH ?? path.join(repoRoot, "node_modules/.bin/bird");
   await runSyncPipeline({
     repoRoot,

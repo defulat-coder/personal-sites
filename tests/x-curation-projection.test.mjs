@@ -1,8 +1,12 @@
 import assert from "node:assert/strict";
 import test from "node:test";
+import Database from "better-sqlite3";
+import { mkdtemp, rm } from "node:fs/promises";
+import path from "node:path";
+import { tmpdir } from "node:os";
 
-import { publishQueueToSupabase } from "../modules/x-sync/publish-to-supabase.mjs";
 import { isReadyForPublication, toPublicCurationItem } from "../modules/x-sync/curation-projection.mjs";
+import { buildPublicCurationDatabase } from "../modules/x-sync/public-sqlite.mjs";
 import { firstSeenMetadata, parseSourceOrderSnapshot } from "../modules/x-sync/source-order.mjs";
 
 const item = {
@@ -96,45 +100,21 @@ test("only items present in the X snapshot receive its collection time and list 
   );
 });
 
-test("Supabase publisher requires service credentials before accessing the network", async () => {
-  await assert.rejects(
-    publishQueueToSupabase({ items: [] }, {}),
-    /SUPABASE_URL/u,
-  );
-});
+test("public SQLite contains only publishable curation records and the matching local Q&A index", async () => {
+  const directory = await mkdtemp(path.join(tmpdir(), "curation-sqlite-test-"));
+  const databasePath = path.join(directory, "curation.sqlite");
+  try {
+    const result = await buildPublicCurationDatabase({
+      outputPath: databasePath,
+      queue: { items: [item, { ...item, id: "draft", ai: { ...item.ai, tags: [] } }] },
+    });
+    assert.deepEqual(result, { documentCount: 1, itemCount: 1 });
 
-test("publishing a public curation projection refreshes the daily Q&A index", async () => {
-  const calls = [];
-  const client = {
-    from: () => ({ upsert: async () => ({ error: null }) }),
-    rpc: async (name, arguments_) => {
-      calls.push({ arguments_, name });
-      return { data: 1, error: null };
-    },
-  };
-
-  const result = await publishQueueToSupabase({ items: [item] }, {
-    SUPABASE_SERVICE_ROLE_KEY: "service-key",
-    SUPABASE_URL: "https://example.supabase.co",
-  }, () => client);
-
-  assert.equal(result.indexedCount, 1);
-  assert.deepEqual(calls[0], {
-    arguments_: {
-      p_documents: [{
-        content: "摘要\n\n解析\n\n公开原文",
-        id: "daily:1",
-        published_at: "2026-08-09T00:00:00.000Z",
-        search_text: "标题\n\nAgent 工程\n\nAuthor\n\nauthor\n\n摘要\n\n解析\n\n公开原文",
-        section: null,
-        source_id: "1",
-        source_scope: "daily",
-        source_url: "/curation/1",
-        title: "标题",
-      }],
-      p_replace_scope: false,
-      p_scope: "daily",
-    },
-    name: "sync_ask_search_documents",
-  });
+    const database = new Database(databasePath, { fileMustExist: true, readonly: true });
+    assert.deepEqual(database.prepare("SELECT id, title FROM curation_items").all(), [{ id: "1", title: "标题" }]);
+    assert.deepEqual(database.prepare("SELECT id, source_url FROM daily_ask_documents").all(), [{ id: "daily:1", source_url: "/curation/1" }]);
+    database.close();
+  } finally {
+    await rm(directory, { force: true, recursive: true });
+  }
 });

@@ -56,10 +56,13 @@ export async function runSyncPipeline({
   if (options.fetchOnly) return;
 
   const enrichArgs = [path.join(repoRoot, "scripts/x-curation-enrich.mjs")];
+  if (options.engine === "codex-cli") {
+    enrichArgs.push("--engine", "codex-cli", "--model", options.codexModel, "--reasoning-effort", options.reasoningEffort);
+  }
   if (options.limit !== null) enrichArgs.push("--limit", String(options.limit));
   await execute(process.execPath, enrichArgs, { cwd: repoRoot });
   await execute(process.execPath, [path.join(repoRoot, "scripts/build-curation-content.mjs")], { cwd: repoRoot });
-  await execute(process.execPath, [path.join(repoRoot, "scripts/x-curation-publish-supabase.mjs")], { cwd: repoRoot });
+  await execute(process.execPath, [path.join(repoRoot, "scripts/build-curation-sqlite.mjs")], { cwd: repoRoot });
 }
 
 export async function runHistoryPipeline({ repoRoot, birdPath, credentials, execute = runCommand }) {
@@ -78,5 +81,5 @@ export async function runHistoryPipeline({ repoRoot, birdPath, credentials, exec
   }
   await execute(process.execPath, [path.join(repoRoot, "scripts/x-curation-import-bird.mjs")], { cwd: repoRoot });
   await execute(process.execPath, [path.join(repoRoot, "scripts/build-curation-content.mjs")], { cwd: repoRoot });
-  await execute(process.execPath, [path.join(repoRoot, "scripts/x-curation-publish-supabase.mjs")], { cwd: repoRoot });
+  await execute(process.execPath, [path.join(repoRoot, "scripts/build-curation-sqlite.mjs")], { cwd: repoRoot });
 }

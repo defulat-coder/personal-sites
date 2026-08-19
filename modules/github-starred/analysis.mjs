@@ -263,6 +263,9 @@ export async function createCodexCliReader({ config = {}, repoRoot, run = runCod
   const cliConfig = config.analysis?.codex_cli ?? {};
   const executable = cliConfig.executable ?? "codex";
   const model = typeof cliConfig.model === "string" && cliConfig.model.trim() ? cliConfig.model.trim() : null;
+  const reasoningEffort = typeof cliConfig.reasoning_effort === "string" && cliConfig.reasoning_effort.trim()
+    ? cliConfig.reasoning_effort.trim()
+    : null;
   const requestTimeoutMilliseconds = cliConfig.request_timeout_ms ?? config.analysis?.request_timeout_ms ?? 240000;
 
   return {
@@ -272,6 +275,7 @@ export async function createCodexCliReader({ config = {}, repoRoot, run = runCod
       const outputPath = path.join(directory, "response.md");
       const args = ["exec", "--ephemeral", "-s", "read-only", "-C", repoRoot, "--output-last-message", outputPath];
       if (model) args.push("--model", model);
+      if (reasoningEffort) args.push("--config", `model_reasoning_effort=${JSON.stringify(reasoningEffort)}`);
       args.push("-");
       const input = `${prompt}\n\n你正在作为受限的文本转换器运行。只输出请求中要求的最终 Markdown 或一句话简介；不要调用工具、不要解释过程、不要修改任何文件。`;
       try {

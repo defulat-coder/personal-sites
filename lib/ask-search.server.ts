@@ -3,6 +3,7 @@ import "server-only";
 import { createClient } from "@supabase/supabase-js";
 import { z } from "zod";
 
+import { searchCurationDailyDocuments } from "@/lib/curation";
 import { getAskSearchFallbackTerms } from "@/lib/ask-search-terms";
 import type { AskScope, AskSource } from "@/lib/ask-types";
 
@@ -19,6 +20,7 @@ const searchResultSchema = z.object({
 });
 
 type SearchDocument = z.infer<typeof searchResultSchema>;
+type RemoteAskScope = Exclude<AskScope, "all" | "daily">;
 
 function requiredEnvironment(key: "SUPABASE_URL" | "SUPABASE_SERVICE_ROLE_KEY") {
   const value = process.env[key];
@@ -34,14 +36,43 @@ function getAskSearchClient() {
   );
 }
 
-async function searchDocuments(query: string, scope: AskScope) {
+async function searchRemoteDocuments(query: string, scope: RemoteAskScope) {
   const { data, error } = await getAskSearchClient().rpc("search_ask_documents", {
     p_limit: 6,
     p_query: query,
-    p_scope: scope === "all" ? null : scope,
+    p_scope: scope,
   });
   if (error) throw new Error(`检索公开问答资料失败：${error.message}`);
   return z.array(searchResultSchema).parse(data ?? []);
+}
+
+function searchLocalDailyDocuments(query: string): SearchDocument[] {
+  return searchCurationDailyDocuments(query).map((document) => ({
+    content: document.content,
+    id: document.id,
+    published_at: document.publishedAt,
+    score: document.score,
+    section: null,
+    source_id: document.sourceId,
+    source_scope: "daily",
+    source_url: document.sourceUrl,
+    title: document.title,
+  }));
+}
+
+function rankDocuments(documents: SearchDocument[]) {
+  return [...documents]
+    .sort((left, right) => right.score - left.score || (right.published_at ?? "").localeCompare(left.published_at ?? ""))
+    .slice(0, 6);
+}
+
+async function searchDocuments(query: string, scope: AskScope) {
+  const documents = scope === "daily" || scope === "all" ? searchLocalDailyDocuments(query) : [];
+  if (scope === "daily") return documents;
+
+  const remoteScopes: RemoteAskScope[] = scope === "all" ? ["open-source", "ai-news"] : [scope];
+  const remoteDocuments = await Promise.all(remoteScopes.map((remoteScope) => searchRemoteDocuments(query, remoteScope)));
+  return rankDocuments([...documents, ...remoteDocuments.flat()]);
 }
 
 function toAskSource(document: SearchDocument): AskSource {

@@ -43,12 +43,12 @@ const output = {
 };
 
 if (ready.length === 0) {
-  console.log("没有已完成 Pi 解析的条目；保留现有本地生成备份。");
+  console.log("没有已完成解析的条目；保留现有本地生成备份。");
   process.exit(0);
 }
 
 await mkdir(path.dirname(outputPath), { recursive: true });
 await writeFile(outputPath, JSON.stringify(output, null, 2) + "\n");
 console.log(
-  `本地生成备份已写入：${path.relative(repoRoot, outputPath)}（${items.length} 条已解析，${queue.items.length - ready.length} 条待 Pi 解析）`,
+  `本地生成备份已写入：${path.relative(repoRoot, outputPath)}（${items.length} 条已解析，${queue.items.length - ready.length} 条待解析）`,
 );

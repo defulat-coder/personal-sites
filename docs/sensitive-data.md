@@ -13,13 +13,14 @@
 | `data/sensitive/github/` | GitHub 同步快照、响应和仓库原始内容 | 仅本机保存，禁止 Git |
 | `data/sensitive/yuque/` | 语雀同步对象、附件和原始文档 | 仅本机保存，禁止 Git |
 | `data/sensitive/x-curation/` | X 书签/点赞原文、媒体、策展队列和生成备份 | 仅本机保存，禁止 Git |
+| `data/curation.sqlite` | 已完成脱敏并已在站点公开的 X 策展投影 | 随代码提交；仅部署端只读查询 |
 | `knowledge/sensitive/` | 私有知识库及其个人来源分区 | 仅本机保存，禁止 Git |
 | `tools/smaug/.state/` | 抓取游标、待处理书签和运行状态 | 仅本机保存，禁止 Git |
 | `tools/smaug/smaug.config.json` | 本地抓取配置和凭据 | 仅本机保存，禁止 Git |
 | `tools/smaug/bookmarks.md` | 本地书签归档 | 仅本机保存，禁止 Git |
 | 私有 Supabase Storage `ask-sessions` | 匿名问答 JSONL 会话与模型生成记录 | 仅服务端 service role 可读写，禁止浏览器、Git 与公开链接 |
 
-X 策展不再使用 `data/public/` 作为页面数据源。经 Pi Agent 解析完成的内容保留在本地敏感生成备份，并同步到 Supabase 的公开表；页面只从 Supabase 读取。原始抓取文件、敏感队列及本地凭据永远不会进入 Git 或浏览器。
+X 策展不再使用 `data/public/` 作为页面数据源。经 Pi Agent 解析完成后，敏感原始队列继续只保留本机；只有与当前站点展示字段完全一致的公开投影会写入 `data/curation.sqlite`。原始抓取文件、敏感队列及本地凭据永远不会进入 Git 或浏览器。
 
 ## 防护约束
 

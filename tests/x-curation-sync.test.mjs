@@ -39,7 +39,7 @@ test("sync pipeline fetches X data, prepares the sensitive queue, then enriches 
     },
     {
       command: process.execPath,
-      args: ["/repo/scripts/x-curation-publish-supabase.mjs"],
+      args: ["/repo/scripts/build-curation-sqlite.mjs"],
       options: { cwd: "/repo" },
     },
   ]);
@@ -89,7 +89,26 @@ test("sync arguments accept pnpm's -- separator", () => {
     media: false,
     fetchOnly: true,
     history: false,
+    engine: "pi",
+    codexModel: "gpt-5.6-luna",
+    reasoningEffort: "max",
   });
+});
+
+test("sync arguments pass the requested Luna Max configuration to the single-threaded Codex parser", async () => {
+  const calls = [];
+  await runSyncPipeline({
+    repoRoot: "/repo",
+    options: parseSyncArgs(["--source", "bookmarks", "--engine", "codex-cli", "--model", "gpt-5.6-luna", "--reasoning-effort", "max"]),
+    execute: async (command, args, options) => calls.push({ command, args, options }),
+  });
+
+  assert.deepEqual(calls[2].args, [
+    "/repo/scripts/x-curation-enrich.mjs",
+    "--engine", "codex-cli",
+    "--model", "gpt-5.6-luna",
+    "--reasoning-effort", "max",
+  ]);
 });
 
 test("history pipeline uses bird pagination directly and imports both raw sources", async () => {
@@ -133,7 +152,7 @@ test("history pipeline uses bird pagination directly and imports both raw source
     },
     {
       command: process.execPath,
-      args: ["/repo/scripts/x-curation-publish-supabase.mjs"],
+      args: ["/repo/scripts/build-curation-sqlite.mjs"],
       options: { cwd: "/repo" },
     },
   ]);

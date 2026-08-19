@@ -2,21 +2,22 @@
 /**
  * x-curation-enrich.mjs
  *
- * 策展队列的 Pi Agent 解析程序。对未解析条目执行完整解析：
+ * 策展队列的本地模型解析程序。对未解析条目执行完整解析：
  *   1. 展开 t.co 短链并分类（github / article / 其他）
  *   2. 抓取链接内容：GitHub 仓库元数据 + 完整 README（gh CLI）；文章正文
- *   3. Pi Coding Agent 调用 Kimi 生成 标题 / 摘要 / 标签 / 深度解析
+ *   3. Pi/Kimi 或显式选择的 Codex CLI 生成标题 / 摘要 / 标签 / 深度解析
  *   4. 写回策展队列（每条落盘，可断点续跑）
  *
  * 凭据从环境变量读取，不写入任何文件：
- *   KIMI_API_KEY         必填，Kimi Coding 凭据
- *   PI_MODEL             可选，默认 kimi-for-coding
+ *   KIMI_API_KEY         Pi/Kimi 路径必填
+ *   PI_MODEL             Pi/Kimi 路径可选，默认 kimi-for-coding
  *
  * 用法：
  *   node scripts/x-curation-enrich.mjs                    # 以默认 15 并发解析全部待处理条目
  *   node scripts/x-curation-enrich.mjs --concurrency 10   # 调整并发数
  *   node scripts/x-curation-enrich.mjs --limit 20         # 只处理前 20 条
- *   node scripts/x-curation-enrich.mjs --dry-run          # 只展开链接和抓内容，不调 Pi Agent
+ *   node scripts/x-curation-enrich.mjs --engine codex-cli --model gpt-5.6-luna --reasoning-effort max
+ *   node scripts/x-curation-enrich.mjs --dry-run          # 只展开链接和抓内容，不调用模型
  *   node scripts/x-curation-enrich.mjs --only <id>        # 只处理指定条目
  */
 
@@ -34,6 +35,7 @@ import {
   SessionManager,
 } from "@earendil-works/pi-coding-agent";
 
+import { createCodexCliReader } from "../modules/github-starred/analysis.mjs";
 import { loadLocalEnv } from "./lib/load-local-env.mjs";
 import { resolvePiModelConfig } from "./lib/x-curation-ai.mjs";
 
@@ -49,15 +51,27 @@ const piModel = resolvePiModelConfig({ config, env: process.env });
 
 const args = process.argv.slice(2);
 const DRY_RUN = args.includes("--dry-run");
+const engineIdx = args.indexOf("--engine");
+const ENGINE = engineIdx >= 0 ? args[engineIdx + 1] : "pi";
+const codexModelIdx = args.indexOf("--model");
+const CODEX_MODEL = codexModelIdx >= 0 ? args[codexModelIdx + 1] : "gpt-5.6-luna";
+const reasoningEffortIdx = args.indexOf("--reasoning-effort");
+const CODEX_REASONING_EFFORT = reasoningEffortIdx >= 0 ? args[reasoningEffortIdx + 1] : "max";
 const limitIdx = args.indexOf("--limit");
 const LIMIT = limitIdx >= 0 ? Number.parseInt(args[limitIdx + 1], 10) : Infinity;
 const concurrencyIdx = args.indexOf("--concurrency");
-const CONCURRENCY = concurrencyIdx >= 0 ? Number.parseInt(args[concurrencyIdx + 1], 10) : 15;
+const CONCURRENCY = concurrencyIdx >= 0 ? Number.parseInt(args[concurrencyIdx + 1], 10) : ENGINE === "codex-cli" ? 1 : 15;
 const onlyIdx = args.indexOf("--only");
 const ONLY = onlyIdx >= 0 ? new Set(args[onlyIdx + 1].split(",")) : null;
 
 if (!Number.isInteger(CONCURRENCY) || CONCURRENCY < 1) {
   throw new Error("--concurrency 必须是大于 0 的整数。");
+}
+if (!new Set(["pi", "codex-cli"]).has(ENGINE)) {
+  throw new Error("--engine 仅支持 pi 或 codex-cli。");
+}
+if (ENGINE === "codex-cli" && CONCURRENCY !== 1) {
+  throw new Error("Codex CLI 解析必须使用 --concurrency 1，避免并发启动多个本机会话。");
 }
 
 const README_CAP = 12_000;
@@ -168,12 +182,12 @@ function parseJsonResponse(responseText) {
   const body = responseText.trim().replace(/^```(?:json)?\s*/u, "").replace(/\s*```$/u, "");
   const parsed = JSON.parse(body);
   if (!parsed.title || !parsed.summary || !parsed.analysis || !Array.isArray(parsed.tags) || parsed.tags.length === 0) {
-    throw new Error("Pi Agent 返回缺少必需字段");
+    throw new Error("模型返回缺少必需字段");
   }
   return parsed;
 }
 
-async function callModel(item, prompt, runtime) {
+async function callPiModel(prompt, runtime) {
   const model = runtime.getModel(piModel.provider, piModel.model);
   if (!model) throw new Error(`Pi 未找到模型：${piModel.provider}/${piModel.model}`);
 
@@ -217,12 +231,23 @@ let targets = queue.items.filter((item) => !item.ai.enrichedAt);
 if (ONLY) targets = targets.filter((item) => ONLY.has(item.id));
 targets = targets.slice(0, LIMIT);
 
-console.log(`待解析: ${targets.length} 条，并发 ${CONCURRENCY}${DRY_RUN ? "（dry-run，不调用 Pi Agent）" : ""}`);
-if (!DRY_RUN && !process.env.KIMI_API_KEY) {
+console.log(`待解析: ${targets.length} 条，并发 ${CONCURRENCY}${DRY_RUN ? "（dry-run，不调用模型）" : ""}`);
+if (!DRY_RUN && ENGINE === "pi" && !process.env.KIMI_API_KEY) {
   console.error("缺少 KIMI_API_KEY 环境变量，Pi 无法使用 Kimi Coding 模型。");
   process.exit(1);
 }
-const runtime = DRY_RUN ? null : await ModelRuntime.create({ allowModelNetwork: false });
+const runtime = DRY_RUN || ENGINE === "codex-cli" ? null : await ModelRuntime.create({ allowModelNetwork: false });
+const codexReader = !DRY_RUN && ENGINE === "codex-cli"
+  ? await createCodexCliReader({
+    config: { analysis: { codex_cli: { model: CODEX_MODEL, reasoning_effort: CODEX_REASONING_EFFORT } } },
+    repoRoot,
+  })
+  : null;
+
+async function callModel(prompt) {
+  if (codexReader) return parseJsonResponse(await codexReader.prompt(prompt));
+  return callPiModel(prompt, runtime);
+}
 
 let done = 0;
 let failed = 0;
@@ -273,11 +298,11 @@ async function processItem(item) {
     const prompt = buildPrompt(item, linkContents);
     let parsed;
     try {
-      parsed = await callModel(item, prompt, runtime);
+      parsed = await callModel(prompt);
     } catch (firstError) {
       console.warn(`  首次调用失败（${firstError.message.slice(0, 80)}），5 秒后重试`);
       await sleep(5000);
-      parsed = await callModel(item, prompt, runtime);
+      parsed = await callModel(prompt);
     }
 
     item.ai = {

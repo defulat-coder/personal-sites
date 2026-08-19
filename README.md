@@ -18,15 +18,15 @@
 ## 技术栈
 
 - **站点**：Next.js 16（App Router）+ React 19 + Tailwind CSS 4 + shadcn/ui
-- **数据**：Supabase（Postgres 公开投影表 + 私有 Storage）
+- **数据**：X 策展使用随 Git 发布的只读 SQLite；每日动态与开源关注仍使用 Supabase 公开投影
 - **部署**：Vercel；内容同步跑在 GitHub Actions
-- **内容管道**：本地策展脚本 → AI 解析（Pi Coding Agent / Kimi）→ Supabase 公开投影 → 站点以 ISR（`revalidate = 300`）读取
+- **内容管道**：本地 X 策展脚本 → AI 解析（Pi/Kimi 默认，支持 Codex CLI）→ Git 管理的公开 SQLite → Vercel 部署只读查询
 
 ```
 本地抓取/策展（敏感原始数据不入库、不入 Git）
       │
       ▼  AI 解析、脱敏、生成公开投影
-Supabase 公开表（ai_news_public_items 等）
+X SQLite 公开投影 + Supabase 公开表（ai_news_public_items 等）
       │
       ▼  ISR 读取
 站点页面（浏览器只见公开投影）
@@ -49,7 +49,7 @@ pnpm build
 
 - **每日动态**：`pnpm ai-news:sync`，GitHub Actions 每 5 分钟增量同步（24h 窗口）、每天 04:17（北京时间）回填 7 天，详见 `docs/ai-news-sync.md`。
 - **开源关注**：`pnpm github:starred:sync`，详见 `docs/github-starred-sync.md`。
-- **每日关注**：`pnpm curation:*` 系列命令，详见 `docs/supabase-x-sync.md`。
+- **每日关注**：`pnpm curation:*` 系列命令生成 `data/curation.sqlite`，详见 `docs/supabase-x-sync.md`。
 
 ## 数据边界
 
