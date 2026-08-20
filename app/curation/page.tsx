@@ -6,7 +6,8 @@ import { ContentSectionNavigation } from "@/components/site-section-navigation";
 import { SiteProfile } from "@/components/site-profile";
 import { getCurationPage } from "@/lib/curation";
 
-// 与首页读同一份 Supabase 公开投影缓存：首次访问按需生成，五分钟内复用。
+// 策展投影随部署打包进 data/curation.sqlite（next.config 的 outputFileTracingIncludes），
+// 本页读本地库；revalidate 只对页面外壳有意义，内容更新以重新部署为准。
 export const revalidate = 300;
 
 export const metadata: Metadata = {

@@ -119,6 +119,7 @@ export function WorksShotStrip({ shots, workTitle }: WorksShotStripProps) {
 
   // 自动漂移：样张带缓慢自动横滚，到端点折返，配合中心强调依次呈现每张样张。
   // 悬停/聚焦暂停，手动滚轮或触摸后稍候再恢复；reduced-motion 下不启动。
+  // rAF 循环只在其滚入视口时运行（IntersectionObserver 门控），避免每个条目常驻空转。
   useEffect(() => {
     const strip = stripRef.current;
     if (!strip || reduceMotion) return;
@@ -156,6 +157,21 @@ export function WorksShotStrip({ shots, workTitle }: WorksShotStripProps) {
       raf = requestAnimationFrame(frame);
     };
 
+    const start = () => {
+      if (raf) return;
+      last = performance.now();
+      raf = requestAnimationFrame(frame);
+    };
+    const stop = () => {
+      cancelAnimationFrame(raf);
+      raf = 0;
+    };
+    const visibilityObserver = new IntersectionObserver((entries) => {
+      if (entries.some((entry) => entry.isIntersecting)) start();
+      else stop();
+    });
+    visibilityObserver.observe(strip);
+
     const holdBriefly = () => {
       resumeAt = performance.now() + 2600;
     };
@@ -174,9 +190,9 @@ export function WorksShotStrip({ shots, workTitle }: WorksShotStripProps) {
     strip.addEventListener("scroll", syncFromUserScroll, { passive: true });
     strip.addEventListener("wheel", holdBriefly, { passive: true });
     strip.addEventListener("touchstart", holdBriefly, { passive: true });
-    raf = requestAnimationFrame(frame);
     return () => {
-      cancelAnimationFrame(raf);
+      stop();
+      visibilityObserver.disconnect();
       strip.removeEventListener("pointerenter", onEnter);
       strip.removeEventListener("pointerleave", onLeave);
       strip.removeEventListener("focusin", onEnter);
@@ -187,17 +203,27 @@ export function WorksShotStrip({ shots, workTitle }: WorksShotStripProps) {
     };
   }, [reduceMotion]);
 
+  // 灯箱开关只跟随 active 有无，切换样张（active 在序号间变化）不关窗。
   useEffect(() => {
     const dialog = dialogRef.current;
     if (!dialog) return;
-    if (active && !dialog.open) {
-      dialog.showModal();
-      document.documentElement.style.overflow = "hidden";
-    }
-    if (!active && dialog.open) {
+    if (active) {
+      if (!dialog.open) dialog.showModal();
+    } else if (dialog.open) {
       dialog.close();
-      document.documentElement.style.overflow = "";
     }
+  }, [active]);
+
+  // 灯箱打开期间锁定页面滚动；cleanup 恢复原值（而非置空），
+  // 保证灯箱打开状态下组件被卸载（如路由切换）也不会把 overflow:hidden 留在页面上。
+  useEffect(() => {
+    if (!active) return;
+    const root = document.documentElement;
+    const previousOverflow = root.style.overflow;
+    root.style.overflow = "hidden";
+    return () => {
+      root.style.overflow = previousOverflow;
+    };
   }, [active]);
 
   const step = (delta: number) => {

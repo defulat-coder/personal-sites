@@ -24,6 +24,30 @@ function getMediaUrl(request: Request): URL | null {
   }
 }
 
+// 重定向目标只允许留在 twimg CDN 域内：手动跟随一跳并逐跳校验，
+// 否则上游一次 302 就能把本端点变成任意外站的开放代理。
+function getRedirectUrl(location: string | null, base: URL): URL | null {
+  if (!location) return null;
+  try {
+    const url = new URL(location, base);
+    const isTwimgHost = url.hostname === MEDIA_HOST || url.hostname.endsWith(".twimg.com");
+    return url.protocol === "https:" && isTwimgHost ? url : null;
+  } catch {
+    return null;
+  }
+}
+
+async function fetchUpstream(mediaUrl: URL, headers: Headers, method: "GET" | "HEAD") {
+  const first = await fetch(mediaUrl, { headers, method, redirect: "manual" });
+  if (first.status < 300 || first.status >= 400) return first;
+
+  const target = getRedirectUrl(first.headers.get("location"), mediaUrl);
+  if (!target) return null;
+  const second = await fetch(target, { headers, method, redirect: "manual" });
+  // 第二跳仍是重定向则不再跟随，避免被多跳链带出 CDN 域。
+  return second.status >= 300 && second.status < 400 ? null : second;
+}
+
 async function proxyMedia(request: Request, method: "GET" | "HEAD") {
   const mediaUrl = getMediaUrl(request);
   if (!mediaUrl) return new Response("不支持的视频地址。", { status: 400 });
@@ -32,7 +56,8 @@ async function proxyMedia(request: Request, method: "GET" | "HEAD") {
   const range = request.headers.get("range");
   if (range) headers.set("range", range);
 
-  const upstream = await fetch(mediaUrl, { headers, method, redirect: "follow" });
+  const upstream = await fetchUpstream(mediaUrl, headers, method);
+  if (!upstream) return new Response("视频地址的重定向目标不受支持。", { status: 502 });
   const responseHeaders = new Headers();
   for (const name of FORWARDED_HEADERS) {
     const value = upstream.headers.get(name);

@@ -324,11 +324,15 @@ test("发布器分别写入私有来源、私有阅读版、策展层和公开�
     "github_open_source_items",
   ]);
   assert.deepEqual(result, { indexedCount: 1, privateAnalysisCount: 1, privateSourceCount: 1, publicCount: 1 });
-  assert.equal(rpcCalls[0].name, "sync_ask_search_documents");
-  assert.equal(rpcCalls[0].arguments_.p_replace_scope, false);
+  // 重新发布先按 source_id 清掉旧 chunk（防止 chunk 数变少时残留），再增量 upsert 新 chunk。
+  assert.equal(rpcCalls[0].name, "delete_ask_search_documents");
   assert.equal(rpcCalls[0].arguments_.p_scope, "open-source");
-  assert.equal(rpcCalls[0].arguments_.p_documents[0].source_id, "node-1");
-  assert.equal(rpcCalls[0].arguments_.p_documents[0].source_url, "/open-source/example-repo#中文阅读版");
+  assert.deepEqual(rpcCalls[0].arguments_.p_source_ids, ["node-1"]);
+  assert.equal(rpcCalls[1].name, "sync_ask_search_documents");
+  assert.equal(rpcCalls[1].arguments_.p_replace_scope, false);
+  assert.equal(rpcCalls[1].arguments_.p_scope, "open-source");
+  assert.equal(rpcCalls[1].arguments_.p_documents[0].source_id, "node-1");
+  assert.equal(rpcCalls[1].arguments_.p_documents[0].source_url, "/open-source/example-repo#中文阅读版");
 });
 
 test("撤回公开仓库时只删除该仓库的问答索引", async () => {

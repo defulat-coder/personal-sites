@@ -176,6 +176,12 @@ export async function publishStarredRecords({ analyses = [], clientFactory = cre
     await deleteAskSearchDocuments(client, "open-source", unpublishedRecordIds);
   }
 
+  // 重新发布的仓库 chunk 数可能变少：增量 upsert（replaceScope=false）不会删除
+  // 未传入的旧 chunk id，先按 source_id 清掉这批仓库的旧 chunk 再写入，避免陈旧残留。
+  const publishedSourceIds = publicRows.map((row) => row.repo_node_id);
+  if (publishedSourceIds.length > 0) {
+    await deleteAskSearchDocuments(client, "open-source", publishedSourceIds);
+  }
   const indexedCount = await syncAskSearchDocuments(client, "open-source", toOpenSourceSearchDocuments(publicRows));
 
   return {

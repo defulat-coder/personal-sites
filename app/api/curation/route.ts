@@ -4,9 +4,10 @@ import { getCurationPage } from "@/lib/curation";
 
 const PUBLIC_CURATION_CACHE_CONTROL = "public, s-maxage=300, stale-while-revalidate=600";
 
-// 与 /api/ai-news 同理：分页档位固定为客户端的 PAGE_SIZE=20，limit 钳位、offset
-// 向下取整到 20 的倍数，把 unstable_cache 的键组合收敛到有限档位，防止爬虫用
-// 随机分页参数撑爆缓存。客户端按 id 去重，取整带来的重复条目会被丢弃。
+// 分页档位固定为客户端的 PAGE_SIZE=20：limit 钳位、offset 向下取整到 20 的倍数。
+// 注意与 /api/ai-news 不同：这里读的是随部署打包的本地 sqlite（不经 unstable_cache），
+// 钳位只保持两个分页接口的参数语义一致，不提供缓存键收敛；客户端按 id 去重，
+// 取整带来的重复条目会被丢弃。
 const PAGE_STEP = 20;
 
 const querySchema = z.object({

@@ -1,3 +1,5 @@
+import "server-only";
+
 import { createClient } from "@supabase/supabase-js";
 import { unstable_cache } from "next/cache";
 import { cache } from "react";
@@ -108,13 +110,9 @@ export async function listWorks(): Promise<WorkEntry[]> {
   return getCachedWorks();
 }
 
+// 详情从带 unstable_cache 的列表快照派生：snapshot 已含 body/records，
+// 与列表读同一份缓存，避免详情/列表之间出现 240s 的读不一致窗口。
 export const getWork = cache(async (slug: string): Promise<Work | null> => {
   if (!/^[\w-]+$/u.test(slug)) return null;
-  const { data, error } = await getPublicWorksClient()
-    .from("project_public_snapshots")
-    .select("display_order,published_at,snapshot")
-    .eq("slug", slug)
-    .maybeSingle();
-  if (error) throw new Error(`读取 Supabase 项目详情失败：${error.message}`);
-  return data ? toWork(workRowSchema.parse(data)) : null;
+  return (await getCachedWorks()).find((work) => work.slug === slug) ?? null;
 });
