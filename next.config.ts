@@ -4,6 +4,12 @@ const nextConfig: NextConfig = {
   outputFileTracingIncludes: {
     "/*": ["data/curation.sqlite"],
   },
+  experimental: {
+    // 每日动态/首页改为动态渲染后，SPA 导航默认每次都重新打服务端（含返回列表），
+    // 表现为明显的卡顿。给客户端 Router Cache 30 秒窗口：会话内往返即时响应，
+    // 超过窗口或整页刷新仍直读数据库，数据新鲜度不受影响。
+    staleTimes: { dynamic: 30 },
+  },
   poweredByHeader: false,
   reactStrictMode: true,
   // Pi resolves optional model integrations at runtime, which Turbopack cannot
