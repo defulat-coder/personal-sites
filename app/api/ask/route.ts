@@ -15,9 +15,11 @@ const requestSchema = sessionSchema.extend({
   scope: z.enum(askScopes),
 });
 
+// x-real-ip 由平台边缘按真实连接对端写入，客户端无法伪造；
+// x-forwarded-for 的链首是请求方可以自行注入的部分，只取链尾（边缘追加的真实 IP）。
 function getClientIp(request: Request) {
-  return request.headers.get("x-forwarded-for")?.split(",")[0]?.trim()
-    || request.headers.get("x-real-ip")
+  return request.headers.get("x-real-ip")
+    || request.headers.get("x-forwarded-for")?.split(",").at(-1)?.trim()
     || "local";
 }
 
@@ -26,9 +28,7 @@ function sseEvent(event: string, data: unknown) {
 }
 
 export async function POST(request: Request) {
-  const parsed = requestSchema.safeParse(await request.json().catch(() => null));
-  if (!parsed.success) return Response.json({ error: "问题、范围或浏览器会话标识无效。" }, { status: 400 });
-
+  // 限流只依赖 IP，提到请求体解析之前，被限的请求不必先读完整 body。
   const limit = checkAskRateLimit(getClientIp(request));
   if (!limit.allowed) {
     return Response.json(
@@ -36,6 +36,9 @@ export async function POST(request: Request) {
       { headers: { "Retry-After": String(limit.retryAfterSeconds) }, status: 429 },
     );
   }
+
+  const parsed = requestSchema.safeParse(await request.json().catch(() => null));
+  if (!parsed.success) return Response.json({ error: "问题、范围或浏览器会话标识无效。" }, { status: 400 });
 
   const encoder = new TextEncoder();
   const stream = new ReadableStream<Uint8Array>({
@@ -55,6 +58,8 @@ export async function POST(request: Request) {
           conversationId: parsed.data.conversationId,
           onText: (delta) => write("text", { delta }),
           question: parsed.data.question,
+          // 客户端断连即中止生成，不再为已离开的访客烧 token。
+          signal: request.signal,
           sources,
           visitorId: parsed.data.visitorId,
         });

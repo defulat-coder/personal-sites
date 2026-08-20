@@ -102,7 +102,11 @@ const AskMessageBubble = memo(function AskMessageBubble({ isStreamingPlaceholder
         {message.content ? (
           <Bubble align={message.role === "user" ? "end" : "start"} variant={message.role === "user" ? "default" : "ghost"}>
             <BubbleContent aria-live={message.role === "assistant" ? "polite" : undefined} className={`${styles.bubble} ${message.role === "user" ? styles.userBubble : styles.assistantBubble}`}>
-              {message.role === "assistant" ? <AskAnswerMarkdown source={message.content} /> : message.content}
+              {/* 流式期间渲染纯文本：Markdown 组件对每个 delta 全量重解析是 O(n²)，
+                  落定（isComplete）后才挂 ReactMarkdown；bubble 的 pre-wrap 保证换行不丢。 */}
+              {message.role === "assistant" && message.isComplete
+                ? <AskAnswerMarkdown source={message.content} />
+                : message.content}
             </BubbleContent>
           </Bubble>
         ) : isStreamingPlaceholder ? (
@@ -235,6 +239,8 @@ export function AskChat() {
 
   useEffect(() => () => {
     planeControls.current?.stop();
+    // 卸载（离开路由）时中止进行中的流式请求，避免对已卸载组件空跑完整回答。
+    requestController.current?.abort();
   }, []);
 
   // 清空对话：移除消息触发 AnimatePresence 逐条收没（最新一条先走，阶梯延迟由

@@ -1,7 +1,7 @@
 import "server-only";
 
 import Database from "better-sqlite3";
-import { existsSync } from "node:fs";
+import { existsSync, statSync } from "node:fs";
 import path from "node:path";
 import { cache } from "react";
 import { z } from "zod";
@@ -169,28 +169,64 @@ function occurrences(text: string, query: string) {
 }
 
 /** The daily corpus is small and ships with the deployment, so an in-process scorer avoids a second remote X index. */
+
+type DailySearchCorpusEntry = {
+  content: string;
+  id: string;
+  lowercaseContent: string;
+  lowercaseSearchText: string;
+  lowercaseTitle: string;
+  publishedAt: string | null;
+  sourceId: string;
+  sourceUrl: string;
+  title: string;
+};
+
+// 语料随部署冻结（curation.sqlite 打包进产物）：按 DB 文件 mtime 做模块级缓存，
+// 小写文本只预处理一次，避免每次提问都全表 SELECT + 逐行 zod parse + 三次 lowercase
+//（检索的 fallback 路径下单次提问会重复调用本函数多次）。
+let dailySearchCorpusCache: { entries: DailySearchCorpusEntry[]; mtimeMs: number } | undefined;
+
+function getDailySearchCorpus(): DailySearchCorpusEntry[] {
+  const db = getCurationDatabase();
+  const mtimeMs = statSync(DATABASE_PATH).mtimeMs;
+  if (dailySearchCorpusCache?.mtimeMs === mtimeMs) return dailySearchCorpusCache.entries;
+
+  const entries = db
+    .prepare("SELECT id, published_at, title, content, search_text, source_id, source_url FROM daily_ask_documents")
+    .all()
+    .map((row) => dailySearchRowSchema.parse(row))
+    .map((row) => ({
+      content: row.content,
+      id: row.id,
+      lowercaseContent: row.content.toLocaleLowerCase("en-US"),
+      lowercaseSearchText: row.search_text.toLocaleLowerCase("en-US"),
+      lowercaseTitle: row.title.toLocaleLowerCase("en-US"),
+      publishedAt: row.published_at,
+      sourceId: row.source_id,
+      sourceUrl: row.source_url,
+      title: row.title,
+    }));
+  dailySearchCorpusCache = { entries, mtimeMs };
+  return entries;
+}
+
 export function searchCurationDailyDocuments(query: string, limit = 6): CurationDailySearchDocument[] {
   const needle = query.trim().toLocaleLowerCase("en-US");
   if (!needle) return [];
 
-  return getCurationDatabase()
-    .prepare("SELECT id, published_at, title, content, search_text, source_id, source_url FROM daily_ask_documents")
-    .all()
-    .map((row) => dailySearchRowSchema.parse(row))
-    .map((row) => {
-      const title = row.title.toLocaleLowerCase("en-US");
-      const searchText = row.search_text.toLocaleLowerCase("en-US");
-      const content = row.content.toLocaleLowerCase("en-US");
-      return {
-        content: row.content,
-        id: row.id,
-        publishedAt: row.published_at,
-        score: occurrences(title, needle) * 8 + occurrences(searchText, needle) * 2 + occurrences(content, needle),
-        sourceId: row.source_id,
-        sourceUrl: row.source_url,
-        title: row.title,
-      };
-    })
+  return getDailySearchCorpus()
+    .map((entry) => ({
+      content: entry.content,
+      id: entry.id,
+      publishedAt: entry.publishedAt,
+      score: occurrences(entry.lowercaseTitle, needle) * 8
+        + occurrences(entry.lowercaseSearchText, needle) * 2
+        + occurrences(entry.lowercaseContent, needle),
+      sourceId: entry.sourceId,
+      sourceUrl: entry.sourceUrl,
+      title: entry.title,
+    }))
     .filter((row) => row.score > 0)
     .sort((left, right) => right.score - left.score || (right.publishedAt ?? "").localeCompare(left.publishedAt ?? ""))
     .slice(0, limit);
