@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { Suspense } from "react";
 
 import { AiNewsStream } from "@/components/ai-news-stream";
 import { SectionMotionLifecycle } from "@/components/section-motion-lifecycle";
@@ -14,15 +15,33 @@ export const metadata: Metadata = {
   title: "每日动态｜陈远",
 };
 
-export default async function AiNewsPage() {
+// 流式骨架：与列表加载更多的骨架共用同一套样式。
+function FeedSkeleton() {
+  return (
+    <div aria-busy="true" aria-live="polite" className="curation-home__stream-skeleton">
+      <span />
+      <span className="is-medium" />
+      <span className="is-short" />
+    </div>
+  );
+}
+
+async function AiNewsFeed() {
   const aiNewsPage = await getAiNewsPage(0, AI_NEWS_LIST_LIMIT);
+  return <AiNewsStream initialHasMore={aiNewsPage.hasMore} initialItems={aiNewsPage.items} />;
+}
+
+export default function AiNewsPage() {
+  // 壳（个人信息栏、版块导航）立即渲染，动态数据经 Suspense 流式补进。
   return (
     <main className="curation-home" id="site-main" tabIndex={-1}>
       <SiteProfile mobileSection="ai-news" />
       <SectionMotionLifecycle section="ai-news" />
       <section aria-label="每日动态" className="curation-home__feed site-section-motion">
         <ContentSectionNavigation current="ai-news" />
-        <AiNewsStream initialHasMore={aiNewsPage.hasMore} initialItems={aiNewsPage.items} />
+        <Suspense fallback={<FeedSkeleton />}>
+          <AiNewsFeed />
+        </Suspense>
       </section>
     </main>
   );

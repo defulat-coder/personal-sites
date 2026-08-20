@@ -2,6 +2,7 @@ import { Suspense } from "react";
 
 import { HomeMain, type HomeStreamData } from "@/components/home-main";
 import { HomeView } from "@/components/home-view";
+import { SiteProfile } from "@/components/site-profile";
 import { getAiNewsPage, AI_NEWS_LIST_LIMIT } from "@/lib/ai-news";
 import { getCurationPage } from "@/lib/curation";
 import { getOpenSourceListEntries } from "@/lib/open-source";
@@ -10,7 +11,23 @@ import { getOpenSourceListEntries } from "@/lib/open-source";
 // 时间缓存——否则缓存过期后的首次访问仍先拿到旧页面。
 export const dynamic = "force-dynamic";
 
-export default async function HomePage() {
+// 数据就绪前的中性壳：个人信息栏 + 加载骨架，让首字节不等数据查询。
+function HomeShell() {
+  return (
+    <main className="curation-home curation-home--mobile-home" id="site-main" tabIndex={-1}>
+      <SiteProfile mobileSection="home" />
+      <section aria-label="内容" className="curation-home__feed">
+        <div aria-busy="true" aria-live="polite" className="curation-home__stream-skeleton">
+          <span />
+          <span className="is-medium" />
+          <span className="is-short" />
+        </div>
+      </section>
+    </main>
+  );
+}
+
+async function HomeData() {
   const [aiNewsPage, curationPage, openSourceEntries] = await Promise.all([
     getAiNewsPage(0, AI_NEWS_LIST_LIMIT),
     getCurationPage(),
@@ -26,6 +43,14 @@ export default async function HomePage() {
   return (
     <Suspense fallback={<HomeMain {...streamData} initialView={null} mobileSection="home" />}>
       <HomeView {...streamData} />
+    </Suspense>
+  );
+}
+
+export default function HomePage() {
+  return (
+    <Suspense fallback={<HomeShell />}>
+      <HomeData />
     </Suspense>
   );
 }

@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
+import { Suspense } from "react";
 import { ArrowLeft, ArrowUpRight } from "lucide-react";
 
 import { SiteProfile } from "@/components/site-profile";
@@ -14,6 +15,8 @@ import {
   getAiNewsUrlHost,
 } from "@/lib/ai-news-types";
 
+import { AiNewsDetailSkeleton } from "./loading";
+
 type AiNewsDetailPageProps = { params: Promise<{ id: string }> };
 
 // 动态渲染、每请求直读 Supabase 公开投影，打开即最新。
@@ -26,60 +29,69 @@ export async function generateMetadata({ params }: AiNewsDetailPageProps): Promi
     : {};
 }
 
-export default async function AiNewsDetailPage({ params }: AiNewsDetailPageProps) {
+export default function AiNewsDetailPage({ params }: AiNewsDetailPageProps) {
+  // 壳（个人信息栏）立即渲染，详情数据经 Suspense 流式补进：
+  // 动态渲染下首字节不再等 Supabase 查询。
+  return (
+    <main className="curation-home curation-detail" id="site-main" tabIndex={-1}>
+      <SiteProfile />
+      <Suspense fallback={<AiNewsDetailSkeleton />}>
+        <AiNewsDetailContent params={params} />
+      </Suspense>
+    </main>
+  );
+}
+
+async function AiNewsDetailContent({ params }: AiNewsDetailPageProps) {
   const item = await getAiNewsItem((await params).id);
   if (!item) notFound();
 
   const relativeTime = formatAiNewsRelativeTime(item.publishedAt);
 
   return (
-    <main className="curation-home curation-detail" id="site-main" tabIndex={-1}>
-      <SiteProfile />
+    <article className="ai-news-detail__article" data-content-id={item.id}>
+      <nav aria-label="返回" className="ai-news-detail__topbar">
+        <Link className="ai-news-detail__back" href="/ai-news">
+          <ArrowLeft aria-hidden="true" />
+          返回每日动态
+        </Link>
+        <ThemeToggle />
+      </nav>
 
-      <article className="ai-news-detail__article" data-content-id={item.id}>
-        <nav aria-label="返回" className="ai-news-detail__topbar">
-          <Link className="ai-news-detail__back" href="/ai-news">
-            <ArrowLeft aria-hidden="true" />
-            返回每日动态
-          </Link>
-          <ThemeToggle />
-        </nav>
+      <header className="ai-news-detail__header">
+        <p className="ai-news-detail__kicker">
+          {getAiNewsCategoryLabel(item.category)}
+          {item.selected ? " · 精选" : ""}
+        </p>
+        <h1>{item.title}</h1>
+        <div className="ai-news-detail__meta">
+          <span>{item.sourceName}</span>
+          <time dateTime={item.publishedAt ?? undefined}>{formatAiNewsTime(item.publishedAt)}</time>
+          {relativeTime ? <span>{relativeTime}</span> : null}
+        </div>
+      </header>
 
-        <header className="ai-news-detail__header">
-          <p className="ai-news-detail__kicker">
-            {getAiNewsCategoryLabel(item.category)}
-            {item.selected ? " · 精选" : ""}
-          </p>
-          <h1>{item.title}</h1>
-          <div className="ai-news-detail__meta">
-            <span>{item.sourceName}</span>
-            <time dateTime={item.publishedAt ?? undefined}>{formatAiNewsTime(item.publishedAt)}</time>
-            {relativeTime ? <span>{relativeTime}</span> : null}
-          </div>
-        </header>
+      {item.summary ? (
+        <section aria-label="导读" className="ai-news-detail__section ai-news-detail__lead">
+          <h2 className="ai-news-detail__eyebrow">导读</h2>
+          <p>{item.summary}</p>
+        </section>
+      ) : null}
 
-        {item.summary ? (
-          <section aria-label="导读" className="ai-news-detail__section ai-news-detail__lead">
-            <h2 className="ai-news-detail__eyebrow">导读</h2>
-            <p>{item.summary}</p>
-          </section>
-        ) : null}
+      {item.reason ? (
+        <section aria-label="推荐理由" className="ai-news-detail__section ai-news-detail__reason">
+          <h2 className="ai-news-detail__eyebrow">推荐理由</h2>
+          <p>{item.reason}</p>
+        </section>
+      ) : null}
 
-        {item.reason ? (
-          <section aria-label="推荐理由" className="ai-news-detail__section ai-news-detail__reason">
-            <h2 className="ai-news-detail__eyebrow">推荐理由</h2>
-            <p>{item.reason}</p>
-          </section>
-        ) : null}
-
-        <footer className="ai-news-detail__source">
-          <a className="ai-news-detail__cta" href={item.url} rel="noreferrer" target="_blank">
-            {getAiNewsOriginalAction(item.url)}
-            <ArrowUpRight aria-hidden="true" />
-          </a>
-          <span className="ai-news-detail__cta-host">{getAiNewsUrlHost(item.url)}</span>
-        </footer>
-      </article>
-    </main>
+      <footer className="ai-news-detail__source">
+        <a className="ai-news-detail__cta" href={item.url} rel="noreferrer" target="_blank">
+          {getAiNewsOriginalAction(item.url)}
+          <ArrowUpRight aria-hidden="true" />
+        </a>
+        <span className="ai-news-detail__cta-host">{getAiNewsUrlHost(item.url)}</span>
+      </footer>
+    </article>
   );
 }

@@ -310,7 +310,8 @@ export function AiNewsStream({ initialHasMore, initialItems }: AiNewsStreamProps
                     ease: STREAM_EASE,
                   }}
                 >
-                  <Link className="ai-news__entry" data-content-id={item.id} href={`/ai-news/${item.id}` as Route}>
+                  {/* 动态页默认不预取；单条动态内容不可变，显式预取让点击即时打开。 */}
+                  <Link className="ai-news__entry" data-content-id={item.id} href={`/ai-news/${item.id}` as Route} prefetch={true}>
                     <div className="ai-news__entry-meta">
                       <time dateTime={item.publishedAt ?? undefined}>{formatAiNewsClock(item.publishedAt)}</time>
                       {/* 登记列只保留出处名；(@handle) 会撑高左栏，详情页仍展示完整出处。 */}
