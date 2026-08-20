@@ -131,7 +131,8 @@ export async function syncAiNews({
   const fetchedAt = now.toISOString();
   const stats = { backfill, modes: {}, publicCount: 0 };
   // all feed 的 upsert 会把同 id 行的 selected 覆盖为 false：先记下当前精选 id，
-  // 待全部 upsert 结束后统一还原；selected feed 本轮有更新时以它的条目为准。
+  // 待全部 upsert 结束后统一先清后设（清掉已掉出精选的旧行，再点亮本轮精选）；
+  // selected feed 本轮有更新时以它的条目为准。
   const { data: previousSelected, error: selectedReadError } = await client
     .from("ai_news_public_items")
     .select("id")
@@ -167,6 +168,18 @@ export async function syncAiNews({
     stats.publicCount += publicRows.length;
     stats.modes[mode] = { changed: true, count: feed.items.length };
   }
+
+  // 精选标记先清后设：掉出精选 feed 的旧条目必须复位为 false，
+  // 否则它们会一直挂着 selected=true，直到 8 天清理才被摘掉。
+  let clearSelectedQuery = client
+    .from("ai_news_public_items")
+    .update({ selected: false })
+    .eq("selected", true);
+  if (selectedIds.size > 0) {
+    clearSelectedQuery = clearSelectedQuery.not("id", "in", `(${[...selectedIds].join(",")})`);
+  }
+  const { error: clearSelectedError } = await clearSelectedQuery;
+  if (clearSelectedError) throw new Error(`复位每日动态精选标记失败：${clearSelectedError.message}`);
 
   if (selectedIds.size > 0) {
     const { error } = await client

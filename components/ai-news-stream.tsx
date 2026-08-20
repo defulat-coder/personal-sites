@@ -3,7 +3,7 @@
 import { motion, useReducedMotion } from "motion/react";
 import type { Route } from "next";
 import Link from "next/link";
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
 
 import {
   formatAiNewsClock,
@@ -13,6 +13,11 @@ import {
 } from "@/lib/ai-news-types";
 import type { AiNewsListItem } from "@/lib/ai-news-types";
 
+import {
+  readAiNewsStreamSnapshot,
+  toAiNewsStreamSnapshot,
+  writeAiNewsStreamSnapshot,
+} from "./ai-news-stream-snapshot";
 import { observeCurationScrollEnd, getCurationScrollTarget } from "./curation-scroll";
 
 type AiNewsPageResponse = {
@@ -22,7 +27,6 @@ type AiNewsPageResponse = {
 };
 
 type AiNewsStreamProps = {
-  active?: boolean;
   initialHasMore: boolean;
   initialItems: AiNewsListItem[];
 };
@@ -33,7 +37,7 @@ const STREAM_EASE: [number, number, number, number] = [0.16, 1, 0.3, 1];
 // 只揭示首屏可见的前几行，其余行直接呈现，避免长列表整体延迟。
 const FILTER_REVEAL_COUNT = 8;
 
-export function AiNewsStream({ active = true, initialHasMore, initialItems }: AiNewsStreamProps) {
+export function AiNewsStream({ initialHasMore, initialItems }: AiNewsStreamProps) {
   const streamRef = useRef<HTMLDivElement>(null);
   const reduceMotion = useReducedMotion();
   const [items, setItems] = useState(initialItems);
@@ -44,8 +48,91 @@ export function AiNewsStream({ active = true, initialHasMore, initialItems }: Ai
   const [activeCategory, setActiveCategory] = useState<string | null>(null);
   // 筛选版本号：> 0 表示列表是筛选后的客户端重挂载，首行阶梯揭示只在这种挂载上播。
   const [filterVersion, setFilterVersion] = useState(0);
+  // 会话快照恢复：从详情页返回时把分页与滚动位置还原，避免列表从头开始。
+  // restored 是一次性开关——恢复后的重渲染提交完成、DOM 行数齐全后再落滚动位置。
+  const [restored, setRestored] = useState(false);
+  const scrollTopRef = useRef(0);
+  const restoreScrollTopRef = useRef(0);
+  // 快照写入门闩：挂载提交期间（含 StrictMode 重放、dev 下的重挂载）禁止写快照——
+  // 否则恢复读取之前，初始 SSR 状态会先把有效快照覆盖掉。挂载落定后由宏任务开门。
+  const writesEnabledRef = useRef(false);
+  const latestRef = useRef({ activeCategory, hasMore, items });
+
+  // 仅挂载时执行：首渲染仍用 SSR 数据（无水合不一致），layout effect 里的
+  // setState 会在绘制前同步重渲染，访客看不到从 50 条跳回完整列表的过程。
+  useLayoutEffect(() => {
+    const enableWrites = window.setTimeout(() => {
+      writesEnabledRef.current = true;
+    }, 0);
+    if (!restored) {
+      const snapshot = readAiNewsStreamSnapshot(initialItems[0]?.id);
+      if (snapshot) {
+        restoreScrollTopRef.current = snapshot.scrollTop;
+        scrollTopRef.current = snapshot.scrollTop;
+        // eslint-disable-next-line react-hooks/set-state-in-effect -- 恢复 sessionStorage 快照只能在挂载后做，layout effect 保证绘制前完成
+        setItems(snapshot.items);
+        setHasMore(snapshot.hasMore);
+        setActiveCategory(snapshot.activeCategory);
+        // 恢复的行全部视为非追加行，不重播入场阶梯。
+        setAppendStart(snapshot.items.length);
+        setRestored(true);
+      }
+    }
+    return () => window.clearTimeout(enableWrites);
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- 只在挂载时尝试恢复一次
+  }, []);
+
+  useLayoutEffect(() => {
+    if (!restored) return;
+    const stream = streamRef.current;
+    if (!stream) return;
+    getCurationScrollTarget(stream).scrollTo({ behavior: "auto", top: restoreScrollTopRef.current });
+  }, [restored]);
+
+  // 跟踪滚动位置（rAF 节流的被动监听）；桌面端滚动容器是 .curation-home__feed，
+  // 移动端是 window，统一经 getCurationScrollTarget 取值。
+  useEffect(() => {
+    const stream = streamRef.current;
+    if (!stream) return;
+    const target = getCurationScrollTarget(stream);
+    let frame = 0;
+    const onScroll = () => {
+      if (frame) return;
+      frame = window.requestAnimationFrame(() => {
+        frame = 0;
+        scrollTopRef.current = target instanceof Window ? target.scrollY : target.scrollTop;
+      });
+    };
+    target.addEventListener("scroll", onScroll, { passive: true });
+    return () => {
+      target.removeEventListener("scroll", onScroll);
+      if (frame) window.cancelAnimationFrame(frame);
+    };
+  }, []);
+
+  // 分页或筛选变化时持久化快照；滚动位置在写入时从 ref 取最新值。
+  useEffect(() => {
+    latestRef.current = { activeCategory, hasMore, items };
+    if (!writesEnabledRef.current || items.length === 0) return;
+    writeAiNewsStreamSnapshot(toAiNewsStreamSnapshot({
+      activeCategory,
+      hasMore,
+      items,
+      scrollTop: scrollTopRef.current,
+    }));
+  }, [activeCategory, hasMore, items]);
+
+  // 路由离开（点进详情）时组件卸载，兜底写一次最终状态。
+  useEffect(() => () => {
+    if (!writesEnabledRef.current) return;
+    const latest = latestRef.current;
+    if (latest.items.length === 0) return;
+    writeAiNewsStreamSnapshot(toAiNewsStreamSnapshot({ ...latest, scrollTop: scrollTopRef.current }));
+  }, []);
 
   const selectCategory = (next: string | null) => {
+    // 幂等：重复点击当前激活的筛选（含「全部」）不触发任何副作用（滚顶/揭示动画）。
+    if (next === activeCategory) return;
     setActiveCategory(next);
     setFilterVersion((version) => version + 1);
   };
@@ -62,7 +149,7 @@ export function AiNewsStream({ active = true, initialHasMore, initialItems }: Ai
   }, [filterVersion, reduceMotion]);
 
   const loadMore = useCallback(async () => {
-    if (!active || isLoading || !hasMore) return;
+    if (isLoading || !hasMore) return;
 
     setIsLoading(true);
     setLoadError(null);
@@ -82,14 +169,14 @@ export function AiNewsStream({ active = true, initialHasMore, initialItems }: Ai
     } finally {
       setIsLoading(false);
     }
-  }, [active, hasMore, isLoading, items.length]);
+  }, [hasMore, isLoading, items.length]);
 
   useEffect(() => {
     const stream = streamRef.current;
-    if (!active || !hasMore || !stream) return;
+    if (!hasMore || !stream) return;
 
     return observeCurationScrollEnd(stream, () => void loadMore());
-  }, [active, hasMore, loadMore]);
+  }, [hasMore, loadMore]);
 
   const categories = useMemo(() => listAiNewsCategories(items), [items]);
   const hasSelected = useMemo(() => items.some((item) => item.selected), [items]);
@@ -107,6 +194,19 @@ export function AiNewsStream({ active = true, initialHasMore, initialItems }: Ai
         : items;
     return groupAiNewsByDay(visible);
   }, [activeCategory, items]);
+  // 筛选揭示用「过滤后展平序列」的序号而非全局索引：加载多页后，某分类的首批条目
+  // 全局索引会整体越过 FILTER_REVEAL_COUNT 窗口，用全局索引判定等于静默禁用揭示。
+  const filteredIndex = useMemo(() => {
+    const index = new Map<string, number>();
+    let position = 0;
+    for (const group of groups) {
+      for (const item of group.items) {
+        index.set(item.id, position);
+        position += 1;
+      }
+    }
+    return index;
+  }, [groups]);
 
   if (initialItems.length === 0) {
     return (
@@ -191,12 +291,13 @@ export function AiNewsStream({ active = true, initialHasMore, initialItems }: Ai
           <ol className="ai-news__timeline">
             {group.items.map((item) => {
               const index = itemIndex.get(item.id) ?? 0;
+              const revealIndex = filteredIndex.get(item.id) ?? 0;
               const isAppended = index >= appendStart;
-              const isFilterReveal = filterVersion > 0 && index < FILTER_REVEAL_COUNT;
+              const isFilterReveal = filterVersion > 0 && revealIndex < FILTER_REVEAL_COUNT;
               const animateMount = !reduceMotion && (isAppended || isFilterReveal);
               const mountDelay = isAppended
                 ? Math.min(index - appendStart, 9) * 0.032
-                : index * 0.032;
+                : revealIndex * 0.032;
               // 首屏 SSR 与筛选重挂载的非揭示行保持静态；追加行与筛选揭示行播放入场阶梯。
               return (
                 <motion.li

@@ -38,12 +38,40 @@ jobs:
           cache: pnpm
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
+      # ETag 条件请求状态（var/ai-news/sync-state.json）随 run 丢失会退化为每次全量抓取；
+      # 用 actions/cache 按内容哈希跨运行保留（命中同键时 save 冲突属正常，不判失败）。
+      - name: Restore sync state (ETag)
+        uses: actions/cache/restore@v4
+        with:
+          path: var/ai-news/sync-state.json
+          key: ai-news-sync-state-${{ hashFiles('var/ai-news/sync-state.json') }}
+          restore-keys: ai-news-sync-state-
       - name: Backfill (7d window)
         if: github.event.schedule == '17 20 * * *' || inputs.backfill == true
         run: node scripts/ai-news-sync.mjs --backfill
       - name: Incremental sync (24h window)
         if: github.event.schedule != '17 20 * * *' && inputs.backfill != true
         run: node scripts/ai-news-sync.mjs
-      # 同步完成后重建公开问答全文索引（含每日动态），保持问一问语料新鲜。
-      - name: Rebuild Q&A full-text index
-        run: node scripts/ask-reindex.mjs
+      - name: Save sync state (ETag)
+        continue-on-error: true
+        uses: actions/cache/save@v4
+        with:
+          path: var/ai-news/sync-state.json
+          key: ai-news-sync-state-${{ hashFiles('var/ai-news/sync-state.json') }}
+      # 同步完成后重建公开问答全文索引。ai-news 语料随本任务 5 分钟一变，随同步重建；
+      # open-source 由 github-starred 发布流程自行增量维护（publish-to-supabase.mjs），
+      # daily 语料随部署打包在本地 sqlite，均无需每次全量重写。
+      - name: Rebuild Q&A full-text index (ai-news scope)
+        run: node scripts/ask-reindex.mjs ai-news
+      # 公开投影已更新，按需失效站点缓存（ISR 页面 + unstable_cache），
+      # 否则访客要等缓存自然过期、且过期后首访仍先拿到旧页面。
+      - name: Revalidate site caches
+        env:
+          SITE_URL: ${{ secrets.SITE_URL }}
+          AI_NEWS_REVALIDATE_SECRET: ${{ secrets.AI_NEWS_REVALIDATE_SECRET }}
+        run: |
+          if [ -z "$SITE_URL" ] || [ -z "$AI_NEWS_REVALIDATE_SECRET" ]; then
+            echo "::notice::SITE_URL 或 AI_NEWS_REVALIDATE_SECRET 未配置，跳过按需失效。"
+            exit 0
+          fi
+          curl -fsS -X POST "$SITE_URL/api/revalidate" -H "Authorization: Bearer $AI_NEWS_REVALIDATE_SECRET"

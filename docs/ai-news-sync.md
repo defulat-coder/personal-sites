@@ -14,10 +14,11 @@
 1. 通过 `pnpm supabase:push` 应用 [迁移](../supabase/migrations/20260814130000_ai_news_storage.sql)（先 `--dry-run` 预演）。
 2. 手动执行一次 `pnpm ai-news:sync`（增量）和 `pnpm ai-news:backfill`（7 天回填）验证。
 3. 定时任务（首选 GitHub Actions，本机 launchd 为可选兜底）：
-   - `.github/workflows/ai-news-sync.yml`：每 5 分钟跑增量（24h 窗口，GitHub cron 的最小间隔，高负载时可能延迟），每天 20:17 UTC（北京时间 04:17）跑 7 天回填；手动触发支持 `backfill` 输入。需在仓库 Settings → Secrets and variables → Actions 配置 `SUPABASE_URL` 与 `SUPABASE_SERVICE_ROLE_KEY`。同步完成后会追加执行 `node scripts/ask-reindex.mjs` 重建公开问答全文索引（含每日动态语料），无需单独调度。
-   - Actions 环境无持久磁盘，ETag 条件请求状态（`var/ai-news/sync-state.json`）不跨运行保留，每次运行按全量 upsert 处理（幂等，按 id 冲突覆盖）。
+   - `.github/workflows/ai-news-sync.yml`：每 5 分钟跑增量（24h 窗口，GitHub cron 的最小间隔，高负载时可能延迟），每天 20:17 UTC（北京时间 04:17）跑 7 天回填；手动触发支持 `backfill` 输入。需在仓库 Settings → Secrets and variables → Actions 配置 `SUPABASE_URL` 与 `SUPABASE_SERVICE_ROLE_KEY`。同步完成后追加执行 `node scripts/ask-reindex.mjs ai-news` 只重建每日动态语料；open-source 语料由 github-starred 发布流程自行增量维护，daily 语料随部署打包在本地 sqlite。需要全量重建时手动执行 `pnpm ask:reindex`（不带参数 = 全部范围）。
+   - 同步（含回填）成功后，工作流最后一步会 `POST $SITE_URL/api/revalidate`（Bearer 密钥 `AI_NEWS_REVALIDATE_SECRET`）按需失效站点缓存（ISR 页面与 `unstable_cache`，`lib/ai-news.ts` 的 `public-ai-news` tag）：密钥只存在于 Vercel 环境变量与 Actions secrets，不落仓库。两个 secret 未配置时该步骤打印 notice 并跳过，不会判失败。
+   - ETag 条件请求状态（`var/ai-news/sync-state.json`）通过 `actions/cache`（按内容哈希的 restore/save）跨运行保留，命中 304 时跳过重写；缓存丢失时退化为全量 upsert（幂等，按 id 冲突覆盖），不影响正确性。回填不读写 ETag 状态。
    - 公开仓库的 Actions 不计私有额度，频率不受分钟数限制；但 GitHub cron 最小间隔为 5 分钟且不保证准点，仓库 60 天无活动时 scheduled workflow 会被自动暂停，需到 Actions 页手动恢复。
-   - 本机 launchd 兜底（plist 模板在 `config/` 下，仓库内不含本机路径，安装前需替换占位符）：
+   - 本机 launchd 兜底（plist 模板在 `config/` 下，仓库内不含本机路径，安装前需替换占位符）。与 GitHub Actions 二选一：upsert 虽幂等，但两套调度并行会重复写入，且 ETag 状态（Actions cache 与本机 `var/ai-news/sync-state.json`）各自为政、互相失效，启用 launchd 前先禁用 workflow（反之亦然）：
      - `ai-news-sync.launchd.plist`：每 5 分钟跑增量（24h 窗口），日志 `var/ai-news/sync.log`；
      - `ai-news-backfill.launchd.plist`：每天 04:17 跑 7 天回填，日志 `var/ai-news/backfill.log`。
 

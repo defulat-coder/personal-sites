@@ -1,7 +1,7 @@
 import assert from "node:assert/strict";
 import { describe, it } from "node:test";
 
-import { buildSyncRows, fetchFeed, stripEmoji, toPublicAiNewsItem } from "../modules/ai-news/sync.mjs";
+import { buildSyncRows, fetchFeed, stripEmoji, syncAiNews, toPublicAiNewsItem } from "../modules/ai-news/sync.mjs";
 
 const upstreamItem = {
   category: "ai-models",
@@ -115,5 +115,70 @@ describe("ai news sync", () => {
     assert.equal(stripEmoji("没有 emoji 的文本"), "没有 emoji 的文本");
     const item = toPublicAiNewsItem({ ...upstreamItem, summary: "开源新模型 ✨，性能提升 50% 🎉" });
     assert.equal(item.summary, "开源新模型，性能提升 50%");
+  });
+
+  it("syncAiNews resets stale selected flags before marking the current feed", async () => {
+    const makeItem = (id) => ({ ...upstreamItem, id, links: { original: `https://example.com/${id}` } });
+    const feedByMode = {
+      all: [makeItem("fresh-z")],
+      selected: [makeItem("keep-x"), makeItem("fresh-z")],
+    };
+    const fetchImpl = async (url) => {
+      const mode = new URL(url).searchParams.get("mode");
+      return new Response(JSON.stringify({
+        items: feedByMode[mode],
+        page: { count: feedByMode[mode].length, hasMore: false, nextCursor: null },
+      }), { status: 200 });
+    };
+
+    // 内存版公开投影：stale-y 是已掉出精选 feed 且不在本轮 24h 窗口里的旧精选。
+    const store = new Map([
+      ["keep-x", { id: "keep-x", selected: false }],
+      ["stale-y", { id: "stale-y", selected: true }],
+    ]);
+    const fakeTable = {
+      select: () => ({
+        eq: async (column, value) => ({
+          data: [...store.values()].filter((row) => row[column] === value).map((row) => ({ id: row.id })),
+          error: null,
+        }),
+      }),
+      upsert: async (rows) => {
+        for (const row of rows) store.set(row.id, { ...store.get(row.id), ...row });
+        return { error: null };
+      },
+      update: (patch) => ({
+        eq: (column, value) => ({
+          not: async (_column, _op, listLiteral) => {
+            const excluded = new Set(listLiteral.replace(/^\(|\)$/g, "").split(",").filter(Boolean));
+            for (const row of store.values()) {
+              if (row[column] === value && !excluded.has(row.id)) Object.assign(row, patch);
+            }
+            return { error: null };
+          },
+        }),
+        in: async (_column, ids) => {
+          for (const id of ids) {
+            const row = store.get(id);
+            if (row) Object.assign(row, patch);
+          }
+          return { error: null };
+        },
+      }),
+      delete: () => ({ or: async () => ({ error: null }) }),
+    };
+    const clientFactory = () => ({ from: () => fakeTable });
+
+    await syncAiNews({
+      backfill: true,
+      clientFactory,
+      env: { SUPABASE_SERVICE_ROLE_KEY: "test", SUPABASE_URL: "https://example.supabase.co" },
+      fetchImpl,
+      repoRoot: "/tmp/unused-in-backfill",
+    });
+
+    assert.equal(store.get("stale-y").selected, false, "掉出精选 feed 的旧条目必须复位");
+    assert.equal(store.get("keep-x").selected, true);
+    assert.equal(store.get("fresh-z").selected, true);
   });
 });
