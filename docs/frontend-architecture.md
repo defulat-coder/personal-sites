@@ -10,10 +10,10 @@
 RootLayout
 ├─ OpeningLoader（全屏遮罩，每次完整页面加载都会播放）
 └─ 路由页面
-   ├─ /                         首页（ISR，revalidate = 300）
+   ├─ /                         首页（动态渲染，每请求直读 Supabase/sqlite）
    │  ├─ Profile rail（sticky）
    │  └─ 右侧默认每日动态；遗留 ?view= 仅作旧链接兼容，由客户端 HomeView 读取
-   ├─ /ai-news                  每日动态版块（ISR，revalidate = 300）
+   ├─ /ai-news                  每日动态版块（动态渲染，每请求直读 Supabase）
    ├─ /curation                 推特点赞版块（ISR，revalidate = 300）
    ├─ /open-source              开源关注版块（ISR，revalidate = 300）
    ├─ /ask                      问一问

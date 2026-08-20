@@ -16,12 +16,8 @@ import {
 
 type AiNewsDetailPageProps = { params: Promise<{ id: string }> };
 
-// 与首页读同一份 Supabase 公开投影缓存：首次访问按需生成，五分钟内复用。
-export const revalidate = 300;
-
-export function generateStaticParams() {
-  return [];
-}
+// 动态渲染、每请求直读 Supabase 公开投影，打开即最新。
+export const dynamic = "force-dynamic";
 
 export async function generateMetadata({ params }: AiNewsDetailPageProps): Promise<Metadata> {
   const item = await getAiNewsItem((await params).id);

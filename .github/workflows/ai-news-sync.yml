@@ -63,15 +63,3 @@ jobs:
       # daily 语料随部署打包在本地 sqlite，均无需每次全量重写。
       - name: Rebuild Q&A full-text index (ai-news scope)
         run: node scripts/ask-reindex.mjs ai-news
-      # 公开投影已更新，按需失效站点缓存（ISR 页面 + unstable_cache），
-      # 否则访客要等缓存自然过期、且过期后首访仍先拿到旧页面。
-      - name: Revalidate site caches
-        env:
-          SITE_URL: ${{ secrets.SITE_URL }}
-          AI_NEWS_REVALIDATE_SECRET: ${{ secrets.AI_NEWS_REVALIDATE_SECRET }}
-        run: |
-          if [ -z "$SITE_URL" ] || [ -z "$AI_NEWS_REVALIDATE_SECRET" ]; then
-            echo "::notice::SITE_URL 或 AI_NEWS_REVALIDATE_SECRET 未配置，跳过按需失效。"
-            exit 0
-          fi
-          curl -fsS -X POST "$SITE_URL/api/revalidate" -H "Authorization: Bearer $AI_NEWS_REVALIDATE_SECRET"

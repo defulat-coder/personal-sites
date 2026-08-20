@@ -6,8 +6,8 @@ import { ContentSectionNavigation } from "@/components/site-section-navigation";
 import { SiteProfile } from "@/components/site-profile";
 import { getAiNewsPage, AI_NEWS_LIST_LIMIT } from "@/lib/ai-news";
 
-// 与首页读同一份 Supabase 公开投影缓存：首次访问按需生成，五分钟内复用。
-export const revalidate = 300;
+// 动态渲染、每请求直读 Supabase 公开投影，打开即最新。
+export const dynamic = "force-dynamic";
 
 export const metadata: Metadata = {
   description: "陈远每日跟踪的 AI 与 Agent 工程动态，按日分组的连续阅读流。",
