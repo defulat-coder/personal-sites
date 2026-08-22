@@ -219,6 +219,7 @@ struct ProfileHeaderContent: View {
 struct ContentPageHeader: View {
     let title: String
     let subtitle: String
+    var leadingSystemImage: String? = nil
     var isCollapsed = false
 
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
@@ -240,28 +241,39 @@ struct ContentPageHeader: View {
             } else {
                 VStack(alignment: .leading, spacing: 0) {
                     HStack(spacing: 10) {
-                        Image("Avatar")
-                            .resizable()
-                            .aspectRatio(contentMode: .fill)
-                            .frame(width: 32, height: 32)
-                            .clipShape(.rect(cornerRadius: 8))
-                        Text("陈远")
+                        if let leadingSystemImage {
+                            Image(systemName: leadingSystemImage)
+                                .font(.system(size: 16, weight: .semibold))
+                                .foregroundStyle(Color.psInk)
+                                .frame(width: 32, height: 32)
+                                .background(Color.psLine.opacity(0.28), in: .rect(cornerRadius: 8))
+                                .accessibilityHidden(true)
+                        } else {
+                            Image("Avatar")
+                                .resizable()
+                                .aspectRatio(contentMode: .fill)
+                                .frame(width: 32, height: 32)
+                                .clipShape(.rect(cornerRadius: 8))
+                        }
+                        Text(leadingSystemImage == nil ? "陈远" : title)
                             .font(.system(size: 14.5, weight: .semibold))
                             .foregroundStyle(Color.psInk)
                         Spacer(minLength: 0)
                         ThemeToggleButton()
                     }
 
-                    Text(title)
-                        .font(.system(size: 22, weight: .semibold))
-                        .tracking(-0.02 * 22)
-                        .foregroundStyle(Color.psInk)
-                        .padding(.top, 10)
+                    if leadingSystemImage == nil {
+                        Text(title)
+                            .font(.system(size: 22, weight: .semibold))
+                            .tracking(-0.02 * 22)
+                            .foregroundStyle(Color.psInk)
+                            .padding(.top, 10)
+                    }
 
                     Text(subtitle)
                         .font(.system(size: 13, weight: .regular))
                         .foregroundStyle(Color.psQuiet)
-                        .padding(.top, 3)
+                        .padding(.top, leadingSystemImage == nil ? 3 : 8)
                 }
                 .padding(.horizontal, 16)
                 .padding(.top, 6)

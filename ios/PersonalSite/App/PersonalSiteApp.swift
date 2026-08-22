@@ -70,7 +70,8 @@ struct PersonalSiteRootView: View {
             TabContent(tab: .ask) {
                 ContentTabScreen(
                     title: "问一问",
-                    subtitle: "从公开动态、关注与工程记录中寻找答案"
+                    subtitle: "从公开动态、关注与工程记录中寻找答案",
+                    leadingSystemImage: AppTab.ask.systemImage
                 ) {
                     AskView()
                 }
@@ -155,11 +156,16 @@ private struct NativeTabBarBehavior: ViewModifier {
 private struct ContentTabScreen<Content: View>: View {
     let title: String
     let subtitle: String
+    var leadingSystemImage: String?
     @ViewBuilder let content: Content
 
     var body: some View {
         VStack(spacing: 0) {
-            ContentPageHeader(title: title, subtitle: subtitle)
+            ContentPageHeader(
+                title: title,
+                subtitle: subtitle,
+                leadingSystemImage: leadingSystemImage
+            )
             content
                 .frame(maxWidth: .infinity, maxHeight: .infinity)
         }

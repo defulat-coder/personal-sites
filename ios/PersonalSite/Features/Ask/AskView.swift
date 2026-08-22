@@ -120,7 +120,6 @@ struct AskView: View {
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
     @State private var model = AskChatModel()
     @State private var followsLatest = true
-    @State private var messageViewportHeight: CGFloat = 0
     @FocusState private var composerFocused: Bool
 
     private let bottomID = "ask-bottom"
@@ -152,8 +151,7 @@ struct AskView: View {
     }
 
     private var messageList: some View {
-        let viewportHeight = messageViewportHeight
-        return ScrollViewReader { proxy in
+        ScrollViewReader { proxy in
             ScrollView {
                 LazyVStack(alignment: .leading, spacing: 16) {
                     if let banner = model.bannerMessage {
@@ -180,23 +178,15 @@ struct AskView: View {
                     Color.clear
                         .frame(height: 1)
                         .id(bottomID)
-                        .onGeometryChange(for: Bool.self) { [viewportHeight] proxy in
-                            let frame = proxy.frame(in: .named("ask-scroll"))
-                            return frame.minY >= 0 && frame.maxY <= viewportHeight + 8
-                        } action: { isVisible in
-                            followsLatest = isVisible
-                        }
                 }
                 .padding()
                 .animation(PSMotion.stateChange, value: model.messages.count)
             }
             .scrollDismissesKeyboard(.interactively)
-            .coordinateSpace(.named("ask-scroll"))
-            .onGeometryChange(for: CGFloat.self) { proxy in
-                proxy.size.height
-            } action: { height in
-                messageViewportHeight = height
-            }
+            .simultaneousGesture(DragGesture(minimumDistance: 4).onChanged { _ in
+                followsLatest = false
+                composerFocused = false
+            })
             .onChange(of: model.messages.count) {
                 followsLatest = true
                 withAnimation(PSMotion.stateChange) {
