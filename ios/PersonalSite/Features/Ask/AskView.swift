@@ -104,7 +104,12 @@ final class AskChatModel {
 }
 
 struct AskView: View {
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
     @State private var model = AskChatModel()
+    @State private var followsLatest = true
+    @State private var messageViewportHeight: CGFloat = 0
+
+    private let bottomID = "ask-bottom"
 
     var body: some View {
         VStack(spacing: 0) {
@@ -117,7 +122,8 @@ struct AskView: View {
     }
 
     private var messageList: some View {
-        ScrollViewReader { proxy in
+        let viewportHeight = messageViewportHeight
+        return ScrollViewReader { proxy in
             ScrollView {
                 LazyVStack(alignment: .leading, spacing: 16) {
                     if let banner = model.bannerMessage {
@@ -127,6 +133,7 @@ struct AskView: View {
                             .frame(maxWidth: .infinity)
                             .padding(8)
                             .background(Color(uiColor: .secondarySystemBackground), in: .rect(cornerRadius: 8))
+                            .transition(.opacity)
                     }
                     if model.messages.isEmpty {
                         Text("问问这些公开资料，回答基于 AI 动态、推特点赞与开源关注。")
@@ -138,22 +145,47 @@ struct AskView: View {
                     ForEach(model.messages) { message in
                         AskMessageBubble(message: message)
                             .id(message.id)
+                            .transition(messageTransition)
                     }
+                    Color.clear
+                        .frame(height: 1)
+                        .id(bottomID)
+                        .onGeometryChange(for: Bool.self) { [viewportHeight] proxy in
+                            let frame = proxy.frame(in: .named("ask-scroll"))
+                            return frame.minY >= 0 && frame.maxY <= viewportHeight + 8
+                        } action: { isVisible in
+                            followsLatest = isVisible
+                        }
                 }
                 .padding()
+                .animation(PSMotion.stateChange, value: model.messages.count)
+            }
+            .coordinateSpace(.named("ask-scroll"))
+            .onGeometryChange(for: CGFloat.self) { proxy in
+                proxy.size.height
+            } action: { height in
+                messageViewportHeight = height
             }
             .onChange(of: model.messages.count) {
-                scrollToBottom(proxy)
+                followsLatest = true
+                withAnimation(PSMotion.stateChange) {
+                    proxy.scrollTo(bottomID, anchor: .bottom)
+                }
             }
             .onChange(of: model.messages.last?.text) {
-                scrollToBottom(proxy)
+                guard followsLatest else { return }
+                var transaction = Transaction()
+                transaction.disablesAnimations = true
+                withTransaction(transaction) {
+                    proxy.scrollTo(bottomID, anchor: .bottom)
+                }
             }
+            .animation(PSMotion.stateChange, value: model.bannerMessage != nil)
         }
     }
 
-    private func scrollToBottom(_ proxy: ScrollViewProxy) {
-        guard let lastID = model.messages.last?.id else { return }
-        withAnimation { proxy.scrollTo(lastID, anchor: .bottom) }
+    private var messageTransition: AnyTransition {
+        reduceMotion ? .opacity : .offset(y: 12).combined(with: .opacity)
     }
 
     private var composer: some View {
@@ -203,14 +235,17 @@ private struct AskMessageBubble: View {
             VStack(alignment: .leading, spacing: 8) {
                 if message.text.isEmpty, message.isStreaming {
                     ProgressView()
+                        .transition(.opacity)
                 } else {
                     MarkdownText(markdown: message.text)
                         .textSelection(.enabled)
+                        .transition(.opacity)
                 }
                 if message.failed {
                     Label("这条回答不完整", systemImage: "exclamationmark.triangle")
                         .font(.caption)
                         .foregroundStyle(.secondary)
+                        .transition(.opacity)
                 }
                 if !message.sources.isEmpty {
                     VStack(alignment: .leading, spacing: 4) {
@@ -231,9 +266,13 @@ private struct AskMessageBubble: View {
                             }
                         }
                     }
+                    .transition(.opacity)
                 }
             }
             .frame(maxWidth: .infinity, alignment: .leading)
+            .animation(PSMotion.stateChange, value: message.text.isEmpty && message.isStreaming)
+            .animation(PSMotion.stateChange, value: message.failed)
+            .animation(PSMotion.stateChange, value: message.sources.isEmpty)
         }
     }
 }

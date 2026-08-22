@@ -33,15 +33,28 @@ struct ThemeToggleButton: View {
 
     var body: some View {
         Button {
-            theme = isDark ? "light" : "dark"
+            withAnimation(PSMotion.symbol) {
+                theme = isDark ? "light" : "dark"
+            }
         } label: {
             Image(systemName: isDark ? "sun.max" : "moon")
                 .font(.system(size: 15, weight: .regular))
                 .foregroundStyle(Color.psInk)
                 .frame(width: 28, height: 28)
                 .contentShape(Rectangle())
+                .contentTransition(.symbolEffect(.replace))
         }
+        .buttonStyle(PSPressButtonStyle())
         .accessibilityLabel(isDark ? "切换为浅色主题" : "切换为深色主题")
+    }
+}
+
+struct PSPressButtonStyle: ButtonStyle {
+    func makeBody(configuration: Configuration) -> some View {
+        configuration.label
+            .scaleEffect(configuration.isPressed ? 0.97 : 1)
+            .opacity(configuration.isPressed ? 0.78 : 1)
+            .animation(configuration.isPressed ? nil : PSMotion.press, value: configuration.isPressed)
     }
 }
 
@@ -82,6 +95,8 @@ struct SectionNavigationRow: View {
     /// margin:-2rem + padding:0 2rem），传 0 避免双重缩进。
     var horizontalPadding: Double = 16
     var onSelect: (SiteSection) -> Void
+    var navigationNamespace: Namespace.ID
+    var indicatorIsSource = false
 
     var body: some View {
         VStack(spacing: 0) {
@@ -100,10 +115,15 @@ struct SectionNavigationRow: View {
                                         Rectangle()
                                             .fill(Color.psInk)
                                             .frame(height: 1.5)
+                                            .matchedGeometryEffect(
+                                                id: "section-indicator",
+                                                in: navigationNamespace,
+                                                isSource: indicatorIsSource
+                                            )
                                     }
                                 }
                         }
-                        .buttonStyle(.plain)
+                        .buttonStyle(PSPressButtonStyle())
                     }
                 }
                 .padding(.horizontal, horizontalPadding)
@@ -123,41 +143,124 @@ struct SectionNavigationRow: View {
 struct SiteHeaderView: View {
     var current: SiteSection
     var onSelect: (SiteSection) -> Void
+    var navigationNamespace: Namespace.ID
 
     var body: some View {
         VStack(alignment: .leading, spacing: 0) {
-            HStack(alignment: .top, spacing: 12) {
-                Image("Avatar")
-                    .resizable()
-                    .aspectRatio(contentMode: .fill)
-                    .frame(width: 44, height: 44)
-                    .clipShape(.rect(cornerRadius: 10))
-                VStack(alignment: .leading, spacing: 6) {
-                    HStack(alignment: .firstTextBaseline, spacing: 6) {
-                        Text("陈远")
-                            .font(.system(size: 15, weight: .semibold))
-                            .foregroundStyle(Color.psInk)
-                        Text("@defulat-coder")
-                            .font(.system(size: 12.5))
-                            .foregroundStyle(Color.psQuiet)
-                    }
-                    HStack(spacing: 12) {
-                        ProfileLinkItem(title: "GitHub", systemImage: "arrow.triangle.branch", url: "https://github.com/defulat-coder")
-                        ProfileLinkSeparator()
-                        ProfileLinkItem(title: "语雀", systemImage: "book", url: "https://www.yuque.com/defulat-coder")
-                        ProfileLinkSeparator()
-                        ProfileLinkItem(title: "关于我", systemImage: "printer", url: Config.siteBaseURL.absoluteString)
-                    }
-                }
-                Spacer(minLength: 0)
-                ThemeToggleButton()
-            }
+            ProfileHeaderContent(mode: .compact, namespace: navigationNamespace)
             .padding(.horizontal, 16)
             .padding(.top, 8)
 
-            SectionNavigationRow(current: current, onSelect: onSelect)
+            SectionNavigationRow(
+                current: current,
+                onSelect: onSelect,
+                navigationNamespace: navigationNamespace,
+                indicatorIsSource: true
+            )
                 .padding(.top, 14)
         }
         .background(Color.psSurface)
+    }
+}
+
+enum ProfileHeaderMode {
+    case expanded
+    case compact
+}
+
+/// One semantic profile header rendered at the expanded and compact endpoints.
+/// Matched geometry keeps the avatar, identity, links, and theme control continuous
+/// while the app swaps between the scrolling Home header and the fixed section header.
+struct ProfileHeaderContent: View {
+    var mode: ProfileHeaderMode
+    var namespace: Namespace.ID
+
+    var body: some View {
+        if mode == .expanded {
+            HStack(alignment: .top, spacing: 24) {
+                avatar(size: 104, radius: 12)
+                VStack(alignment: .leading, spacing: 0) {
+                    name
+                    handle.padding(.top, 2.9)
+                    HStack(spacing: 12.8) {
+                        github
+                        ProfileLinkSeparator()
+                        yuque
+                    }
+                    .padding(.top, 16)
+                    HStack(spacing: 12.8) {
+                        ProfileLinkSeparator()
+                        about
+                    }
+                    .padding(.top, 6)
+                }
+                Spacer(minLength: 0)
+                themeButton
+            }
+        } else {
+            HStack(alignment: .top, spacing: 12) {
+                avatar(size: 44, radius: 10)
+                VStack(alignment: .leading, spacing: 6) {
+                    HStack(alignment: .firstTextBaseline, spacing: 6) {
+                        name
+                        handle
+                    }
+                    HStack(spacing: 12) {
+                        github
+                        ProfileLinkSeparator()
+                        yuque
+                        ProfileLinkSeparator()
+                        about
+                    }
+                }
+                Spacer(minLength: 0)
+                themeButton
+            }
+        }
+    }
+
+    private func avatar(size: CGFloat, radius: CGFloat) -> some View {
+        Image("Avatar")
+            .resizable()
+            .aspectRatio(contentMode: .fill)
+            .frame(width: size, height: size)
+            .clipShape(.rect(cornerRadius: radius))
+            .matchedGeometryEffect(id: "profile-avatar", in: namespace, isSource: mode == .expanded)
+    }
+
+    private var name: some View {
+        Text("陈远")
+            .font(.system(size: mode == .expanded ? 15.2 : 15, weight: .semibold))
+            .tracking(mode == .expanded ? -0.035 * 15.2 : 0)
+            .foregroundStyle(Color.psInk)
+            .matchedGeometryEffect(id: "profile-name", in: namespace, properties: .position, isSource: mode == .expanded)
+    }
+
+    private var handle: some View {
+        Text("@defulat-coder")
+            .font(.system(size: 12.5))
+            .tracking(mode == .expanded ? -0.02 * 12.5 : 0)
+            .foregroundStyle(Color.psQuiet)
+            .matchedGeometryEffect(id: "profile-handle", in: namespace, properties: .position, isSource: mode == .expanded)
+    }
+
+    private var github: some View {
+        ProfileLinkItem(title: "GitHub", systemImage: "arrow.triangle.branch", url: "https://github.com/defulat-coder")
+            .matchedGeometryEffect(id: "profile-github", in: namespace, properties: .position, isSource: mode == .expanded)
+    }
+
+    private var yuque: some View {
+        ProfileLinkItem(title: "语雀", systemImage: "book", url: "https://www.yuque.com/defulat-coder")
+            .matchedGeometryEffect(id: "profile-yuque", in: namespace, properties: .position, isSource: mode == .expanded)
+    }
+
+    private var about: some View {
+        ProfileLinkItem(title: "关于我", systemImage: "printer", url: Config.siteBaseURL.absoluteString)
+            .matchedGeometryEffect(id: "profile-about", in: namespace, properties: .position, isSource: mode == .expanded)
+    }
+
+    private var themeButton: some View {
+        ThemeToggleButton()
+            .matchedGeometryEffect(id: "profile-theme", in: namespace, properties: .position, isSource: mode == .expanded)
     }
 }

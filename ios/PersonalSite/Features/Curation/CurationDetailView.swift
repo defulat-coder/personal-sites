@@ -8,8 +8,13 @@ struct CurationDetailView: View {
     @State private var item: CurationItem?
     @State private var errorMessage: String?
 
+    private var stateIdentity: LoadStateIdentity {
+        item != nil ? .content : errorMessage != nil ? .error : .loading
+    }
+
     var body: some View {
-        Group {
+        ZStack {
+            Group {
             if let item {
                 detail(item)
             } else if let errorMessage {
@@ -23,7 +28,12 @@ struct CurationDetailView: View {
             } else {
                 ProgressView()
             }
+            }
+            .id(stateIdentity)
+            .transition(.opacity)
         }
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
+        .animation(PSMotion.stateChange, value: stateIdentity)
         .navigationTitle("策展详情")
         .navigationBarTitleDisplayMode(.inline)
         .task { await load() }
@@ -118,16 +128,24 @@ private struct CurationMediaView: View {
         case .photo, .animatedGif:
             if let url = URL(string: media.url) {
                 AsyncImage(url: url) { phase in
-                    switch phase {
-                    case .success(let image):
-                        image.resizable().aspectRatio(contentMode: .fit)
-                    case .failure:
-                        Label("图片加载失败", systemImage: "photo")
-                            .foregroundStyle(.secondary)
-                    default:
-                        ProgressView()
+                    ZStack {
+                        Color(uiColor: .secondarySystemBackground)
+                        switch phase {
+                        case .success(let image):
+                            image.resizable().aspectRatio(contentMode: .fit)
+                                .transition(.opacity)
+                        case .failure:
+                            Label("图片加载失败", systemImage: "photo")
+                                .foregroundStyle(.secondary)
+                                .transition(.opacity)
+                        default:
+                            ProgressView()
+                                .transition(.opacity)
+                        }
                     }
+                    .animation(PSMotion.stateChange, value: phaseIdentity(phase))
                 }
+                .aspectRatio(aspectRatio, contentMode: .fit)
                 .clipShape(.rect(cornerRadius: 12))
             }
         }
@@ -136,6 +154,14 @@ private struct CurationMediaView: View {
     private var aspectRatio: CGFloat {
         guard let width = media.width, let height = media.height, height > 0 else { return 16.0 / 9.0 }
         return CGFloat(width) / CGFloat(height)
+    }
+
+    private func phaseIdentity(_ phase: AsyncImagePhase) -> LoadStateIdentity {
+        switch phase {
+        case .success: .content
+        case .failure: .error
+        default: .loading
+        }
     }
 
     private func proxiedURL(_ raw: String) -> URL? {

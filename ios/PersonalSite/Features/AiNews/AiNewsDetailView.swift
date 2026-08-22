@@ -7,8 +7,13 @@ struct AiNewsDetailView: View {
     @State private var item: AiNewsItem?
     @State private var errorMessage: String?
 
+    private var stateIdentity: LoadStateIdentity {
+        item != nil ? .content : errorMessage != nil ? .error : .loading
+    }
+
     var body: some View {
-        Group {
+        ZStack {
+            Group {
             if let item {
                 ScrollView {
                     VStack(alignment: .leading, spacing: 16) {
@@ -58,7 +63,12 @@ struct AiNewsDetailView: View {
             } else {
                 ProgressView()
             }
+            }
+            .id(stateIdentity)
+            .transition(.opacity)
         }
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
+        .animation(PSMotion.stateChange, value: stateIdentity)
         .navigationTitle("动态详情")
         .navigationBarTitleDisplayMode(.inline)
         .task { await load() }

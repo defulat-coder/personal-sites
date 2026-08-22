@@ -126,8 +126,13 @@ struct OpenSourceDetailView: View {
     @State private var entry: OpenSourceEntry?
     @State private var errorMessage: String?
 
+    private var stateIdentity: LoadStateIdentity {
+        entry != nil ? .content : errorMessage != nil ? .error : .loading
+    }
+
     var body: some View {
-        Group {
+        ZStack {
+            Group {
             if let entry {
                 detail(entry)
             } else if let errorMessage {
@@ -141,7 +146,12 @@ struct OpenSourceDetailView: View {
             } else {
                 ProgressView()
             }
+            }
+            .id(stateIdentity)
+            .transition(.opacity)
         }
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
+        .animation(PSMotion.stateChange, value: stateIdentity)
         .navigationTitle(slug)
         .navigationBarTitleDisplayMode(.inline)
         .task { await load() }

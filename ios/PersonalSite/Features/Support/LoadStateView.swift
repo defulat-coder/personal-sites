@@ -26,24 +26,46 @@ struct LoadStateView<Content: View>: View {
     var onRetry: () -> Void
     @ViewBuilder var content: () -> Content
 
-    var body: some View {
-        if isLoading {
-            ProgressView()
-                .frame(maxWidth: .infinity, maxHeight: .infinity)
-        } else if let errorMessage {
-            ContentUnavailableView {
-                Label("加载失败", systemImage: "exclamationmark.triangle")
-            } description: {
-                Text(errorMessage)
-            } actions: {
-                Button("重试", action: onRetry)
-            }
-        } else if isEmpty {
-            ContentUnavailableView {
-                Label(emptyMessage, systemImage: "tray")
-            }
-        } else {
-            content()
-        }
+    private var stateIdentity: LoadStateIdentity {
+        if isLoading { return .loading }
+        if errorMessage != nil { return .error }
+        if isEmpty { return .empty }
+        return .content
     }
+
+    var body: some View {
+        ZStack {
+            Group {
+                if isLoading {
+                    ProgressView()
+                        .frame(maxWidth: .infinity, maxHeight: .infinity)
+                } else if let errorMessage {
+                    ContentUnavailableView {
+                        Label("加载失败", systemImage: "exclamationmark.triangle")
+                    } description: {
+                        Text(errorMessage)
+                    } actions: {
+                        Button("重试", action: onRetry)
+                    }
+                } else if isEmpty {
+                    ContentUnavailableView {
+                        Label(emptyMessage, systemImage: "tray")
+                    }
+                } else {
+                    content()
+                }
+            }
+            .id(stateIdentity)
+            .transition(.opacity)
+        }
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
+        .animation(PSMotion.stateChange, value: stateIdentity)
+    }
+}
+
+enum LoadStateIdentity: Hashable {
+    case loading
+    case error
+    case empty
+    case content
 }

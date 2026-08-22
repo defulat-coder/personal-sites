@@ -118,12 +118,23 @@ private struct WorkDetailView: View {
                     if let url = shotURL(shot.src) {
                         VStack(alignment: .leading, spacing: 4) {
                             AsyncImage(url: url) { phase in
-                                if case .success(let image) = phase {
-                                    image.resizable().aspectRatio(contentMode: .fit)
-                                } else {
-                                    ProgressView()
+                                ZStack {
+                                    Color(uiColor: .secondarySystemBackground)
+                                    if case .success(let image) = phase {
+                                        image.resizable().aspectRatio(contentMode: .fit)
+                                            .transition(.opacity)
+                                    } else if case .failure = phase {
+                                        Label("图片加载失败", systemImage: "photo")
+                                            .foregroundStyle(.secondary)
+                                            .transition(.opacity)
+                                    } else {
+                                        ProgressView()
+                                            .transition(.opacity)
+                                    }
                                 }
+                                .animation(PSMotion.stateChange, value: workShotPhaseIdentity(phase))
                             }
+                            .aspectRatio(16.0 / 9.0, contentMode: .fit)
                             .clipShape(.rect(cornerRadius: 12))
                             Text(shot.label)
                                 .font(.caption)
@@ -177,5 +188,13 @@ private struct WorkDetailView: View {
             return URL(string: src, relativeTo: Config.siteBaseURL)?.absoluteURL
         }
         return URL(string: src)
+    }
+
+    private func workShotPhaseIdentity(_ phase: AsyncImagePhase) -> LoadStateIdentity {
+        switch phase {
+        case .success: .content
+        case .failure: .error
+        default: .loading
+        }
     }
 }

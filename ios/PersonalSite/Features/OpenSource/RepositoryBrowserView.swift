@@ -99,8 +99,13 @@ struct RepositoryFileView: View {
     @State private var file: RepositoryFileResponse?
     @State private var errorMessage: String?
 
+    private var stateIdentity: LoadStateIdentity {
+        file != nil ? .content : errorMessage != nil ? .error : .loading
+    }
+
     var body: some View {
-        Group {
+        ZStack {
+            Group {
             if let file {
                 if file.binary {
                     ContentUnavailableView {
@@ -130,7 +135,12 @@ struct RepositoryFileView: View {
             } else {
                 ProgressView()
             }
+            }
+            .id(stateIdentity)
+            .transition(.opacity)
         }
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
+        .animation(PSMotion.stateChange, value: stateIdentity)
         .navigationTitle(path.split(separator: "/").last.map(String.init) ?? path)
         .navigationBarTitleDisplayMode(.inline)
         .task { await load() }

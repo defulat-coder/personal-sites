@@ -1,11 +1,11 @@
 import SwiftUI
 import WebKit
 
-/// 开屏 Loading：对齐 components/opening-loader.tsx。
+/// 可选的首次欢迎动画：主页已在下层完成渲染，用户可随时跳过。
 /// 电池五格节拍 [0.45,1.4,2.35,3.3,4.25]s，颜色沿 4.7s 主线红→黄→绿；
-/// 4.48s 电池 1→1.08→1 回弹；5s 整屏 0.8s ease [0.76,0,0.24,1] 向上滑出。
+/// 4.48s 电池 1→1.08→1 回弹；5s 后以应用统一的 200ms 透明度转场退出。
 /// 角色是 SMIL 逐帧 SVG（100 帧 / 50ms），SwiftUI 不能直接渲染，用 WKWebView 加载以保真。
-struct OpeningLoaderView: View {
+struct WelcomeAnimationView: View {
     var onFinished: () -> Void
 
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
@@ -20,34 +20,43 @@ struct OpeningLoaderView: View {
     private static let bounceStart = 4.48
     private static let bounceDuration = 0.42
     private static let revealAt = 5.0
-    private static let revealDuration = 0.8
 
     var body: some View {
-        GeometryReader { geometry in
-            TimelineView(.animation(minimumInterval: 1.0 / 30.0, paused: startDate == nil || didFinish)) { context in
+        ZStack(alignment: .topTrailing) {
+            TimelineView(.animation(paused: startDate == nil || didFinish || reduceMotion)) { context in
                 let elapsed = startDate.map { context.date.timeIntervalSince($0) } ?? 0
-                content(elapsed: elapsed, size: geometry.size)
+                content(elapsed: elapsed)
                     .frame(maxWidth: .infinity, maxHeight: .infinity)
             }
             .frame(maxWidth: .infinity, maxHeight: .infinity)
+
+            Button("跳过", action: finish)
+                .font(.callout.weight(.medium))
+                .foregroundStyle(Color.psInk)
+                .padding(.horizontal, 16)
+                .frame(minWidth: 44, minHeight: 44)
+                .buttonStyle(PSPressButtonStyle())
+                .padding(.top, 8)
+                .padding(.trailing, 8)
+                .accessibilityHint("关闭首次欢迎动画并进入首页")
         }
-        .ignoresSafeArea()
-        .onAppear {
-            // 与 Web 一致：SVG 未就绪时 1.2s 兜底开播。
-            DispatchQueue.main.asyncAfter(deadline: .now() + 1.2) {
-                if startDate == nil { start() }
-            }
+        .task(id: reduceMotion) {
             if reduceMotion {
-                // reduced-motion：160ms 直接切，无动画。
-                DispatchQueue.main.asyncAfter(deadline: .now() + 0.16) { finish() }
+                startDate = Date().addingTimeInterval(-Self.revealAt)
+                try? await Task.sleep(for: .milliseconds(200))
+                guard !Task.isCancelled else { return }
+                finish()
+            } else {
+                // 与 Web 一致：SVG 未就绪时 1.2s 兜底开播。
+                try? await Task.sleep(for: .milliseconds(1200))
+                guard !Task.isCancelled else { return }
+                if startDate == nil { start() }
             }
         }
     }
 
-    private func content(elapsed: Double, size: CGSize) -> some View {
-        let slideProgress = cubicBezier(0.76, 0, 0.24, 1).evaluate(x: min(max((elapsed - Self.revealAt) / Self.revealDuration, 0), 1))
-        let sliding = elapsed >= Self.revealAt
-        return ZStack {
+    private func content(elapsed: Double) -> some View {
+        ZStack {
             (colorScheme == .dark ? Color.psSurface : Color.white).ignoresSafeArea()
             // 电池绝对定位在角色图顶部（Web: top: calc(3% - 2px)，横向居中，与图重叠）。
             let characterHeight = 132 * 685.0 / 700.0
@@ -66,8 +75,7 @@ struct OpeningLoaderView: View {
             // 与 Web 一致：SVG 就绪前整组视觉不可见。
             .opacity(startDate == nil ? 0 : 1)
         }
-        .offset(y: sliding ? -size.height * slideProgress : 0)
-        .onChange(of: elapsed >= Self.revealAt + Self.revealDuration) { _, done in
+        .onChange(of: elapsed >= Self.revealAt) { _, done in
             if done, !didFinish { finish() }
         }
     }
@@ -124,12 +132,12 @@ private struct BatteryView: View {
     }
 
     private func isLit(_ index: Int) -> Bool {
-        elapsed >= OpeningLoaderView.cellDelays[index]
+        elapsed >= WelcomeAnimationView.cellDelays[index]
     }
 
     /// 颜色沿全局 4.7s 主线插值：红(0) → 红(0.18) → 黄(0.52) → 绿(1)。
     private func cellColor() -> Color {
-        let t = min(max(elapsed / OpeningLoaderView.colorDuration, 0), 1)
+        let t = min(max(elapsed / WelcomeAnimationView.colorDuration, 0), 1)
         switch t {
         case ..<0.18: return .psBatteryRed
         case ..<0.52: return lerp(Color.psBatteryRed, Color.psBatteryYellow, (t - 0.18) / 0.34)
