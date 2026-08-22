@@ -24,6 +24,7 @@
     "data/sensitive/personal/resume.md",
     "tools/smaug/smaug.config.json",
     "tools/smaug/bookmarks.md",
+    "ios/Secrets.xcconfig",
     "陈远-Agent工程师_全栈工程师_资深java工程师.md"
   ],
   "blocked_filename_prefixes": [
@@ -44,6 +45,7 @@
     "tools/smaug/smaug.config.json",
     "tools/smaug/bookmarks.md",
     ".env.local",
+    "ios/Secrets.xcconfig",
     "cache.tsbuildinfo"
   ]
 }

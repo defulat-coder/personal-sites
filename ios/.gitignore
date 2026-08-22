@@ -1,0 +1,8 @@
+# Xcode 用户状态与构建产物
+xcuserdata/
+DerivedData/
+build/
+*.xcuserstate
+
+# 本地密钥（只提交 Secrets.xcconfig.example）
+Secrets.xcconfig

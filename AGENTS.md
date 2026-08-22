@@ -42,6 +42,13 @@ This block is written and re-added by `next dev` — verify at `node_modules/nex
 - Keep public curation detail reads cacheable with ISR (`revalidate = 300`) and loading states. For cache changes, verify production route classification and `x-nextjs-cache` MISS then HIT behavior.
 - Treat `curation:*`, `github:starred:*`, `ai-news:sync`, and `supabase:push` as external data operations. Follow `docs/supabase-x-sync.md`, `docs/github-starred-sync.md`, and `docs/ai-news-sync.md`; use `pnpm supabase:push -- --dry-run` before a database write. Run daily Star syncs one at a time and report partial results until the process exits. `ai-news:sync` runs on GitHub Actions every 5 minutes (`.github/workflows/ai-news-sync.yml`; launchd on this machine is an optional fallback); the site only reads the `ai_news_public_items` projection.
 
+## iOS App
+
+- `ios/` holds the native SwiftUI client (Swift 6, iOS 17+); see `docs/ios-app.md` for architecture and data flow. The Xcode project uses synchronized folders — new Swift files need no `project.pbxproj` edits.
+- Build/test from `ios/`: `xcodebuild -scheme PersonalSite -destination 'platform=iOS Simulator,name=iPhone 17 Pro' build|test`.
+- `ios/Secrets.xcconfig` (gitignored) carries only `SUPABASE_URL`, `SUPABASE_PUBLISHABLE_KEY`, `SITE_BASE_URL`. Service-role and LLM keys never enter the app.
+- Data contract source of truth stays in `lib/*-types.ts`; when those types or `/api/*` shapes change, update `ios/PersonalSite/Models/` and `SiteAPIClient` accordingly.
+
 ## Git and Commits
 
 - Inspect `git status` before editing or staging. Stage only agreed paths; `tools/smaug` is a nested repository and must stay out of outer-repo commits.
