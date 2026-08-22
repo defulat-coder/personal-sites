@@ -1,12 +1,9 @@
 import SwiftUI
 
-/// 内容板块，顺序与标签对齐 Web 端 site-section-navigation.tsx；「首页」仅出现在
-/// 移动端导航第一位，对应 Web 的 mobileSection="home"。
-enum SiteSection: String, CaseIterable, Identifiable {
+enum AppTab: String, CaseIterable, Identifiable {
     case home
     case aiNews
-    case daily
-    case openSource
+    case following
     case works
     case ask
 
@@ -15,11 +12,20 @@ enum SiteSection: String, CaseIterable, Identifiable {
     var label: String {
         switch self {
         case .home: return "首页"
-        case .aiNews: return "每日动态"
-        case .daily: return "推特点赞"
-        case .openSource: return "开源关注"
+        case .aiNews: return "动态"
+        case .following: return "关注"
         case .works: return "构建"
         case .ask: return "问一问"
+        }
+    }
+
+    var systemImage: String {
+        switch self {
+        case .home: "house"
+        case .aiNews: "clock"
+        case .following: "bookmark"
+        case .works: "cube"
+        case .ask: "bubble.left"
         }
     }
 }
@@ -37,15 +43,36 @@ struct ThemeToggleButton: View {
                 theme = isDark ? "light" : "dark"
             }
         } label: {
-            Image(systemName: isDark ? "sun.max" : "moon")
-                .font(.system(size: 15, weight: .regular))
-                .foregroundStyle(Color.psInk)
-                .frame(width: 28, height: 28)
+            SplitToneSunIcon()
+                .frame(width: 44, height: 44)
                 .contentShape(Rectangle())
-                .contentTransition(.symbolEffect(.replace))
         }
         .buttonStyle(PSPressButtonStyle())
         .accessibilityLabel(isDark ? "切换为浅色主题" : "切换为深色主题")
+    }
+}
+
+private struct SplitToneSunIcon: View {
+    var body: some View {
+        ZStack {
+            Image(systemName: "sun.max.fill")
+                .foregroundStyle(Color.psQuiet)
+
+            Image(systemName: "sun.max.fill")
+                .foregroundStyle(Color.white)
+                .mask {
+                    HStack(spacing: 0) {
+                        Color.clear
+                        Color.white
+                    }
+                }
+
+            Image(systemName: "sun.max")
+                .foregroundStyle(Color.psInk.opacity(0.74))
+        }
+        .font(.system(size: 15, weight: .regular))
+        .frame(width: 18, height: 18)
+        .accessibilityHidden(true)
     }
 }
 
@@ -77,6 +104,25 @@ struct ProfileLinkItem: View {
     }
 }
 
+struct ProfileLinkButton: View {
+    let title: String
+    let systemImage: String
+    var action: () -> Void
+
+    var body: some View {
+        Button(action: action) {
+            HStack(spacing: 4) {
+                Image(systemName: systemImage)
+                    .font(.system(size: 10, weight: .medium))
+                Text(title)
+                    .font(.system(size: 12, weight: .medium))
+            }
+            .foregroundStyle(Color.psLink)
+        }
+        .buttonStyle(PSPressButtonStyle())
+    }
+}
+
 /// 链接之间的 1px 竖线分隔。
 struct ProfileLinkSeparator: View {
     var body: some View {
@@ -86,136 +132,48 @@ struct ProfileLinkSeparator: View {
     }
 }
 
-/// 横向导航行：当前项粗体 + 短下划线。首页不在行尾画 hairline（对齐 Web 移动端
-/// mobileNavigation 无下边框），其余板块保留 hairline。
-struct SectionNavigationRow: View {
-    var current: SiteSection
-    var showsHairline = true
-    /// 行内左右留白；首页整页已有 32pt 页边距（对齐 Web mobileNavigation 的
-    /// margin:-2rem + padding:0 2rem），传 0 避免双重缩进。
-    var horizontalPadding: Double = 16
-    var onSelect: (SiteSection) -> Void
-    var navigationNamespace: Namespace.ID
-    var indicatorIsSource = false
-
-    var body: some View {
-        VStack(spacing: 0) {
-            ScrollView(.horizontal, showsIndicators: false) {
-                HStack(spacing: 16) {
-                    ForEach(SiteSection.allCases) { section in
-                        Button {
-                            onSelect(section)
-                        } label: {
-                            Text(section.label)
-                                .font(.system(size: 13, weight: current == section ? .semibold : .regular))
-                                .foregroundStyle(current == section ? Color.psInk : Color.psLink)
-                                .padding(.vertical, 10)
-                                .overlay(alignment: .bottom) {
-                                    if current == section {
-                                        Rectangle()
-                                            .fill(Color.psInk)
-                                            .frame(height: 1.5)
-                                            .matchedGeometryEffect(
-                                                id: "section-indicator",
-                                                in: navigationNamespace,
-                                                isSource: indicatorIsSource
-                                            )
-                                    }
-                                }
-                        }
-                        .buttonStyle(PSPressButtonStyle())
-                    }
-                }
-                .padding(.horizontal, horizontalPadding)
-            }
-            if showsHairline {
-                Rectangle()
-                    .fill(Color.psLine)
-                    .frame(height: 0.5)
-            }
-        }
-    }
-}
-
-/// 紧凑身份头 + 横向导航行，对齐 Web 移动端非首页板块：小号圆角头像、「陈远 @defulat-coder」一行、
-/// 链接行（GitHub｜语雀｜关于我，细分隔竖线）、右上角月亮切换深浅色；
-/// 导航当前项粗体 + 短下划线，行下 hairline。
-struct SiteHeaderView: View {
-    var current: SiteSection
-    var onSelect: (SiteSection) -> Void
-    var navigationNamespace: Namespace.ID
-
-    var body: some View {
-        VStack(alignment: .leading, spacing: 0) {
-            ProfileHeaderContent(mode: .compact, namespace: navigationNamespace)
-            .padding(.horizontal, 16)
-            .padding(.top, 8)
-
-            SectionNavigationRow(
-                current: current,
-                onSelect: onSelect,
-                navigationNamespace: navigationNamespace,
-                indicatorIsSource: true
-            )
-                .padding(.top, 14)
-        }
-        .background(Color.psSurface)
-    }
-}
-
-enum ProfileHeaderMode {
-    case expanded
-    case compact
-}
-
-/// One semantic profile header rendered at the expanded and compact endpoints.
-/// Matched geometry keeps the avatar, identity, links, and theme control continuous
-/// while the app swaps between the scrolling Home header and the fixed section header.
 struct ProfileHeaderContent: View {
-    var mode: ProfileHeaderMode
-    var namespace: Namespace.ID
+    nonisolated static let expandedTimelineTrailingInset: CGFloat = 18
+    nonisolated static let expandedLinksTrailingInset: CGFloat = 10
+
+    var onShowAbout: () -> Void
+    var careerTimelinePlayed = true
+    var onCareerTimelinePlayed: () -> Void = {}
 
     var body: some View {
-        if mode == .expanded {
+        ZStack(alignment: .topTrailing) {
             HStack(alignment: .top, spacing: 24) {
                 avatar(size: 104, radius: 12)
                 VStack(alignment: .leading, spacing: 0) {
                     name
                     handle.padding(.top, 2.9)
-                    HStack(spacing: 12.8) {
+                    CareerTimelineView(
+                        shouldAnimateEntrance: !careerTimelinePlayed,
+                        onEntranceCompleted: onCareerTimelinePlayed
+                    )
+                    .padding(.top, 7)
+                    .transition(.opacity)
+                    Spacer(minLength: 0)
+                    HStack(spacing: 0) {
                         github
+                        Spacer(minLength: 6)
                         ProfileLinkSeparator()
+                        Spacer(minLength: 6)
                         yuque
-                    }
-                    .padding(.top, 16)
-                    HStack(spacing: 12.8) {
+                        Spacer(minLength: 6)
                         ProfileLinkSeparator()
+                        Spacer(minLength: 6)
                         about
                     }
-                    .padding(.top, 6)
+                    .frame(maxWidth: .infinity)
+                    .padding(.trailing, Self.expandedLinksTrailingInset)
                 }
-                Spacer(minLength: 0)
-                themeButton
+                .padding(.top, 8)
+                .frame(height: 104)
+                .frame(maxWidth: .infinity, alignment: .leading)
             }
-        } else {
-            HStack(alignment: .top, spacing: 12) {
-                avatar(size: 44, radius: 10)
-                VStack(alignment: .leading, spacing: 6) {
-                    HStack(alignment: .firstTextBaseline, spacing: 6) {
-                        name
-                        handle
-                    }
-                    HStack(spacing: 12) {
-                        github
-                        ProfileLinkSeparator()
-                        yuque
-                        ProfileLinkSeparator()
-                        about
-                    }
-                }
-                Spacer(minLength: 0)
-                themeButton
-            }
+
+            themeButton
         }
     }
 
@@ -225,42 +183,101 @@ struct ProfileHeaderContent: View {
             .aspectRatio(contentMode: .fill)
             .frame(width: size, height: size)
             .clipShape(.rect(cornerRadius: radius))
-            .matchedGeometryEffect(id: "profile-avatar", in: namespace, isSource: mode == .expanded)
     }
 
     private var name: some View {
         Text("陈远")
-            .font(.system(size: mode == .expanded ? 15.2 : 15, weight: .semibold))
-            .tracking(mode == .expanded ? -0.035 * 15.2 : 0)
+            .font(.system(size: 15.2, weight: .semibold))
+            .tracking(-0.035 * 15.2)
             .foregroundStyle(Color.psInk)
-            .matchedGeometryEffect(id: "profile-name", in: namespace, properties: .position, isSource: mode == .expanded)
     }
 
     private var handle: some View {
         Text("@defulat-coder")
             .font(.system(size: 12.5))
-            .tracking(mode == .expanded ? -0.02 * 12.5 : 0)
+            .tracking(-0.02 * 12.5)
             .foregroundStyle(Color.psQuiet)
-            .matchedGeometryEffect(id: "profile-handle", in: namespace, properties: .position, isSource: mode == .expanded)
     }
 
     private var github: some View {
         ProfileLinkItem(title: "GitHub", systemImage: "arrow.triangle.branch", url: "https://github.com/defulat-coder")
-            .matchedGeometryEffect(id: "profile-github", in: namespace, properties: .position, isSource: mode == .expanded)
     }
 
     private var yuque: some View {
         ProfileLinkItem(title: "语雀", systemImage: "book", url: "https://www.yuque.com/defulat-coder")
-            .matchedGeometryEffect(id: "profile-yuque", in: namespace, properties: .position, isSource: mode == .expanded)
     }
 
     private var about: some View {
-        ProfileLinkItem(title: "关于我", systemImage: "printer", url: Config.siteBaseURL.absoluteString)
-            .matchedGeometryEffect(id: "profile-about", in: namespace, properties: .position, isSource: mode == .expanded)
+        ProfileLinkButton(title: "关于我", systemImage: "printer", action: onShowAbout)
     }
 
     private var themeButton: some View {
         ThemeToggleButton()
-            .matchedGeometryEffect(id: "profile-theme", in: namespace, properties: .position, isSource: mode == .expanded)
+    }
+}
+
+struct ContentPageHeader: View {
+    let title: String
+    let subtitle: String
+    var isCollapsed = false
+
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
+
+    var body: some View {
+        Group {
+            if isCollapsed {
+                HStack(spacing: 10) {
+                    Text(title)
+                        .font(.system(size: 17, weight: .semibold))
+                        .foregroundStyle(Color.psInk)
+                    Spacer(minLength: 0)
+                    ThemeToggleButton()
+                }
+                .frame(height: 52)
+                .padding(.leading, 16)
+                .padding(.trailing, 8)
+                .transition(.opacity)
+            } else {
+                VStack(alignment: .leading, spacing: 0) {
+                    HStack(spacing: 10) {
+                        Image("Avatar")
+                            .resizable()
+                            .aspectRatio(contentMode: .fill)
+                            .frame(width: 32, height: 32)
+                            .clipShape(.rect(cornerRadius: 8))
+                        Text("陈远")
+                            .font(.system(size: 14.5, weight: .semibold))
+                            .foregroundStyle(Color.psInk)
+                        Spacer(minLength: 0)
+                        ThemeToggleButton()
+                    }
+
+                    Text(title)
+                        .font(.system(size: 22, weight: .semibold))
+                        .tracking(-0.02 * 22)
+                        .foregroundStyle(Color.psInk)
+                        .padding(.top, 10)
+
+                    Text(subtitle)
+                        .font(.system(size: 13, weight: .regular))
+                        .foregroundStyle(Color.psQuiet)
+                        .padding(.top, 3)
+                }
+                .padding(.horizontal, 16)
+                .padding(.top, 6)
+                .padding(.bottom, 12)
+                .transition(.opacity)
+            }
+        }
+        .background(Color.psSurface)
+        .overlay(alignment: .bottom) {
+            Rectangle()
+                .fill(Color.psLine)
+                .frame(height: 0.5)
+        }
+        .animation(
+            reduceMotion ? .easeOut(duration: 0.12) : .spring(duration: 0.28, bounce: 0),
+            value: isCollapsed
+        )
     }
 }

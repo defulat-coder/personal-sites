@@ -48,6 +48,13 @@ final class OpenSourceListModel {
 
 struct OpenSourceView: View {
     @State private var model = OpenSourceListModel()
+    var headerCollapsed: Binding<Bool>?
+
+    private let scrollSpace = "open-source-list-scroll"
+
+    init(headerCollapsed: Binding<Bool>? = nil) {
+        self.headerCollapsed = headerCollapsed
+    }
 
     var body: some View {
         NavigationStack {
@@ -58,13 +65,28 @@ struct OpenSourceView: View {
                 emptyMessage: "暂无开源关注",
                 onRetry: { Task { await model.refresh() } }
             ) {
-                List(model.entries) { entry in
-                    NavigationLink(value: OpenSourceRoute.detail(entry.slug)) {
-                        OpenSourceRow(entry: entry)
+                List {
+                    if let headerCollapsed {
+                        ScrollCollapseSensor(
+                            coordinateSpace: scrollSpace,
+                            isCollapsed: headerCollapsed
+                        )
+                        .listRowInsets(.init())
+                        .listRowSeparator(.hidden)
+                        .listRowBackground(Color.clear)
+                    }
+                    ForEach(model.entries) { entry in
+                        NavigationLink(value: OpenSourceRoute.detail(entry.slug)) {
+                            OpenSourceRow(entry: entry)
+                        }
+                        .contentListRowChrome()
                     }
                 }
                 .listStyle(.plain)
+                .environment(\.defaultMinListRowHeight, 1)
                 .scrollContentBackground(.hidden)
+                .coordinateSpace(.named(scrollSpace))
+                .trackHeaderCollapse(headerCollapsed)
                 .refreshable { await model.refresh() }
             }
             .toolbar(.hidden, for: .navigationBar)
@@ -88,29 +110,17 @@ private struct OpenSourceRow: View {
     let entry: OpenSourceListEntry
 
     var body: some View {
-        VStack(alignment: .leading, spacing: 6) {
+        VStack(alignment: .leading, spacing: ContentListMetrics.rowSpacing) {
+            ContentListMetadataLine(items: [entry.category.label, entry.status.rawValue])
             Text(entry.repository)
-                .font(.headline)
+                .contentListTitle()
+                .lineLimit(1)
             if !entry.sourceSummary.isEmpty {
                 Text(entry.sourceSummary)
-                    .font(.subheadline)
-                    .foregroundStyle(.secondary)
-                    .lineLimit(2)
-            }
-            HStack(spacing: 8) {
-                Text(entry.category.label)
-                    .font(.caption)
-                    .foregroundStyle(.secondary)
-                Text(entry.status.rawValue)
-                    .font(.caption)
-                    .padding(.horizontal, 6)
-                    .padding(.vertical, 2)
-                    .overlay(Capsule().stroke(Color.secondary, lineWidth: 0.5))
-                    .foregroundStyle(.secondary)
-                Spacer()
+                    .contentListSummary()
             }
         }
-        .padding(.vertical, 4)
+        .contentListBody()
     }
 }
 

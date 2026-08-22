@@ -29,7 +29,7 @@ final class AskChatModel {
     private var streamTask: Task<Void, Never>?
 
     static let scopeLabels: [AskScope: String] = [
-        .all: "全部",
+        .all: "全部资料",
         .aiNews: "每日动态",
         .daily: "推特点赞",
         .openSource: "开源关注",
@@ -39,15 +39,28 @@ final class AskChatModel {
         !input.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty && !isStreaming && visitorId != nil
     }
 
-    func send() {
-        let question = input.trimmingCharacters(in: .whitespacesAndNewlines)
-        guard canSend, let visitorId else { return }
+    func send(_ suggestedQuestion: String? = nil) {
+        let question = (suggestedQuestion ?? input).trimmingCharacters(in: .whitespacesAndNewlines)
+        let canSubmit = !question.isEmpty && !isStreaming && visitorId != nil
+        guard canSubmit, let visitorId else { return }
         input = ""
         bannerMessage = nil
         messages.append(AskMessage(role: .user, text: question))
         messages.append(AskMessage(role: .assistant, text: "", isStreaming: true))
         isStreaming = true
         streamTask = Task { await streamAnswer(question: question, visitorId: visitorId) }
+    }
+
+    func stopGenerating() {
+        streamTask?.cancel()
+        streamTask = nil
+        updateLastAssistant {
+            if $0.text.isEmpty {
+                $0.text = "已停止生成。"
+            }
+            $0.isStreaming = false
+        }
+        isStreaming = false
     }
 
     /// 离开页面时调用：取消流，停止消费事件。
@@ -108,17 +121,34 @@ struct AskView: View {
     @State private var model = AskChatModel()
     @State private var followsLatest = true
     @State private var messageViewportHeight: CGFloat = 0
+    @FocusState private var composerFocused: Bool
 
     private let bottomID = "ask-bottom"
+    private let suggestions = [
+        AskSuggestion(
+            title: "最近在关注什么？",
+            detail: "从每日动态里找出正在发生的变化",
+            prompt: "最近有哪些值得持续跟踪的 Agent 工程？"
+        ),
+        AskSuggestion(
+            title: "哪些项目值得尝试？",
+            detail: "结合推荐内容与开源判断给出答案",
+            prompt: "哪些开源项目已经被提炼或计划试用？"
+        ),
+        AskSuggestion(
+            title: "现在正在构建什么？",
+            detail: "从工程档案总结当前验证方向",
+            prompt: "目前正在构建和验证什么？"
+        ),
+    ]
 
     var body: some View {
-        VStack(spacing: 0) {
-            messageList
-            Divider().overlay(Color.psLine)
-            composer
-        }
-        .background(Color.psSurface)
-        .onDisappear { model.cancelStream() }
+        messageList
+            .safeAreaInset(edge: .bottom, spacing: 0) {
+                composer
+            }
+            .background(Color.psSurface)
+            .onDisappear { model.cancelStream() }
     }
 
     private var messageList: some View {
@@ -136,11 +166,11 @@ struct AskView: View {
                             .transition(.opacity)
                     }
                     if model.messages.isEmpty {
-                        Text("问问这些公开资料，回答基于 AI 动态、推特点赞与开源关注。")
-                            .font(.subheadline)
-                            .foregroundStyle(.secondary)
-                            .frame(maxWidth: .infinity, alignment: .center)
-                            .padding(.top, 48)
+                        AskEmptyState(suggestions: suggestions) { suggestion in
+                            composerFocused = false
+                            model.send(suggestion.prompt)
+                        }
+                        .padding(.top, 24)
                     }
                     ForEach(model.messages) { message in
                         AskMessageBubble(message: message)
@@ -160,6 +190,7 @@ struct AskView: View {
                 .padding()
                 .animation(PSMotion.stateChange, value: model.messages.count)
             }
+            .scrollDismissesKeyboard(.interactively)
             .coordinateSpace(.named("ask-scroll"))
             .onGeometryChange(for: CGFloat.self) { proxy in
                 proxy.size.height
@@ -189,33 +220,133 @@ struct AskView: View {
     }
 
     private var composer: some View {
-        HStack(alignment: .bottom, spacing: 8) {
-            Menu {
-                Picker("检索范围", selection: $model.scope) {
-                    ForEach(AskScope.allCases, id: \.self) { scope in
-                        Text(AskChatModel.scopeLabels[scope] ?? scope.rawValue).tag(scope)
-                    }
-                }
-            } label: {
-                HStack(spacing: 4) {
-                    Text(AskChatModel.scopeLabels[model.scope] ?? "")
-                        .font(.subheadline)
-                    Image(systemName: "chevron.down")
-                        .font(.caption2)
-                }
-                .foregroundStyle(Color.psLink)
-            }
-            TextField("问问这些公开资料…", text: $model.input, axis: .vertical)
-                .textFieldStyle(.roundedBorder)
+        VStack(alignment: .leading, spacing: 8) {
+            TextField("问任何公开记录…", text: $model.input, axis: .vertical)
+                .font(.system(size: 16, weight: .regular))
+                .textFieldStyle(.plain)
                 .lineLimit(1...5)
+                .focused($composerFocused)
                 .onSubmit { model.send() }
-            Button { model.send() } label: {
-                Image(systemName: "arrow.up.circle.fill")
-                    .font(.title2)
+
+            HStack(spacing: 8) {
+                Menu {
+                    Picker("检索范围", selection: $model.scope) {
+                        ForEach(AskScope.allCases, id: \.self) { scope in
+                            Text(AskChatModel.scopeLabels[scope] ?? scope.rawValue).tag(scope)
+                        }
+                    }
+                } label: {
+                    HStack(spacing: 5) {
+                        Image(systemName: "line.3.horizontal.decrease")
+                        Text(AskChatModel.scopeLabels[model.scope] ?? "")
+                        Image(systemName: "chevron.down")
+                            .font(.system(size: 9, weight: .semibold))
+                    }
+                    .font(.system(size: 12, weight: .medium))
+                    .foregroundStyle(Color.psQuiet)
+                    .frame(minHeight: 32)
+                }
+                .disabled(model.isStreaming)
+
+                Spacer(minLength: 0)
+
+                Button {
+                    if model.isStreaming {
+                        model.stopGenerating()
+                    } else {
+                        model.send()
+                    }
+                } label: {
+                    Image(systemName: model.isStreaming ? "stop.fill" : "arrow.up")
+                        .font(.system(size: 14, weight: .semibold))
+                        .foregroundStyle(canSubmitOrStop ? Color.psSurface : Color.psQuiet)
+                        .frame(width: 32, height: 32)
+                        .background(
+                            canSubmitOrStop ? Color.psInk : Color.psLine,
+                            in: Circle()
+                        )
+                        .frame(width: 44, height: 44)
+                }
+                .buttonStyle(PSPressButtonStyle())
+                .disabled(!canSubmitOrStop)
+                .accessibilityLabel(model.isStreaming ? "停止生成" : "发送")
             }
-            .disabled(!model.canSend)
         }
-        .padding()
+        .padding(.leading, 14)
+        .padding(.trailing, 8)
+        .padding(.top, 12)
+        .padding(.bottom, 6)
+        .background(Color(uiColor: .secondarySystemBackground), in: .rect(cornerRadius: 22))
+        .overlay {
+            RoundedRectangle(cornerRadius: 22)
+                .stroke(Color.psLine, lineWidth: 0.5)
+        }
+        .padding(.horizontal, 12)
+        .padding(.bottom, 8)
+        .background(Color.psSurface.opacity(0.96))
+    }
+
+    private var canSubmitOrStop: Bool {
+        model.isStreaming || model.canSend
+    }
+}
+
+private struct AskSuggestion: Identifiable {
+    let title: String
+    let detail: String
+    let prompt: String
+
+    var id: String { title }
+}
+
+private struct AskEmptyState: View {
+    let suggestions: [AskSuggestion]
+    let onSelect: (AskSuggestion) -> Void
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 0) {
+            Text("从哪里开始？")
+                .font(.system(size: 22, weight: .semibold))
+                .tracking(-0.02 * 22)
+                .foregroundStyle(Color.psInk)
+
+            Text("直接提问，回答只基于这个站点已经公开的内容。")
+                .font(.system(size: 13.5, weight: .regular))
+                .foregroundStyle(Color.psQuiet)
+                .padding(.top, 4)
+                .padding(.bottom, 18)
+
+            ForEach(suggestions) { suggestion in
+                Button {
+                    onSelect(suggestion)
+                } label: {
+                    HStack(alignment: .top, spacing: 12) {
+                        VStack(alignment: .leading, spacing: 4) {
+                            Text(suggestion.title)
+                                .font(.system(size: 14.5, weight: .semibold))
+                                .foregroundStyle(Color.psInk)
+                            Text(suggestion.detail)
+                                .font(.system(size: 12.5, weight: .regular))
+                                .foregroundStyle(Color.psQuiet)
+                                .lineLimit(2)
+                        }
+                        Spacer(minLength: 0)
+                        Image(systemName: "arrow.up.right")
+                            .font(.system(size: 11, weight: .medium))
+                            .foregroundStyle(Color.psQuiet)
+                            .padding(.top, 2)
+                    }
+                    .frame(maxWidth: .infinity, minHeight: 66, alignment: .leading)
+                    .padding(.horizontal, 14)
+                    .padding(.vertical, 10)
+                    .background(Color.psLine.opacity(0.18), in: .rect(cornerRadius: 14))
+                    .contentShape(.rect)
+                }
+                .buttonStyle(PSPressButtonStyle())
+                .padding(.bottom, 10)
+            }
+        }
+        .frame(maxWidth: .infinity, alignment: .leading)
     }
 }
 
@@ -226,15 +357,25 @@ private struct AskMessageBubble: View {
         switch message.role {
         case .user:
             HStack {
-                Spacer(minLength: 48)
+                Spacer(minLength: 64)
                 Text(message.text)
-                    .padding(10)
-                    .background(Color(uiColor: .secondarySystemBackground), in: .rect(cornerRadius: 12))
+                    .font(.system(size: 15, weight: .regular))
+                    .foregroundStyle(Color.psSurface)
+                    .padding(.horizontal, 14)
+                    .padding(.vertical, 10)
+                    .background(Color.psInk, in: .rect(cornerRadius: 18))
+                    .textSelection(.enabled)
             }
         case .assistant:
-            VStack(alignment: .leading, spacing: 8) {
+            VStack(alignment: .leading, spacing: 10) {
                 if message.text.isEmpty, message.isStreaming {
-                    ProgressView()
+                    HStack(spacing: 8) {
+                        ProgressView()
+                            .controlSize(.small)
+                        Text("正在整理公开资料…")
+                            .font(.system(size: 13.5, weight: .regular))
+                            .foregroundStyle(Color.psQuiet)
+                    }
                         .transition(.opacity)
                 } else {
                     MarkdownText(markdown: message.text)

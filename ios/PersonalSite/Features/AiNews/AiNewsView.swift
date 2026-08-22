@@ -61,6 +61,13 @@ final class AiNewsListModel {
 
 struct AiNewsView: View {
     @State private var model = AiNewsListModel()
+    var headerCollapsed: Binding<Bool>?
+
+    private let scrollSpace = "ai-news-list-scroll"
+
+    init(headerCollapsed: Binding<Bool>? = nil) {
+        self.headerCollapsed = headerCollapsed
+    }
 
     var body: some View {
         NavigationStack {
@@ -72,10 +79,22 @@ struct AiNewsView: View {
                 onRetry: { Task { await model.refresh() } }
             ) {
                 List {
+                    if let headerCollapsed {
+                        ScrollCollapseSensor(
+                            coordinateSpace: scrollSpace,
+                            isCollapsed: headerCollapsed
+                        )
+                        .listRowInsets(.init())
+                        .listRowSeparator(.hidden)
+                        .listRowBackground(Color.clear)
+                    }
                     AiNewsStreamContent(model: model)
                 }
                 .listStyle(.plain)
+                .environment(\.defaultMinListRowHeight, 1)
                 .scrollContentBackground(.hidden)
+                .coordinateSpace(.named(scrollSpace))
+                .trackHeaderCollapse(headerCollapsed)
                 .refreshable { await model.refresh() }
             }
             .toolbar(.hidden, for: .navigationBar)
@@ -101,12 +120,27 @@ struct AiNewsStreamContent: View {
                     NavigationLink(value: item.id) {
                         AiNewsRow(item: item)
                     }
+                    .contentListRowChrome()
                     .onAppear {
                         Task { await model.loadMoreIfNeeded(currentItem: item) }
                     }
                 }
             } header: {
-                Text(group.weekday.isEmpty ? group.label : "\(group.label) \(group.weekday)")
+                HStack(alignment: .firstTextBaseline, spacing: 6) {
+                    Text(group.label)
+                        .font(.system(size: 14.5, weight: .semibold))
+                        .foregroundStyle(Color.psInk)
+                    if !group.weekday.isEmpty {
+                        Text(group.weekday)
+                            .font(.system(size: ContentListMetrics.metadataSize, weight: .medium))
+                            .foregroundStyle(Color.psQuiet)
+                    }
+                    Spacer(minLength: 0)
+                }
+                .textCase(nil)
+                .padding(.top, 10)
+                .padding(.bottom, 2)
+                .background(Color.psSurface)
             }
         }
     }
@@ -116,30 +150,19 @@ struct AiNewsRow: View {
     let item: AiNewsListItem
 
     var body: some View {
-        VStack(alignment: .leading, spacing: 6) {
-            HStack(spacing: 8) {
-                Text(AiNewsCategory.label(for: item.category))
-                    .font(.caption)
-                    .padding(.horizontal, 6)
-                    .padding(.vertical, 2)
-                    .overlay(Capsule().stroke(Color.secondary, lineWidth: 0.5))
-                    .foregroundStyle(.secondary)
-                if let relative = AiNewsGrouping.relativeTime(for: item.publishedAt) {
-                    Text(relative)
-                        .font(.caption)
-                        .foregroundStyle(.secondary)
-                }
-                Spacer()
-            }
+        VStack(alignment: .leading, spacing: ContentListMetrics.rowSpacing) {
+            ContentListMetadataLine(items: [
+                AiNewsCategory.label(for: item.category),
+                AiNewsGrouping.relativeTime(for: item.publishedAt) ?? "",
+            ])
             Text(item.title)
-                .font(.headline)
+                .contentListTitle()
+                .lineLimit(2)
             if !item.summary.isEmpty {
                 Text(item.summary)
-                    .font(.subheadline)
-                    .foregroundStyle(.secondary)
-                    .lineLimit(3)
+                    .contentListSummary()
             }
         }
-        .padding(.vertical, 4)
+        .contentListBody()
     }
 }

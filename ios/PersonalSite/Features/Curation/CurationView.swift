@@ -53,6 +53,13 @@ final class CurationListModel {
 
 struct CurationView: View {
     @State private var model = CurationListModel()
+    var headerCollapsed: Binding<Bool>?
+
+    private let scrollSpace = "curation-list-scroll"
+
+    init(headerCollapsed: Binding<Bool>? = nil) {
+        self.headerCollapsed = headerCollapsed
+    }
 
     var body: some View {
         NavigationStack {
@@ -63,16 +70,31 @@ struct CurationView: View {
                 emptyMessage: "暂无策展内容",
                 onRetry: { Task { await model.refresh() } }
             ) {
-                List(model.items) { item in
-                    NavigationLink(value: item.id) {
-                        CurationRow(item: item)
+                List {
+                    if let headerCollapsed {
+                        ScrollCollapseSensor(
+                            coordinateSpace: scrollSpace,
+                            isCollapsed: headerCollapsed
+                        )
+                        .listRowInsets(.init())
+                        .listRowSeparator(.hidden)
+                        .listRowBackground(Color.clear)
                     }
-                    .onAppear {
-                        Task { await model.loadMoreIfNeeded(currentItem: item) }
+                    ForEach(model.items) { item in
+                        NavigationLink(value: item.id) {
+                            CurationRow(item: item)
+                        }
+                        .contentListRowChrome()
+                        .onAppear {
+                            Task { await model.loadMoreIfNeeded(currentItem: item) }
+                        }
                     }
                 }
                 .listStyle(.plain)
+                .environment(\.defaultMinListRowHeight, 1)
                 .scrollContentBackground(.hidden)
+                .coordinateSpace(.named(scrollSpace))
+                .trackHeaderCollapse(headerCollapsed)
                 .refreshable { await model.refresh() }
             }
             .toolbar(.hidden, for: .navigationBar)
@@ -89,30 +111,19 @@ private struct CurationRow: View {
     let item: CurationListItem
 
     var body: some View {
-        VStack(alignment: .leading, spacing: 6) {
+        VStack(alignment: .leading, spacing: ContentListMetrics.rowSpacing) {
+            ContentListMetadataLine(items: [
+                "@\(item.author.handle)",
+                item.tags.first ?? "",
+            ])
             Text(item.title)
-                .font(.headline)
+                .contentListTitle()
+                .lineLimit(2)
             if !item.summary.isEmpty {
                 Text(item.summary)
-                    .font(.subheadline)
-                    .foregroundStyle(.secondary)
-                    .lineLimit(3)
-            }
-            HStack(spacing: 8) {
-                Text("@\(item.author.handle)")
-                    .font(.caption)
-                    .foregroundStyle(.secondary)
-                ForEach(item.tags.prefix(3), id: \.self) { tag in
-                    Text(tag)
-                        .font(.caption)
-                        .padding(.horizontal, 6)
-                        .padding(.vertical, 2)
-                        .overlay(Capsule().stroke(Color.secondary, lineWidth: 0.5))
-                        .foregroundStyle(.secondary)
-                }
-                Spacer()
+                    .contentListSummary()
             }
         }
-        .padding(.vertical, 4)
+        .contentListBody()
     }
 }

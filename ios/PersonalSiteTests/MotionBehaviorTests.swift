@@ -3,10 +3,29 @@ import Testing
 @testable import PersonalSite
 
 struct MotionBehaviorTests {
-    @Test func sectionDirectionFollowsNavigationOrder() {
-        #expect(SiteSection.transitionDirection(from: .home, to: .daily) == .forward)
-        #expect(SiteSection.transitionDirection(from: .ask, to: .home) == .backward)
-        #expect(SiteSection.transitionDirection(from: .daily, to: .daily) == .forward)
+    @Test func appShellUsesFivePrimaryTabsAndTwoFollowingModes() {
+        #expect(AppTab.allCases == [.home, .aiNews, .following, .works, .ask])
+        #expect(FollowingMode.allCases == [.recommendations, .openSource])
+    }
+
+    @Test func careerTimelineShowsTheFourPublicMilestones() {
+        #expect(CareerTimelineView.years == ["2014", "2019", "2023", "2026"])
+        #expect(CareerTimelineView.arrowCount == 3)
+        #expect(ProfileHeaderContent.expandedTimelineTrailingInset == 18)
+        #expect(ProfileHeaderContent.expandedLinksTrailingInset == 10)
+        #expect(
+            ProfileHeaderContent.expandedTimelineTrailingInset
+                > ProfileHeaderContent.expandedLinksTrailingInset
+        )
+        #expect(CareerTimelineView.fontSize == 12.2)
+        #expect(CareerTimelineView.opacity(for: 3) > CareerTimelineView.opacity(for: 0))
+        #expect(CareerTimelineView.runnerWidth == 18)
+        #expect(CareerTimelineView.stageHeight >= CareerTimelineView.runnerHeight)
+        #expect(CareerTimelineView.runnerCenterX(progress: 1, width: 200) > 200)
+        #expect(!CareerTimelineView.shouldRenderRunner(
+            shouldAnimateEntrance: false,
+            reduceMotion: false
+        ))
     }
 
     @Test func bioFinalSnapshotIsCompleteChineseCopy() {

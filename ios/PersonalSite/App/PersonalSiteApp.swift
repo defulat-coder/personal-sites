@@ -10,15 +10,13 @@ struct PersonalSiteApp: App {
 }
 
 struct PersonalSiteRootView: View {
-    @Environment(\.accessibilityReduceMotion) private var reduceMotion
-    @Namespace private var navigationNamespace
     @AppStorage("curation-theme") private var theme = "system"
     @AppStorage("hasSeenWelcome") private var hasSeenWelcome = false
 
-    @State private var section: SiteSection = UserDefaults.standard.string(forKey: "initialSection")
-        .flatMap(SiteSection.init(rawValue:)) ?? .home
-    @State private var direction: SectionTransitionDirection = .forward
+    @State private var selectedTab: AppTab = .home
     @State private var bioPlayed = false
+    @State private var careerTimelinePlayed = false
+    @State private var showsAbout = false
 
     private var showWelcome: Bool {
         !hasSeenWelcome && !UserDefaults.standard.bool(forKey: "skipLoader")
@@ -26,7 +24,7 @@ struct PersonalSiteRootView: View {
 
     var body: some View {
         ZStack {
-            sectionSurface
+            tabSurface
                 .background(Color.psSurface.ignoresSafeArea())
 
             if showWelcome {
@@ -38,94 +36,133 @@ struct PersonalSiteRootView: View {
                 .transition(.opacity)
                 .zIndex(10)
             }
+
+            if showsAbout {
+                AboutPrintView(onDismiss: dismissAbout)
+                    .transition(.opacity)
+                    .zIndex(20)
+            }
         }
         .preferredColorScheme(theme == "system" ? nil : theme == "dark" ? .dark : .light)
     }
 
-    @ViewBuilder
-    private var sectionSurface: some View {
-        ZStack(alignment: .top) {
-            if section == .home {
+    private var tabSurface: some View {
+        TabView(selection: $selectedTab) {
+            TabContent(tab: .home) {
                 HomeView(
                     loaderFinished: !showWelcome,
                     bioPlayed: bioPlayed,
                     onBioPlayed: { bioPlayed = true },
-                    onSelect: selectSection,
-                    navigationNamespace: navigationNamespace
+                    careerTimelinePlayed: careerTimelinePlayed,
+                    onCareerTimelinePlayed: { careerTimelinePlayed = true },
+                    onShowAbout: presentAbout
                 )
-                .transition(ProfileEndpointRetentionTransition())
-            } else {
-                VStack(spacing: 0) {
-                    SiteHeaderView(
-                        current: section,
-                        onSelect: selectSection,
-                        navigationNamespace: navigationNamespace
-                    )
-                    ZStack {
-                        sectionContent
-                            .id(section)
-                            .transition(contentTransition)
-                    }
-                    .frame(maxWidth: .infinity, maxHeight: .infinity)
-                    .clipped()
-                    .animation(reduceMotion ? PSMotion.stateChange : PSMotion.section, value: section)
+            }
+            TabContent(tab: .aiNews) {
+                AiNewsTabView()
+            }
+            TabContent(tab: .following) {
+                FollowingView()
+            }
+            TabContent(tab: .works) {
+                WorksTabView()
+            }
+            TabContent(tab: .ask) {
+                ContentTabScreen(
+                    title: "问一问",
+                    subtitle: "从公开动态、关注与工程记录中寻找答案"
+                ) {
+                    AskView()
                 }
-                .transition(ProfileEndpointRetentionTransition())
             }
         }
+        .tint(Color.psInk)
+        .modifier(NativeTabBarBehavior())
     }
 
-    private func selectSection(_ destination: SiteSection) {
-        guard destination != section else { return }
-        direction = SiteSection.transitionDirection(from: section, to: destination)
-        let changesProfileMode = section == .home || destination == .home
-        let animation = reduceMotion
-            ? PSMotion.stateChange
-            : (changesProfileMode ? PSMotion.profile : PSMotion.section)
-        withAnimation(animation) {
-            section = destination
+    private func presentAbout() {
+        withAnimation(PSMotion.stateChange) {
+            showsAbout = true
         }
     }
 
-    private var contentTransition: AnyTransition {
-        guard !reduceMotion else { return .opacity }
-        let insertion = direction == .forward ? 12.0 : -12.0
-        return .asymmetric(
-            insertion: .offset(x: insertion).combined(with: .opacity),
-            removal: .offset(x: -insertion).combined(with: .opacity)
-        )
+    private func dismissAbout() {
+        withAnimation(PSMotion.stateChange) {
+            showsAbout = false
+        }
     }
 
+}
+
+private struct AiNewsTabView: View {
+    @State private var headerCollapsed = false
+
+    var body: some View {
+        VStack(spacing: 0) {
+            ContentPageHeader(
+                title: "每日动态",
+                subtitle: "按时间跟踪正在发生的 AI 与 Agent 变化",
+                isCollapsed: headerCollapsed
+            )
+            AiNewsView(headerCollapsed: $headerCollapsed)
+                .frame(maxWidth: .infinity, maxHeight: .infinity)
+        }
+        .background(Color.psSurface)
+    }
+}
+
+private struct WorksTabView: View {
+    @State private var headerCollapsed = false
+
+    var body: some View {
+        VStack(spacing: 0) {
+            ContentPageHeader(
+                title: "构建",
+                subtitle: "正在运行、验证和持续维护的工程",
+                isCollapsed: headerCollapsed
+            )
+            WorksView(headerCollapsed: $headerCollapsed)
+                .frame(maxWidth: .infinity, maxHeight: .infinity)
+        }
+        .background(Color.psSurface)
+    }
+}
+
+private struct TabContent<Content: View>: View {
+    let tab: AppTab
+    @ViewBuilder let content: Content
+
+    var body: some View {
+        content
+            .tabItem {
+                Label(tab.label, systemImage: tab.systemImage)
+            }
+            .tag(tab)
+    }
+}
+
+private struct NativeTabBarBehavior: ViewModifier {
     @ViewBuilder
-    private var sectionContent: some View {
-        switch section {
-        case .home: EmptyView()
-        case .aiNews: AiNewsView()
-        case .daily: CurationView()
-        case .openSource: OpenSourceView()
-        case .works: WorksView()
-        case .ask: AskView()
+    func body(content: Content) -> some View {
+        if #available(iOS 26.0, *) {
+            content.tabBarMinimizeBehavior(.onScrollDown)
+        } else {
+            content
         }
     }
 }
 
-/// Keeps both profile endpoints in the render tree for the spring without adding
-/// a visible whole-screen transition. The tiny sub-pixel transform is imperceptible.
-private struct ProfileEndpointRetentionTransition: Transition {
-    func body(content: Content, phase: TransitionPhase) -> some View {
-        content.offset(x: phase.isIdentity ? 0 : 0.001)
-    }
-}
+private struct ContentTabScreen<Content: View>: View {
+    let title: String
+    let subtitle: String
+    @ViewBuilder let content: Content
 
-enum SectionTransitionDirection: Equatable {
-    case forward
-    case backward
-}
-
-extension SiteSection {
-    static func transitionDirection(from source: SiteSection, to destination: SiteSection) -> SectionTransitionDirection {
-        let sourceIndex = allCases.firstIndex(of: source) ?? 0
-        let destinationIndex = allCases.firstIndex(of: destination) ?? 0
-        return destinationIndex >= sourceIndex ? .forward : .backward
+    var body: some View {
+        VStack(spacing: 0) {
+            ContentPageHeader(title: title, subtitle: subtitle)
+            content
+                .frame(maxWidth: .infinity, maxHeight: .infinity)
+        }
+        .background(Color.psSurface)
     }
 }

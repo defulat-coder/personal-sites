@@ -41,6 +41,13 @@ final class WorksListModel {
 
 struct WorksView: View {
     @State private var model = WorksListModel()
+    var headerCollapsed: Binding<Bool>?
+
+    private let scrollSpace = "works-list-scroll"
+
+    init(headerCollapsed: Binding<Bool>? = nil) {
+        self.headerCollapsed = headerCollapsed
+    }
 
     var body: some View {
         NavigationStack {
@@ -51,24 +58,31 @@ struct WorksView: View {
                 emptyMessage: "暂无构建档案",
                 onRetry: { Task { await model.refresh() } }
             ) {
-                List(model.works) { work in
-                    NavigationLink(value: work) {
-                        VStack(alignment: .leading, spacing: 6) {
-                            Text(work.title)
-                                .font(.headline)
-                            Text(work.summary)
-                                .font(.subheadline)
-                                .foregroundStyle(.secondary)
-                                .lineLimit(2)
-                            Text("\(work.period) · \(work.status)")
-                                .font(.caption)
-                                .foregroundStyle(.secondary)
+                ScrollView {
+                    LazyVStack(spacing: 0) {
+                        if let headerCollapsed {
+                            ScrollCollapseSensor(
+                                coordinateSpace: scrollSpace,
+                                isCollapsed: headerCollapsed
+                            )
                         }
-                        .padding(.vertical, 4)
+                        ForEach(model.works) { work in
+                            NavigationLink(value: work) {
+                                WorkArchiveRow(work: work)
+                            }
+                            .buttonStyle(PSPressButtonStyle())
+
+                            if work.id != model.works.last?.id {
+                                Rectangle()
+                                    .fill(Color.psLine)
+                                    .frame(height: 0.5)
+                            }
+                        }
                     }
+                    .padding(.horizontal, 16)
                 }
-                .listStyle(.plain)
-                .scrollContentBackground(.hidden)
+                .coordinateSpace(.named(scrollSpace))
+                .trackHeaderCollapse(headerCollapsed)
                 .refreshable { await model.refresh() }
             }
             .toolbar(.hidden, for: .navigationBar)
@@ -78,6 +92,30 @@ struct WorksView: View {
             }
         }
         .task { await model.loadInitial() }
+    }
+}
+
+private struct WorkArchiveRow: View {
+    let work: Work
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 9) {
+            ContentListMetadataLine(items: [work.period, work.status])
+
+            Text(work.title)
+                .font(.system(size: 19, weight: .semibold))
+                .tracking(-0.018 * 19)
+                .foregroundStyle(Color.psInk)
+
+            Text(work.summary)
+                .font(.system(size: 14, weight: .regular))
+                .foregroundStyle(Color.psQuiet)
+                .lineSpacing(2.5)
+                .lineLimit(3)
+        }
+        .frame(maxWidth: .infinity, minHeight: 142, alignment: .topLeading)
+        .padding(.vertical, 18)
+        .contentShape(.rect)
     }
 }
 
