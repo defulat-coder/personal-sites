@@ -1,0 +1,5 @@
+# 复制为 local.properties 并填入真实值（已被 gitignore）。
+# 只放公开配置；service-role、KIMI_API_KEY、ASK_SESSION_SECRET 等绝不进这里。
+SUPABASE_URL=https://your-project.supabase.co
+SUPABASE_PUBLISHABLE_KEY=sb_publishable_xxx
+SITE_BASE_URL=http://10.0.2.2:3000

@@ -49,6 +49,13 @@ This block is written and re-added by `next dev` — verify at `node_modules/nex
 - `ios/Secrets.xcconfig` (gitignored) carries only `SUPABASE_URL`, `SUPABASE_PUBLISHABLE_KEY`, `SITE_BASE_URL`. Service-role and LLM keys never enter the app.
 - Data contract source of truth stays in `lib/*-types.ts`; when those types or `/api/*` shapes change, update `ios/PersonalSite/Models/` and `SiteAPIClient` accordingly.
 
+## Android App
+
+- `android/` holds the native Kotlin + Jetpack Compose client (minSdk 26, compileSdk 36, AGP 8.13 + Gradle 8.14, 2025 年稳定依赖线); see `docs/android-app.md`. Feature and data-access parity with `ios/` is the design constraint.
+- Build/test from `android/`: `JAVA_HOME=$(/usr/libexec/java_home -v 17) ANDROID_HOME=/opt/homebrew/share/android-commandlinetools ./gradlew :app:assembleDebug` and `./gradlew :app:testDebugUnitTest`.
+- `android/local.properties` (gitignored) carries only `SUPABASE_URL`, `SUPABASE_PUBLISHABLE_KEY`, `SITE_BASE_URL` (emulator dev: `http://10.0.2.2:3000`). Service-role and LLM keys never enter the app.
+- When `lib/*-types.ts` or `/api/*` shapes change, update `android/app/src/main/java/com/personalsite/models/` and `core/SiteApiClient.kt` together with the iOS models.
+
 ## Git and Commits
 
 - Inspect `git status` before editing or staging. Stage only agreed paths; `tools/smaug` is a nested repository and must stay out of outer-repo commits.
