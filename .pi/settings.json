@@ -1,5 +1,6 @@
 {
   "defaultProvider": "kimi-coding",
   "defaultModel": "kimi-for-coding",
-  "defaultThinkingLevel": "off"
+  "defaultThinkingLevel": "off",
+  "enableSkillCommands": true
 }

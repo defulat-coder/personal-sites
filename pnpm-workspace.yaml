@@ -1,5 +1,6 @@
 allowBuilds:
   '@google/genai': false
+  '@rpamis/comet': true
   better-sqlite3: true
   protobufjs: false
   sharp: true

@@ -367,6 +367,12 @@
       "skillPath": "skills/composition-patterns/SKILL.md",
       "computedHash": "575757e3e25761c8c562d6e395d29f0b76c98b1273c0bd72d88e6ab1bc9c7d42"
     },
+    "video-shotcraft": {
+      "source": "vincentwei1021/video-shotcraft",
+      "sourceType": "github",
+      "skillPath": "SKILL.md",
+      "computedHash": "4dce010daae43665f92caddf44afac8d04f1dbc4857657f0dcffc60138c4b7fa"
+    },
     "wayfinder": {
       "source": "mattpocock/skills",
       "sourceType": "github",
