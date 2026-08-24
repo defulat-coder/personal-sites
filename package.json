@@ -6,8 +6,14 @@
   "engines": {
     "node": ">=22.19.0"
   },
+  "portless": {
+    "name": "personal-site",
+    "script": "dev",
+    "appPort": 3000
+  },
   "scripts": {
     "dev": "next dev --turbopack --hostname 127.0.0.1",
+    "dev:domain": "portless",
     "build": "next build",
     "start": "next start --hostname 127.0.0.1",
     "lint": "eslint --max-warnings=0 --no-error-on-unmatched-pattern 'app/**/*.{ts,tsx}' 'components/**/*.{ts,tsx}' 'lib/**/*.{ts,tsx}' '*.config.{js,mjs,ts}'",
@@ -66,6 +72,7 @@
   "devDependencies": {
     "@axe-core/playwright": "4.13.0",
     "@playwright/test": "1.62.1",
+    "@rpamis/comet": "0.4.0-beta.19",
     "@steipete/bird": "^0.8.0",
     "@tailwindcss/postcss": "4.3.3",
     "@testing-library/dom": "10.4.1",
@@ -79,6 +86,7 @@
     "eslint": "9.39.5",
     "eslint-config-next": "16.3.1",
     "jsdom": "30.0.1",
+    "portless": "^0.15.5",
     "postcss": "8.5.26",
     "shadcn": "4.18.0",
     "tailwindcss": "4.3.3",
