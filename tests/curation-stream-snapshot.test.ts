@@ -12,6 +12,7 @@ const sampleItem: CurationListItem = {
   collectedAt: "2026-08-14T11:25:29.000Z",
   id: "tweet-1",
   publishedAt: "2026-08-14T11:25:29.000Z",
+  source: { label: "X 原文", platform: "x", url: "https://x.com/someone/status/1" },
   summary: "一条策展判断。",
   tags: [],
   text: "原推正文。",

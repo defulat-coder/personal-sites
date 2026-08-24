@@ -21,6 +21,8 @@ test-results/
 /tools/smaug/.state/
 /tools/smaug/smaug.config.json
 /tools/smaug/bookmarks.md
+/ios/Secrets.xcconfig
+/android/local.properties
 # Sensitive source kept only for local recovery; never recreate it at repo root.
 /陈远-Agent工程师_全栈工程师_资深java工程师.md
 /var/

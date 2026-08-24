@@ -19,7 +19,7 @@ type FocusStreamProps = {
 
 const viewLabels: Record<FocusView, string> = {
   "ai-news": "每日动态",
-  daily: "推特点赞",
+  daily: "每日关注",
   "open-source": "开源关注",
 };
 

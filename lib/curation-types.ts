@@ -4,6 +4,12 @@ export type CurationLink = {
   url: string;
 };
 
+export type CurationSource = {
+  label: string;
+  platform: "douyin" | "x";
+  url: string;
+};
+
 export type CurationItem = {
   analysis: string;
   author: { handle: string; name: string };
@@ -22,11 +28,11 @@ export type CurationItem = {
   }>;
   publishedAt: string | null;
   quoteContext: { author: string; authorName: string; text: string } | null;
+  source: CurationSource;
   summary: string;
   tags: string[];
   text: string;
   title: string;
-  tweetUrl: string;
 };
 
 /**
@@ -36,7 +42,7 @@ export type CurationItem = {
  */
 export type CurationListItem = Pick<
   CurationItem,
-  "author" | "collectedAt" | "id" | "publishedAt" | "summary" | "tags" | "text" | "title"
+  "author" | "collectedAt" | "id" | "publishedAt" | "source" | "summary" | "tags" | "text" | "title"
 > & {
   attachments: string[];
 };

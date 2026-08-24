@@ -24,6 +24,7 @@ const listItemSchema = z.object({
   collectedAt: z.string().nullable(),
   id: z.string().min(1),
   publishedAt: z.string().nullable(),
+  source: z.object({ label: z.string(), platform: z.enum(["douyin", "x"]), url: z.string().url() }),
   summary: z.string(),
   tags: z.array(z.string()),
   text: z.string(),

@@ -8,7 +8,7 @@
 | --- | --- | --- | --- |
 | 原始 X 抓取与完整队列 | `data/sensitive/x-curation/` | 禁止 | 否 |
 | Pi/Kimi 或 Codex CLI 生成结果 | `data/sensitive/x-curation/` | 禁止 | 否 |
-| 已完成解析且已公开的策展内容 | `data/curation.sqlite` | 提交 | 是 |
+| 已完成解析且已公开的统一每日关注内容 | `data/curation.sqlite` | 提交 | 是 |
 
 ## 配置
 
@@ -18,7 +18,7 @@
 KIMI_API_KEY=<kimi-key>
 ```
 
-`data/curation.sqlite` 只能由本机 `scripts/build-curation-sqlite.mjs` 通过 `better-sqlite3` 从敏感队列生成。它是只读公开投影，不包含抓取快照、游标或凭据；Vercel 在部署中随 Git 文件读取，运行时不写入它。
+`data/curation.sqlite` 只能由本机 `scripts/build-curation-sqlite.mjs` 通过 `better-sqlite3` 从 X 策展队列与已批准的抖音待审队列生成。它是只读公开投影，不包含抓取快照、视频、转写、游标或凭据；Vercel 在部署中随 Git 文件读取，运行时不写入它。
 
 ## 初始化与同步
 

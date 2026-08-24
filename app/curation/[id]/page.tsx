@@ -53,7 +53,7 @@ export async function generateMetadata({
 }: CurationEntryPageProps): Promise<Metadata> {
   const item = await findCurationItem((await params).id);
   return item
-    ? { description: item.summary, title: `${item.title}｜推特点赞` }
+    ? { description: item.summary, title: `${item.title}｜每日关注` }
     : {};
 }
 
@@ -72,7 +72,7 @@ export default async function CurationEntryPage({
         <nav aria-label="返回" className="curation-detail__back">
           <Link href="/curation">
             <ArrowLeft aria-hidden="true" />
-            返回推特点赞
+            返回每日关注
           </Link>
           <ThemeToggle />
         </nav>
@@ -97,14 +97,14 @@ export default async function CurationEntryPage({
         </header>
 
         <div className="curation-detail__body">
-          <section aria-label="原推剪报" className="curation-detail__evidence curation-detail__original">
-            <h2 className="curation-detail__eyebrow">原推剪报</h2>
+          <section aria-label="来源摘录" className="curation-detail__evidence curation-detail__original">
+            <h2 className="curation-detail__eyebrow">来源摘录</h2>
             <figure className="curation-detail__specimen">
             <figcaption className="curation-detail__specimen-byline">
               <strong>{item.author.name}</strong>
-              <span>@{item.author.handle}</span>
+              {item.source.platform === "x" ? <span>@{item.author.handle}</span> : <span>{item.source.label}</span>}
               <time dateTime={item.publishedAt ?? undefined}>
-                原推发布于 {formatOriginalPublicationDate(item)}
+                原内容发布于 {formatOriginalPublicationDate(item)}
               </time>
             </figcaption>
             <blockquote>
@@ -142,13 +142,13 @@ export default async function CurationEntryPage({
                     isAnimatedGif={media.type === "animated_gif"}
                     key={media.url}
                     poster={media.previewUrl ?? media.url}
-                    tweetUrl={item.tweetUrl}
+                    tweetUrl={item.source.url}
                     videoUrl={media.videoUrl}
                   />
                 ) : (
                   <XAppLink
                     className="curation-detail__media-video"
-                    href={item.tweetUrl}
+                    href={item.source.url}
                     key={media.url}
                   >
                     {/* eslint-disable-next-line @next/next/no-img-element -- 外部推文媒体直链 */}
@@ -161,7 +161,7 @@ export default async function CurationEntryPage({
                     />
                     <span>
                       <Play aria-hidden="true" />
-                      视频内容 · 在 X 上查看
+                      视频内容 · 查看原始来源
                     </span>
                   </XAppLink>
                 ),
@@ -181,8 +181,8 @@ export default async function CurationEntryPage({
           <h2 className="curation-detail__eyebrow">原始来源</h2>
           <ul>
             <li>
-              <XAppLink href={item.tweetUrl}>
-                X 原文（@{item.author.handle}）
+              <XAppLink href={item.source.url}>
+                {item.source.label}{item.source.platform === "x" ? `（@${item.author.handle}）` : `（${item.author.name}）`}
                 <ArrowUpRight aria-hidden="true" />
               </XAppLink>
             </li>

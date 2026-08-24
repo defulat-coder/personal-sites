@@ -127,7 +127,7 @@ private fun CurationDetailContent(item: CurationItem) {
         )
         Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
             Text(
-                text = "${item.author.name} @${item.author.handle}",
+                text = if (item.source.platform == "x") "${item.author.name} @${item.author.handle}" else "抖音 · ${item.author.name}",
                 fontSize = 12.sp,
                 color = PSColors.quiet,
             )
@@ -153,7 +153,7 @@ private fun CurationDetailContent(item: CurationItem) {
 
         if (item.text.isNotEmpty()) {
             Column(verticalArrangement = Arrangement.spacedBy(6.dp)) {
-                Text("原文摘录", fontSize = SectionTitleSize, fontWeight = FontWeight.SemiBold, color = PSColors.ink)
+                Text("来源摘录", fontSize = SectionTitleSize, fontWeight = FontWeight.SemiBold, color = PSColors.ink)
                 Text(item.text, color = PSColors.quiet)
             }
         }
@@ -177,13 +177,13 @@ private fun CurationDetailContent(item: CurationItem) {
             }
         }
 
-        if (item.tweetUrl.isNotEmpty()) {
+        if (item.source.url.isNotEmpty()) {
             Text(
-                text = "查看原推",
+                text = "查看${item.source.label}",
                 fontSize = SectionTitleSize,
                 fontWeight = FontWeight.SemiBold,
                 color = PSColors.link,
-                modifier = Modifier.clickable { uriHandler.openUri(item.tweetUrl) },
+                modifier = Modifier.clickable { uriHandler.openUri(item.source.url) },
             )
         }
     }

@@ -11,8 +11,8 @@ import { getCurationPage } from "@/lib/curation";
 export const revalidate = 300;
 
 export const metadata: Metadata = {
-  description: "陈远在 X 上点赞并逐条写下策展解析的判断流。",
-  title: "推特点赞｜陈远",
+  description: "陈远从 X、抖音等来源持续收录并写下策展解析的判断流。",
+  title: "每日关注｜陈远",
 };
 
 export default async function CurationPage() {
@@ -21,7 +21,7 @@ export default async function CurationPage() {
     <main className="curation-home" id="site-main" tabIndex={-1}>
       <SiteProfile mobileSection="daily" />
       <SectionMotionLifecycle section="daily" />
-      <section aria-label="推特点赞" className="curation-home__feed site-section-motion">
+      <section aria-label="每日关注" className="curation-home__feed site-section-motion">
         <ContentSectionNavigation current="daily" />
         <CurationStream initialHasMore={curationPage.hasMore} initialItems={curationPage.items} />
       </section>

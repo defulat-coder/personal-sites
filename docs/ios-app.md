@@ -1,6 +1,6 @@
 # iOS App（ios/）
 
-原生 SwiftUI 客户端，复刻 Web 端五个模块：每日动态、推特点赞、开源关注、作品档案、问一问。
+原生 SwiftUI 客户端，复刻 Web 端五个模块：每日动态、每日关注、开源关注、作品档案、问一问。
 
 ## 技术栈
 
@@ -33,7 +33,7 @@ xcodebuild -scheme PersonalSite -destination 'platform=iOS Simulator,name=iPhone
 | 每日动态 | Supabase `ai_news_public_items` 直连 |
 | 作品档案 | Supabase `project_public_snapshots` 直连 |
 | 开源关注 | Supabase `github_open_source_items` 直连；仓库树/文件走站点 `/api/open-source/[slug]/repository/*` |
-| 推特点赞 | 站点 `/api/curation` + `/api/curation/[id]`（策展在本地 sqlite，不在 Supabase）；视频经 `/api/x-media` 代理用 `AVPlayer` 播放 |
+| 每日关注 | 站点 `/api/curation` + `/api/curation/[id]`（X 与抖音的公开投影在本地 sqlite，不在 Supabase）；X 视频经 `/api/x-media` 代理用 `AVPlayer` 播放 |
 | 问一问 | 站点 `POST /api/ask`（SSE：`sources`/`text`/`done`/`error`）；`visitorId` 用 `identifierForVendor` 去连字符，限流按 IP 无需客户端处理 |
 
 数据契约以 `lib/*-types.ts` 为准；Supabase 行外层 snake_case 列名用显式 `CodingKeys`，`content`/`snapshot` jsonb 内部是 camelCase，解码策略分层，见 `ios/PersonalSiteTests/ModelDecodingTests.swift`。

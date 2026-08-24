@@ -25,11 +25,11 @@ describe("curation detail route", () => {
       media: [],
       publishedAt: "2026-08-01T01:00:00.000Z",
       quoteContext: null,
+      source: { label: "X 原文", platform: "x", url: "https://x.com/someone/status/1" },
       summary: "摘要",
       tags: ["ai"],
       text: "原文",
       title: "标题",
-      tweetUrl: "https://x.com/someone/status/1",
     });
 
     const response = await GET(new Request("http://localhost/api/curation/abc123"), context("abc123"));

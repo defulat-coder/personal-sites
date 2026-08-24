@@ -43,11 +43,15 @@ const curationItemSchema = z.object({
       text: z.string(),
     })
     .nullable(),
+  source: z.object({
+    label: z.string().min(1),
+    platform: z.enum(["douyin", "x"]),
+    url: z.string().url(),
+  }),
   summary: z.string().min(1),
   tags: z.array(z.string().min(1)).min(1),
   text: z.string().min(1),
   title: z.string().min(1),
-  tweetUrl: z.string().url(),
 });
 
 const curationContentRowSchema = z.object({ content_json: z.string().min(1) });
@@ -98,6 +102,7 @@ function toCurationListItem(item: CurationItem): CurationListItem {
     collectedAt: item.collectedAt,
     id: item.id,
     publishedAt: item.publishedAt,
+    source: item.source,
     summary: item.summary,
     tags: item.tags,
     text: item.text,

@@ -113,7 +113,7 @@ private struct CurationRow: View {
     var body: some View {
         VStack(alignment: .leading, spacing: ContentListMetrics.rowSpacing) {
             ContentListMetadataLine(items: [
-                "@\(item.author.handle)",
+                item.source.platform == "x" ? "X · @\(item.author.handle)" : "抖音 · \(item.author.name)",
                 item.tags.first ?? "",
             ])
             Text(item.title)

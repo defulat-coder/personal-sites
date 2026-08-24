@@ -14,7 +14,7 @@ type SiteSectionNavigationProps = {
 // 问一问与阅读版块同为右侧内容入口，共享刊头与版块序列；作为对话式入口排在序列末位。
 const siblingSections: Array<{ href: Route; id: Exclude<SiteSection, "home">; label: string }> = [
   { href: "/ai-news", id: "ai-news", label: "每日动态" },
-  { href: "/curation", id: "daily", label: "推特点赞" },
+  { href: "/curation", id: "daily", label: "每日关注" },
   { href: "/open-source", id: "open-source", label: "开源关注" },
   { href: "/works", id: "works", label: "构建" },
   { href: "/ask", id: "ask", label: "问一问" },

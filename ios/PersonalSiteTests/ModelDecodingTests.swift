@@ -69,6 +69,7 @@ struct ModelDecodingTests {
               "collectedAt": null,
               "id": "cur-1",
               "publishedAt": "2026-08-10T03:00:00Z",
+              "source": {"label":"X 原文","platform":"x","url":"https://x.com/someone/status/1"},
               "summary": "判断",
               "tags": ["agent"],
               "text": "原文摘录",
@@ -108,7 +109,7 @@ struct ModelDecodingTests {
           "tags": [],
           "text": "原文",
           "title": "标题",
-          "tweetUrl": "https://x.com/someone/status/1"
+          "source": {"label":"X 原文","platform":"x","url":"https://x.com/someone/status/1"}
         }
         """)
         #expect(item.media[0].type == .animatedGif)

@@ -30,7 +30,7 @@ import com.personalsite.features.opensource.RepositoryDirectoryView
 import com.personalsite.features.opensource.RepositoryFileView
 
 /**
- * 「关注」Tab：推荐（推特点赞）/ 开源 双模式分段切换（对齐 iOS FollowingView）。
+ * 「关注」Tab：推荐（每日关注）/ 开源 双模式分段切换（对齐 iOS FollowingView）。
  * 每个模式持有自己的导航栈。
  */
 @Composable

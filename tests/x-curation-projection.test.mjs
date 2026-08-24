@@ -6,7 +6,7 @@ import path from "node:path";
 import { tmpdir } from "node:os";
 
 import { isReadyForPublication, toPublicCurationItem } from "../modules/x-sync/curation-projection.mjs";
-import { buildPublicCurationDatabase } from "../modules/x-sync/public-sqlite.mjs";
+import { buildPublicCurationDatabase } from "../modules/focus-sync/public-sqlite.mjs";
 import { firstSeenMetadata, parseSourceOrderSnapshot } from "../modules/x-sync/source-order.mjs";
 
 const item = {
@@ -60,7 +60,7 @@ test("only completed Pi results become a public curation record", () => {
     tags: ["Agent 工程"],
     text: "公开原文",
     title: "标题",
-    tweetUrl: "https://x.com/author/status/1",
+    source: { label: "X 原文", platform: "x", url: "https://x.com/author/status/1" },
   });
 });
 
@@ -100,19 +100,33 @@ test("only items present in the X snapshot receive its collection time and list 
   );
 });
 
-test("public SQLite contains only publishable curation records and the matching local Q&A index", async () => {
+test("public SQLite merges approved focus sources and builds the matching local Q&A index", async () => {
   const directory = await mkdtemp(path.join(tmpdir(), "curation-sqlite-test-"));
   const databasePath = path.join(directory, "curation.sqlite");
   try {
+    const xItem = toPublicCurationItem(item);
+    const douyinItem = {
+      ...xItem,
+      collectedAt: "2026-08-11T00:00:00.000Z",
+      id: "douyin-2",
+      source: { label: "抖音视频", platform: "douyin", url: "https://www.douyin.com/video/2" },
+      title: "抖音条目",
+    };
     const result = await buildPublicCurationDatabase({
       outputPath: databasePath,
-      queue: { items: [item, { ...item, id: "draft", ai: { ...item.ai, tags: [] } }] },
+      items: [xItem, douyinItem],
     });
-    assert.deepEqual(result, { documentCount: 1, itemCount: 1 });
+    assert.deepEqual(result, { documentCount: 2, itemCount: 2 });
 
     const database = new Database(databasePath, { fileMustExist: true, readonly: true });
-    assert.deepEqual(database.prepare("SELECT id, title FROM curation_items").all(), [{ id: "1", title: "标题" }]);
-    assert.deepEqual(database.prepare("SELECT id, source_url FROM daily_ask_documents").all(), [{ id: "daily:1", source_url: "/curation/1" }]);
+    assert.deepEqual(database.prepare("SELECT id, title FROM curation_items ORDER BY id").all(), [
+      { id: "1", title: "标题" },
+      { id: "douyin-2", title: "抖音条目" },
+    ]);
+    assert.deepEqual(database.prepare("SELECT id, source_url FROM daily_ask_documents ORDER BY id").all(), [
+      { id: "daily:1", source_url: "/curation/1" },
+      { id: "daily:douyin-2", source_url: "/curation/douyin-2" },
+    ]);
     database.close();
   } finally {
     await rm(directory, { force: true, recursive: true });

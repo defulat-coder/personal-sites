@@ -3,26 +3,22 @@ import { mkdtemp, mkdir, rename, rm } from "node:fs/promises";
 import path from "node:path";
 
 import { toDailySearchDocuments } from "../ask/search-index.mjs";
-import { isReadyForPublication, toPublicCurationItem } from "./curation-projection.mjs";
 
 export const PUBLIC_CURATION_DATABASE_PATH = "data/curation.sqlite";
 
-export function publicCurationItems(queue) {
-  return queue.items
-    .filter(isReadyForPublication)
-    .map(toPublicCurationItem)
-    .sort((left, right) =>
-      (right.collectedAt ?? "").localeCompare(left.collectedAt ?? "")
-      || (left.collectedOrder ?? Number.MAX_SAFE_INTEGER) - (right.collectedOrder ?? Number.MAX_SAFE_INTEGER)
-      || (right.publishedAt ?? "").localeCompare(left.publishedAt ?? "")
-      || right.id.localeCompare(left.id),
-    );
+function sortPublicFocusItems(items) {
+  return [...items].sort((left, right) =>
+    (right.collectedAt ?? "").localeCompare(left.collectedAt ?? "")
+    || (left.collectedOrder ?? Number.MAX_SAFE_INTEGER) - (right.collectedOrder ?? Number.MAX_SAFE_INTEGER)
+    || (right.publishedAt ?? "").localeCompare(left.publishedAt ?? "")
+    || right.id.localeCompare(left.id),
+  );
 }
 
-/** Build the Git-tracked, read-only projection. The sensitive queue never leaves this process. */
-export async function buildPublicCurationDatabase({ outputPath, queue }) {
-  const items = publicCurationItems(queue);
-  if (items.length === 0) throw new Error("没有已完成解析的 X 策展条目，无法生成公开 SQLite 投影。");
+/** Build the Git-tracked, read-only projection. Sensitive source queues never leave this process. */
+export async function buildPublicCurationDatabase({ outputPath, items: unsortedItems }) {
+  const items = sortPublicFocusItems(unsortedItems);
+  if (items.length === 0) throw new Error("没有已批准的每日关注条目，无法生成公开 SQLite 投影。");
 
   const outputDirectory = path.dirname(outputPath);
   await mkdir(outputDirectory, { recursive: true });
@@ -60,14 +56,7 @@ export async function buildPublicCurationDatabase({ outputPath, queue }) {
       VALUES (?, ?, ?, ?, ?, ?)
     `);
     for (const item of items) {
-      insertItem.run(
-        item.id,
-        item.collectedAt,
-        item.collectedOrder,
-        item.publishedAt,
-        item.title,
-        JSON.stringify(item),
-      );
+      insertItem.run(item.id, item.collectedAt, item.collectedOrder, item.publishedAt, item.title, JSON.stringify(item));
     }
 
     const insertDocument = database.prepare(`

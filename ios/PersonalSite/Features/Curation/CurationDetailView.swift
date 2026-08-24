@@ -46,7 +46,7 @@ struct CurationDetailView: View {
                     .font(.title2)
                     .fontWeight(.semibold)
                 HStack(spacing: 8) {
-                    Text("\(item.author.name) @\(item.author.handle)")
+                    Text(item.source.platform == "x" ? "\(item.author.name) @\(item.author.handle)" : "抖音 · \(item.author.name)")
                         .font(.caption)
                         .foregroundStyle(.secondary)
                     if let publishedAt = item.publishedAt {
@@ -69,7 +69,7 @@ struct CurationDetailView: View {
 
                 if !item.text.isEmpty {
                     VStack(alignment: .leading, spacing: 6) {
-                        Text("原文摘录")
+                        Text("来源摘录")
                             .font(.headline)
                         Text(item.text)
                             .foregroundStyle(.secondary)
@@ -93,8 +93,8 @@ struct CurationDetailView: View {
                     }
                 }
 
-                if let tweetURL = URL(string: item.tweetUrl) {
-                    Link("查看原推", destination: tweetURL)
+                if let sourceURL = URL(string: item.source.url) {
+                    Link("查看\(item.source.label)", destination: sourceURL)
                         .font(.headline)
                 }
             }

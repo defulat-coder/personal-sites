@@ -1,0 +1,21 @@
+{
+  "source": "douyin-curation",
+  "queueFile": "data/sensitive/douyin-curation/review-queue.json",
+  "rawDir": "data/sensitive/douyin-curation/raw",
+  "analyzer": {
+    "package": "mcp-video-analyzer@0.10.0",
+    "detail": "standard",
+    "fields": "metadata,transcript,frames,ocrResults,timeline",
+    "ocrLanguage": "chi_sim+eng"
+  },
+  "taxonomy": [
+    "Agent 工程",
+    "AI 应用",
+    "前端工程",
+    "架构与基础设施",
+    "研发效能",
+    "行业观察",
+    "产品与商业",
+    "其他"
+  ]
+}

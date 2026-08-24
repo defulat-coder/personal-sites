@@ -1,7 +1,7 @@
 "use client";
 
 /*
- * 推特点赞 · 剪报簿（方向契约，种子 8999beeb）
+ * 每日关注 · 剪报簿（方向契约，种子 8999beeb）
  * THESIS: 每条目把判断（题名+解析）与证据（原推剪报摘录+附件登记+标签）贴在同一行登记簿里，拒绝"链接列表"式信息流。
  * OWN-WORLD: 沿用全站单色黑白灰与 1px 细线登记栏；剪报只用 1px 左引线与降调灰阶区分"原文声音"，不新增颜色、容器或阴影。
  * STORY: 访客在列表里同时读到他赞了什么与他怎么判断；进详情后原推以样张贴片完整呈现，读完解析顺势翻向相邻剪报。
@@ -175,7 +175,7 @@ export function CurationStream({ initialHasMore, initialItems }: CurationStreamP
           <Link data-content-id={item.id} href={`/curation/${item.id}` as Route}>
             <div className="curation-home__stream-meta">
               <time dateTime={item.collectedAt ?? item.publishedAt ?? undefined}>{formatCurationDate(item)}</time>
-              <span>@{item.author.handle}</span>
+              <span>{item.source.platform === "x" ? `X · @${item.author.handle}` : `抖音 · ${item.author.name}`}</span>
               {item.attachments.length > 0 ? <span>{item.attachments.join(" · ")}</span> : null}
             </div>
             <div className="curation-home__stream-copy">

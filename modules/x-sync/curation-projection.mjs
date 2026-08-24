@@ -37,7 +37,11 @@ export function toPublicCurationItem(item) {
       handle: item.author.handle,
       name: item.author.name,
     },
-    tweetUrl: item.tweetUrl,
+    source: {
+      label: "X 原文",
+      platform: "x",
+      url: item.tweetUrl,
+    },
     links: [
       ...new Map(
         item.links

@@ -23,6 +23,8 @@
     "curation:enrich": "node scripts/x-curation-enrich.mjs",
     "curation:build": "node scripts/build-curation-content.mjs",
     "curation:publish": "node scripts/build-curation-sqlite.mjs",
+    "douyin:curation": "node scripts/douyin-curation.mjs",
+    "douyin:sync": "node scripts/douyin-full-sync.mjs",
     "curation:purge:supabase": "node scripts/purge-x-curation-supabase.mjs",
     "github:starred:sync": "node scripts/github-starred.mjs sync",
     "github:starred:init": "node scripts/github-starred.mjs init",

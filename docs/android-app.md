@@ -1,6 +1,6 @@
 # Android App（android/）
 
-原生 Kotlin + Jetpack Compose 客户端，功能与数据接入完整对齐 ios/ 的 iOS 实现：五个模块（每日动态、推特点赞、开源关注、作品档案、问一问）+ 首页（Bio、职业时间线、信号场）。先读 [docs/ios-app.md](ios-app.md) 了解数据流与契约，本文只记差异。
+原生 Kotlin + Jetpack Compose 客户端，功能与数据接入完整对齐 ios/ 的 iOS 实现：五个模块（每日动态、每日关注、开源关注、作品档案、问一问）+ 首页（Bio、职业时间线、信号场）。先读 [docs/ios-app.md](ios-app.md) 了解数据流与契约，本文只记差异。
 
 ## 技术栈
 
@@ -35,7 +35,7 @@ export ANDROID_HOME=/opt/homebrew/share/android-commandlinetools   # brew 的 an
 | 每日动态 | Supabase `ai_news_public_items` 直连（同一 PostgREST 投影与分页策略） |
 | 作品档案 | Supabase `project_public_snapshots` 直连 |
 | 开源关注 | Supabase `github_open_source_items` 直连；仓库树/文件走站点 `/api/open-source/[slug]/repository/*` |
-| 推特点赞 | 站点 `/api/curation` + `/api/curation/[id]`；视频经 `/api/x-media` 代理用 ExoPlayer 播放 |
+| 每日关注 | 站点 `/api/curation` + `/api/curation/[id]`；X 视频经 `/api/x-media` 代理用 ExoPlayer 播放 |
 | 问一问 | 站点 `POST /api/ask`（SSE：`sources`/`text`/`done`/`error`）；`visitorId` 优先 `ANDROID_ID`（16 位 hex，过服务端正则），否则 DataStore 持久化随机 UUID 去连字符；限流按 IP 无需客户端处理 |
 
 数据契约以 `lib/*-types.ts` 为准；Supabase 行外层 snake_case 列名用显式 `@SerialName`，`content`/`snapshot` jsonb 内部是 camelCase，解码策略分层。Markdown 仅行内级渲染（`renderInlineMarkdown`，对齐 iOS 的 `inlineOnlyPreservingWhitespace`）。

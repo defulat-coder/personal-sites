@@ -22,6 +22,13 @@ data class CurationLink(
 )
 
 @Serializable
+data class CurationSource(
+    val label: String,
+    val platform: String,
+    val url: String,
+)
+
+@Serializable
 enum class CurationMediaType {
     @SerialName("photo") PHOTO,
     @SerialName("video") VIDEO,
@@ -57,11 +64,11 @@ data class CurationItem(
     val media: List<CurationMedia> = emptyList(),
     val publishedAt: String? = null,
     val quoteContext: CurationQuoteContext? = null,
+    val source: CurationSource,
     val summary: String,
     val tags: List<String> = emptyList(),
     val text: String,
     val title: String,
-    val tweetUrl: String,
 )
 
 /** 列表项：full analysis 仅详情页；attachments 由服务端从 media/quoteContext 归并。 */
@@ -72,6 +79,7 @@ data class CurationListItem(
     val collectedAt: String? = null,
     val id: String,
     val publishedAt: String? = null,
+    val source: CurationSource,
     val summary: String,
     val tags: List<String> = emptyList(),
     val text: String,

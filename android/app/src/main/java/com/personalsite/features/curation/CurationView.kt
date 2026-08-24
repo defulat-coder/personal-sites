@@ -189,7 +189,7 @@ private fun CurationRow(item: CurationListItem, onClick: () -> Unit) {
     ) {
         ContentListMetadataLine(
             items = listOf(
-                "@${item.author.handle}",
+                if (item.source.platform == "x") "X · @${item.author.handle}" else "抖音 · ${item.author.name}",
                 item.tags.firstOrNull().orEmpty(),
             ),
         )

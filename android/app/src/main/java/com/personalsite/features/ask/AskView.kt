@@ -244,7 +244,7 @@ class AskChatModel(application: Application) : AndroidViewModel(application) {
         val scopeLabels: Map<AskScope, String> = mapOf(
             AskScope.ALL to "全部资料",
             AskScope.AI_NEWS to "每日动态",
-            AskScope.DAILY to "推特点赞",
+            AskScope.DAILY to "每日关注",
             AskScope.OPEN_SOURCE to "开源关注",
         )
     }

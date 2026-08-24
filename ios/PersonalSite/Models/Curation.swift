@@ -14,6 +14,12 @@ struct CurationLink: Codable, Equatable, Sendable {
     var url: String
 }
 
+struct CurationSource: Codable, Equatable, Sendable {
+    var label: String
+    var platform: String
+    var url: String
+}
+
 enum CurationMediaType: String, Codable, Sendable {
     case photo
     case video
@@ -46,11 +52,11 @@ struct CurationItem: Codable, Equatable, Identifiable, Sendable {
     var media: [CurationMedia]
     var publishedAt: String?
     var quoteContext: CurationQuoteContext?
+    var source: CurationSource
     var summary: String
     var tags: [String]
     var text: String
     var title: String
-    var tweetUrl: String
 }
 
 /// 列表项：full analysis 仅详情页；attachments 由服务端从 media/quoteContext 归并。
@@ -60,6 +66,7 @@ struct CurationListItem: Codable, Equatable, Identifiable, Sendable {
     var collectedAt: String?
     var id: String
     var publishedAt: String?
+    var source: CurationSource
     var summary: String
     var tags: [String]
     var text: String
