@@ -1,6 +1,6 @@
 # 抖音收藏接入每日关注
 
-抖音只作为关注来源。原始视频、转写、OCR 与模型草稿保存在本机敏感层；审核通过后才与 X 条目一起写入 `data/curation.sqlite`，并同步成为“问一问”的公开检索资料。
+抖音只作为关注来源。原始视频、转写、OCR 与模型草稿保存在本机敏感层；草稿在 sync 完成时**自动批准并自动重建公开投影**，写入 `data/curation.sqlite`，并同步成为“问一问”的公开检索资料。不再设人工审核闸门；`list` 与 `approve` 命令保留用于回查与手工修正。
 
 ## 准备输入
 
@@ -22,7 +22,7 @@
 export WHISPER_MODEL=small
 ```
 
-## 同步与审核
+## 同步与发布
 
 先用 5 条验证：
 
@@ -32,7 +32,7 @@ pnpm douyin:curation -- sync \
   --limit 5
 ```
 
-默认使用本机 Codex CLI 的 `gpt-5.6-terra`（`high`）生成待审草稿。也可显式切换到项目现有 Pi/Kimi：
+默认使用本机 Codex CLI 的 `gpt-5.6-terra`（`high`）生成草稿。也可显式切换到项目现有 Pi/Kimi：
 
 ```bash
 pnpm douyin:curation -- sync \
@@ -41,18 +41,15 @@ pnpm douyin:curation -- sync \
   --engine pi
 ```
 
-查看待审条目：
+草稿生成后即自动标记为已批准；本轮有新增条目时，sync 结束会自动重建公开投影（等价于 `pnpm curation:publish`），无需手工发布。
+
+查看队列条目（主要作为回查）：
 
 ```bash
 pnpm douyin:curation -- list
 ```
 
-确认私有队列中的标题、摘要、解析、证据摘录和实体候选无误后批准：
-
-```bash
-pnpm douyin:curation -- approve douyin:<aweme_id>
-pnpm curation:publish
-```
+如需手工修正某条条目的批准状态，仍可运行 `pnpm douyin:curation -- approve douyin:<aweme_id>` 后执行 `pnpm curation:publish`。
 
 `sync` 可重复运行，已处理条目默认跳过；需要重新分析时加 `--force`。批准状态会在重新分析时保留。
 
@@ -79,7 +76,7 @@ pnpm douyin:sync
 | 数据 | 路径 | 公开 |
 | --- | --- | --- |
 | 分析 JSON、关键帧与时间线 | `data/sensitive/douyin-curation/raw/` | 否 |
-| 待审草稿与项目候选 | `data/sensitive/douyin-curation/review-queue.json` | 否 |
-| 已批准的统一每日关注投影 | `data/curation.sqlite` | 是 |
+| 草稿与项目候选 | `data/sensitive/douyin-curation/review-queue.json` | 否 |
+| 自动批准后的统一每日关注投影 | `data/curation.sqlite` | 是 |
 
-实体候选只是辅助审核，不会自动写入“开源关注”；无法唯一核验的项目名继续保留在私有待审资料中。
+实体候选不会自动写入“开源关注”；无法唯一核验的项目名继续保留在私有资料中。注意：草稿未经人工核验即公开，其中提到的项目身份可能存在误差。

@@ -165,7 +165,10 @@ async function sync(options) {
     await writePrivateJson(rawEvidencePath, { evidence, source: video });
     const parsed = parseCurationResponse(await reader.prompt(buildCurationPrompt(video, evidence, config.taxonomy)));
     parsed.ai.excerpt = groundEvidenceExcerpt(parsed.ai.excerpt, evidence);
-    byId.set(id, toReviewItem(video, parsed, path.relative(repoRoot, rawEvidencePath), existing));
+    const item = toReviewItem(video, parsed, path.relative(repoRoot, rawEvidencePath), existing);
+    // 同步即发布：草稿生成后直接批准，不再经过人工审核闸门。
+    item.review = { approved: true, reviewedAt: new Date().toISOString() };
+    byId.set(id, item);
     failuresById.delete(id);
     queue.items = [...byId.values()];
     queue.updatedAt = new Date().toISOString();
@@ -189,7 +192,16 @@ async function sync(options) {
     });
   }
   await writePrivateJson(failuresPath, { items: [...failuresById.values()], updatedAt: new Date().toISOString(), version: 1 });
-  console.log(`抖音关注收件箱已更新：成功 ${completed} 条，失败 ${failures.length} 条；运行 list 查看待审条目。`);
+  console.log(`抖音关注收件箱已更新：成功 ${completed} 条，失败 ${failures.length} 条。`);
+  // 有新增条目时自动重建公开投影（等价 pnpm curation:publish）；无新增时跳过。
+  if (completed > 0) {
+    console.log("新增条目已自动批准，开始重建公开投影。");
+    await execFileAsync(process.execPath, [path.join(repoRoot, "scripts/build-curation-sqlite.mjs")], {
+      cwd: repoRoot,
+      maxBuffer: 16 * 1024 * 1024,
+    });
+    console.log("公开投影已更新：data/curation.sqlite。");
+  }
 }
 
 async function approve(ids) {
