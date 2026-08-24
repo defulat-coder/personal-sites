@@ -71,17 +71,17 @@ export function fromCurationStreamSnapshot(
   }
 }
 
-export function writeCurationStreamSnapshot(snapshot: CurationStreamSnapshot) {
+export function writeCurationStreamSnapshot(snapshot: CurationStreamSnapshot, storageKey = STORAGE_KEY) {
   try {
-    window.sessionStorage.setItem(STORAGE_KEY, JSON.stringify(snapshot));
+    window.sessionStorage.setItem(storageKey, JSON.stringify(snapshot));
   } catch {
     // 隐私模式或配额满时静默放弃，快照只是体验增强。
   }
 }
 
-export function readCurationStreamSnapshot(headId: string | undefined): CurationStreamSnapshot | null {
+export function readCurationStreamSnapshot(headId: string | undefined, storageKey = STORAGE_KEY): CurationStreamSnapshot | null {
   try {
-    return fromCurationStreamSnapshot(window.sessionStorage.getItem(STORAGE_KEY), headId);
+    return fromCurationStreamSnapshot(window.sessionStorage.getItem(storageKey), headId);
   } catch {
     return null;
   }

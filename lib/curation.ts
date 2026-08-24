@@ -75,6 +75,7 @@ const ATTACHMENT_LABELS = {
   video: "视频",
 } as const;
 const CURATION_ORDER = "collected_at DESC NULLS LAST, collected_order ASC NULLS LAST, published_at DESC NULLS LAST, id DESC";
+const CURATION_PLATFORM = "json_extract(content_json, '$.source.platform')";
 const DATABASE_PATH = path.join(process.cwd(), "data/curation.sqlite");
 
 let database: Database.Database | undefined;
@@ -115,13 +116,25 @@ export type CurationPage = {
   items: CurationListItem[];
 };
 
-export async function getCurationPage(offset = 0, limit = 20): Promise<CurationPage> {
+type CurationPlatform = "douyin" | "x";
+
+async function getCurationPageByPlatform(platform: CurationPlatform, offset: number, limit: number): Promise<CurationPage> {
   const rows = getCurationDatabase()
-    .prepare(`SELECT content_json FROM curation_items ORDER BY ${CURATION_ORDER} LIMIT ? OFFSET ?`)
-    .all(limit + 1, offset)
+    .prepare(`SELECT content_json FROM curation_items WHERE ${CURATION_PLATFORM} = ? ORDER BY ${CURATION_ORDER} LIMIT ? OFFSET ?`)
+    .all(platform, limit + 1, offset)
     .map((row) => curationContentRowSchema.parse(row));
   const items = rows.map((row) => toCurationListItem(parseCurationItem(row.content_json)));
   return { hasMore: items.length > limit, items: items.slice(0, limit) };
+}
+
+/** 每日关注：来源拆分后只呈现 X 条目；抖音条目由 /douyin 板块承载。 */
+export async function getCurationPage(offset = 0, limit = 20): Promise<CurationPage> {
+  return getCurationPageByPlatform("x", offset, limit);
+}
+
+/** 抖音收藏板块：只呈现公开投影中已发布的抖音来源条目。 */
+export async function getDouyinCurationPage(offset = 0, limit = 20): Promise<CurationPage> {
+  return getCurationPageByPlatform("douyin", offset, limit);
 }
 
 export type CurationNeighbor = { id: string; title: string } | null;
@@ -131,11 +144,19 @@ export type CurationNeighbors = {
   older: CurationNeighbor;
 };
 
+const curationPlatformRowSchema = z.object({ platform: z.enum(["douyin", "x"]) });
+
 // 剪报簿总量有限（逐条人工策展的点赞），一次取全量 id+title 即可按列表同一排序定位相邻条目。
+// 来源拆分后相邻导航不跨来源：抖音条目只在抖音条目间翻页，X 条目只在 X 条目间翻页。
 export async function getCurationNeighbors(id: string): Promise<CurationNeighbors> {
+  const platformRow = getCurationDatabase()
+    .prepare(`SELECT ${CURATION_PLATFORM} AS platform FROM curation_items WHERE id = ?`)
+    .get(id);
+  if (!platformRow) return { newer: null, older: null };
+  const { platform } = curationPlatformRowSchema.parse(platformRow);
   const rows = getCurationDatabase()
-    .prepare(`SELECT id, title FROM curation_items ORDER BY ${CURATION_ORDER}`)
-    .all()
+    .prepare(`SELECT id, title FROM curation_items WHERE ${CURATION_PLATFORM} = ? ORDER BY ${CURATION_ORDER}`)
+    .all(platform)
     .map((row) => curationNeighborRowSchema.parse(row));
   const index = rows.findIndex((row) => row.id === id);
   return {

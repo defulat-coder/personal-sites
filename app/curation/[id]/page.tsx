@@ -53,7 +53,10 @@ export async function generateMetadata({
 }: CurationEntryPageProps): Promise<Metadata> {
   const item = await findCurationItem((await params).id);
   return item
-    ? { description: item.summary, title: `${item.title}｜每日关注` }
+    ? {
+        description: item.summary,
+        title: `${item.title}｜${item.source.platform === "douyin" ? "抖音收藏" : "每日关注"}`,
+      }
     : {};
 }
 
@@ -70,9 +73,9 @@ export default async function CurationEntryPage({
 
       <article className="curation-detail__article" data-content-id={item.id}>
         <nav aria-label="返回" className="curation-detail__back">
-          <Link href="/curation">
+          <Link href={item.source.platform === "douyin" ? "/douyin" : "/curation"}>
             <ArrowLeft aria-hidden="true" />
-            返回每日关注
+            {item.source.platform === "douyin" ? "返回抖音收藏" : "返回每日关注"}
           </Link>
           <ThemeToggle />
         </nav>

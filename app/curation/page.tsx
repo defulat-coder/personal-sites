@@ -11,7 +11,7 @@ import { getCurationPage } from "@/lib/curation";
 export const revalidate = 300;
 
 export const metadata: Metadata = {
-  description: "陈远从 X、抖音等来源持续收录并写下策展解析的判断流。",
+  description: "陈远从 X 持续收录并写下策展解析的判断流。",
   title: "每日关注｜陈远",
 };
 

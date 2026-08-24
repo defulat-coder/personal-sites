@@ -32,13 +32,19 @@ type CurationPageResponse = {
 };
 
 type CurationStreamProps = {
+  /** 加载更多的分页接口；每日关注用 /api/curation，抖音收藏用 /api/douyin。 */
+  apiPath?: string;
+  /** 空列表时的提示文案。 */
+  emptyLabel?: string;
   initialHasMore: boolean;
   initialItems: CurationListItem[];
+  /** 会话快照的 sessionStorage key；两个板块各自独立，互不覆盖。 */
+  snapshotKey?: string;
 };
 
 const PAGE_SIZE = 20;
 
-export function CurationStream({ initialHasMore, initialItems }: CurationStreamProps) {
+export function CurationStream({ apiPath = "/api/curation", emptyLabel = "暂无已发布的策展条目。", initialHasMore, initialItems, snapshotKey }: CurationStreamProps) {
   const streamRef = useRef<HTMLOListElement>(null);
   const reduceMotion = useReducedMotion();
   const [items, setItems] = useState(initialItems);
@@ -63,7 +69,7 @@ export function CurationStream({ initialHasMore, initialItems }: CurationStreamP
       writesEnabledRef.current = true;
     }, 0);
     if (!restored) {
-      const snapshot = readCurationStreamSnapshot(initialItems[0]?.id);
+      const snapshot = readCurationStreamSnapshot(initialItems[0]?.id, snapshotKey);
       if (snapshot) {
         restoreScrollTopRef.current = snapshot.scrollTop;
         scrollTopRef.current = snapshot.scrollTop;
@@ -115,16 +121,16 @@ export function CurationStream({ initialHasMore, initialItems }: CurationStreamP
       hasMore,
       items,
       scrollTop: scrollTopRef.current,
-    }));
-  }, [hasMore, items]);
+    }), snapshotKey);
+  }, [hasMore, items, snapshotKey]);
 
   // 路由离开（点进详情）时组件卸载，兜底写一次最终状态。
   useEffect(() => () => {
     if (!writesEnabledRef.current) return;
     const latest = latestRef.current;
     if (latest.items.length === 0) return;
-    writeCurationStreamSnapshot(toCurationStreamSnapshot({ ...latest, scrollTop: scrollTopRef.current }));
-  }, []);
+    writeCurationStreamSnapshot(toCurationStreamSnapshot({ ...latest, scrollTop: scrollTopRef.current }), snapshotKey);
+  }, [snapshotKey]);
 
   const loadMore = useCallback(async () => {
     if (isLoading || !hasMore) return;
@@ -133,7 +139,7 @@ export function CurationStream({ initialHasMore, initialItems }: CurationStreamP
     setLoadError(null);
     setAppendStart(items.length);
     try {
-      const response = await fetch(`/api/curation?offset=${items.length}&limit=${PAGE_SIZE}`);
+      const response = await fetch(`${apiPath}?offset=${items.length}&limit=${PAGE_SIZE}`);
       const payload = (await response.json()) as CurationPageResponse;
       if (!response.ok) throw new Error(payload.error ?? "暂时无法加载更多策展内容。");
 
@@ -147,7 +153,7 @@ export function CurationStream({ initialHasMore, initialItems }: CurationStreamP
     } finally {
       setIsLoading(false);
     }
-  }, [hasMore, isLoading, items.length]);
+  }, [apiPath, hasMore, isLoading, items.length]);
 
   useEffect(() => {
     const stream = streamRef.current;
@@ -206,7 +212,7 @@ export function CurationStream({ initialHasMore, initialItems }: CurationStreamP
           </>
         ) : null}
         {loadError ? <button onClick={() => void loadMore()} type="button">{loadError}，重试</button> : null}
-        {!hasMore && !loadError ? <span>已加载全部策展内容</span> : null}
+        {!hasMore && !loadError ? <span>{items.length === 0 ? emptyLabel : "已加载全部策展内容"}</span> : null}
       </li>
     </ol>
   );
