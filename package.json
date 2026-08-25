@@ -41,6 +41,8 @@
     "github:starred:publish": "node scripts/github-starred.mjs publish",
     "ai-news:sync": "node scripts/ai-news-sync.mjs",
     "ai-news:backfill": "node scripts/ai-news-sync.mjs --backfill",
+    "vectors:index": "node scripts/local-vectors.mjs index",
+    "vectors:search": "node scripts/local-vectors.mjs search",
     "ask:reindex": "node scripts/ask-reindex.mjs",
     "github:starred:run": "node scripts/github-starred.mjs run",
     "projects:sync": "node scripts/projects-sync.mjs",
@@ -54,6 +56,7 @@
   "dependencies": {
     "@earendil-works/pi-coding-agent": "^0.84.2",
     "@fingerprintjs/fingerprintjs": "^5.2.0",
+    "@huggingface/transformers": "4.2.0",
     "@shadcn/react": "^0.3.0",
     "@supabase/supabase-js": "2.112.3",
     "better-sqlite3": "^13.0.3",
@@ -67,6 +70,7 @@
     "react-dom": "19.2.8",
     "react-markdown": "10.1.0",
     "remark-gfm": "4.0.1",
+    "sqlite-vec": "0.1.9",
     "tailwind-merge": "3.6.0",
     "zod": "4.4.3"
   },

@@ -9,6 +9,7 @@ import { toPublicDouyinItem } from "../modules/douyin-sync/curation-projection.m
 import { PUBLIC_CURATION_DATABASE_PATH, buildPublicCurationDatabase } from "../modules/focus-sync/public-sqlite.mjs";
 import { summarizeDesignClassifications } from "../modules/x-sync/design-classification.mjs";
 import { isReadyForPublication, toPublicCurationItem } from "../modules/x-sync/curation-projection.mjs";
+import { rebuildDefaultIndex } from "./local-vectors.mjs";
 
 const repoRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const config = JSON.parse(await readFile(path.join(repoRoot, "config/x-curation.json"), "utf8"));
@@ -38,3 +39,4 @@ const result = await buildPublicCurationDatabase({
 console.log(`公开 SQLite 已生成：${PUBLIC_CURATION_DATABASE_PATH}（策展 ${result.itemCount} 条，问答索引 ${result.documentCount} 条）。`);
 const designSummary = summarizeDesignClassifications(xItems);
 console.log(`设计分类：收录 ${designSummary.include}，排除 ${designSummary.exclude}，待复核 ${designSummary.review}，未分类 ${designSummary.unclassified}；可直接播放视频 ${designSummary.playableVideos}。`);
+await rebuildDefaultIndex();

@@ -2,6 +2,7 @@ allowBuilds:
   '@google/genai': false
   '@rpamis/comet': true
   better-sqlite3: true
+  onnxruntime-node: true
   protobufjs: false
   sharp: true
   unrs-resolver: true

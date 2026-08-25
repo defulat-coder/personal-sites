@@ -165,3 +165,8 @@ if (options.stage === "sync") {
   const records = await synchronize({ incremental: false });
   await analyze(records);
 }
+
+if (!process.exitCode && new Set(["analyze", "daily", "init", "run"]).has(options.stage)) {
+  const { rebuildDefaultIndex } = await import("./local-vectors.mjs");
+  await rebuildDefaultIndex();
+}
