@@ -15,6 +15,7 @@ RootLayout
    │  └─ 右侧默认每日动态；遗留 ?view= 仅作旧链接兼容，由客户端 HomeView 读取
    ├─ /ai-news                  每日动态版块（动态渲染，每请求直读 Supabase）
    ├─ /curation                 每日关注版块（仅 X 来源，ISR，revalidate = 300）
+   ├─ /design                   设计收藏版块（X 高置信设计相关内容，ISR，视频站内播放）
    ├─ /douyin                   抖音收藏版块（仅抖音来源，ISR，revalidate = 300）
    ├─ /open-source              开源关注版块（ISR，revalidate = 300）
    ├─ /ask                      问一问
@@ -37,11 +38,11 @@ RootLayout
 |---|---|---|---|
 | 全局壳 | `app/layout.tsx` | metadata、全局 CSS、Loading 注入 | 路由内容或业务数据 |
 | 首页 | `app/page.tsx` | ISR 静态壳 + `HomeView`/`HomeMain` 编排，右侧默认每日动态 | 详情内容渲染；遗留 `?view=` 不进服务端 |
-| 版块页 | `app/ai-news/page.tsx`、`app/curation/page.tsx`、`app/douyin/page.tsx`、`app/open-source/page.tsx` | 单版块的 ISR 列表页，复用身份轨与刊头 | 第二套侧栏语言 |
+| 版块页 | `app/ai-news/page.tsx`、`app/curation/page.tsx`、`app/design/page.tsx`、`app/douyin/page.tsx`、`app/open-source/page.tsx` | 单版块的 ISR 列表页，复用身份轨与刊头 | 第二套侧栏语言 |
 | 详情页 | `app/curation/[id]/page.tsx` | 条目元信息、原文、媒体、解析、来源 | 第二套个人侧栏 |
 | Loading | `components/opening-loader.tsx` | 加载阶段、滚动锁定、向上揭幕；每次完整页面加载都播放，水合后移除 | 常规页面配色 |
 | 个人简介 | `components/profile-introduction.tsx` | 双语逐字输入/删除、最终中文正文与多语言标题轮换；每次进入首页都播放 | 静态履历数据源 |
-| 内容导航 | `components/site-section-navigation.tsx` | 统一内容入口（每日动态、每日关注、抖音收藏、开源关注、构建、问一问）的路由跳转与当前页面状态；导航即栏目页头，不重复显示标题与说明 | 外部链接或同页 Tab 语义 |
+| 内容导航 | `components/site-section-navigation.tsx` | 统一内容入口（每日动态、每日关注、设计收藏、抖音收藏、开源关注、构建、问一问）的路由跳转与当前页面状态；导航即栏目页头，不重复显示标题与说明 | 外部链接或同页 Tab 语义 |
 | 技术信号场 | `components/interactive-dot-field.tsx` | AI 术语与技术栈词库、稀疏视觉表达 | 标签过滤或导航 |
 | 策展数据 | `lib/curation.ts` | Zod 校验、查询、日期格式化 | 页面布局 |
 
@@ -59,7 +60,7 @@ RootLayout
 | `.curation-home` | 两栏 Grid；左栏最小 `28rem`、最大 `38vw` | 新首页内容不得破坏此列关系 |
 | `.curation-home__profile` | `sticky`、`100dvh`、`1.875rem` padding | 首页与详情页必须视觉一致 |
 | `.curation-home__feed` | 最大 `50rem`，右侧连续流 | 使用行与行分隔，不包卡片 |
-| `ContentSectionNavigation` | 每日动态、每日关注、抖音收藏、开源关注、构建、问一问共享等权内容入口；导航即栏目页头 | 使用站内链接与 `aria-current`，不得伪装为同页 Tab |
+| `ContentSectionNavigation` | 每日动态、每日关注、设计收藏、抖音收藏、开源关注、构建、问一问共享等权内容入口；导航即栏目页头 | 使用站内链接与 `aria-current`，不得伪装为同页 Tab |
 | `.curation-detail__article` | 最大 `50rem`，承接右栏阅读 | 详情结构沿用首页的留白与分隔节奏 |
 | `.curation-home__bio` | `width: 100%` | 简介正文撑满身份轨，不再限制 `max-width` |
 | `.interactive-dot-field` | `11.5rem` 高点阵画布 | AI 术语 12 词 + 技术栈 25 词按 6 条泳道滚动，泳道内分 3 组轮换入场保持稀疏；参数由组件按索引确定性内联，同屏词条互不重叠 |

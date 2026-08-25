@@ -61,6 +61,20 @@ export async function runSyncPipeline({
   }
   if (options.limit !== null) enrichArgs.push("--limit", String(options.limit));
   await execute(process.execPath, enrichArgs, { cwd: repoRoot });
+
+  // 新条目在正文解析时已经完成设计分类；第二阶段只补历史上“已有解析但缺分类”的条目，
+  // 不重写标题、摘要或深度解析。Codex 正文保持单并发，轻量分类使用已验证的并发档。
+  const designArgs = [path.join(repoRoot, "scripts/x-curation-enrich.mjs"), "--design-only"];
+  if (options.engine === "codex-cli") {
+    designArgs.push(
+      "--engine", "codex-cli",
+      "--model", options.codexModel,
+      "--reasoning-effort", "high",
+    );
+  }
+  designArgs.push("--concurrency", String(options.designConcurrency));
+  if (options.limit !== null) designArgs.push("--limit", String(options.limit));
+  await execute(process.execPath, designArgs, { cwd: repoRoot });
   await execute(process.execPath, [path.join(repoRoot, "scripts/build-curation-content.mjs")], { cwd: repoRoot });
   await execute(process.execPath, [path.join(repoRoot, "scripts/build-curation-sqlite.mjs")], { cwd: repoRoot });
 }

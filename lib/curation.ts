@@ -16,6 +16,18 @@ const curationItemSchema = z.object({
   }),
   collectedAt: z.string().datetime().nullable().default(null),
   collectedOrder: z.number().int().nonnegative().nullable().default(null),
+  design: z
+    .object({
+      categories: z.array(z.string().min(1)).max(3),
+      classifiedAt: z.string().datetime(),
+      confidence: z.number().min(0).max(1),
+      evidence: z.array(z.string().min(1)).max(4),
+      reason: z.string().min(1),
+      relevant: z.boolean(),
+      status: z.enum(["include", "review", "exclude"]),
+    })
+    .nullable()
+    .default(null),
   id: z.string().min(1),
   links: z.array(
     z.object({
@@ -101,7 +113,9 @@ function toCurationListItem(item: CurationItem): CurationListItem {
     attachments,
     author: item.author,
     collectedAt: item.collectedAt,
+    design: item.design,
     id: item.id,
+    media: item.media,
     publishedAt: item.publishedAt,
     source: item.source,
     summary: item.summary,
@@ -137,6 +151,19 @@ export async function getDouyinCurationPage(offset = 0, limit = 20): Promise<Cur
   return getCurationPageByPlatform("douyin", offset, limit);
 }
 
+/** 设计收藏：只呈现模型高置信收录的 X 条目；中置信结果留在本地队列等待复核。 */
+export async function getDesignCurationPage(offset = 0, limit = 20): Promise<CurationPage> {
+  const rows = getCurationDatabase()
+    .prepare(`SELECT content_json FROM curation_items
+      WHERE ${CURATION_PLATFORM} = 'x'
+        AND json_extract(content_json, '$.design.status') = 'include'
+      ORDER BY ${CURATION_ORDER} LIMIT ? OFFSET ?`)
+    .all(limit + 1, offset)
+    .map((row) => curationContentRowSchema.parse(row));
+  const items = rows.map((row) => toCurationListItem(parseCurationItem(row.content_json)));
+  return { hasMore: items.length > limit, items: items.slice(0, limit) };
+}
+
 export type CurationNeighbor = { id: string; title: string } | null;
 
 export type CurationNeighbors = {
@@ -148,14 +175,17 @@ const curationPlatformRowSchema = z.object({ platform: z.enum(["douyin", "x"]) }
 
 // 剪报簿总量有限（逐条人工策展的点赞），一次取全量 id+title 即可按列表同一排序定位相邻条目。
 // 来源拆分后相邻导航不跨来源：抖音条目只在抖音条目间翻页，X 条目只在 X 条目间翻页。
-export async function getCurationNeighbors(id: string): Promise<CurationNeighbors> {
+export async function getCurationNeighbors(id: string, designOnly = false): Promise<CurationNeighbors> {
   const platformRow = getCurationDatabase()
     .prepare(`SELECT ${CURATION_PLATFORM} AS platform FROM curation_items WHERE id = ?`)
     .get(id);
   if (!platformRow) return { newer: null, older: null };
   const { platform } = curationPlatformRowSchema.parse(platformRow);
   const rows = getCurationDatabase()
-    .prepare(`SELECT id, title FROM curation_items WHERE ${CURATION_PLATFORM} = ? ORDER BY ${CURATION_ORDER}`)
+    .prepare(`SELECT id, title FROM curation_items
+      WHERE ${CURATION_PLATFORM} = ?
+        ${designOnly ? "AND json_extract(content_json, '$.design.status') = 'include'" : ""}
+      ORDER BY ${CURATION_ORDER}`)
     .all(platform)
     .map((row) => curationNeighborRowSchema.parse(row));
   const index = rows.findIndex((row) => row.id === id);

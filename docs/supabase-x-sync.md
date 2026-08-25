@@ -28,17 +28,26 @@ KIMI_API_KEY=<kimi-key>
 # Pi Coding Agent + Kimi（默认 15 并发）
 pnpm curation:sync:kimi
 
-# Codex CLI + GPT-5.6 Luna（Max，固定单并发）
+# Codex CLI + GPT-5.6 Luna（正文解析 Max 单并发；设计回填 High 40 并发）
 pnpm curation:sync:luna
+
+# 只补“已有策展、缺少设计判断”的历史条目，不改写原解析
+pnpm curation:classify-design
 ```
 
-两个命令都可以在 `--` 后继续传 `--source`、`--limit` 或 `--media` 等公共参数，例如 `pnpm curation:sync:luna -- --source bookmarks --limit 20`。
+同步命令可以在 `--` 后继续传 `--source`、`--limit`、`--design-concurrency` 或 `--no-media` 等公共参数，例如 `pnpm curation:sync:luna -- --source bookmarks --limit 20`。媒体元数据默认抓取，供设计分类与站内视频播放使用；Luna 的历史设计回填默认使用已验证的 40 并发，可通过 `--design-concurrency` 降档。
 
-1. 执行其中一个同步命令：抓取、解析、本地敏感生成备份、`data/curation.sqlite` 生成。底层仍保留 `pnpm curation:sync -- --engine pi|codex-cli`，用于需要自定义模型或推理等级的场景。
+1. 执行其中一个同步命令：抓取媒体与正文 → 为新条目生成完整策展及设计分类 → 只为已有解析但缺分类的历史条目补设计判断 → 本地敏感生成备份 → 生成 `data/curation.sqlite`。历史补分类不会重写已有标题、摘要、标签或深度解析。底层仍保留 `pnpm curation:sync -- --engine pi|codex-cli`，用于需要自定义模型或推理等级的场景。
 2. 只暂存 `data/curation.sqlite` 与本次明确的代码/文档变更，运行 `pnpm git:safety` 后提交并推送；Vercel 的 Git 集成会创建新部署。
-3. `pnpm curation:publish` 只重建 SQLite，不会访问远端数据库。
+3. `pnpm curation:publish` 只重建 SQLite，不会访问远端数据库；结束时固定报告设计收录、排除、待复核、未分类及可播放视频数量。
 
 前端只在 Node.js 服务端从 SQLite 读取，绝不向浏览器暴露数据库文件。`next.config.ts` 的输出文件追踪会将它随每个函数部署；Edge Runtime 不支持这一读取路径。
+
+## 设计相关性分类
+
+模型解析每条 X 内容时，同时读取原文、引用、展开后的外链正文，以及最多 5 张图片或视频代表帧。视频帧只写入系统临时目录，判断结束立即删除；原视频、抽帧和私有队列都不会进入公开 SQLite。
+
+分类输出包含 `relevant`、`confidence`、设计子类、证据和理由，由本地代码统一决策：置信度不低于 `0.75` 的相关内容进入 `/design`，同等置信度的不相关内容直接排除，低置信度的正反判断都留在私有队列等待复核。旧条目缺少分类时会在后续 `curation:enrich` / `curation:sync` 批次中重新解析，可用 `--limit` 分批回填。
 
 ## 迁移后的远端清理
 

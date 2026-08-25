@@ -12,6 +12,15 @@ import { firstSeenMetadata, parseSourceOrderSnapshot } from "../modules/x-sync/s
 const item = {
   ai: {
     analysis: "解析",
+    design: {
+      categories: ["交互设计"],
+      classifiedAt: "2026-08-09T00:00:00.000Z",
+      confidence: 0.91,
+      evidence: ["视频展示界面交互"],
+      reason: "主要价值来自交互设计。",
+      relevant: true,
+      status: "include",
+    },
     enrichedAt: "2026-08-09T00:00:00.000Z",
     summary: "摘要",
     tags: ["Agent 工程"],
@@ -43,6 +52,7 @@ test("only completed Pi results become a public curation record", () => {
     author: { handle: "author", name: "Author" },
     collectedAt: null,
     collectedOrder: null,
+    design: item.ai.design,
     id: "1",
     links: [{ shortUrl: "https://t.co/x", type: "article", url: "https://example.com" }],
     media: [{

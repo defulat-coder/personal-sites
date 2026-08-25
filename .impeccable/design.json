@@ -1,6 +1,6 @@
 {
   "schemaVersion": 2,
-  "generatedAt": "2026-08-15T00:37:39Z",
+  "generatedAt": "2026-08-25T16:04:51Z",
   "title": "Design System: 陈远｜每日关注",
   "extensions": {
     "colorMeta": {
@@ -267,6 +267,11 @@
         "name": "receipt-feed",
         "value": "clip-path + steps()",
         "purpose": "关于我打印稿的机械式逐段走纸；收卷为快速反向。"
+      },
+      {
+        "name": "animated-gif-playback",
+        "value": "autoplay + loop when motion is allowed",
+        "purpose": "X animated GIF 在常规偏好下静音自动播放并循环；prefers-reduced-motion 下两者均关闭，保留封面与原生手动播放控件。"
       }
     ],
     "breakpoints": [
@@ -316,6 +321,14 @@
       "description": "三条内容流共用的登记簿行：左列 quiet 登记栏，右列标题/摘要，1px 分隔线，无箭头无卡片。",
       "html": "<a class=\"ds-stream-row\" href=\"#\"><span class=\"ds-stream-row__meta\">2026年8月7日<br>@author</span><span class=\"ds-stream-row__body\"><strong>一条每日关注条目标题</strong><em>摘要文本，低强调，一到两行。</em></span></a>",
       "css": ".ds-stream-row { display:grid; grid-template-columns:minmax(112px,136px) minmax(0,1fr); column-gap:24px; align-items:start; border-bottom:1px solid #eee; color:#1c1c1e; font:12px/1.38 -apple-system,BlinkMacSystemFont,Arial,sans-serif; padding:24px 0; text-decoration:none; }.ds-stream-row__meta { display:flex; flex-direction:column; gap:5px; padding-top:2px; color:#767676; font-size:11.5px; line-height:1.4; }.ds-stream-row__body strong { display:block; color:#303033; font-size:clamp(14px,.95vw,16px); font-weight:500; letter-spacing:-.018em; line-height:1.32; text-wrap:pretty; transition:color 180ms ease; }.ds-stream-row__body em { display:block; color:#3f3f42; font-size:13px; font-style:normal; line-height:1.55; margin-top:8px; }.ds-stream-row:hover strong,.ds-stream-row:focus-visible strong { color:#1c1c1e; }.ds-stream-row:focus-visible { outline:2px solid #1c1c1e; outline-offset:4px; }"
+    },
+    {
+      "name": "Native X Video Player",
+      "kind": "custom",
+      "refersTo": "x-video-player",
+      "description": "设计收藏流右侧正文列内的原生 X 视频播放器：与详情标题链接分离，带原生控制条和 X 回退出口；animated GIF 遇 prefers-reduced-motion 不自动播放或循环。",
+      "html": "<figure class=\"ds-x-video\"><video aria-label=\"X 视频\" controls muted playsinline></video><figcaption><a href=\"#\">在 X 上查看原视频</a></figcaption></figure>",
+      "css": ".ds-x-video { max-width:608px; overflow:hidden; margin:0; border-radius:12px; background:#111; font-family:-apple-system,BlinkMacSystemFont,Arial,sans-serif; }.ds-x-video video { display:block; width:100%; min-height:220px; max-height:512px; background:#111; }.ds-x-video figcaption { padding:10px 13px; background:#1c1c1e; color:#fff; font-size:12px; }.ds-x-video a { color:inherit; text-decoration-color:rgb(255 255 255 / 55%); text-underline-offset:3px; }.ds-x-video a:focus-visible { outline:2px solid #fff; outline-offset:2px; }"
     },
     {
       "name": "Tag Chip",

@@ -17,6 +17,7 @@ import { useCallback, useEffect, useLayoutEffect, useRef, useState } from "react
 
 import { formatCurationClip, formatCurationDate } from "@/lib/curation-format";
 import type { CurationListItem } from "@/lib/curation-types";
+import { XVideoPlayer } from "@/components/x-video-player";
 
 import { observeCurationScrollEnd, getCurationScrollTarget } from "./curation-scroll";
 import {
@@ -40,11 +41,13 @@ type CurationStreamProps = {
   initialItems: CurationListItem[];
   /** 会话快照的 sessionStorage key；两个板块各自独立，互不覆盖。 */
   snapshotKey?: string;
+  /** 设计收藏在列表内直接呈现可播放视频，详情入口缩为标题链接以避免嵌套交互。 */
+  variant?: "default" | "design";
 };
 
 const PAGE_SIZE = 20;
 
-export function CurationStream({ apiPath = "/api/curation", emptyLabel = "暂无已发布的策展条目。", initialHasMore, initialItems, snapshotKey }: CurationStreamProps) {
+export function CurationStream({ apiPath = "/api/curation", emptyLabel = "暂无已发布的策展条目。", initialHasMore, initialItems, snapshotKey, variant = "default" }: CurationStreamProps) {
   const streamRef = useRef<HTMLOListElement>(null);
   const reduceMotion = useReducedMotion();
   const [items, setItems] = useState(initialItems);
@@ -166,6 +169,7 @@ export function CurationStream({ apiPath = "/api/curation", emptyLabel = "暂无
     <ol className="curation-home__stream" ref={streamRef}>
       {items.map((item, index) => {
         const isAppended = index >= appendStart;
+        const playableMedia = item.media.filter((media) => media.videoUrl);
         // 首屏条目随 SSR 静态输出；只有无限滚动追加的条目播放入场阶梯动画。
         return (
         <motion.li
@@ -178,6 +182,41 @@ export function CurationStream({ apiPath = "/api/curation", emptyLabel = "暂无
             ease: [0.16, 1, 0.3, 1],
           }}
         >
+          {variant === "design" ? (
+            <article className="design-curation__entry">
+              <div className="curation-home__stream-meta">
+                <time dateTime={item.collectedAt ?? item.publishedAt ?? undefined}>{formatCurationDate(item)}</time>
+                <span>{`X · @${item.author.handle}`}</span>
+                {item.design?.categories.length ? <span>{item.design.categories.join(" · ")}</span> : null}
+              </div>
+              <div className="curation-home__stream-copy">
+                <h3>
+                  <Link data-content-id={item.id} href={`/curation/${item.id}?from=design` as Route}>{item.title}</Link>
+                </h3>
+                <p>{item.summary}</p>
+                {playableMedia.length > 0 ? (
+                  <div className="design-curation__media">
+                    {playableMedia.map((media) => (
+                      <XVideoPlayer
+                        compact
+                        isAnimatedGif={media.type === "animated_gif"}
+                        key={media.videoUrl}
+                        poster={media.previewUrl ?? media.url}
+                        tweetUrl={item.source.url}
+                        videoUrl={media.videoUrl!}
+                      />
+                    ))}
+                  </div>
+                ) : null}
+                {item.text.trim() ? (
+                  <blockquote className="curation-home__stream-clip">
+                    <p>{formatCurationClip(item.text)}</p>
+                  </blockquote>
+                ) : null}
+                {item.tags.length > 0 ? <p className="curation-home__stream-tags">{item.tags.join(" · ")}</p> : null}
+              </div>
+            </article>
+          ) : (
           <Link data-content-id={item.id} href={`/curation/${item.id}` as Route}>
             <div className="curation-home__stream-meta">
               <time dateTime={item.collectedAt ?? item.publishedAt ?? undefined}>{formatCurationDate(item)}</time>
@@ -197,6 +236,7 @@ export function CurationStream({ apiPath = "/api/curation", emptyLabel = "暂无
               ) : null}
             </div>
           </Link>
+          )}
         </motion.li>
         );
       })}

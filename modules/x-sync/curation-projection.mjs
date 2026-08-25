@@ -1,3 +1,5 @@
+import { designClassificationStatus } from "./design-classification.mjs";
+
 export function isReadyForPublication(item) {
   return Boolean(
     item.ai?.title
@@ -33,6 +35,12 @@ export function toPublicCurationItem(item) {
           }
         : null,
     analysis: item.ai.analysis,
+    design: item.ai.design
+      ? {
+          ...item.ai.design,
+          status: designClassificationStatus(item.ai.design.relevant, item.ai.design.confidence),
+        }
+      : null,
     author: {
       handle: item.author.handle,
       name: item.author.name,

@@ -42,11 +42,22 @@ struct CurationQuoteContext: Codable, Equatable, Sendable {
     var text: String
 }
 
+struct DesignClassification: Codable, Equatable, Sendable {
+    var categories: [String]
+    var classifiedAt: String
+    var confidence: Double
+    var evidence: [String]
+    var reason: String
+    var relevant: Bool
+    var status: String
+}
+
 struct CurationItem: Codable, Equatable, Identifiable, Sendable {
     var analysis: String
     var author: CurationAuthor
     var collectedAt: String?
     var collectedOrder: Int?
+    var design: DesignClassification? = nil
     var id: String
     var links: [CurationLink]
     var media: [CurationMedia]
@@ -64,7 +75,9 @@ struct CurationListItem: Codable, Equatable, Identifiable, Sendable {
     var author: CurationAuthor
     var attachments: [String]
     var collectedAt: String?
+    var design: DesignClassification? = nil
     var id: String
+    var media: [CurationMedia] = []
     var publishedAt: String?
     var source: CurationSource
     var summary: String

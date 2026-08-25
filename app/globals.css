@@ -254,6 +254,13 @@ html[data-curation-theme="dark"] .about-printer__paper { background:#f6f2e9; box
 .curation-home__stream-clip { max-width:34rem; margin:.85rem 0 0; border-left:1px solid #dededf; padding-left:.85rem; }
 .curation-home__stream-clip p { display:-webkit-box; max-width:none; margin-top:0; overflow:hidden; -webkit-box-orient:vertical; -webkit-line-clamp:2; color:#656568; font-size:.78rem; line-height:1.55; }
 .curation-home__stream-copy .curation-home__stream-tags { max-width:38rem; margin-top:.7rem; color:#767676; font-size:.67rem; letter-spacing:.01em; line-height:1.5; }
+.design-curation__entry { display:grid; grid-template-columns:minmax(7rem,8.5rem) minmax(0,1fr); column-gap:clamp(1.25rem,2.5vw,2rem); align-items:start; padding:1.5rem 0; }
+.design-curation__entry .curation-home__stream-copy h3 a { color:inherit; text-decoration:none; }
+.design-curation__entry .curation-home__stream-copy h3 a:hover,.design-curation__entry .curation-home__stream-copy h3 a:focus-visible { color:var(--ink); }
+.design-curation__media { display:grid; gap:.9rem; max-width:38rem; margin-top:1rem; }
+.design-curation__media-player video { max-height:32rem; }
+.design-curation__media-player figcaption { padding:.6rem .8rem; }
+@media (max-width:900px) { .design-curation__entry { grid-template-columns:minmax(0,1fr); }.design-curation__entry .curation-home__stream-meta { margin-bottom:.55rem; } }
 
 /* 长列表屏外条目跳过布局与绘制：无限滚动下 DOM 只增不减，
    contain-intrinsic-size 用 auto 记住已渲染高度，未渲染条目按估计值占位。 */

@@ -25,7 +25,8 @@ export function DotFieldParallax({ children }: { children: ReactNode }) {
         offsetX.set(((event.clientX - box.left) / box.width - 0.5) * 12);
         offsetY.set(((event.clientY - box.top) / box.height - 0.5) * 8);
       }}
-      style={reduceMotion ? undefined : { x, y }}
+      // 始终输出 transform: none，避免服务端未知偏好、客户端 reduced-motion=true 时属性不一致。
+      style={{ x: reduceMotion ? 0 : x, y: reduceMotion ? 0 : y }}
     >
       {children}
     </motion.div>

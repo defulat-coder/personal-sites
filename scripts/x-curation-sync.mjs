@@ -30,11 +30,12 @@ export function parseSyncArgs(args) {
   const options = {
     source: "both",
     limit: null,
-    media: false,
+    media: true,
     fetchOnly: false,
     history: false,
     engine: "pi",
     codexModel: "gpt-5.6-luna",
+    designConcurrency: null,
     reasoningEffort: "max",
   };
 
@@ -61,8 +62,15 @@ export function parseSyncArgs(args) {
     } else if (arg === "--reasoning-effort") {
       options.reasoningEffort = requireValue(args, index, "--reasoning-effort");
       index += 1;
+    } else if (arg === "--design-concurrency") {
+      options.designConcurrency = Number.parseInt(requireValue(args, index, "--design-concurrency"), 10);
+      index += 1;
+    } else if (arg.startsWith("--design-concurrency=")) {
+      options.designConcurrency = Number.parseInt(arg.slice("--design-concurrency=".length), 10);
     } else if (arg === "--media") {
       options.media = true;
+    } else if (arg === "--no-media") {
+      options.media = false;
     } else if (arg === "--fetch-only") {
       options.fetchOnly = true;
     } else if (arg === "--history") {
@@ -85,6 +93,10 @@ export function parseSyncArgs(args) {
   }
   if (!new Set(["none", "low", "medium", "high", "xhigh", "max"]).has(options.reasoningEffort)) {
     throw new Error("--reasoning-effort 仅支持 none、low、medium、high、xhigh 或 max。");
+  }
+  options.designConcurrency ??= options.engine === "codex-cli" ? 40 : 15;
+  if (!Number.isInteger(options.designConcurrency) || options.designConcurrency <= 0) {
+    throw new Error("--design-concurrency 必须是正整数。");
   }
   return options;
 }
@@ -109,10 +121,11 @@ function printUsage() {
 选项：
   --source bookmarks|likes|both  抓取来源，默认 both
   --limit <n>                    最多交给解析器处理 n 条条目
-  --engine pi|codex-cli          解析器，默认 pi；codex-cli 单并发执行
+  --engine pi|codex-cli          解析器，默认 pi；codex-cli 正文解析单并发执行
   --model <name>                 Codex CLI 模型，默认 gpt-5.6-luna
   --reasoning-effort <level>     Codex CLI 推理等级，默认 max
-  --media                        同时抓取媒体元数据
+  --design-concurrency <n>       缺失设计分类的回填并发；Luna 默认 40，Kimi 默认 15
+  --no-media                     不抓取媒体元数据（默认会抓取，供设计识别与站内播放）
   --fetch-only                   只抓取并写入策展队列，不调用模型
   --history                      全量抓取历史书签与点赞并导入策展队列
 `);

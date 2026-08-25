@@ -13,6 +13,7 @@ import {
   getPreservedLiterals,
   missingPreservedLiterals,
   normaliseOneLineSummary,
+  runCodexCli,
   splitMarkdown,
   translateReadme,
 } from "../modules/github-starred/analysis.mjs";
@@ -67,18 +68,29 @@ test("Codex CLI 是显式备用读取器，并把最终内容限制在临时输�
       repoRoot: "/project",
       temporaryDirectory,
     });
-    assert.equal(await reader.prompt("只输出 Markdown"), "中文阅读版");
+    assert.equal(await reader.prompt("只输出 Markdown", { imagePaths: ["/tmp/frame.jpg"] }), "中文阅读版");
     assert.deepEqual(reader.modelConfig, { model: "codex-mini", provider: "codex-cli" });
     assert.equal(calls.length, 1);
     assert.equal(calls[0].command, "codex");
     assert.ok(calls[0].args.includes("--ephemeral"));
     assert.ok(calls[0].args.includes("read-only"));
     assert.ok(calls[0].args.includes("--model"));
+    assert.deepEqual(calls[0].args.slice(calls[0].args.indexOf("--image"), -1), ["--image", "/tmp/frame.jpg"]);
     assert.equal(calls[0].args.at(-1), "-");
     assert.match(calls[0].options.input, /不要修改任何文件/u);
   } finally {
     await rm(temporaryDirectory, { force: true, recursive: true });
   }
+});
+
+test("Codex CLI 超时会终止子进程而不是留下后台句柄", async () => {
+  await assert.rejects(
+    runCodexCli(process.execPath, ["-e", "setInterval(() => {}, 1000)"], {
+      input: "",
+      timeoutMilliseconds: 100,
+    }),
+    /Codex CLI 请求超时/u,
+  );
 });
 
 test("README 缺失时以仓库结构作为原始证据", () => {

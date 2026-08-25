@@ -10,22 +10,35 @@ export type CurationSource = {
   url: string;
 };
 
+export type DesignClassification = {
+  categories: string[];
+  classifiedAt: string;
+  confidence: number;
+  evidence: string[];
+  reason: string;
+  relevant: boolean;
+  status: "include" | "review" | "exclude";
+};
+
+export type CurationMedia = {
+  durationMs: number | null;
+  height: number | null;
+  previewUrl: string | null;
+  type: "photo" | "video" | "animated_gif";
+  url: string;
+  videoUrl: string | null;
+  width: number | null;
+};
+
 export type CurationItem = {
   analysis: string;
   author: { handle: string; name: string };
   collectedAt: string | null;
   collectedOrder: number | null;
+  design: DesignClassification | null;
   id: string;
   links: CurationLink[];
-  media: Array<{
-    durationMs: number | null;
-    height: number | null;
-    previewUrl: string | null;
-    type: "photo" | "video" | "animated_gif";
-    url: string;
-    videoUrl: string | null;
-    width: number | null;
-  }>;
+  media: CurationMedia[];
   publishedAt: string | null;
   quoteContext: { author: string; authorName: string; text: string } | null;
   source: CurationSource;
@@ -42,7 +55,7 @@ export type CurationItem = {
  */
 export type CurationListItem = Pick<
   CurationItem,
-  "author" | "collectedAt" | "id" | "publishedAt" | "source" | "summary" | "tags" | "text" | "title"
+  "author" | "collectedAt" | "design" | "id" | "media" | "publishedAt" | "source" | "summary" | "tags" | "text" | "title"
 > & {
   attachments: string[];
 };

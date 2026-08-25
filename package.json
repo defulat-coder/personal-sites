@@ -27,6 +27,7 @@
     "curation:sync:kimi": "node scripts/x-curation-sync.mjs --engine pi",
     "curation:sync:luna": "node scripts/x-curation-sync.mjs --engine codex-cli --model gpt-5.6-luna --reasoning-effort max",
     "curation:enrich": "node scripts/x-curation-enrich.mjs",
+    "curation:classify-design": "node scripts/x-curation-enrich.mjs --design-only --engine codex-cli --model gpt-5.6-luna --reasoning-effort high --concurrency 40",
     "curation:build": "node scripts/build-curation-content.mjs",
     "curation:publish": "node scripts/build-curation-sqlite.mjs",
     "douyin:curation": "node scripts/douyin-curation.mjs",

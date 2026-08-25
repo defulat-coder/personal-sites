@@ -54,11 +54,23 @@ data class CurationQuoteContext(
 )
 
 @Serializable
+data class DesignClassification(
+    val categories: List<String> = emptyList(),
+    val classifiedAt: String,
+    val confidence: Double,
+    val evidence: List<String> = emptyList(),
+    val reason: String,
+    val relevant: Boolean,
+    val status: String,
+)
+
+@Serializable
 data class CurationItem(
     val analysis: String,
     val author: CurationAuthor,
     val collectedAt: String? = null,
     val collectedOrder: Int? = null,
+    val design: DesignClassification? = null,
     val id: String,
     val links: List<CurationLink> = emptyList(),
     val media: List<CurationMedia> = emptyList(),
@@ -77,7 +89,9 @@ data class CurationListItem(
     val author: CurationAuthor,
     val attachments: List<String> = emptyList(),
     val collectedAt: String? = null,
+    val design: DesignClassification? = null,
     val id: String,
+    val media: List<CurationMedia> = emptyList(),
     val publishedAt: String? = null,
     val source: CurationSource,
     val summary: String,

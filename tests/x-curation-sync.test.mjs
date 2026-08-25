@@ -34,6 +34,11 @@ test("sync pipeline fetches X data, prepares the sensitive queue, then enriches 
     },
     {
       command: process.execPath,
+      args: ["/repo/scripts/x-curation-enrich.mjs", "--design-only", "--concurrency", "15", "--limit", "3"],
+      options: { cwd: "/repo" },
+    },
+    {
+      command: process.execPath,
       args: ["/repo/scripts/build-curation-content.mjs"],
       options: { cwd: "/repo" },
     },
@@ -55,9 +60,9 @@ test("both sources retain their own origin before Pi Agent enrichment", async ()
   });
 
   assert.deepEqual(calls.map((call) => call.args), [
-    ["src/cli.js", "fetch", "--source", "bookmarks"],
+    ["src/cli.js", "fetch", "--source", "bookmarks", "--media"],
     ["/repo/scripts/x-curation-prepare.mjs", "--source=bookmarks"],
-    ["src/cli.js", "fetch", "--source", "likes"],
+    ["src/cli.js", "fetch", "--source", "likes", "--media"],
     ["/repo/scripts/x-curation-prepare.mjs", "--source=likes"],
   ]);
 });
@@ -73,7 +78,7 @@ test("sync pipeline passes the captured X list order to the queue preparation st
   });
 
   assert.deepEqual(calls.map((call) => call.args), [
-    ["src/cli.js", "fetch", "--source", "bookmarks"],
+    ["src/cli.js", "fetch", "--source", "bookmarks", "--media"],
     [
       "/repo/scripts/x-curation-prepare.mjs",
       "--source=bookmarks",
@@ -86,16 +91,17 @@ test("sync arguments accept pnpm's -- separator", () => {
   assert.deepEqual(parseSyncArgs(["--", "--source=bookmarks", "--fetch-only"]), {
     source: "bookmarks",
     limit: null,
-    media: false,
+    media: true,
     fetchOnly: true,
     history: false,
     engine: "pi",
     codexModel: "gpt-5.6-luna",
+    designConcurrency: 15,
     reasoningEffort: "max",
   });
 });
 
-test("sync arguments pass the requested Luna Max configuration to the single-threaded Codex parser", async () => {
+test("Luna sync keeps full enrichment single-threaded and backfills design classification at concurrency 40", async () => {
   const calls = [];
   await runSyncPipeline({
     repoRoot: "/repo",
@@ -109,6 +115,20 @@ test("sync arguments pass the requested Luna Max configuration to the single-thr
     "--model", "gpt-5.6-luna",
     "--reasoning-effort", "max",
   ]);
+  assert.deepEqual(calls[3].args, [
+    "/repo/scripts/x-curation-enrich.mjs",
+    "--design-only",
+    "--engine", "codex-cli",
+    "--model", "gpt-5.6-luna",
+    "--reasoning-effort", "high",
+    "--concurrency", "40",
+  ]);
+});
+
+test("design backfill concurrency can be overridden without changing full enrichment", () => {
+  const options = parseSyncArgs(["--engine", "codex-cli", "--design-concurrency", "12"]);
+  assert.equal(options.designConcurrency, 12);
+  assert.equal(options.reasoningEffort, "max");
 });
 
 test("history pipeline uses bird pagination directly and imports both raw sources", async () => {

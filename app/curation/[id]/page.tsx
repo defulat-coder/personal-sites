@@ -16,7 +16,10 @@ import {
 import { formatCurationDate, formatOriginalPublicationDate } from "@/lib/curation-format";
 import type { CurationItem } from "@/lib/curation-types";
 
-type CurationEntryPageProps = { params: Promise<{ id: string }> };
+type CurationEntryPageProps = {
+  params: Promise<{ id: string }>;
+  searchParams?: Promise<{ from?: string }>;
+};
 
 // 公开策展不依赖用户态：首次访问按需生成，随后五分钟内直接复用页面结果，
 // 让列表中的链接可以被 Next 提前加载，而非必须等到用户点击后再查询 Supabase。
@@ -62,10 +65,14 @@ export async function generateMetadata({
 
 export default async function CurationEntryPage({
   params,
+  searchParams,
 }: CurationEntryPageProps) {
   const id = (await params).id;
-  const [item, neighbors] = await Promise.all([findCurationItem(id), getCurationNeighbors(id)]);
+  const fromDesign = (await searchParams)?.from === "design";
+  const item = await findCurationItem(id);
   if (!item) notFound();
+  const designContext = fromDesign && item.design?.status === "include";
+  const neighbors = await getCurationNeighbors(id, designContext);
 
   return (
     <main className="curation-home curation-detail curation-detail--spread" id="site-main" tabIndex={-1}>
@@ -73,9 +80,9 @@ export default async function CurationEntryPage({
 
       <article className="curation-detail__article" data-content-id={item.id}>
         <nav aria-label="返回" className="curation-detail__back">
-          <Link href={item.source.platform === "douyin" ? "/douyin" : "/curation"}>
+          <Link href={(designContext ? "/design" : item.source.platform === "douyin" ? "/douyin" : "/curation") as Route}>
             <ArrowLeft aria-hidden="true" />
-            {item.source.platform === "douyin" ? "返回抖音收藏" : "返回每日关注"}
+            {designContext ? "返回设计收藏" : item.source.platform === "douyin" ? "返回抖音收藏" : "返回每日关注"}
           </Link>
           <ThemeToggle />
         </nav>
@@ -203,13 +210,13 @@ export default async function CurationEntryPage({
         {neighbors.newer || neighbors.older ? (
           <nav aria-label="相邻剪报" className="curation-detail__neighbors">
             {neighbors.newer ? (
-              <Link data-dir="newer" href={`/curation/${neighbors.newer.id}` as Route}>
+              <Link data-dir="newer" href={`/curation/${neighbors.newer.id}${designContext ? "?from=design" : ""}` as Route}>
                 <span>上一则 · 较新收录</span>
                 <strong>{neighbors.newer.title}</strong>
               </Link>
             ) : null}
             {neighbors.older ? (
-              <Link data-dir="older" href={`/curation/${neighbors.older.id}` as Route}>
+              <Link data-dir="older" href={`/curation/${neighbors.older.id}${designContext ? "?from=design" : ""}` as Route}>
                 <span>下一则 · 较早收录</span>
                 <strong>{neighbors.older.title}</strong>
               </Link>

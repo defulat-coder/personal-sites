@@ -20,6 +20,7 @@ describe("curation detail route", () => {
       author: { handle: "someone", name: "Someone" },
       collectedAt: "2026-08-01T00:00:00.000Z",
       collectedOrder: 1,
+      design: null,
       id: "abc123",
       links: [],
       media: [],

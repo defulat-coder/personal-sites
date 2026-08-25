@@ -226,9 +226,15 @@ export async function createKimiReader({ config = {}, env = process.env, repoRoo
   };
 }
 
-export function runCodexCli(command, args, { cwd, input, maxBuffer = 8 * 1024 * 1024 } = {}) {
+export function runCodexCli(command, args, { cwd, input, maxBuffer = 8 * 1024 * 1024, timeoutMilliseconds } = {}) {
   return new Promise((resolve, reject) => {
     const child = spawn(command, args, { cwd, stdio: ["pipe", "pipe", "pipe"] });
+    const timeoutId = Number.isInteger(timeoutMilliseconds)
+      ? setTimeout(() => {
+          child.kill("SIGTERM");
+          reject(new Error(`Codex CLI 请求超时（${Math.round(timeoutMilliseconds / 1000)} 秒）。`));
+        }, timeoutMilliseconds)
+      : null;
     let stdout = "";
     let stderr = "";
     const collect = (target) => (chunk) => {
@@ -242,8 +248,12 @@ export function runCodexCli(command, args, { cwd, input, maxBuffer = 8 * 1024 * 
     const errors = { value: "" };
     child.stdout.on("data", collect(output));
     child.stderr.on("data", collect(errors));
-    child.once("error", reject);
+    child.once("error", (error) => {
+      if (timeoutId) clearTimeout(timeoutId);
+      reject(error);
+    });
     child.once("close", (code) => {
+      if (timeoutId) clearTimeout(timeoutId);
       stdout = output.value;
       stderr = errors.value;
       if (code === 0) resolve({ stderr, stdout });
@@ -270,17 +280,23 @@ export async function createCodexCliReader({ config = {}, repoRoot, run = runCod
 
   return {
     modelConfig: { model: model ?? "default", provider: "codex-cli" },
-    async prompt(prompt) {
+    async prompt(prompt, { imagePaths = [] } = {}) {
       const directory = await mkdtemp(path.join(temporaryDirectory, "github-starred-codex-"));
       const outputPath = path.join(directory, "response.md");
       const args = ["exec", "--ephemeral", "-s", "read-only", "-C", repoRoot, "--output-last-message", outputPath];
       if (model) args.push("--model", model);
       if (reasoningEffort) args.push("--config", `model_reasoning_effort=${JSON.stringify(reasoningEffort)}`);
+      if (imagePaths.length > 0) args.push("--image", ...imagePaths);
       args.push("-");
       const input = `${prompt}\n\n你正在作为受限的文本转换器运行。只输出请求中要求的最终 Markdown 或一句话简介；不要调用工具、不要解释过程、不要修改任何文件。`;
       try {
         await awaitModelResponse(
-          run(executable, args, { cwd: repoRoot, input, maxBuffer: 8 * 1024 * 1024 }),
+          run(executable, args, {
+            cwd: repoRoot,
+            input,
+            maxBuffer: 8 * 1024 * 1024,
+            timeoutMilliseconds: Math.max(1000, requestTimeoutMilliseconds - 1000),
+          }),
           requestTimeoutMilliseconds,
           { label: "Codex CLI" },
         );
