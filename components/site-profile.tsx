@@ -4,6 +4,7 @@ import Image from "next/image";
 import { AboutPrint } from "@/components/about-print";
 import { InteractiveDotField } from "@/components/interactive-dot-field";
 import { ProfileIntroduction } from "@/components/profile-introduction";
+import { ProfileDayVideo } from "@/components/profile-day-video";
 import { ProfileTransitionBridge } from "@/components/profile-transition-bridge";
 import { MobileSectionNavigation, type SiteSection } from "@/components/site-section-navigation";
 import { ThemeToggle } from "@/components/theme-toggle";
@@ -56,6 +57,7 @@ export function SiteProfile({ animateOnFirstHomeVisit = false, mobileSection }: 
               语雀
             </a>
             <AboutPrint />
+            <ProfileDayVideo />
           </nav>
         </div>
       </div>
