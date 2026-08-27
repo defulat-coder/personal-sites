@@ -58,8 +58,3 @@ jobs:
         with:
           path: var/ai-news/sync-state.json
           key: ai-news-sync-state-${{ hashFiles('var/ai-news/sync-state.json') }}
-      # 同步完成后重建公开问答全文索引。ai-news 语料随本任务 5 分钟一变，随同步重建；
-      # open-source 由 github-starred 发布流程自行增量维护（publish-to-supabase.mjs），
-      # daily 语料随部署打包在本地 sqlite，均无需每次全量重写。
-      - name: Rebuild Q&A full-text index (ai-news scope)
-        run: node scripts/ask-reindex.mjs ai-news
