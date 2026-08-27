@@ -26,11 +26,6 @@ test-results/
 # Sensitive source kept only for local recovery; never recreate it at repo root.
 /陈远-Agent工程师_全栈工程师_资深java工程师.md
 /var/
-# >>> Comet managed project state >>>
-!/.comet/
-/.comet/*
-!/.comet/config.yaml
-# <<< Comet managed project state <<<
 # Python virtual environments (e.g. video-promo/analysis/.venv) must never enter git;
 # their native binaries exceed GitHub's 100 MiB hard limit and fail git:safety.
 .venv/
