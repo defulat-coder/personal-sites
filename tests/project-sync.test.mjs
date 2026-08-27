@@ -1,8 +1,12 @@
 import assert from "node:assert/strict";
 import test from "node:test";
+import Database from "better-sqlite3";
+import { mkdtemp, rm, writeFile } from "node:fs/promises";
+import os from "node:os";
+import path from "node:path";
 
 import { sanitizePublicCandidate } from "../modules/project-sync/derive.mjs";
-import { assertPublicSnapshotSafe, buildPublicProjectSnapshot } from "../modules/project-sync/publish.mjs";
+import { assertPublicSnapshotSafe, buildPublicProjectSnapshot, publishApprovedProject } from "../modules/project-sync/publish.mjs";
 import { canonicalJson, extractMemoryBlocks, sha256 } from "../modules/project-sync/source.mjs";
 
 test("canonicalJson 对对象键顺序稳定", () => {
@@ -70,4 +74,40 @@ test("公开候选在审核前清理本机敏感路径", () => {
   assert.equal(candidate.body.includes("data/sensitive"), false);
   assert.equal(candidate.body.includes(".codex/sessions"), false);
   assert.equal(assertPublicSnapshotSafe(candidate), true);
+});
+
+test("批准后的项目快照发布到本地 SQLite 并回读修订", async () => {
+  const directory = await mkdtemp(path.join(os.tmpdir(), "project-publish-sqlite-"));
+  const paths = {
+    approved: path.join(directory, "approved.json"),
+    state: path.join(directory, "state.json"),
+  };
+  const databasePath = path.join(directory, "public.sqlite");
+  const approved = {
+    approvedAt: "2026-08-20T01:00:00.000Z",
+    approvedDigest: "a".repeat(64),
+    currentFocus: "验证本地发布",
+    extractorVersion: "v1",
+    generatedAt: "2026-08-20T00:00:00.000Z",
+    projectId: "demo",
+    records: [],
+    sourceDigest: "b".repeat(64),
+    sourceObservedAt: "2026-08-20T00:00:00.000Z",
+    summary: "项目摘要",
+  };
+  const project = {
+    id: "demo", order: 1, period: "2026", role: "开发", shots: [], slug: "demo",
+    stack: ["TypeScript"], status: "在役", title: "Demo",
+  };
+  try {
+    await writeFile(paths.approved, JSON.stringify(approved));
+    const result = await publishApprovedProject({ databasePath, now: new Date("2026-08-20T02:00:00.000Z"), paths, project });
+    const database = new Database(databasePath, { readonly: true });
+    const row = database.prepare("SELECT project_id, revision FROM project_snapshots").get();
+    database.close();
+    assert.equal(row.project_id, "demo");
+    assert.equal(row.revision, result.revision);
+  } finally {
+    await rm(directory, { force: true, recursive: true });
+  }
 });

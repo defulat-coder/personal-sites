@@ -3,8 +3,13 @@ import { mkdtemp, mkdir, rename, rm } from "node:fs/promises";
 import path from "node:path";
 
 import { toDailySearchDocuments } from "../ask/search-index.mjs";
+import {
+  initializePublicDatabase,
+  preserveSupplementalProjection,
+  PUBLIC_DATABASE_PATH,
+} from "../public-data/sqlite.mjs";
 
-export const PUBLIC_CURATION_DATABASE_PATH = "data/curation.sqlite";
+export const PUBLIC_CURATION_DATABASE_PATH = PUBLIC_DATABASE_PATH;
 
 function sortPublicFocusItems(items) {
   return [...items].sort((left, right) =>
@@ -26,30 +31,9 @@ export async function buildPublicCurationDatabase({ outputPath, items: unsortedI
   const temporaryPath = path.join(temporaryDirectory, "curation.sqlite");
 
   try {
-    const database = new Database(temporaryPath);
+    const database = initializePublicDatabase(new Database(temporaryPath));
     database.pragma("journal_mode = DELETE");
-    database.exec(`
-      PRAGMA foreign_keys = ON;
-      CREATE TABLE curation_items (
-        id TEXT PRIMARY KEY,
-        collected_at TEXT,
-        collected_order INTEGER,
-        published_at TEXT,
-        title TEXT NOT NULL,
-        content_json TEXT NOT NULL
-      ) STRICT;
-      CREATE INDEX curation_items_feed_order_idx
-        ON curation_items (collected_at DESC, collected_order ASC, published_at DESC, id DESC);
-      CREATE TABLE daily_ask_documents (
-        id TEXT PRIMARY KEY,
-        published_at TEXT,
-        title TEXT NOT NULL,
-        content TEXT NOT NULL,
-        search_text TEXT NOT NULL,
-        source_id TEXT NOT NULL,
-        source_url TEXT NOT NULL
-      ) STRICT;
-    `);
+    preserveSupplementalProjection(outputPath, database);
 
     const insertItem = database.prepare(`
       INSERT INTO curation_items (id, collected_at, collected_order, published_at, title, content_json)
@@ -60,8 +44,8 @@ export async function buildPublicCurationDatabase({ outputPath, items: unsortedI
     }
 
     const insertDocument = database.prepare(`
-      INSERT INTO daily_ask_documents (id, published_at, title, content, search_text, source_id, source_url)
-      VALUES (?, ?, ?, ?, ?, ?, ?)
+      INSERT INTO ask_documents (id, source_scope, published_at, title, content, search_text, source_id, source_url)
+      VALUES (?, 'daily', ?, ?, ?, ?, ?, ?)
     `);
     const documents = toDailySearchDocuments(items.map((content) => ({ content, published_at: content.publishedAt })));
     for (const document of documents) {

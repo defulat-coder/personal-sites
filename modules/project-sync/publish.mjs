@@ -1,13 +1,12 @@
-import { createClient } from "@supabase/supabase-js";
+import Database from "better-sqlite3";
+import path from "node:path";
+import { fileURLToPath } from "node:url";
 
+import { initializePublicDatabase, PUBLIC_DATABASE_PATH } from "../public-data/sqlite.mjs";
 import { approvedProjectSchema, publicProjectSnapshotSchema } from "./schema.mjs";
 import { assertPublicContentSafe, canonicalJson, readJson, sha256, writePrivateJson } from "./source.mjs";
 
-function requiredEnvironment(env, key) {
-  const value = env[key];
-  if (!value) throw new Error(`缺少 ${key}，无法发布项目公开快照。`);
-  return value;
-}
+const repoRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "../..");
 
 export function assertPublicSnapshotSafe(snapshot) {
   return assertPublicContentSafe(snapshot);
@@ -37,43 +36,37 @@ export function buildPublicProjectSnapshot(project, approved) {
   return { revision: sha256(canonicalJson(snapshot)), snapshot };
 }
 
-export async function publishApprovedProject({ clientFactory = createClient, env = process.env, now = new Date(), paths, project }) {
+export async function publishApprovedProject({
+  databasePath = path.join(repoRoot, PUBLIC_DATABASE_PATH),
+  now = new Date(),
+  paths,
+  project,
+}) {
   const approved = approvedProjectSchema.parse(await readJson(paths.approved));
   const { revision, snapshot } = buildPublicProjectSnapshot(project, approved);
-  const client = clientFactory(
-    requiredEnvironment(env, "SUPABASE_URL"),
-    requiredEnvironment(env, "SUPABASE_SERVICE_ROLE_KEY"),
-    { auth: { autoRefreshToken: false, persistSession: false } },
-  );
   const publishedAt = now.toISOString();
-  const row = {
-    display_order: project.order,
-    period: project.period,
-    project_id: project.id,
-    published_at: publishedAt,
-    revision,
-    slug: project.slug,
-    snapshot,
-    source_observed_at: snapshot.sourceObservedAt,
-    status: project.status,
-    summary: snapshot.summary,
-    synced_at: publishedAt,
-    title: project.title,
-  };
-  const { error: writeError } = await client
-    .from("project_public_snapshots")
-    .upsert(row, { onConflict: "project_id" });
-  if (writeError) throw new Error(`发布 ${project.id} 项目快照失败：${writeError.message}`);
-  const { data, error: readError } = await client
-    .from("project_public_snapshots")
-    .select("project_id,revision,snapshot")
-    .eq("project_id", project.id)
-    .single();
-  if (readError) throw new Error(`回读 ${project.id} 项目快照失败：${readError.message}`);
-  if (data.project_id !== project.id || data.revision !== revision) {
-    throw new Error(`${project.id} 项目快照回读修订不一致。`);
+  const database = initializePublicDatabase(new Database(databasePath));
+  try {
+    database.prepare(`
+      INSERT INTO project_snapshots (project_id, slug, display_order, published_at, revision, snapshot_json)
+      VALUES (?, ?, ?, ?, ?, ?)
+      ON CONFLICT(project_id) DO UPDATE SET
+        slug = excluded.slug,
+        display_order = excluded.display_order,
+        published_at = excluded.published_at,
+        revision = excluded.revision,
+        snapshot_json = excluded.snapshot_json
+    `).run(project.id, project.slug, project.order, publishedAt, revision, JSON.stringify(snapshot));
+    const row = database.prepare(
+      "SELECT project_id, revision, snapshot_json FROM project_snapshots WHERE project_id = ?",
+    ).get(project.id);
+    if (row.project_id !== project.id || row.revision !== revision) {
+      throw new Error(`${project.id} 项目快照回读修订不一致。`);
+    }
+    publicProjectSnapshotSchema.parse(JSON.parse(row.snapshot_json));
+  } finally {
+    database.close();
   }
-  publicProjectSnapshotSchema.parse(data.snapshot);
   const state = (await readJson(paths.state)) ?? {};
   await writePrivateJson(paths.state, { ...state, publishedAt, publishedRevision: revision });
   return { publishedAt, recordCount: snapshot.records.length, revision, snapshot };

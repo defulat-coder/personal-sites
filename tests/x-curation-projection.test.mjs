@@ -133,7 +133,7 @@ test("public SQLite merges approved focus sources and builds the matching local 
       { id: "1", title: "标题" },
       { id: "douyin-2", title: "抖音条目" },
     ]);
-    assert.deepEqual(database.prepare("SELECT id, source_url FROM daily_ask_documents ORDER BY id").all(), [
+    assert.deepEqual(database.prepare("SELECT id, source_url FROM ask_documents WHERE source_scope = 'daily' ORDER BY id").all(), [
       { id: "daily:1", source_url: "/curation/1" },
       { id: "daily:douyin-2", source_url: "/curation/douyin-2" },
     ]);

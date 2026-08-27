@@ -1,7 +1,7 @@
 import Foundation
 
 /// 开源关注模型，对齐 lib/open-source-types.ts。
-/// 列表/详情走 github_open_source_items 的 PostgREST 投影（select 别名后已是 camelCase），默认解码即可。
+/// 列表/详情走站点本地 SQLite API，响应为 camelCase。
 
 enum OpenSourceCategory: String, Codable, CaseIterable, Sendable {
     case all

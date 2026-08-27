@@ -55,41 +55,8 @@ struct WorkRecord: Codable, Equatable, Hashable, Identifiable, Sendable {
     var updatedAt: String
 }
 
-/// snapshot jsonb 结构（camelCase），对齐 publicWorkSnapshotSchema。
-struct WorkSnapshot: Decodable, Sendable {
-    var bodyMarkdown: String?
-    var currentFocus: String
-    var period: String
-    var projectId: String
-    var records: [WorkRecord]
-    var repo: String?
-    var role: String
-    var shots: [WorkShot]
-    var slug: String
-    var sourceObservedAt: String?
-    var stack: [String]
-    var status: String
-    var summary: String
-    var title: String
-    var url: String?
-    var version: Int
-}
-
-/// project_public_snapshots 表行：外层 snake_case 列名，snapshot jsonb 内 camelCase，分层解码。
-struct WorkPublicRow: Decodable, Sendable {
-    var displayOrder: Int
-    var publishedAt: String
-    var snapshot: WorkSnapshot
-
-    enum CodingKeys: String, CodingKey {
-        case displayOrder = "display_order"
-        case publishedAt = "published_at"
-        case snapshot
-    }
-}
-
-/// 对齐 Web 的 Work：snapshot 平铺 + 行级 display_order/published_at。
-struct Work: Equatable, Hashable, Identifiable, Sendable {
+/// 站点 `/api/works` 返回的公开 SQLite 投影。
+struct Work: Codable, Equatable, Hashable, Identifiable, Sendable {
     var body: String
     var currentFocus: String
     var order: Int
@@ -109,24 +76,4 @@ struct Work: Equatable, Hashable, Identifiable, Sendable {
 
     var id: String { slug }
 
-    /// 对齐 lib/works.ts 的 toWork：body 由 bodyMarkdown 兜底为空串。
-    init(row: WorkPublicRow) {
-        let snapshot = row.snapshot
-        body = snapshot.bodyMarkdown ?? ""
-        currentFocus = snapshot.currentFocus
-        order = row.displayOrder
-        period = snapshot.period
-        publishedAt = row.publishedAt
-        records = snapshot.records
-        repo = snapshot.repo
-        role = snapshot.role
-        shots = snapshot.shots
-        slug = snapshot.slug
-        sourceObservedAt = snapshot.sourceObservedAt
-        stack = snapshot.stack
-        status = snapshot.status
-        summary = snapshot.summary
-        title = snapshot.title
-        url = snapshot.url
-    }
 }

@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 /**
- * GitHub Star 初始化、每日增量同步、Pi/Kimi 中文阅读版生成与 Supabase 投影。
+ * GitHub Star 初始化、每日增量同步、Pi/Kimi 中文阅读版生成与本地 SQLite 投影。
  * 默认并发为 15；每日同步仅处理新仓库或更新过的仓库。
  */
 
@@ -10,7 +10,7 @@ import { fileURLToPath } from "node:url";
 
 import { openSourceEntries } from "../config/open-source-curation.mjs";
 import { analyzeStarredRecords, createCodexCliReader, createKimiReader, ONE_LINE_SUMMARY_VERSION, readLocalAnalyses } from "../modules/github-starred/analysis.mjs";
-import { publishStarredRecords } from "../modules/github-starred/publish-to-supabase.mjs";
+import { publishStarredRecords } from "../modules/github-starred/publish-to-sqlite.mjs";
 import { readLocalSourceRecords, syncStarredRepositories } from "../modules/github-starred/source.mjs";
 import { loadLocalEnv } from "./lib/load-local-env.mjs";
 
@@ -73,7 +73,7 @@ function selectRecords(records) {
 async function publish(records) {
   const analyses = await readLocalAnalyses(records, derivedRoot);
   const result = await publishStarredRecords({ analyses, records, seedEntries: openSourceEntries });
-  console.log(`Supabase：私有原始资料 ${result.privateSourceCount}，中文阅读版 ${result.privateAnalysisCount}，公开投影 ${result.publicCount}。`);
+  console.log(`本地 SQLite：私有原始资料 ${result.privateSourceCount}，中文阅读版 ${result.privateAnalysisCount}，公开投影 ${result.publicCount}，检索分块 ${result.indexedCount}。`);
 }
 
 async function synchronize({ incremental = false } = {}) {
@@ -166,7 +166,7 @@ if (options.stage === "sync") {
   await analyze(records);
 }
 
-if (!process.exitCode && new Set(["analyze", "daily", "init", "run"]).has(options.stage)) {
+if (!process.exitCode) {
   const { rebuildDefaultIndex } = await import("./local-vectors.mjs");
   await rebuildDefaultIndex();
 }

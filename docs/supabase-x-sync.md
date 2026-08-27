@@ -51,4 +51,4 @@ pnpm curation:classify-design
 
 ## 迁移后的远端清理
 
-确认 SQLite 版本已在 Vercel 正常部署并可读后，可一次性执行 `pnpm curation:purge:supabase`，删除旧的 `x_sync_items`、`x_curation_items` 与 `daily` 问答索引副本。该命令不可逆，不能在新部署验证之前执行。
+旧 Supabase 的 X、策展与 Ask 表已经通过收敛迁移删除；当前流程不会再创建或写入这些结构。

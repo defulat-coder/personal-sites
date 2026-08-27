@@ -1,12 +1,11 @@
 import "server-only";
 
-import { createClient } from "@supabase/supabase-js";
-import { unstable_cache } from "next/cache";
 import { cache } from "react";
 
 import { z } from "zod";
 
-import type { Work, WorkEntry } from "@/lib/works-types";
+import type { Work } from "@/lib/works-types";
+import { getPublicDatabase } from "@/lib/public-database";
 
 const workEvidenceSchema = z.object({
   id: z.string(),
@@ -53,25 +52,11 @@ const publicWorkSnapshotSchema = z.object({
 const workRowSchema = z.object({
   display_order: z.number(),
   published_at: z.string(),
-  snapshot: publicWorkSnapshotSchema,
+  snapshot_json: z.string().min(1),
 });
 
-function requiredEnvironment(key: "SUPABASE_PUBLISHABLE_KEY" | "SUPABASE_URL") {
-  const value = process.env[key];
-  if (!value) throw new Error(`缺少 ${key}；构建版块只能从 Supabase 公开项目投影读取。`);
-  return value;
-}
-
-function getPublicWorksClient() {
-  return createClient(
-    requiredEnvironment("SUPABASE_URL"),
-    requiredEnvironment("SUPABASE_PUBLISHABLE_KEY"),
-    { auth: { autoRefreshToken: false, persistSession: false } },
-  );
-}
-
 function toWork(row: z.infer<typeof workRowSchema>): Work {
-  const snapshot = row.snapshot;
+  const snapshot = publicWorkSnapshotSchema.parse(JSON.parse(row.snapshot_json));
   return {
     body: snapshot.bodyMarkdown ?? "",
     currentFocus: snapshot.currentFocus,
@@ -92,27 +77,17 @@ function toWork(row: z.infer<typeof workRowSchema>): Work {
   };
 }
 
-const getCachedWorks = unstable_cache(
-  async (): Promise<Work[]> => {
-    const { data, error } = await getPublicWorksClient()
-      .from("project_public_snapshots")
-      .select("display_order,published_at,snapshot")
-      .order("display_order", { ascending: true })
-      .order("published_at", { ascending: false });
-    if (error) throw new Error(`读取 Supabase 项目列表失败：${error.message}`);
-    return z.array(workRowSchema).parse(data).map(toWork);
-  },
-  ["public-project-snapshots-v2"],
-  { revalidate: 240, tags: ["public-projects"] },
-);
-
-export async function listWorks(): Promise<WorkEntry[]> {
-  return getCachedWorks();
+export async function listWorks(): Promise<Work[]> {
+  return getPublicDatabase()
+    .prepare("SELECT display_order, published_at, snapshot_json FROM project_snapshots ORDER BY display_order ASC, published_at DESC")
+    .all()
+    .map((row) => toWork(workRowSchema.parse(row)));
 }
 
-// 详情从带 unstable_cache 的列表快照派生：snapshot 已含 body/records，
-// 与列表读同一份缓存，避免详情/列表之间出现 240s 的读不一致窗口。
 export const getWork = cache(async (slug: string): Promise<Work | null> => {
   if (!/^[\w-]+$/u.test(slug)) return null;
-  return (await getCachedWorks()).find((work) => work.slug === slug) ?? null;
+  const row = getPublicDatabase()
+    .prepare("SELECT display_order, published_at, snapshot_json FROM project_snapshots WHERE slug = ?")
+    .get(slug);
+  return row ? toWork(workRowSchema.parse(row)) : null;
 });

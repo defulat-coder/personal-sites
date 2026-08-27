@@ -95,6 +95,10 @@ export function mergeRankings(vectorRows, keywordRows, limit = 8) {
     .slice(0, limit);
 }
 
+export function publicAskVectorSource(row) {
+  return `${row.source_scope}/${row.source_id}/${row.id}`;
+}
+
 function resolveInsideRepo(input) {
   const absolutePath = path.resolve(repoRoot, input);
   const relativePath = path.relative(repoRoot, absolutePath);
@@ -145,26 +149,42 @@ async function readChunks(inputs, options) {
   return { chunks, fileCount: files.length };
 }
 
-function readCurationChunks() {
+function readPublicProjectionChunks() {
   const database = new Database(curationDatabasePath, { fileMustExist: true, readonly: true });
   try {
-    const rows = database.prepare(`
-      SELECT d.source_id, d.title, d.content, c.content_json
-      FROM daily_ask_documents d
-      JOIN curation_items c ON c.id = d.source_id
-      ORDER BY d.id
+    const askRows = database.prepare(`
+      SELECT id, source_scope, source_id, title, content
+      FROM ask_documents
+      ORDER BY id
     `).all();
-
-    const chunks = rows.flatMap((row) => {
-      const platform = JSON.parse(row.content_json)?.source?.platform;
-      if (platform !== "x" && platform !== "douyin") return [];
-      return splitText(`${row.title}\n\n${row.content}`).map((content, chunkIndex) => ({
+    const workRows = database.prepare(`
+      SELECT slug, snapshot_json
+      FROM project_snapshots
+      ORDER BY display_order, published_at DESC
+    `).all();
+    const askChunks = askRows.flatMap((row) =>
+      splitText(`${row.title}\n\n${row.content}`).map((content, chunkIndex) => ({
         chunkIndex,
         content,
-        source: `curation/${platform}/${row.source_id}`,
+        source: publicAskVectorSource(row),
+      })),
+    );
+    const workChunks = workRows.flatMap((row) => {
+      const snapshot = JSON.parse(row.snapshot_json);
+      const content = [
+        snapshot.title,
+        snapshot.summary,
+        snapshot.currentFocus,
+        snapshot.bodyMarkdown,
+        ...(snapshot.records ?? []).flatMap((record) => [record.title, record.summary, record.bodyMarkdown]),
+      ].filter(Boolean).join("\n\n");
+      return splitText(content).map((chunk, chunkIndex) => ({
+        chunkIndex,
+        content: chunk,
+        source: `works/${row.slug}`,
       }));
     });
-    return { chunks, itemCount: rows.length };
+    return { chunks: [...askChunks, ...workChunks], itemCount: askRows.length + workRows.length };
   } finally {
     database.close();
   }
@@ -257,8 +277,8 @@ function initializeDatabase(filePath) {
 
 async function buildIndex(inputs, { includeCuration = false } = {}) {
   const { chunks: fileChunks, fileCount } = await readChunks(inputs, { ignoreMissing: includeCuration });
-  const curation = includeCuration ? readCurationChunks() : { chunks: [], itemCount: 0 };
-  const chunks = [...fileChunks, ...curation.chunks];
+  const publicProjection = includeCuration ? readPublicProjectionChunks() : { chunks: [], itemCount: 0 };
+  const chunks = [...fileChunks, ...publicProjection.chunks];
   if (chunks.length === 0) throw new Error("没有找到可索引的 Markdown 或文本文件。");
 
   await mkdir(path.dirname(databasePath), { recursive: true });
@@ -266,7 +286,7 @@ async function buildIndex(inputs, { includeCuration = false } = {}) {
   await rm(temporaryPath, { force: true });
 
   console.log(
-    `准备索引 ${fileCount} 个文件、${includeCuration ? `${curation.itemCount} 条策展记录、` : ""}${chunks.length} 个分块；首次运行会下载本地模型。`,
+    `准备索引 ${fileCount} 个文件、${includeCuration ? `${publicProjection.itemCount} 条公开记录、` : ""}${chunks.length} 个分块；首次运行会下载本地模型。`,
   );
   const cachedVectors = readCachedVectors();
   let embedder;

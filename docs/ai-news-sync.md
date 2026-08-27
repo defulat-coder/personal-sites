@@ -14,7 +14,7 @@
 1. 通过 `pnpm supabase:push` 应用 [迁移](../supabase/migrations/20260814130000_ai_news_storage.sql)（先 `--dry-run` 预演）。
 2. 手动执行一次 `pnpm ai-news:sync`（增量）和 `pnpm ai-news:backfill`（7 天回填）验证。
 3. 定时任务（首选 GitHub Actions，本机 launchd 为可选兜底）：
-   - `.github/workflows/ai-news-sync.yml`：每 5 分钟跑增量（24h 窗口，GitHub cron 的最小间隔，高负载时可能延迟），每天 20:17 UTC（北京时间 04:17）跑 7 天回填；手动触发支持 `backfill` 输入。需在仓库 Settings → Secrets and variables → Actions 配置 `SUPABASE_URL` 与 `SUPABASE_SERVICE_ROLE_KEY`。同步完成后追加执行 `node scripts/ask-reindex.mjs ai-news` 只重建每日动态语料；open-source 语料由 github-starred 发布流程自行增量维护，daily 语料随部署打包在本地 sqlite。需要全量重建时手动执行 `pnpm ask:reindex`（不带参数 = 全部范围）。
+   - `.github/workflows/ai-news-sync.yml`：每 5 分钟跑增量（24h 窗口，GitHub cron 的最小间隔，高负载时可能延迟），每天 20:17 UTC（北京时间 04:17）跑 7 天回填；手动触发支持 `backfill` 输入。需在仓库 Settings → Secrets and variables → Actions 配置 `SUPABASE_URL` 与 `SUPABASE_SERVICE_ROLE_KEY`。Ask 直接读取这张唯一保留的每日动态公开表，不再维护第二份远端全文索引。
    - 站点侧不做时间缓存：首页与每日动态页面动态渲染、每请求直读公开投影，同步落库后下一次访问即为最新。
    - ETag 条件请求状态（`var/ai-news/sync-state.json`）通过 `actions/cache`（按内容哈希的 restore/save）跨运行保留，命中 304 时跳过重写；缓存丢失时退化为全量 upsert（幂等，按 id 冲突覆盖），不影响正确性。回填不读写 ETag 状态。
    - 公开仓库的 Actions 不计私有额度，频率不受分钟数限制；但 GitHub cron 最小间隔为 5 分钟且不保证准点，仓库 60 天无活动时 scheduled workflow 会被自动暂停，需到 Actions 页手动恢复。

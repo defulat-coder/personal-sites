@@ -110,4 +110,8 @@ for (const project of projects) {
 }
 
 console.log(`项目同步完成：项目 ${totals.projects}，变化 ${totals.changed}，复用 ${totals.reused}，记录 ${totals.records}，批准 ${totals.approved}，发布 ${totals.published}，失败 ${totals.failed}。`);
+if (totals.published > 0 && totals.failed === 0) {
+  const { rebuildDefaultIndex } = await import("./local-vectors.mjs");
+  await rebuildDefaultIndex();
+}
 if (totals.failed > 0) process.exitCode = 1;

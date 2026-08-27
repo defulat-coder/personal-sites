@@ -71,7 +71,7 @@ dependencies {
     implementation("androidx.compose.material:material-icons-extended")
     implementation("androidx.compose.foundation:foundation")
 
-    // Supabase 公开投影直连（仅 publishable key）
+    // 每日动态仍直连 Supabase（仅 publishable key）
     implementation("io.github.jan-tennert.supabase:postgrest-kt:3.7.0")
     implementation("io.ktor:ktor-client-okhttp:3.5.2")
 

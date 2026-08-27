@@ -22,7 +22,7 @@ type CurationEntryPageProps = {
 };
 
 // 公开策展不依赖用户态：首次访问按需生成，随后五分钟内直接复用页面结果，
-// 让列表中的链接可以被 Next 提前加载，而非必须等到用户点击后再查询 Supabase。
+// 让列表中的链接可以被 Next 提前加载，而非必须等到用户点击后再查询 SQLite。
 export const revalidate = 300;
 
 export function generateStaticParams() {

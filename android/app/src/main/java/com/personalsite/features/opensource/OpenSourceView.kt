@@ -42,7 +42,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.personalsite.core.PSColors
-import com.personalsite.core.SupabaseClientProvider
+import com.personalsite.core.SiteApiClient
 import com.personalsite.features.support.ContentListMetadataLine
 import com.personalsite.features.support.ContentListMetrics
 import com.personalsite.features.support.LoadStateView
@@ -50,11 +50,7 @@ import com.personalsite.features.support.MarkdownText
 import com.personalsite.features.support.contentListBody
 import com.personalsite.models.OpenSourceEntry
 import com.personalsite.models.OpenSourceListEntry
-import io.github.jan.supabase.postgrest.from
-import io.github.jan.supabase.postgrest.query.Columns
-import io.github.jan.supabase.postgrest.query.Order
 import kotlinx.coroutines.launch
-import kotlinx.serialization.Serializable
 
 /** 开源关注内部导航：列表 → 详情 → 仓库目录/文件。 */
 sealed interface OpenSourceRoute {
@@ -63,7 +59,7 @@ sealed interface OpenSourceRoute {
     data class File(val slug: String, val path: String) : OpenSourceRoute
 }
 
-/** 开源关注列表：直连 github_open_source_items，排序与 Web 一致（display_rank 升序，再按 published_at 倒序）。 */
+/** 开源关注列表：经站点 API 读取随部署打包的本地 SQLite 投影。 */
 class OpenSourceListModel : ViewModel() {
     var entries by mutableStateOf<List<OpenSourceListEntry>>(emptyList())
         private set
@@ -84,25 +80,12 @@ class OpenSourceListModel : ViewModel() {
             isLoading = true
             errorMessage = null
             try {
-                entries = SupabaseClientProvider.shared
-                    .from("github_open_source_items")
-                    .select(columns = Columns.raw(LIST_SELECT)) {
-                        order("display_rank", Order.ASCENDING, nullsFirst = false)
-                        order("published_at", Order.DESCENDING)
-                    }
-                    .decodeList()
+                entries = SiteApiClient().get("/api/open-source")
             } catch (e: Exception) {
                 errorMessage = "读取开源关注失败，请检查网络后重试。"
             }
             isLoading = false
         }
-    }
-
-    private companion object {
-        const val LIST_SELECT =
-            "category:content->>category,checkedAt:content->evidence->>checkedAt," +
-                "dimensions:content->dimensions,repository:content->>repository,slug," +
-                "sourceSummary:content->>sourceSummary,status:content->>status,type:content->>type"
     }
 }
 
@@ -181,10 +164,6 @@ private fun OpenSourceRow(entry: OpenSourceListEntry, onClick: () -> Unit) {
     }
 }
 
-/** content jsonb 整行包装：详情直接取完整 content 解成 OpenSourceEntry。 */
-@Serializable
-private data class OpenSourceContentRow(val content: OpenSourceEntry)
-
 /** 开源关注详情：分类/维度标签、摘要、判读、中文阅读版（Markdown），入口进仓库浏览。 */
 @Composable
 fun OpenSourceDetailView(slug: String, onBrowseRepository: (String) -> Unit) {
@@ -196,13 +175,7 @@ fun OpenSourceDetailView(slug: String, onBrowseRepository: (String) -> Unit) {
     suspend fun load() {
         errorMessage = null
         try {
-            val row = SupabaseClientProvider.shared
-                .from("github_open_source_items")
-                .select(columns = Columns.raw("content")) {
-                    filter { eq("slug", slug) }
-                }
-                .decodeSingle<OpenSourceContentRow>()
-            entry = row.content
+            entry = SiteApiClient().get("/api/open-source/$slug")
         } catch (e: Exception) {
             errorMessage = "读取开源关注详情失败，请稍后重试。"
         }

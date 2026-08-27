@@ -21,7 +21,7 @@ export async function generateStaticParams() {
     const entries = await listWorks();
     return entries.map((entry) => ({ slug: entry.slug }));
   } catch {
-    // 构建环境缺 Supabase env（或投影暂不可读）时不让整站构建失败：
+    // 本地投影暂不可读时不让整站构建失败：
     // 返回空集，详情页回退为首个请求时按需 ISR 渲染。
     return [];
   }

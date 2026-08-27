@@ -9,6 +9,16 @@ import type { AiNewsItem, AiNewsListItem } from "@/lib/ai-news-types";
 
 export type { AiNewsItem, AiNewsListItem } from "@/lib/ai-news-types";
 
+export type AiNewsSearchDocument = {
+  content: string;
+  id: string;
+  publishedAt: string | null;
+  score: number;
+  sourceId: string;
+  sourceUrl: string;
+  title: string;
+};
+
 // 首页列表一次展示的最近动态条数上限，与客户端加载更多的页大小一致；
 // 完整数据都在 Supabase 公开投影里。
 export const AI_NEWS_LIST_LIMIT = 50;
@@ -74,3 +84,53 @@ export const getAiNewsItem = cache(async (id: string): Promise<AiNewsItem | null
   if (error) throw new Error(`读取 Supabase 每日动态详情失败：${error.message}`);
   return data ? toAiNewsItem(aiNewsRowSchema.parse(data)) : null;
 });
+
+let askCorpusCache: { expiresAt: number; items: AiNewsItem[] } | undefined;
+
+async function getAiNewsAskCorpus() {
+  if (askCorpusCache && askCorpusCache.expiresAt > Date.now()) return askCorpusCache.items;
+  const { data, error } = await getPublicAiNewsClient()
+    .from("ai_news_public_items")
+    .select("content,selected")
+    .order("published_at", { ascending: false, nullsFirst: false })
+    .limit(2500);
+  if (error) throw new Error(`读取 Supabase 每日动态检索语料失败：${error.message}`);
+  const items = z.array(aiNewsRowSchema).parse(data).map(toAiNewsItem);
+  askCorpusCache = { expiresAt: Date.now() + 300_000, items };
+  return items;
+}
+
+function occurrences(text: string, query: string) {
+  let count = 0;
+  let start = 0;
+  while (true) {
+    const index = text.indexOf(query, start);
+    if (index < 0) return count;
+    count += 1;
+    start = index + query.length;
+  }
+}
+
+/** 每日动态仍以 Supabase 为源，Ask 直接读取现有公开表，不再维护第二份远端索引。 */
+export async function searchAiNewsDocuments(query: string, limit = 6): Promise<AiNewsSearchDocument[]> {
+  const needle = query.trim().toLocaleLowerCase("en-US");
+  if (!needle) return [];
+  return (await getAiNewsAskCorpus())
+    .map((item) => {
+      const title = item.title.toLocaleLowerCase("en-US");
+      const summary = item.summary.toLocaleLowerCase("en-US");
+      const supporting = `${item.reason}\n${item.category}\n${item.sourceName}`.toLocaleLowerCase("en-US");
+      return {
+        content: [item.summary, item.reason].filter(Boolean).join("\n\n"),
+        id: `ai-news:${item.id}`,
+        publishedAt: item.publishedAt,
+        score: occurrences(title, needle) * 8 + occurrences(summary, needle) * 2 + occurrences(supporting, needle),
+        sourceId: item.id,
+        sourceUrl: `/ai-news/${encodeURIComponent(item.id)}`,
+        title: item.title,
+      };
+    })
+    .filter((item) => item.score > 0)
+    .sort((left, right) => right.score - left.score || (right.publishedAt ?? "").localeCompare(left.publishedAt ?? ""))
+    .slice(0, limit);
+}

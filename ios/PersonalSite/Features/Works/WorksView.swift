@@ -1,6 +1,6 @@
 import SwiftUI
 
-/// 作品档案：直连 project_public_snapshots，snapshot jsonb 平铺成 Work（对齐 lib/works.ts 的 toWork）。
+/// 作品档案：经站点 API 读取随部署打包的本地 SQLite 投影。
 @MainActor
 @Observable
 final class WorksListModel {
@@ -24,15 +24,7 @@ final class WorksListModel {
         errorMessage = nil
         defer { isLoading = false }
         do {
-            // 与 Web 端同排序：display_order 升序，再按 published_at 倒序。
-            let rows: [WorkPublicRow] = try await SupabaseClientProvider.shared
-                .from("project_public_snapshots")
-                .select("display_order,published_at,snapshot")
-                .order("display_order", ascending: true)
-                .order("published_at", ascending: false)
-                .execute()
-                .value
-            works = rows.map(Work.init(row:))
+            works = try await SiteAPIClient().get("/api/works")
         } catch {
             errorMessage = "读取构建档案失败，请检查网络后重试。"
         }

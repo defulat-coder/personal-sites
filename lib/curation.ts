@@ -71,12 +71,14 @@ const curationNeighborRowSchema = z.object({
   id: z.string().min(1),
   title: z.string().min(1),
 });
-const dailySearchRowSchema = z.object({
+const localSearchRowSchema = z.object({
   content: z.string().min(1),
   id: z.string().min(1),
   published_at: z.string().datetime().nullable(),
   search_text: z.string().min(1),
+  section: z.string().nullable(),
   source_id: z.string().min(1),
+  source_scope: z.enum(["daily", "open-source"]),
   source_url: z.string().min(1),
   title: z.string().min(1),
 });
@@ -233,7 +235,9 @@ type DailySearchCorpusEntry = {
   lowercaseSearchText: string;
   lowercaseTitle: string;
   publishedAt: string | null;
+  section: string | null;
   sourceId: string;
+  sourceScope: "daily" | "open-source";
   sourceUrl: string;
   title: string;
 };
@@ -249,9 +253,9 @@ function getDailySearchCorpus(): DailySearchCorpusEntry[] {
   if (dailySearchCorpusCache?.mtimeMs === mtimeMs) return dailySearchCorpusCache.entries;
 
   const entries = db
-    .prepare("SELECT id, published_at, title, content, search_text, source_id, source_url FROM daily_ask_documents")
+    .prepare("SELECT id, source_scope, published_at, title, section, content, search_text, source_id, source_url FROM ask_documents")
     .all()
-    .map((row) => dailySearchRowSchema.parse(row))
+    .map((row) => localSearchRowSchema.parse(row))
     .map((row) => ({
       content: row.content,
       id: row.id,
@@ -259,7 +263,9 @@ function getDailySearchCorpus(): DailySearchCorpusEntry[] {
       lowercaseSearchText: row.search_text.toLocaleLowerCase("en-US"),
       lowercaseTitle: row.title.toLocaleLowerCase("en-US"),
       publishedAt: row.published_at,
+      section: row.section,
       sourceId: row.source_id,
+      sourceScope: row.source_scope,
       sourceUrl: row.source_url,
       title: row.title,
     }));
@@ -268,10 +274,32 @@ function getDailySearchCorpus(): DailySearchCorpusEntry[] {
 }
 
 export function searchCurationDailyDocuments(query: string, limit = 6): CurationDailySearchDocument[] {
+  return searchLocalAskDocuments(query, "daily", limit).map((document) => ({
+    content: document.content,
+    id: document.id,
+    publishedAt: document.publishedAt,
+    score: document.score,
+    sourceId: document.sourceId,
+    sourceUrl: document.sourceUrl,
+    title: document.title,
+  }));
+}
+
+export type LocalAskDocument = CurationDailySearchDocument & {
+  scope: "daily" | "open-source";
+  section: string | null;
+};
+
+export function searchLocalAskDocuments(
+  query: string,
+  scope: "daily" | "open-source",
+  limit = 6,
+): LocalAskDocument[] {
   const needle = query.trim().toLocaleLowerCase("en-US");
   if (!needle) return [];
 
   return getDailySearchCorpus()
+    .filter((entry) => entry.sourceScope === scope)
     .map((entry) => ({
       content: entry.content,
       id: entry.id,
@@ -279,6 +307,8 @@ export function searchCurationDailyDocuments(query: string, limit = 6): Curation
       score: occurrences(entry.lowercaseTitle, needle) * 8
         + occurrences(entry.lowercaseSearchText, needle) * 2
         + occurrences(entry.lowercaseContent, needle),
+      scope: entry.sourceScope,
+      section: entry.section,
       sourceId: entry.sourceId,
       sourceUrl: entry.sourceUrl,
       title: entry.title,

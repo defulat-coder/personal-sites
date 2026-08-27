@@ -6,7 +6,7 @@ import { ContentSectionNavigation } from "@/components/site-section-navigation";
 import { SiteProfile } from "@/components/site-profile";
 import { getOpenSourceListEntries } from "@/lib/open-source";
 
-// 与首页读同一份 Supabase 公开投影缓存：首次访问按需生成，五分钟内复用。
+// 公开投影随部署打包进 data/curation.sqlite，页面按五分钟 ISR 节奏更新。
 export const revalidate = 300;
 
 export const metadata: Metadata = {

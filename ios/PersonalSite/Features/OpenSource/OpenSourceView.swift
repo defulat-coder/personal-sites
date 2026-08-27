@@ -7,15 +7,13 @@ enum OpenSourceRoute: Hashable {
     case file(slug: String, path: String)
 }
 
-/// 开源关注列表：直连 github_open_source_items，排序与 Web 一致（display_rank 升序，再按 published_at 倒序）。
+/// 开源关注列表：经站点 API 读取随部署打包的本地 SQLite 投影。
 @MainActor
 @Observable
 final class OpenSourceListModel {
     private(set) var entries: [OpenSourceListEntry] = []
     private(set) var isLoading = false
     private(set) var errorMessage: String?
-
-    private static let listSelect = "category:content->>category,checkedAt:content->evidence->>checkedAt,dimensions:content->dimensions,repository:content->>repository,slug,sourceSummary:content->>sourceSummary,status:content->>status,type:content->>type"
 
     var isEmpty: Bool { entries.isEmpty }
 
@@ -33,13 +31,7 @@ final class OpenSourceListModel {
         errorMessage = nil
         defer { isLoading = false }
         do {
-            entries = try await SupabaseClientProvider.shared
-                .from("github_open_source_items")
-                .select(Self.listSelect)
-                .order("display_rank", ascending: true, nullsFirst: false)
-                .order("published_at", ascending: false)
-                .execute()
-                .value
+            entries = try await SiteAPIClient().get("/api/open-source")
         } catch {
             errorMessage = "读取开源关注失败，请检查网络后重试。"
         }
@@ -122,11 +114,6 @@ private struct OpenSourceRow: View {
         }
         .contentListBody()
     }
-}
-
-/// content jsonb 整行包装：详情直接取完整 content 解成 OpenSourceEntry。
-private struct OpenSourceContentRow: Decodable {
-    var content: OpenSourceEntry
 }
 
 /// 开源关注详情：分类/维度标签、摘要、判读、中文阅读版（Markdown），入口进仓库浏览。
@@ -221,14 +208,7 @@ struct OpenSourceDetailView: View {
     private func load() async {
         errorMessage = nil
         do {
-            let row: OpenSourceContentRow = try await SupabaseClientProvider.shared
-                .from("github_open_source_items")
-                .select("content")
-                .eq("slug", value: slug)
-                .single()
-                .execute()
-                .value
-            entry = row.content
+            entry = try await SiteAPIClient().get("/api/open-source/\(slug)")
         } catch {
             errorMessage = "读取开源关注详情失败，请稍后重试。"
         }

@@ -3,7 +3,7 @@ import Testing
 
 @testable import PersonalSite
 
-/// 各模型 decode：fixture 按 TS 类型与 Supabase 迁移里的行形状手写。
+/// 各模型 decode：fixture 按 TS 类型、每日动态 Supabase 行与站点 SQLite API 形状手写。
 /// 重点覆盖 null 字段与「外层 snake_case 列 + jsonb 内 camelCase」的分层解码。
 struct ModelDecodingTests {
     private func decode<T: Decodable>(_ type: T.Type, _ json: String) throws -> T {
@@ -178,18 +178,15 @@ struct ModelDecodingTests {
 
     // MARK: 作品档案
 
-    @Test func works表行分层解码() throws {
-        // 外层 snake_case（display_order/published_at），snapshot jsonb 内 camelCase。
-        let row = try decode(WorkPublicRow.self, """
+    @Test func works本地API解码() throws {
+        let work = try decode(Work.self, """
         {
-          "display_order": 1,
-          "published_at": "2026-08-01T00:00:00+00:00",
-          "snapshot": {
-            "bodyMarkdown": null,
-            "currentFocus": "当前重点",
-            "period": "2024 — 至今",
-            "projectId": "proj-1",
-            "records": [
+          "body": "",
+          "currentFocus": "当前重点",
+          "order": 1,
+          "period": "2024 — 至今",
+          "publishedAt": "2026-08-01T00:00:00+00:00",
+          "records": [
               {
                 "bodyMarkdown": "正文",
                 "evidence": [
@@ -211,23 +208,20 @@ struct ModelDecodingTests {
                 "topics": ["主题"],
                 "updatedAt": "2026-08-01T00:00:00Z"
               }
-            ],
-            "role": "独立开发",
-            "shots": [{ "label": "首页", "src": "/images/x.png" }],
-            "slug": "proj",
-            "sourceObservedAt": null,
-            "stack": ["Swift"],
-            "status": "进行中",
-            "summary": "一句话",
-            "title": "项目",
-            "version": 1
-          }
+          ],
+          "role": "独立开发",
+          "shots": [{ "label": "首页", "src": "/images/x.png" }],
+          "slug": "proj",
+          "sourceObservedAt": null,
+          "stack": ["Swift"],
+          "status": "进行中",
+          "summary": "一句话",
+          "title": "项目"
         }
         """)
-        let work = Work(row: row)
         #expect(work.order == 1)
         #expect(work.publishedAt == "2026-08-01T00:00:00+00:00")
-        // bodyMarkdown 为 null 时 body 兜底空串；可选 repo/url 缺省为 nil。
+        // 可选 repo/url 缺省为 nil。
         #expect(work.body == "")
         #expect(work.repo == nil)
         #expect(work.records[0].kind == .milestone)

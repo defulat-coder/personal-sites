@@ -1,5 +1,6 @@
 import assert from "node:assert/strict";
 import test from "node:test";
+import Database from "better-sqlite3";
 import { mkdtemp, rm, writeFile } from "node:fs/promises";
 import os from "node:os";
 import path from "node:path";
@@ -17,7 +18,7 @@ import {
   splitMarkdown,
   translateReadme,
 } from "../modules/github-starred/analysis.mjs";
-import { publishStarredRecords, toPublicOpenSourceItem } from "../modules/github-starred/publish-to-supabase.mjs";
+import { publishStarredRecords, toPublicOpenSourceItem } from "../modules/github-starred/publish-to-sqlite.mjs";
 import { buildRepositoryStructureMarkdown, isChineseMarkdown, readLocalSourceRecords, syncRepositorySource, syncStarredRepositories } from "../modules/github-starred/source.mjs";
 
 test("中文阅读版校验代码、链接和 Agent 术语保持原样", () => {
@@ -289,22 +290,9 @@ test("公开投影只携带选中的单仓库资料及双版本 Markdown", () =>
   assert.equal(item.content.repositoryDefaultBranch, "main");
 });
 
-test("发布器分别写入私有来源、私有阅读版、策展层和公开投影", async () => {
-  const tables = [];
-  const rpcCalls = [];
-  const clientFactory = () => ({
-    from(table) {
-      tables.push(table);
-      return {
-        async upsert() { return { error: null }; },
-        delete() { return { async in() { return { error: null }; } }; },
-      };
-    },
-    async rpc(name, arguments_) {
-      rpcCalls.push({ arguments_, name });
-      return { data: 1, error: null };
-    },
-  });
+test("发布器把公开投影和问答分块写入本地 SQLite", async () => {
+  const directory = await mkdtemp(path.join(os.tmpdir(), "github-starred-sqlite-"));
+  const databasePath = path.join(directory, "public.sqlite");
   const record = {
     repository: { fullName: "example/repo", nodeId: "node-1", repositoryUrl: "https://github.com/example/repo", starredAt: null },
     sourceFetchedAt: "2026-08-09T00:00:00.000Z",
@@ -321,46 +309,25 @@ test("发布器分别写入私有来源、私有阅读版、策展层和公开�
     scenarios: [], slug: "example-repo", sourceSummary: "摘要", status: "持续跟踪", type: "Skill", workflow: [],
   };
   const analysis = { contentMarkdown: "# 中文阅读版\n", generatedAt: "2026-08-09T00:00:00.000Z", model: { provider: "kimi-coding", model: "kimi-for-coding" }, oneLineSummary: "Kimi 生成的一句话简介。", parserVersion: "test", repoNodeId: "node-1", repository: "example/repo", sourceKind: "readme", sourceSha256: "sha", summaryModel: { provider: "kimi-coding", model: "kimi-for-coding" }, summaryVersion: "test-summary" };
-  const result = await publishStarredRecords({
-    analyses: [analysis],
-    clientFactory,
-    env: { SUPABASE_SERVICE_ROLE_KEY: "service", SUPABASE_URL: "https://example.supabase.co" },
-    records: [record],
-    seedEntries: [entry],
-  });
-  assert.deepEqual(tables, [
-    "github_starred_sources",
-    "github_starred_analyses",
-    "github_starred_curation",
-    "github_starred_curation",
-    "github_open_source_items",
-  ]);
-  assert.deepEqual(result, { indexedCount: 1, privateAnalysisCount: 1, privateSourceCount: 1, publicCount: 1 });
-  // 重新发布先按 source_id 清掉旧 chunk（防止 chunk 数变少时残留），再增量 upsert 新 chunk。
-  assert.equal(rpcCalls[0].name, "delete_ask_search_documents");
-  assert.equal(rpcCalls[0].arguments_.p_scope, "open-source");
-  assert.deepEqual(rpcCalls[0].arguments_.p_source_ids, ["node-1"]);
-  assert.equal(rpcCalls[1].name, "sync_ask_search_documents");
-  assert.equal(rpcCalls[1].arguments_.p_replace_scope, false);
-  assert.equal(rpcCalls[1].arguments_.p_scope, "open-source");
-  assert.equal(rpcCalls[1].arguments_.p_documents[0].source_id, "node-1");
-  assert.equal(rpcCalls[1].arguments_.p_documents[0].source_url, "/open-source/example-repo#中文阅读版");
+  try {
+    const result = await publishStarredRecords({ analyses: [analysis], databasePath, records: [record], seedEntries: [entry] });
+    assert.deepEqual(result, { indexedCount: 1, privateAnalysisCount: 1, privateSourceCount: 1, publicCount: 1 });
+    const database = new Database(databasePath, { readonly: true });
+    assert.deepEqual(database.prepare("SELECT repo_node_id, slug FROM open_source_items").all(), [
+      { repo_node_id: "node-1", slug: "example-repo" },
+    ]);
+    assert.deepEqual(database.prepare("SELECT source_id, source_url FROM ask_documents").all(), [
+      { source_id: "node-1", source_url: "/open-source/example-repo#中文阅读版" },
+    ]);
+    database.close();
+  } finally {
+    await rm(directory, { force: true, recursive: true });
+  }
 });
 
-test("撤回公开仓库时只删除该仓库的问答索引", async () => {
-  const rpcCalls = [];
-  const clientFactory = () => ({
-    from() {
-      return {
-        async upsert() { return { error: null }; },
-        delete() { return { async in() { return { error: null }; } }; },
-      };
-    },
-    async rpc(name, arguments_) {
-      rpcCalls.push({ arguments_, name });
-      return { data: 0, error: null };
-    },
-  });
+test("撤回公开仓库时删除本地投影和问答分块", async () => {
+  const directory = await mkdtemp(path.join(os.tmpdir(), "github-starred-withdraw-"));
+  const databasePath = path.join(directory, "public.sqlite");
   const record = {
     repository: { fullName: "example/withdrawn", nodeId: "node-withdrawn", repositoryUrl: "https://github.com/example/withdrawn", starredAt: null },
     sourceFetchedAt: "2026-08-09T00:00:00.000Z",
@@ -371,20 +338,21 @@ test("撤回公开仓库时只删除该仓库的问答索引", async () => {
     sourceTruncated: false,
   };
 
-  await publishStarredRecords({
-    clientFactory,
-    env: { SUPABASE_SERVICE_ROLE_KEY: "service", SUPABASE_URL: "https://example.supabase.co" },
-    records: [record],
-  });
-
-  assert.deepEqual(rpcCalls, [
-    {
-      arguments_: { p_scope: "open-source", p_source_ids: ["node-withdrawn"] },
-      name: "delete_ask_search_documents",
-    },
-    {
-      arguments_: { p_documents: [], p_replace_scope: false, p_scope: "open-source" },
-      name: "sync_ask_search_documents",
-    },
-  ]);
+  const entry = {
+    category: "skills", caveats: [], dimensions: ["agent-skills"],
+    evidence: { checkedAt: "2026-08-09", kind: "readme", label: "README.md", note: "来源", url: "https://github.com/example/withdrawn/blob/main/README.md" },
+    judgement: "判断", nextStep: "下一步", personalNote: "备注", repository: "example/withdrawn", repositoryUrl: "https://github.com/example/withdrawn",
+    scenarios: [], slug: "example-withdrawn", sourceSummary: "摘要", status: "持续跟踪", type: "Skill", workflow: [],
+  };
+  const analysis = { contentMarkdown: "# 中文阅读版\n", oneLineSummary: "简介", repoNodeId: "node-withdrawn" };
+  try {
+    await publishStarredRecords({ analyses: [analysis], databasePath, records: [record], seedEntries: [entry] });
+    await publishStarredRecords({ databasePath, records: [record] });
+    const database = new Database(databasePath, { readonly: true });
+    assert.equal(database.prepare("SELECT count(*) AS count FROM open_source_items").get().count, 0);
+    assert.equal(database.prepare("SELECT count(*) AS count FROM ask_documents").get().count, 0);
+    database.close();
+  } finally {
+    await rm(directory, { force: true, recursive: true });
+  }
 });

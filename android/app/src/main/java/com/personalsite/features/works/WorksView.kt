@@ -48,20 +48,17 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import coil3.compose.SubcomposeAsyncImage
 import com.personalsite.core.Config
 import com.personalsite.core.PSColors
+import com.personalsite.core.SiteApiClient
 import com.personalsite.features.support.ContentListMetadataLine
 import com.personalsite.features.support.LoadStateView
 import com.personalsite.features.support.MarkdownText
 import com.personalsite.models.Work
-import com.personalsite.models.WorkPublicRow
 import com.personalsite.models.WorkRecord
 import com.personalsite.models.WorkShot
-import io.github.jan.supabase.postgrest.from
-import io.github.jan.supabase.postgrest.query.Columns
-import io.github.jan.supabase.postgrest.query.Order
 import kotlinx.coroutines.launch
 
 /**
- * 作品档案：直连 project_public_snapshots，snapshot jsonb 平铺成 Work（对齐 lib/works.ts 的 toWork）。
+ * 作品档案：经站点 API 读取随部署打包的本地 SQLite 投影。
  */
 class WorksListModel : ViewModel() {
     var works by mutableStateOf<List<Work>>(emptyList())
@@ -88,15 +85,7 @@ class WorksListModel : ViewModel() {
             isLoading = true
             errorMessage = null
             try {
-                // 与 Web 端同排序：display_order 升序，再按 published_at 倒序。
-                val rows: List<WorkPublicRow> = com.personalsite.core.SupabaseClientProvider.shared
-                    .from("project_public_snapshots")
-                    .select(columns = Columns.raw("display_order,published_at,snapshot")) {
-                        order("display_order", Order.ASCENDING)
-                        order("published_at", Order.DESCENDING)
-                    }
-                    .decodeList()
-                works = rows.map(::Work)
+                works = SiteApiClient().get("/api/works")
             } catch (e: Exception) {
                 errorMessage = "读取构建档案失败，请检查网络后重试。"
             } finally {
