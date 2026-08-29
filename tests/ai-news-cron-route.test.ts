@@ -55,7 +55,6 @@ describe("AI news Cron routes", () => {
     healthMock.mockResolvedValue({
       ageMinutes: 25,
       healthy: false,
-      lastError: null,
       lastStartedAt: null,
       lastSucceededAt: "2026-08-29T00:00:00.000Z",
       running: false,
@@ -67,5 +66,23 @@ describe("AI news Cron routes", () => {
       ageMinutes: 25,
       healthy: false,
     });
+  });
+
+  it("never exposes the stored synchronization error text", async () => {
+    const internalHealth = {
+      ageMinutes: 1,
+      healthy: false,
+      lastError: "database connection failed with internal details",
+      lastStartedAt: "2026-08-29T00:00:00.000Z",
+      lastSucceededAt: "2026-08-29T00:00:00.000Z",
+      running: false,
+    };
+    healthMock.mockResolvedValue(internalHealth);
+
+    const response = await healthGET();
+    const body = await response.json();
+
+    expect(body).not.toHaveProperty("lastError");
+    expect(JSON.stringify(body)).not.toContain("internal details");
   });
 });

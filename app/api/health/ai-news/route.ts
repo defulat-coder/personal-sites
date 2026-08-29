@@ -1,10 +1,11 @@
 import { readAiNewsCronHealth } from "@/lib/ai-news-sync.server";
+import { toPublicAiNewsHealth } from "@/modules/ai-news/public-health.mjs";
 
 export const runtime = "nodejs";
 
 export async function GET() {
   try {
-    const health = await readAiNewsCronHealth();
+    const health = toPublicAiNewsHealth(await readAiNewsCronHealth());
     return Response.json(health, {
       headers: { "Cache-Control": "no-store" },
       status: health.healthy ? 200 : 503,

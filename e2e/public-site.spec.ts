@@ -26,10 +26,12 @@ test("public discovery endpoints remain machine readable", async ({ request }) =
 
   const health = await request.get("/api/health/data");
   expect(health.ok()).toBe(true);
-  expect(await health.json()).toMatchObject({
+  const healthBody = await health.json();
+  expect(healthBody).toMatchObject({
     askIndex: { healthy: true, missingFts: 0, orphanFts: 0 },
     database: { healthy: true, quickCheck: "ok" },
   });
+  expect(healthBody.aiNews).not.toHaveProperty("lastError");
 });
 
 test("Ask has no automatically detectable accessibility violations", async ({ page }) => {

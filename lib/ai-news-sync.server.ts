@@ -3,6 +3,7 @@ import "server-only";
 import { createClient } from "@supabase/supabase-js";
 
 import { syncAiNews } from "@/modules/ai-news/sync.mjs";
+import { toPublicAiNewsHealth } from "@/modules/ai-news/public-health.mjs";
 import { createSupabaseAiNewsStateStore } from "@/modules/ai-news/state.mjs";
 
 function requiredEnvironment(
@@ -37,5 +38,5 @@ export async function runAiNewsCron(backfill = false) {
 }
 
 export async function readAiNewsCronHealth() {
-  return createSupabaseAiNewsStateStore(createAdminClient()).health();
+  return toPublicAiNewsHealth(await createSupabaseAiNewsStateStore(createAdminClient()).health());
 }
