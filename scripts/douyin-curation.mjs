@@ -185,13 +185,12 @@ async function sync(options) {
 
   async function processVideo(video) {
     const id = `douyin:${video.awemeId}`;
-    const existing = byId.get(id);
     const evidence = await withAnalyzerSlot(() => analyzeVideo(video));
     const rawEvidencePath = path.join(rawRoot, video.awemeId, "analysis.json");
     await writePrivateJson(rawEvidencePath, { evidence, source: video });
     const parsed = parseCurationResponse(await reader.prompt(buildCurationPrompt(video, evidence, config.taxonomy)));
     parsed.ai.excerpt = groundEvidenceExcerpt(parsed.ai.excerpt, evidence);
-    const item = toReviewItem(video, parsed, path.relative(repoRoot, rawEvidencePath), existing);
+    const item = toReviewItem(video, parsed, path.relative(repoRoot, rawEvidencePath));
     byId.set(id, item);
     failuresById.delete(id);
     await persistQueue();

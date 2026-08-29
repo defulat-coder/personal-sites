@@ -161,7 +161,7 @@ export function groundEvidenceExcerpt(candidate, evidence) {
   return entries.sort((left, right) => score(right) - score(left) || right.length - left.length)[0].slice(0, 280);
 }
 
-export function toReviewItem(video, parsed, rawEvidencePath, existingItem) {
+export function toReviewItem(video, parsed, rawEvidencePath) {
   return {
     ai: parsed.ai,
     author: video.author,
