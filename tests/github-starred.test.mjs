@@ -55,7 +55,7 @@ test("模型请求超时会失败，避免单个仓库阻塞整批解析", async
   assert.equal(await awaitModelResponse(Promise.resolve("ok"), 1000), "ok");
 });
 
-test("Codex CLI 是显式备用读取器，并把最终内容限制在临时输出文件", async () => {
+test("Codex CLI 读取器把最终内容限制在临时输出文件", async () => {
   const temporaryDirectory = await mkdtemp(path.join(os.tmpdir(), "github-starred-codex-cli-"));
   try {
     const calls = [];

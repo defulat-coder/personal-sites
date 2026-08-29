@@ -264,7 +264,7 @@ export function runCodexCli(command, args, { cwd, input, maxBuffer = 8 * 1024 * 
 }
 
 /**
- * Optional fallback reader. It deliberately mirrors the Pi reader's prompt
+ * Codex CLI reader. It deliberately mirrors the Pi reader's prompt
  * contract so all translation validation and local persistence stay shared.
  * It is only constructed when the caller explicitly selects `codex-cli`.
  */

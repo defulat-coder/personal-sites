@@ -34,6 +34,8 @@ const SUPPORTED_EXTENSIONS = new Set([".md", ".mdx", ".txt"]);
 function compactText(value) {
   return String(value ?? "")
     .replaceAll("\0", "")
+    .replace(/data:[^,\s"'<>]+;base64,[A-Za-z0-9+/_=-]+/giu, "[embedded media]")
+    .replace(/data%3A[^&)\s"'<>]+/giu, "[embedded media]")
     .replace(/\r\n/g, "\n")
     .replace(/\n{3,}/g, "\n\n")
     .trim();
@@ -78,6 +80,10 @@ export function splitText(value, maximumCharacters = 420, overlapCharacters = 60
   }
   pushCurrent();
   return chunks.filter(Boolean);
+}
+
+export function isUsefulVectorChunk(value) {
+  return (compactText(value).match(/[\p{L}\p{N}]/gu)?.length ?? 0) >= 20;
 }
 
 export function mergeRankings(vectorRows, keywordRows, limit = 8) {
@@ -142,7 +148,7 @@ async function readChunks(inputs, options) {
   for (const filePath of files) {
     const source = path.relative(repoRoot, filePath);
     const content = await readFile(filePath, "utf8");
-    splitText(content).forEach((chunk, chunkIndex) => {
+    splitText(content).filter(isUsefulVectorChunk).forEach((chunk, chunkIndex) => {
       chunks.push({ chunkIndex, content: chunk, source });
     });
   }
@@ -163,7 +169,7 @@ function readPublicProjectionChunks() {
       ORDER BY display_order, published_at DESC
     `).all();
     const askChunks = askRows.flatMap((row) =>
-      splitText(`${row.title}\n\n${row.content}`).map((content, chunkIndex) => ({
+      splitText(`${row.title}\n\n${row.content}`).filter(isUsefulVectorChunk).map((content, chunkIndex) => ({
         chunkIndex,
         content,
         source: publicAskVectorSource(row),
@@ -178,7 +184,7 @@ function readPublicProjectionChunks() {
         snapshot.bodyMarkdown,
         ...(snapshot.records ?? []).flatMap((record) => [record.title, record.summary, record.bodyMarkdown]),
       ].filter(Boolean).join("\n\n");
-      return splitText(content).map((chunk, chunkIndex) => ({
+      return splitText(content).filter(isUsefulVectorChunk).map((chunk, chunkIndex) => ({
         chunkIndex,
         content: chunk,
         source: `works/${row.slug}`,
