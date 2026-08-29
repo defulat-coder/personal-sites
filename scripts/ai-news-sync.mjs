@@ -11,7 +11,11 @@ const repoRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), ".."
 loadLocalEnv(repoRoot);
 
 const backfill = process.argv.includes("--backfill");
-const stats = await syncAiNews({ backfill, repoRoot });
+const stats = await syncAiNews({ backfill });
+if (stats.skipped) {
+  console.log("每日动态已有同步任务运行中，本次跳过。");
+  process.exit(0);
+}
 const parts = Object.entries(stats.modes).map(
   ([mode, modeStats]) => `${mode === "selected" ? "精选" : "全部"} ${modeStats.changed ? `${modeStats.count} 条` : "无变化"}`,
 );

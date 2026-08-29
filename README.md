@@ -47,7 +47,7 @@ pnpm build
 
 ## 数据同步
 
-- **每日动态**：`pnpm ai-news:sync`，GitHub Actions 每 5 分钟增量同步（24h 窗口）、每天 04:17（北京时间）回填 7 天，详见 `docs/ai-news-sync.md`。
+- **每日动态**：`pnpm ai-news:sync`；Supabase Cron 每 5 分钟调用受保护的 Vercel 接口做 24h 增量同步，GitHub Actions 每天 04:17（北京时间）回填 7 天并保留手动恢复入口，详见 `docs/ai-news-sync.md`。
 - **开源关注**：`pnpm github:starred:sync`，详见 `docs/github-starred-sync.md`。
 - **每日关注**：`pnpm curation:*` 系列命令生成 `data/curation.sqlite`，详见 `docs/supabase-x-sync.md`。
 

@@ -2,9 +2,7 @@ name: AI news sync
 
 on:
   schedule:
-    # 增量同步（24h 窗口），每 5 分钟一次（GitHub cron 的最小间隔；高负载时可能延迟）
-    - cron: "*/5 * * * *"
-    # 回填（7d 窗口），每天 20:17 UTC = 北京时间 04:17
+    # 7 天回填，每天 20:17 UTC = 北京时间 04:17；5 分钟增量由 Supabase Cron 负责。
     - cron: "17 20 * * *"
   workflow_dispatch:
     inputs:
@@ -38,23 +36,9 @@ jobs:
           cache: pnpm
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
-      # ETag 条件请求状态（var/ai-news/sync-state.json）随 run 丢失会退化为每次全量抓取；
-      # 用 actions/cache 按内容哈希跨运行保留（命中同键时 save 冲突属正常，不判失败）。
-      - name: Restore sync state (ETag)
-        uses: actions/cache/restore@v4
-        with:
-          path: var/ai-news/sync-state.json
-          key: ai-news-sync-state-${{ hashFiles('var/ai-news/sync-state.json') }}
-          restore-keys: ai-news-sync-state-
       - name: Backfill (7d window)
         if: github.event.schedule == '17 20 * * *' || inputs.backfill == true
         run: node scripts/ai-news-sync.mjs --backfill
       - name: Incremental sync (24h window)
         if: github.event.schedule != '17 20 * * *' && inputs.backfill != true
         run: node scripts/ai-news-sync.mjs
-      - name: Save sync state (ETag)
-        continue-on-error: true
-        uses: actions/cache/save@v4
-        with:
-          path: var/ai-news/sync-state.json
-          key: ai-news-sync-state-${{ hashFiles('var/ai-news/sync-state.json') }}
