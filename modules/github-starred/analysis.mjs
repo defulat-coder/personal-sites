@@ -127,7 +127,7 @@ export function normaliseOneLineSummary(value) {
     .replace(/\s{2,}/gu, " ")
     .replace(/^[“”"']|[“”"']$/gu, "")
     .trim();
-  if (!summary) throw new Error("Kimi 未返回仓库一句话简介。");
+  if (!summary) throw new Error("模型未返回仓库一句话简介。");
   if (summary.length <= 140) return summary;
 
   const sentenceEnd = Math.max(summary.lastIndexOf("。", 139), summary.lastIndexOf("！", 139), summary.lastIndexOf("？", 139));
@@ -147,7 +147,7 @@ function fallbackOneLineSummary(record) {
 }
 
 async function createOneLineSummary(record, { prompt }) {
-  if (typeof prompt !== "function") throw new Error(`${record.repository.fullName} 缺少 Kimi 解析器，无法生成仓库一句话简介。`);
+  if (typeof prompt !== "function") throw new Error(`${record.repository.fullName} 缺少模型解析器，无法生成仓库一句话简介。`);
   try {
     return { fallback: false, summary: normaliseOneLineSummary(await prompt(buildOneLineSummaryPrompt(record))) };
   } catch {
@@ -165,13 +165,14 @@ function collectModelText(session) {
   return { getText: () => answer, unsubscribe };
 }
 
-export async function awaitModelResponse(request, timeoutMilliseconds, { label = "Kimi" } = {}) {
+export async function awaitModelResponse(request, timeoutMilliseconds, { label } = {}) {
   if (!Number.isInteger(timeoutMilliseconds) || timeoutMilliseconds < 1000) {
     throw new Error("模型请求超时必须是不小于 1000 的整数毫秒数。");
   }
+  const requestLabel = label ? `${label} 请求` : "模型请求";
   let timeoutId;
   const timeout = new Promise((_, reject) => {
-    timeoutId = setTimeout(() => reject(new Error(`${label} 请求超时（${Math.round(timeoutMilliseconds / 1000)} 秒）。`)), timeoutMilliseconds);
+    timeoutId = setTimeout(() => reject(new Error(`${requestLabel}超时（${Math.round(timeoutMilliseconds / 1000)} 秒）。`)), timeoutMilliseconds);
   });
   try {
     return await Promise.race([request, timeout]);
@@ -211,7 +212,7 @@ export async function createKimiReader({ config = {}, env = process.env, repoRoo
       });
       const collected = collectModelText(session);
       try {
-        await awaitModelResponse(session.prompt(prompt), requestTimeoutMilliseconds);
+        await awaitModelResponse(session.prompt(prompt), requestTimeoutMilliseconds, { label: "Kimi" });
         const failure = getFinalAssistantFailure(session);
         if (failure) throw new Error(`Kimi 请求失败：${failure}`);
         // Some providers only expose the complete message when the turn ends,
@@ -371,7 +372,7 @@ async function writeDerivedAnalysis(derivedRoot, record, analysis) {
 }
 
 export async function analyzeStarredRecord(record, { chunkCharacters, derivedRoot, model, prompt }) {
-  // A fallback summary means Kimi was unavailable for this run. Rebuild the
+  // A fallback summary means the selected model was unavailable for this run. Rebuild the
   // complete reading version on the next successful run instead of forever
   // preserving an original-language fallback as if it were an AI result.
   const existing = await readDerivedAnalysis(derivedRoot, record, { allowFallback: false });
@@ -380,7 +381,7 @@ export async function analyzeStarredRecord(record, { chunkCharacters, derivedRoo
   const usesOfficialChineseReadme = Boolean(record.readingMarkdown);
   if ((!existing && !usesOfficialChineseReadme) || !existing?.oneLineSummary || existing.summaryVersion !== ONE_LINE_SUMMARY_VERSION || existing.summaryFallback) {
     if (typeof prompt !== "function") {
-      throw new Error(`${record.repository.fullName} 缺少 Kimi 解析器，无法生成中文阅读版或仓库一句话简介。`);
+      throw new Error(`${record.repository.fullName} 缺少模型解析器，无法生成中文阅读版或仓库一句话简介。`);
     }
   }
   const contentMarkdown = existing?.contentMarkdown ?? (usesOfficialChineseReadme
@@ -388,7 +389,7 @@ export async function analyzeStarredRecord(record, { chunkCharacters, derivedRoo
     : record.sourceKind === "readme"
       ? await translateReadme(record, { chunkCharacters, prompt })
       : await prompt(buildRepositoryAnalysisPrompt(record)));
-  if (!contentMarkdown) throw new Error(`${record.repository.fullName} 的 Pi 解析未返回内容。`);
+  if (!contentMarkdown) throw new Error(`${record.repository.fullName} 的模型解析未返回内容。`);
 
   const summary = existing?.oneLineSummary && existing.summaryVersion === ONE_LINE_SUMMARY_VERSION && !existing.summaryFallback
     ? { fallback: false, summary: existing.oneLineSummary }

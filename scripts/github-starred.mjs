@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 /**
- * GitHub Star 初始化、每日增量同步、Pi/Kimi 中文阅读版生成与本地 SQLite 投影。
+ * GitHub Star 初始化、每日增量同步、模型中文阅读版生成与本地 SQLite 投影。
  * 默认使用 Codex CLI；每日同步仅处理新仓库或更新过的仓库。
  */
 
@@ -121,8 +121,8 @@ async function analyze(records) {
   );
   const engineLabel = options.engine === "codex-cli" ? "Codex CLI" : "Pi Coding Agent / Kimi";
   console.log(`开始生成中文阅读版与一句话简介：${targets.length} 个仓库，并发 ${concurrency}；官方中文 README 直接使用，所有仓库的一句话简介由 ${engineLabel} 生成。`);
-  const needsKimi = targets.some((record) => !record.readingMarkdown || !summariesByNodeId.has(record.repository.nodeId));
-  const reader = needsKimi
+  const needsModel = targets.some((record) => !record.readingMarkdown || !summariesByNodeId.has(record.repository.nodeId));
+  const reader = needsModel
     ? options.engine === "codex-cli"
       ? await createCodexCliReader({ config, repoRoot })
       : await createKimiReader({ config, repoRoot })

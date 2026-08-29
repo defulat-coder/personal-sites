@@ -51,8 +51,9 @@ test("翻译遗漏受保护内容时保留原始 Markdown 片段，不让整仓�
 });
 
 test("模型请求超时会失败，避免单个仓库阻塞整批解析", async () => {
-  await assert.rejects(awaitModelResponse(new Promise(() => {}), 1000), /Kimi 请求超时/u);
+  await assert.rejects(awaitModelResponse(new Promise(() => {}), 1000), /模型请求超时/u);
   assert.equal(await awaitModelResponse(Promise.resolve("ok"), 1000), "ok");
+  assert.throws(() => normaliseOneLineSummary(""), /模型未返回仓库一句话简介/u);
 });
 
 test("Codex CLI 读取器把最终内容限制在临时输出文件", async () => {
