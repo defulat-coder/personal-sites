@@ -218,17 +218,17 @@ private fun DrawScope.drawHumanRunner(pose: HumanRunPose) {
 
         val torso = Path().apply {
             moveTo(offset(shoulder, shoulderHalf).x, offset(shoulder, shoulderHalf).y)
-            quadraticBezierTo(
+            quadraticTo(
                 offset(midpoint(shoulder, hip), 1.75f * scale).x,
                 offset(midpoint(shoulder, hip), 1.75f * scale).y,
                 offset(hip, hipHalf).x,
                 offset(hip, hipHalf).y,
             )
-            quadraticBezierTo(
+            quadraticTo(
                 hip.x + 0.25f * scale, hip.y + 0.9f * scale,
                 offset(hip, -hipHalf).x, offset(hip, -hipHalf).y,
             )
-            quadraticBezierTo(
+            quadraticTo(
                 offset(midpoint(shoulder, hip), -1.55f * scale).x,
                 offset(midpoint(shoulder, hip), -1.55f * scale).y,
                 offset(shoulder, -shoulderHalf).x,

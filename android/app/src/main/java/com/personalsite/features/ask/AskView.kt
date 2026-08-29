@@ -162,8 +162,7 @@ class AskChatModel(application: Application) : AndroidViewModel(application) {
     fun send(suggestedQuestion: String? = null) {
         val question = (suggestedQuestion ?: input).trim()
         val currentVisitorId = visitorId
-        val canSubmit = question.isNotEmpty() && !isStreaming && currentVisitorId != null
-        if (!canSubmit || currentVisitorId == null) return
+        if (question.isEmpty() || isStreaming || currentVisitorId == null) return
         input = ""
         bannerMessage = null
         messages.add(AskMessage(role = AskMessage.Role.USER).apply { text = question })
