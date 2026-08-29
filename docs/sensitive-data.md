@@ -13,6 +13,7 @@
 | `data/sensitive/github/` | GitHub 同步快照、响应和仓库原始内容 | 仅本机保存，禁止 Git |
 | `data/sensitive/yuque/` | 语雀同步对象、附件和原始文档 | 仅本机保存，禁止 Git |
 | `data/sensitive/x-curation/` | X 书签/点赞原文、媒体、策展队列和生成备份 | 仅本机保存，禁止 Git |
+| `data/sensitive/x-curation/generated/insight-snapshots/` | 按内容摘要去重的全库趋势与健康历史快照 | 仅本机保存，禁止 Git 与网站读取 |
 | `data/sensitive/douyin-curation/` | 抖音视频分析、转写、OCR、待审草稿和实体候选 | 仅本机保存，禁止 Git |
 | `data/curation.sqlite` | 已审核公开的每日关注、开源关注、作品快照与 Ask 文本投影 | 随代码提交；仅部署端只读查询 |
 | `data/sensitive/local-vectors.sqlite` | 本地文档与公开投影的 sqlite-vec 混合检索索引 | 仅本机保存，禁止 Git |

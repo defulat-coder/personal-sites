@@ -216,14 +216,14 @@ pnpm projects:sync -- --project pi-samples --dry-run
 pnpm projects:sync -- --project pi-samples
 pnpm projects:sync -- --project pi-samples --approve
 pnpm projects:sync -- --project pi-samples --approve --publish
-pnpm projects:sync:codex -- --project pi-samples
+pnpm projects:sync:pi -- --project pi-samples
 pnpm projects:publish
 ```
 
 - `sync` 负责发现、采集与提炼；没有显式批准时不会发布。
 - `--approve` 将当前草稿与项目审校覆盖绑定为已批准修订；`--publish` 只读取批准后的记录，生成、发布并回读校验项目快照。
 - 不传 `--project` 时默认处理全部已登记项目，并保持项目级串行，避免同时占用多个 Agent/模型会话。
-- 项目同步当前默认使用 Pi / Kimi，也可显式传 `--engine codex-cli`；X 策展管道的默认引擎另行以 `docs/supabase-x-sync.md` 为准。
+- 项目同步与其他离线分析管道统一默认使用 Codex CLI；只有显式传 `--engine pi` 或使用 `projects:sync:pi` 时才改用 Pi / Kimi。
 - `--dry-run` 只报告项目数、证据变化数、待提炼数、待审数和将发布的记录数，不写状态、不调用模型、不输出敏感正文。
 
 建议模块：

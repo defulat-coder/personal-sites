@@ -7,6 +7,7 @@ import { promisify } from "node:util";
 import { fileURLToPath } from "node:url";
 
 import { createCodexCliReader, createKimiReader } from "../modules/github-starred/analysis.mjs";
+import { DEFAULT_ANALYSIS_ENGINE, resolveAnalysisEngine } from "../modules/analysis/runtime.mjs";
 import {
   buildCurationPrompt,
   groundEvidenceExcerpt,
@@ -27,7 +28,7 @@ const failuresPath = path.join(path.dirname(queuePath), "analysis-failures.json"
 const favoriteIndexPath = path.join(path.dirname(queuePath), "favorite-index.json");
 
 export function parseArgs(args) {
-  const options = { analyzerConcurrency: null, concurrency: null, engine: "codex-cli", force: false, limit: Infinity, manifest: null, refreshOnly: false, stage: null };
+  const options = { analyzerConcurrency: null, concurrency: null, engine: DEFAULT_ANALYSIS_ENGINE, force: false, limit: Infinity, manifest: null, refreshOnly: false, stage: null };
   const positionals = [];
   for (let index = 0; index < args.length; index += 1) {
     const argument = args[index];
@@ -48,7 +49,7 @@ export function parseArgs(args) {
     throw new Error("用法：pnpm douyin:curation -- sync --manifest <download_manifest.jsonl> [--refresh-only] [--limit n] [--engine codex-cli|pi]");
   }
   if (options.stage === "sync" && !options.manifest) throw new Error("sync 需要 --manifest <download_manifest.jsonl>。");
-  if (!new Set(["codex-cli", "pi"]).has(options.engine)) throw new Error("--engine 仅支持 codex-cli 或 pi。");
+  options.engine = resolveAnalysisEngine(options.engine);
   if (options.limit !== Infinity && (!Number.isInteger(options.limit) || options.limit < 1)) throw new Error("--limit 必须是正整数。");
   if (options.concurrency !== null && (!Number.isInteger(options.concurrency) || options.concurrency < 1)) throw new Error("--concurrency 必须是正整数。");
   if (options.analyzerConcurrency !== null && (!Number.isInteger(options.analyzerConcurrency) || options.analyzerConcurrency < 1)) throw new Error("--analyzer-concurrency 必须是正整数。");

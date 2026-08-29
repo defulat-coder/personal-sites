@@ -11,6 +11,7 @@
  *   node scripts/build-curation-content.mjs
  */
 
+import { createHash } from "node:crypto";
 import { mkdir, readFile } from "node:fs/promises";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
@@ -29,6 +30,7 @@ const queuePath = path.join(repoRoot, config.queueFile);
 const outputPath = path.join(repoRoot, "data/sensitive/x-curation/generated/curation.json");
 const insightsPath = path.join(repoRoot, "data/sensitive/x-curation/generated/insights.json");
 const insightsMarkdownPath = path.join(repoRoot, "data/sensitive/x-curation/generated/insights.md");
+const insightsSnapshotDirectory = path.join(repoRoot, "data/sensitive/x-curation/generated/insight-snapshots");
 
 const queue = JSON.parse(await readFile(queuePath, "utf8"));
 const analyzedItems = queue.items.map((item) => prepareCurationItem(item));
@@ -52,7 +54,12 @@ await mkdir(path.dirname(outputPath), { recursive: true });
 const insights = buildCurationInsights(analyzedItems);
 await writeJsonAtomically(insightsPath, insights);
 await writeTextAtomically(insightsMarkdownPath, renderCurationInsightsMarkdown(insights));
-console.log(`私有全库洞察已写入：${path.relative(repoRoot, insightsPath)}`);
+const snapshotPayload = { ...insights, generatedAt: undefined };
+const snapshotDigest = createHash("sha256").update(JSON.stringify(snapshotPayload)).digest("hex").slice(0, 12);
+const snapshotPath = path.join(insightsSnapshotDirectory, `${insights.referenceDate.slice(0, 10)}-${snapshotDigest}.json`);
+await mkdir(insightsSnapshotDirectory, { recursive: true });
+await writeJsonAtomically(snapshotPath, insights);
+console.log(`私有全库洞察已写入：${path.relative(repoRoot, insightsPath)}；快照 ${path.basename(snapshotPath)}`);
 if (ready.length === 0) {
   console.log("没有已完成解析的条目；保留现有本地生成备份。");
   process.exit(0);

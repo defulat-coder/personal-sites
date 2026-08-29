@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 /**
  * GitHub Star 初始化、每日增量同步、Pi/Kimi 中文阅读版生成与本地 SQLite 投影。
- * 默认并发为 15；每日同步仅处理新仓库或更新过的仓库。
+ * 默认使用 Codex CLI；每日同步仅处理新仓库或更新过的仓库。
  */
 
 import { readFile } from "node:fs/promises";
@@ -9,6 +9,7 @@ import path from "node:path";
 import { fileURLToPath } from "node:url";
 
 import { openSourceEntries } from "../config/open-source-curation.mjs";
+import { DEFAULT_ANALYSIS_ENGINE, resolveAnalysisConcurrency, resolveAnalysisEngine } from "../modules/analysis/runtime.mjs";
 import { analyzeStarredRecords, createCodexCliReader, createKimiReader, ONE_LINE_SUMMARY_VERSION, readLocalAnalyses } from "../modules/github-starred/analysis.mjs";
 import { publishStarredRecords } from "../modules/github-starred/publish-to-sqlite.mjs";
 import { readLocalSourceRecords, syncStarredRepositories } from "../modules/github-starred/source.mjs";
@@ -19,7 +20,7 @@ const config = JSON.parse(await readFile(path.join(repoRoot, "config/github-sync
 loadLocalEnv(repoRoot);
 
 export function parseGithubStarredArgs(args) {
-  const options = { concurrency: null, engine: "pi", limit: Infinity, only: null, stage: "run" };
+  const options = { concurrency: null, engine: DEFAULT_ANALYSIS_ENGINE, limit: Infinity, only: null, stage: "run" };
   const positionals = [];
   for (let index = 0; index < args.length; index += 1) {
     const argument = args[index];
@@ -41,9 +42,7 @@ export function parseGithubStarredArgs(args) {
     throw new Error("--concurrency 必须是大于 0 的整数。");
   }
   if (options.only?.size === 0) throw new Error("--only 至少需要一个 owner/repository。");
-  if (!new Set(["pi", "codex-cli"]).has(options.engine)) {
-    throw new Error("--engine 仅支持 pi 或 codex-cli。");
-  }
+  options.engine = resolveAnalysisEngine(options.engine);
   options.stage = positionals[0] ?? "run";
   return options;
 }
@@ -51,9 +50,12 @@ export function parseGithubStarredArgs(args) {
 const options = parseGithubStarredArgs(process.argv.slice(2));
 const rawRoot = path.join(repoRoot, config.storage.raw_root);
 const derivedRoot = path.join(repoRoot, config.storage.derived_root);
-const concurrency = options.concurrency
-  ?? (options.engine === "codex-cli" ? config.analysis?.codex_cli?.concurrency : config.analysis?.concurrency)
-  ?? 15;
+const concurrency = resolveAnalysisConcurrency({
+  codex: config.analysis?.codex_cli?.concurrency ?? 1,
+  engine: options.engine,
+  override: options.concurrency,
+  pi: config.analysis?.concurrency ?? 15,
+});
 const chunkCharacters = config.analysis?.chunk_characters ?? 12000;
 const publishRankByRepository = new Map(openSourceEntries.map((entry, index) => [entry.repository, index]));
 

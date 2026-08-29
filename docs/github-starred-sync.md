@@ -5,7 +5,7 @@
 | 数据 | 本地 | 网站读取 |
 | --- | --- | --- |
 | Star 元数据、README、仓库结构证据 | `data/sensitive/github/starred/raw/` | 否 |
-| 官方中文 README 或 Kimi 生成的中文阅读版，以及一句话简介 | `data/sensitive/github/starred/derived/` | 否 |
+| 官方中文 README 或模型生成的中文阅读版，以及一句话简介 | `data/sensitive/github/starred/derived/` | 否 |
 | 已明确公开的单仓库双版本 Markdown | `data/curation.sqlite` 的 `open_source_items` | 是 |
 
 同步器不再写 Supabase。完整 Star、原始 README 与模型派生内容只留在本机敏感目录；白名单内且已有阅读版的条目写入 Git 跟踪的只读公开 SQLite，同时生成 `ask_documents` 分块并重建 `data/sensitive/local-vectors.sqlite`。
@@ -14,13 +14,13 @@
 
 ## 执行
 
-首次初始化会读取当前全部 GitHub Star、保留本地敏感副本，并默认使用 Pi Coding Agent / Kimi 解析每个仓库：
+首次初始化会读取当前全部 GitHub Star、保留本地敏感副本，并默认使用本机 Codex CLI 解析每个仓库：
 
 ```bash
 pnpm github:starred:init
 ```
 
-初始化可以中断后重跑：内容 SHA 未变化的仓库会复用本地中文阅读版和一句话简介。单次 Kimi 请求默认最多等待 4 分钟；超时仓库会记录失败但不会阻塞其余批次，下次运行可以继续处理。
+初始化可以中断后重跑：内容 SHA 未变化的仓库会复用本地中文阅读版和一句话简介。单次模型请求默认最多等待 4 分钟；超时仓库会记录失败但不会阻塞其余批次，下次运行可以继续处理。
 
 每日增量任务会先分页读取当前 Star 元数据；仅新出现的仓库、默认分支变化的仓库，或 GitHub `updatedAt` 变化的仓库，才会重新读取 README。它会解析这些变更仓库，并自动补偿此前未完成或失败的历史解析；已完成且未变化的仓库不会再次调用 Kimi：
 
@@ -28,18 +28,19 @@ pnpm github:starred:init
 pnpm github:starred:daily
 ```
 
-该任务必须在保存 GitHub 登录态和 Kimi 凭据的本机环境执行；不要放进前端或 Vercel。Codex 已配置为每天在本项目的本机环境运行它。Pi / Kimi 默认使用 15 并发；`--limit 20` 可用于小范围验证，`--only owner/repository` 可重试单个仓库，`--concurrency 10` 可临时限流。
+该任务必须在保存 GitHub 登录态和 Codex CLI 登录态的本机环境执行；不要放进前端或 Vercel。Codex 默认单并发，避免同时启动大量 Agent 会话；`--limit 20` 可用于小范围验证，`--only owner/repository` 可重试单个仓库，`--concurrency 2` 可显式提高并发。
 
-## Codex CLI 备用引擎
+## 解析引擎
 
-默认路径始终是 Pi / Kimi。仅当显式传入 `--engine codex-cli` 时，才会使用本机已登录的 Codex CLI；默认并发为 1，避免同时启动大量 Agent 会话。该路径把与 Pi 相同的受限翻译/解析提示传给临时、无状态的 CLI 会话，CLI 以只读沙箱运行，最终文本先写入系统临时目录，再由本模块沿用原有的本地私有落盘与 SQLite 发布逻辑。
+默认路径使用本机已登录的 Codex CLI；Pi / Kimi 保留为显式备选。两条路径使用同一受限翻译/解析提示，最终文本都沿用相同的本地私有落盘与 SQLite 发布逻辑。
 
 ```bash
-pnpm github:starred:analyze:codex
-pnpm github:starred:analyze:codex -- --only owner/repository
+pnpm github:starred:analyze
+pnpm github:starred:analyze:pi
+pnpm github:starred:analyze:pi -- --only owner/repository
 ```
 
-可在 `config/github-sync.json` 的 `analysis.codex_cli` 中设置 `model`、`concurrency`、`request_timeout_ms` 与 `executable`。该方式会把待处理的 README/仓库结构发送给当前 Codex 账户所使用的模型；只在已获得这类资料外发授权时使用。日常定时任务不自动切换到 Codex CLI，仍保持 Pi / Kimi。
+可在 `config/github-sync.json` 的 `analysis.codex_cli` 中设置 Codex 并发与超时。显式使用 Pi 时需要 `KIMI_API_KEY`，默认 15 并发；两种方式都会把待处理的公开 README/仓库结构发送给所选模型。
 
 ## 中文阅读版规则
 

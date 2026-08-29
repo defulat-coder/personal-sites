@@ -13,6 +13,7 @@ import { fileURLToPath } from "node:url";
 
 import { loadLocalEnv } from "./lib/load-local-env.mjs";
 import { resolvePiModelConfig } from "./lib/x-curation-ai.mjs";
+import { DEFAULT_ANALYSIS_ENGINE, resolveAnalysisConcurrency, resolveAnalysisEngine } from "../modules/analysis/runtime.mjs";
 import { runHistoryPipeline, runSyncPipeline } from "../modules/x-sync/pipeline.mjs";
 
 export { runHistoryPipeline, runSyncPipeline } from "../modules/x-sync/pipeline.mjs";
@@ -33,7 +34,7 @@ export function parseSyncArgs(args) {
     media: true,
     fetchOnly: false,
     history: false,
-    engine: "codex-cli",
+    engine: DEFAULT_ANALYSIS_ENGINE,
     codexModel: "gpt-5.6-luna",
     designConcurrency: null,
     reasoningEffort: "max",
@@ -88,16 +89,11 @@ export function parseSyncArgs(args) {
   if (options.limit !== null && (!Number.isInteger(options.limit) || options.limit <= 0)) {
     throw new Error("--limit 必须是正整数。");
   }
-  if (!new Set(["pi", "codex-cli"]).has(options.engine)) {
-    throw new Error("--engine 仅支持 pi 或 codex-cli。");
-  }
+  options.engine = resolveAnalysisEngine(options.engine);
   if (!new Set(["none", "low", "medium", "high", "xhigh", "max"]).has(options.reasoningEffort)) {
     throw new Error("--reasoning-effort 仅支持 none、low、medium、high、xhigh 或 max。");
   }
-  options.designConcurrency ??= options.engine === "codex-cli" ? 40 : 15;
-  if (!Number.isInteger(options.designConcurrency) || options.designConcurrency <= 0) {
-    throw new Error("--design-concurrency 必须是正整数。");
-  }
+  options.designConcurrency = resolveAnalysisConcurrency({ codex: 40, engine: options.engine, override: options.designConcurrency, pi: 15 });
   return options;
 }
 

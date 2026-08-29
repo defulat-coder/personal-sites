@@ -84,7 +84,7 @@ export function createSupabaseAiNewsStateStore(client) {
     async health({ now = new Date(), staleAfterMinutes = 20 } = {}) {
       const { data, error } = await client
         .from("ai_news_sync_state")
-        .select("last_succeeded_at,last_started_at,lease_until")
+        .select("last_error,last_succeeded_at,last_started_at,lease_until")
         .eq("id", STATE_ID)
         .maybeSingle();
       if (error)
@@ -99,7 +99,8 @@ export function createSupabaseAiNewsStateStore(client) {
         : null;
       return {
         ageMinutes,
-        healthy: ageMinutes !== null && ageMinutes <= staleAfterMinutes,
+        healthy: ageMinutes !== null && ageMinutes <= staleAfterMinutes && !data?.last_error,
+        lastError: data?.last_error ?? null,
         lastStartedAt: data?.last_started_at ?? null,
         lastSucceededAt: data?.last_succeeded_at ?? null,
         running: Boolean(

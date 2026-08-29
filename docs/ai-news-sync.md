@@ -17,7 +17,8 @@
 3. 定时任务：
    - Supabase Cron 每 5 分钟通过 `pg_net` 调用 `POST /api/cron/ai-news`，执行 24h 增量同步。Bearer 密钥由迁移随机生成，明文只保存在 Supabase Vault；Vercel 接口读取私有状态表中的 SHA-256 摘要校验请求。
    - `.github/workflows/ai-news-sync.yml`：每天 20:17 UTC（北京时间 04:17）跑 7 天回填，并保留 `workflow_dispatch` 手动增量/回填入口。需在仓库 Actions Secrets 配置 `SUPABASE_URL` 与 `SUPABASE_SERVICE_ROLE_KEY`。
-   - `/api/health/ai-news` 返回最近成功时间和同步年龄；超过 20 分钟没有成功同步时返回 503，可接入外部 uptime 监控。
+   - `/api/health/ai-news` 返回每日动态的最近成功时间和同步年龄；`/api/health/data` 同时校验全部公开投影的新鲜度、Ask FTS 一致性与部署 Commit。
+   - `.github/workflows/data-health.yml` 每 15 分钟探测统一健康端点，连续三次异常才失败并触发 GitHub 通知。
    - 站点侧不做时间缓存：首页与每日动态页面动态渲染、每请求直读公开投影，同步落库后下一次访问即为最新。
    - ETag、4 分钟租约、最后成功/失败和统计统一保存在 `ai_news_sync_state`；Supabase Cron、GitHub Actions、手动 CLI 和本机 launchd 共享同一租约，重复触发会安全跳过。
    - 本机 launchd 只作为故障恢复手段（plist 模板在 `config/` 下，仓库内不含本机路径，安装前需替换占位符）：

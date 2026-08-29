@@ -16,6 +16,7 @@ export type AiNewsStateStore = {
   health(options?: { now?: Date; staleAfterMinutes?: number }): Promise<{
     ageMinutes: number | null;
     healthy: boolean;
+    lastError: string | null;
     lastStartedAt: string | null;
     lastSucceededAt: string | null;
     running: boolean;

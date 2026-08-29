@@ -403,7 +403,8 @@ export function ProfileIntroduction({
         {introductionTitle.slice(0, titleVisibleCount)}
       </h2>
       {displayedParagraphs.map((paragraph, index) => (
-        <p aria-label={paragraph} className={activeIndex === index ? "is-typing" : undefined} key={paragraph}>
+        <p className={activeIndex === index ? "is-typing" : undefined} key={paragraph}>
+          <span className="sr-only">{paragraph}</span>
           <span aria-hidden="true">{paragraph.slice(0, visibleCounts[index])}</span>
         </p>
       ))}

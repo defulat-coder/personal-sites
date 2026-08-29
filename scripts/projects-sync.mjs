@@ -5,6 +5,7 @@ import path from "node:path";
 import { fileURLToPath } from "node:url";
 
 import { projectCatalog } from "../config/project-catalog.mjs";
+import { DEFAULT_ANALYSIS_ENGINE, resolveAnalysisEngine } from "../modules/analysis/runtime.mjs";
 import { createCodexCliReader, createKimiReader } from "../modules/github-starred/analysis.mjs";
 import { approveProjectDraft, deriveProjectDraft, PROJECT_EXTRACTOR_VERSION } from "../modules/project-sync/derive.mjs";
 import { publishApprovedProject } from "../modules/project-sync/publish.mjs";
@@ -21,7 +22,7 @@ const repoRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), ".."
 loadLocalEnv(repoRoot);
 
 export function parseProjectSyncArgs(args) {
-  const options = { approve: false, dryRun: false, engine: "pi", force: false, projects: null, publish: false };
+  const options = { approve: false, dryRun: false, engine: DEFAULT_ANALYSIS_ENGINE, force: false, projects: null, publish: false };
   for (let index = 0; index < args.length; index += 1) {
     const argument = args[index];
     if (argument === "--") continue;
@@ -33,7 +34,7 @@ export function parseProjectSyncArgs(args) {
     else if (argument === "--project") options.projects = new Set((args[++index] ?? "").split(",").filter(Boolean));
     else throw new Error(`未知参数：${argument}`);
   }
-  if (!new Set(["pi", "codex-cli"]).has(options.engine)) throw new Error("--engine 仅支持 pi 或 codex-cli。");
+  options.engine = resolveAnalysisEngine(options.engine);
   if (options.projects?.size === 0) throw new Error("--project 至少需要一个项目 ID。");
   if (options.dryRun && (options.approve || options.publish)) throw new Error("--dry-run 不能与 --approve 或 --publish 同时使用。");
   return options;

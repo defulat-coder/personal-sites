@@ -35,7 +35,7 @@ import {
   MessageScrollerViewport,
 } from "@/components/ui/message-scroller";
 import { ContentSectionNavigation } from "@/components/site-section-navigation";
-import type { AskScope, AskSource } from "@/lib/ask-types";
+import { isAskScope, type AskScope, type AskSource } from "@/lib/ask-types";
 import { ArrowUpRight, ChevronDown, Search, SendHorizontal, Square, Trash2 } from "lucide-react";
 import { AnimatePresence, animate, motion } from "motion/react";
 import dynamic from "next/dynamic";
@@ -572,7 +572,7 @@ export function AskChat() {
                 <DropdownMenuGroup>
                   <DropdownMenuRadioGroup
                     onValueChange={(value) => {
-                      if (value === "all" || value === "ai-news" || value === "daily" || value === "open-source") setScope(value);
+                      if (isAskScope(value)) setScope(value);
                     }}
                     value={scope}
                   >

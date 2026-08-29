@@ -8,6 +8,7 @@ import { fileURLToPath } from "node:url";
 import { createClient } from "@supabase/supabase-js";
 import Database from "better-sqlite3";
 
+import { buildDataHealth } from "../modules/data-health/status.mjs";
 import { loadLocalEnv } from "./lib/load-local-env.mjs";
 
 const repoRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
@@ -36,15 +37,18 @@ const database = new Database(databasePath, { fileMustExist: true, readonly: tru
 let status;
 try {
   const count = (sql, ...params) => Number(database.prepare(sql).get(...params).count);
-  const latest = database.prepare("SELECT max(collected_at) AS value FROM curation_items").get().value;
-  const documents = count("SELECT count(*) AS count FROM ask_documents");
-  const fts = count("SELECT count(*) AS count FROM ask_documents_fts");
+  const latest = (table) => database.prepare(`SELECT count(*) AS count, max(published_at) AS latest FROM ${table}`).get();
+  const platforms = new Map(database.prepare(`SELECT json_extract(content_json, '$.source.platform') AS platform,
+    count(*) AS count, max(coalesce(collected_at, published_at)) AS latest
+    FROM curation_items GROUP BY platform`).all().map((row) => [row.platform, row]));
   const insightsPath = path.join(repoRoot, "data/sensitive/x-curation/generated/insights.json");
   const insights = existsSync(insightsPath) ? JSON.parse(await readFile(insightsPath, "utf8")) : null;
   const aiAgeMinutes = aiState?.last_succeeded_at
     ? Math.round((Date.now() - Date.parse(aiState.last_succeeded_at)) / 60_000)
     : null;
-  status = {
+  const openSource = latest("open_source_items");
+  const works = latest("project_snapshots");
+  status = buildDataHealth({
     aiNews: {
       ageMinutes: aiAgeMinutes,
       healthy: aiAgeMinutes !== null && aiAgeMinutes <= 20 && !aiState?.last_error,
@@ -52,17 +56,21 @@ try {
       lastSucceededAt: aiState?.last_succeeded_at ?? null,
       running: Boolean(aiState?.lease_until && Date.parse(aiState.lease_until) > Date.now()),
     },
-    askIndex: { documents, fts, healthy: documents === fts },
-    curation: {
+    insights: {
       analysisErrors: insights?.health?.analysisErrors ?? null,
       designReview: insights?.health?.designReview ?? null,
-      latestCollectedAt: latest,
-      x: count("SELECT count(*) AS count FROM curation_items WHERE json_extract(content_json, '$.source.platform') = 'x'"),
-      douyin: count("SELECT count(*) AS count FROM curation_items WHERE json_extract(content_json, '$.source.platform') = 'douyin'"),
     },
-    openSource: count("SELECT count(*) AS count FROM open_source_items"),
-    works: count("SELECT count(*) AS count FROM project_snapshots"),
-  };
+    publicData: {
+      askDocuments: count("SELECT count(*) AS count FROM ask_documents"),
+      askFts: count("SELECT count(*) AS count FROM ask_documents_fts"),
+      curation: {
+        douyin: { count: Number(platforms.get("douyin")?.count ?? 0), latestAt: platforms.get("douyin")?.latest ?? null },
+        x: { count: Number(platforms.get("x")?.count ?? 0), latestAt: platforms.get("x")?.latest ?? null },
+      },
+      openSource: { count: Number(openSource.count), latestAt: openSource.latest ?? null },
+      works: { count: Number(works.count), latestAt: works.latest ?? null },
+    },
+  });
 } finally {
   database.close();
 }
@@ -70,11 +78,10 @@ try {
 if (process.argv.includes("--json")) console.log(JSON.stringify(status, null, 2));
 else {
   console.log(`每日动态：${status.aiNews.healthy ? "正常" : "异常"}（${status.aiNews.ageMinutes ?? "?"} 分钟前）`);
-  console.log(`每日关注：X ${status.curation.x}，抖音 ${status.curation.douyin}，设计待复核 ${status.curation.designReview ?? "?"}`);
-  console.log(`开源关注：${status.openSource}；构建：${status.works}`);
+  console.log(`每日关注：X ${status.curation.x.count}，抖音 ${status.curation.douyin.count}，设计待复核 ${status.insights?.designReview ?? "?"}`);
+  console.log(`开源关注：${status.openSource.count}；构建：${status.works.count}`);
   console.log(`Ask 索引：${status.askIndex.documents} 文档 / ${status.askIndex.fts} FTS`);
+  for (const warning of status.warnings) console.log(`提醒：${warning}`);
 }
 
-if (!status.aiNews.healthy || !status.askIndex.healthy || Number(status.curation.analysisErrors ?? 0) > 0) {
-  process.exitCode = 1;
-}
+if (!status.healthy) process.exitCode = 1;

@@ -5,6 +5,8 @@ import { SITE_URL } from "@/lib/site";
 
 const staticPaths = ["", "/ai-news", "/curation", "/design", "/douyin", "/open-source", "/works", "/ask"];
 
+export const revalidate = 300;
+
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const dynamic = await getSitemapRecords();
   return [

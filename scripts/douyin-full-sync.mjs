@@ -5,6 +5,8 @@ import { readFile } from "node:fs/promises";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 
+import { DEFAULT_ANALYSIS_ENGINE, resolveAnalysisEngine } from "../modules/analysis/runtime.mjs";
+
 const repoRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const dataRoot = path.join(repoRoot, "data/sensitive/douyin-curation");
 const sidecar = path.join(dataRoot, "sidecar");
@@ -31,7 +33,7 @@ async function pendingVideoCount() {
 }
 
 export function parseFullSyncArgs(args) {
-  const options = { analyze: true, analyzeLimit: null, analyzerConcurrency: 6, concurrency: 20, download: true, engine: "codex-cli" };
+  const options = { analyze: true, analyzeLimit: null, analyzerConcurrency: 6, concurrency: 20, download: true, engine: DEFAULT_ANALYSIS_ENGINE };
   for (let index = 0; index < args.length; index += 1) {
     const argument = args[index];
     if (argument === "--") continue;
@@ -47,7 +49,7 @@ export function parseFullSyncArgs(args) {
   if (options.analyzeLimit !== null && (!Number.isInteger(options.analyzeLimit) || options.analyzeLimit < 1)) {
     throw new Error("--analyze-limit 必须是正整数。");
   }
-  if (!new Set(["codex-cli", "pi"]).has(options.engine)) throw new Error("--engine 仅支持 codex-cli 或 pi。");
+  options.engine = resolveAnalysisEngine(options.engine);
   if (!Number.isInteger(options.concurrency) || options.concurrency < 1) throw new Error("--concurrency 必须是正整数。");
   if (!Number.isInteger(options.analyzerConcurrency) || options.analyzerConcurrency < 1) throw new Error("--analyzer-concurrency 必须是正整数。");
   return options;

@@ -244,6 +244,7 @@
   background: #fff !important;
   box-shadow: none !important;
   padding: 0 0.75rem;
+  opacity: 1 !important;
   transition: border-color 180ms ease;
 }
 

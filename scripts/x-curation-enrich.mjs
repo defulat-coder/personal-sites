@@ -53,6 +53,7 @@ import { writeJsonAtomically, writeTextAtomically } from "../modules/x-sync/queu
 import { getFinalAssistantFailure, getFinalAssistantText } from "../lib/pi-runtime.mjs";
 import { loadLocalEnv } from "./lib/load-local-env.mjs";
 import { resolvePiModelConfig } from "./lib/x-curation-ai.mjs";
+import { DEFAULT_ANALYSIS_ENGINE, resolveAnalysisConcurrency, resolveAnalysisEngine } from "../modules/analysis/runtime.mjs";
 
 const execFileAsync = promisify(execFile);
 const repoRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
@@ -69,7 +70,7 @@ const DRY_RUN = args.includes("--dry-run");
 const DESIGN_ONLY = args.includes("--design-only");
 const REFRESH = args.includes("--refresh");
 const engineIdx = args.indexOf("--engine");
-const ENGINE = engineIdx >= 0 ? args[engineIdx + 1] : "codex-cli";
+const ENGINE = resolveAnalysisEngine(engineIdx >= 0 ? args[engineIdx + 1] : DEFAULT_ANALYSIS_ENGINE);
 const codexModelIdx = args.indexOf("--model");
 const CODEX_MODEL = codexModelIdx >= 0 ? args[codexModelIdx + 1] : "gpt-5.6-luna";
 const reasoningEffortIdx = args.indexOf("--reasoning-effort");
@@ -77,16 +78,13 @@ const CODEX_REASONING_EFFORT = reasoningEffortIdx >= 0 ? args[reasoningEffortIdx
 const limitIdx = args.indexOf("--limit");
 const LIMIT = limitIdx >= 0 ? Number.parseInt(args[limitIdx + 1], 10) : Infinity;
 const concurrencyIdx = args.indexOf("--concurrency");
-const CONCURRENCY = concurrencyIdx >= 0 ? Number.parseInt(args[concurrencyIdx + 1], 10) : ENGINE === "codex-cli" ? 1 : 15;
+const CONCURRENCY = resolveAnalysisConcurrency({
+  engine: ENGINE,
+  override: concurrencyIdx >= 0 ? Number.parseInt(args[concurrencyIdx + 1], 10) : null,
+});
 const onlyIdx = args.indexOf("--only");
 const ONLY = onlyIdx >= 0 ? new Set(args[onlyIdx + 1].split(",")) : null;
 
-if (!Number.isInteger(CONCURRENCY) || CONCURRENCY < 1) {
-  throw new Error("--concurrency 必须是大于 0 的整数。");
-}
-if (!new Set(["pi", "codex-cli"]).has(ENGINE)) {
-  throw new Error("--engine 仅支持 pi 或 codex-cli。");
-}
 const README_CAP = 12_000;
 const ARTICLE_CAP = 8_000;
 const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));

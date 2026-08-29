@@ -119,7 +119,7 @@ const curationNeighborRowSchema = z.object({
 const localSearchRowSchema = z.object({
   content: z.string().min(1),
   id: z.string().min(1),
-  published_at: z.string().datetime().nullable(),
+  published_at: z.string().datetime({ offset: true }).nullable(),
   search_text: z.string().min(1),
   section: z.string().nullable(),
   source_id: z.string().min(1),

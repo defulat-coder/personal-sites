@@ -40,8 +40,10 @@ pnpm dev              # 开发服务器（Turbopack）
 pnpm typecheck        # TypeScript 7（scripts/tsc7.mjs）
 pnpm lint
 pnpm test             # Vitest + node:test
+pnpm test:e2e         # Playwright + Axe 浏览器回归
 pnpm build
 pnpm focus:status     # 汇总每日动态、策展、Ask 索引与项目档案健康度
+pnpm health:production # 连续三次探测线上统一健康端点
 ```
 
 环境变量见 `.env.example`：站点运行只需要 `SUPABASE_URL` 与 `SUPABASE_PUBLISHABLE_KEY`（读公开表）；同步脚本额外需要 `SUPABASE_SERVICE_ROLE_KEY` 等，仅服务端使用，绝不使用 `NEXT_PUBLIC_` 前缀。
@@ -53,6 +55,8 @@ pnpm focus:status     # 汇总每日动态、策展、Ask 索引与项目档案�
 - **每日关注**：`pnpm curation:*` 系列命令生成 `data/curation.sqlite`，详见 `docs/supabase-x-sync.md`。
 
 公开发现入口包括 `/sitemap.xml`、`/robots.txt`、`/feed.xml` 与全站 Open Graph 图片；RSS 聚合每日动态、每日关注、开源关注和项目档案的最近更新。
+
+`/api/health/data` 汇总全部公开数据面的新鲜度、Ask 索引一致性与部署 Commit；GitHub Actions 每 15 分钟探测，连续三次异常才使任务失败。
 
 ## 数据边界
 

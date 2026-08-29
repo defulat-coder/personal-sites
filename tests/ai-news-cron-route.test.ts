@@ -55,6 +55,7 @@ describe("AI news Cron routes", () => {
     healthMock.mockResolvedValue({
       ageMinutes: 25,
       healthy: false,
+      lastError: null,
       lastStartedAt: null,
       lastSucceededAt: "2026-08-29T00:00:00.000Z",
       running: false,
