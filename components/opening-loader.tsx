@@ -110,6 +110,7 @@ export function OpeningLoader() {
             decoding="async"
             draggable={false}
             height={685}
+            loading="eager"
             onError={start}
             onLoad={start}
             src="/images/ample-loader-sequence.svg"
