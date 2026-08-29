@@ -52,6 +52,8 @@ RootLayout
 | 公开发现 | `lib/discovery.server.ts` | 汇总公开 SQLite 与 Supabase，生成 Sitemap/RSS 数据 | 私有原始资料或运行时写入 |
 | 数据健康 | `lib/data-health.server.ts` + `modules/data-health/status.mjs` | 汇总远端同步状态与本地公开投影，通过一个接口应用新鲜度规则 | 数据抓取、自动修复或暴露私有洞察 |
 
+统一健康状态会执行 SQLite `quick_check`，并按 `rowid` 双向核对 `ask_documents` 与 FTS5，而不是只比较总数；数据库损坏、缺失索引行或孤儿索引行都会让健康端点返回 503。
+
 “问一问”的本地 FTS 语料由公开个人简介、项目档案、每日关注和开源关注派生；每日动态继续直接检索 Supabase 公开投影。完整问题、拆词结果与不同来源使用排名融合后统一取前六条，并由固定公开语料评测集验证召回。项目快照发布与 Ask 文档替换在同一 SQLite 事务中完成，避免页面和问答看到不同修订。请求限流在 Supabase 中按 IP 的 HMAC 摘要原子计数，所有 Vercel 实例共享 10 分钟 50 次的窗口；浏览器和原生客户端都不持有 service-role key。
 
 ## 桌面布局契约

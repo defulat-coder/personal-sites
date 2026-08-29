@@ -2,7 +2,8 @@ name: Production data health
 
 on:
   schedule:
-    - cron: "*/15 * * * *"
+    # 避开整点与常用的 15 分钟刻度，降低 GitHub 高负载时延迟或丢弃任务的概率。
+    - cron: "7,22,37,52 * * * *"
   workflow_dispatch:
 
 permissions:
