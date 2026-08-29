@@ -25,7 +25,7 @@ test("Douyin manifest and analyzer output form an auditable review item", () => 
     publish_timestamp: 1_700_000_000,
     recorded_at: "2026-08-23T10:00:00.000Z",
   })}\n`);
-  const video = toDouyinVideo(record, "/downloads");
+  const video = { ...toDouyinVideo(record, "/downloads"), collectedOrder: 2 };
   const evidence = parseAnalyzerOutput({
     metadata: { title: "demo" },
     ocrResults: [{ confidence: 90, text: "Example Project", time: "0:03" }],
@@ -51,12 +51,10 @@ test("Douyin manifest and analyzer output form an auditable review item", () => 
 
   assert.equal(video.videoPath, "/downloads/作者/collect/demo.mp4");
   assert.match(buildCurationPrompt(video, evidence, ["AI 应用"]), /屏幕文字 OCR/u);
-  assert.equal(item.review.approved, false);
+  assert.equal(item.review.approved, true);
+  assert.equal(item.collectedOrder, 2);
   assert.equal(item.ai.excerpt, "Example Project");
   assert.equal(item.mentionedProjects[0].verification, "unresolved");
-  assert.throws(() => toPublicDouyinItem(item), /尚未批准/u);
-
-  item.review.approved = true;
   const publicItem = toPublicDouyinItem(item);
   assert.equal(publicItem.id, "douyin-123");
   assert.deepEqual(publicItem.source, {
@@ -64,6 +62,7 @@ test("Douyin manifest and analyzer output form an auditable review item", () => 
     platform: "douyin",
     url: "https://www.douyin.com/video/123",
   });
+  assert.equal(publicItem.collectedOrder, 2);
 });
 
 test("Douyin importer rejects malformed or evidence-free input", () => {
@@ -74,11 +73,12 @@ test("Douyin importer rejects malformed or evidence-free input", () => {
     concurrency: null,
     engine: "codex-cli",
     force: false,
-    ids: [],
     limit: 5,
     manifest: "downloads/download_manifest.jsonl",
+    refreshOnly: false,
     stage: "sync",
   });
+  assert.equal(parseArgs(["sync", "--manifest", "downloads/download_manifest.jsonl", "--refresh-only"]).refreshOnly, true);
   assert.deepEqual(parseFullSyncArgs(["--skip-download", "--analyze-limit", "20"]), {
     analyze: true,
     analyzeLimit: 20,
@@ -87,6 +87,7 @@ test("Douyin importer rejects malformed or evidence-free input", () => {
     download: false,
     engine: "codex-cli",
   });
+  assert.throws(() => parseArgs(["approve", "douyin:123"]), /不接受/u);
 });
 
 test("Douyin worker pool records one failure without stopping later work", async () => {

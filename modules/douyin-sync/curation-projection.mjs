@@ -3,14 +3,18 @@ function toIsoDate(value) {
   return Number.isNaN(parsed.getTime()) ? null : parsed.toISOString();
 }
 
+function toOrder(value) {
+  return Number.isInteger(value) && value >= 0 ? value : null;
+}
+
 export function toPublicDouyinItem(item) {
-  if (!item.review?.approved) throw new Error(`${item.id} 尚未批准，不能进入公开每日关注。`);
+  if (!item.review?.approved) throw new Error(`${item.id} 未完成自动批准，不能进入公开每日关注。`);
   const id = `douyin-${item.id.replace(/^douyin:/u, "")}`;
   return {
     analysis: item.ai.analysis,
     author: item.author,
     collectedAt: toIsoDate(item.collectedAt),
-    collectedOrder: null,
+    collectedOrder: toOrder(item.collectedOrder),
     id,
     links: [],
     media: [],

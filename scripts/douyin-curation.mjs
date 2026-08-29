@@ -24,9 +24,10 @@ const config = JSON.parse(await readFile(path.join(repoRoot, "config/douyin-cura
 const queuePath = path.join(repoRoot, config.queueFile);
 const rawRoot = path.join(repoRoot, config.rawDir);
 const failuresPath = path.join(path.dirname(queuePath), "analysis-failures.json");
+const favoriteIndexPath = path.join(path.dirname(queuePath), "favorite-index.json");
 
 export function parseArgs(args) {
-  const options = { analyzerConcurrency: null, concurrency: null, engine: "codex-cli", force: false, ids: [], limit: Infinity, manifest: null, stage: null };
+  const options = { analyzerConcurrency: null, concurrency: null, engine: "codex-cli", force: false, limit: Infinity, manifest: null, refreshOnly: false, stage: null };
   const positionals = [];
   for (let index = 0; index < args.length; index += 1) {
     const argument = args[index];
@@ -37,16 +38,16 @@ export function parseArgs(args) {
     else if (argument === "--analyzer-concurrency") options.analyzerConcurrency = Number.parseInt(args[++index], 10);
     else if (argument === "--engine") options.engine = args[++index] ?? "";
     else if (argument === "--force") options.force = true;
+    else if (argument === "--refresh-only") options.refreshOnly = true;
     else if (argument.startsWith("--")) throw new Error(`未知参数：${argument}`);
     else positionals.push(argument);
   }
   options.stage = positionals.shift() ?? null;
-  options.ids = positionals;
-  if (!new Set(["approve", "list", "sync"]).has(options.stage)) {
-    throw new Error("用法：pnpm douyin:curation -- sync --manifest <download_manifest.jsonl> [--limit n] [--engine codex-cli|pi] | list | approve <id...>");
+  if (positionals.length > 0) throw new Error("sync 不接受额外参数。");
+  if (options.stage !== "sync") {
+    throw new Error("用法：pnpm douyin:curation -- sync --manifest <download_manifest.jsonl> [--refresh-only] [--limit n] [--engine codex-cli|pi]");
   }
   if (options.stage === "sync" && !options.manifest) throw new Error("sync 需要 --manifest <download_manifest.jsonl>。");
-  if (options.stage === "approve" && options.ids.length === 0) throw new Error("approve 至少需要一个条目 id。");
   if (!new Set(["codex-cli", "pi"]).has(options.engine)) throw new Error("--engine 仅支持 codex-cli 或 pi。");
   if (options.limit !== Infinity && (!Number.isInteger(options.limit) || options.limit < 1)) throw new Error("--limit 必须是正整数。");
   if (options.concurrency !== null && (!Number.isInteger(options.concurrency) || options.concurrency < 1)) throw new Error("--concurrency 必须是正整数。");
@@ -66,6 +67,14 @@ async function readQueue() {
 async function writePrivateJson(filePath, value) {
   await mkdir(path.dirname(filePath), { mode: 0o700, recursive: true });
   await writeFile(filePath, JSON.stringify(value, null, 2) + "\n", { mode: 0o600 });
+}
+
+async function readFavoriteOrders() {
+  const index = await readFile(favoriteIndexPath, "utf8").then(JSON.parse, (error) => {
+    if (error.code === "ENOENT") return { items: [] };
+    throw error;
+  });
+  return new Map(index.items.map((item, order) => [`douyin:${item.id}`, order]));
 }
 
 export async function settleConcurrently(targets, concurrency, processTarget) {
@@ -118,12 +127,19 @@ async function sync(options) {
   loadLocalEnv(repoRoot);
   const manifestPath = path.resolve(repoRoot, options.manifest);
   const records = parseDownloadManifest(await readFile(manifestPath, "utf8"));
+  const favoriteOrders = await readFavoriteOrders();
   const videos = records
     .map((record) => toDouyinVideo(record, path.dirname(manifestPath)))
     .filter(Boolean)
+    .map((video) => ({ ...video, collectedOrder: favoriteOrders.get(`douyin:${video.awemeId}`) ?? null }))
     .slice(0, options.limit);
   const queue = await readQueue();
   const byId = new Map(queue.items.map((item) => [item.id, item]));
+  const reviewedAt = new Date().toISOString();
+  for (const item of byId.values()) {
+    item.collectedOrder = favoriteOrders.get(item.id) ?? item.collectedOrder ?? null;
+    item.review = { approved: true, reviewedAt: item.review?.reviewedAt ?? reviewedAt };
+  }
   const previousFailures = await readFile(failuresPath, "utf8").then(JSON.parse, (error) => {
     if (error.code === "ENOENT") return { items: [] };
     throw error;
@@ -131,16 +147,27 @@ async function sync(options) {
   const failuresById = new Map(previousFailures.items.map((item) => [item.id, item]));
   const concurrency = options.concurrency ?? (options.engine === "pi" ? 2 : 20);
   const analyzerConcurrency = options.analyzerConcurrency ?? 6;
-  const reader = options.engine === "pi"
+  const reader = options.refreshOnly ? null : options.engine === "pi"
     ? await createKimiReader({ config: {}, repoRoot })
     : await createCodexCliReader({
       config: { analysis: { codex_cli: { model: "gpt-5.6-terra", reasoning_effort: "high" } } },
       repoRoot,
     });
 
-  const targets = videos.filter((video) => options.force || !byId.has(`douyin:${video.awemeId}`));
+  const targets = options.refreshOnly ? [] : videos.filter((video) => options.force || !byId.has(`douyin:${video.awemeId}`));
   let completed = 0;
   let saveQueue = Promise.resolve();
+  function persistQueue() {
+    queue.items = [...byId.values()];
+    queue.updatedAt = new Date().toISOString();
+    const snapshot = JSON.stringify(queue, null, 2) + "\n";
+    saveQueue = saveQueue.then(async () => {
+      await mkdir(path.dirname(queuePath), { mode: 0o700, recursive: true });
+      await writeFile(queuePath, snapshot, { mode: 0o600 });
+    });
+    return saveQueue;
+  }
+  await persistQueue();
   let activeAnalyzers = 0;
   const analyzerWaiters = [];
 
@@ -168,16 +195,9 @@ async function sync(options) {
     const item = toReviewItem(video, parsed, path.relative(repoRoot, rawEvidencePath), existing);
     byId.set(id, item);
     failuresById.delete(id);
-    queue.items = [...byId.values()];
-    queue.updatedAt = new Date().toISOString();
-    const snapshot = JSON.stringify(queue, null, 2) + "\n";
-    saveQueue = saveQueue.then(async () => {
-      await mkdir(path.dirname(queuePath), { mode: 0o700, recursive: true });
-      await writeFile(queuePath, snapshot, { mode: 0o600 });
-    });
-    await saveQueue;
+    await persistQueue();
     completed += 1;
-    console.log(`[${completed}/${targets.length}] ${id} → ${parsed.ai.title} · 实体 ${parsed.mentionedProjects.length}`);
+    console.log(`[${completed}/${targets.length}] ${id} 已自动批准。`);
   }
 
   const failures = await settleConcurrently(targets, concurrency, processVideo);
@@ -190,39 +210,12 @@ async function sync(options) {
     });
   }
   await writePrivateJson(failuresPath, { items: [...failuresById.values()], updatedAt: new Date().toISOString(), version: 1 });
-  console.log(`抖音关注收件箱已更新：成功 ${completed} 条，失败 ${failures.length} 条。`);
-  if (completed > 0) console.log("新增条目保留在待审队列；批准后运行 pnpm curation:publish 更新公开投影。");
-}
-
-async function approve(ids) {
-  const queue = await readQueue();
-  const requested = new Set(ids);
-  let approved = 0;
-  for (const item of queue.items) {
-    if (!requested.has(item.id)) continue;
-    item.review = { approved: true, reviewedAt: new Date().toISOString() };
-    requested.delete(item.id);
-    approved += 1;
-  }
-  if (requested.size > 0) throw new Error(`没有找到：${[...requested].join("、")}`);
-  queue.updatedAt = new Date().toISOString();
-  await writePrivateJson(queuePath, queue);
-  console.log(`已批准 ${approved} 条；运行 pnpm curation:publish 生成公开每日关注投影。`);
-}
-
-async function list() {
-  const queue = await readQueue();
-  if (queue.items.length === 0) return console.log("抖音关注收件箱为空。");
-  for (const item of queue.items) {
-    console.log(`${item.review?.approved ? "[已批准]" : "[待审核]"} ${item.id} · ${item.ai.title}`);
-  }
+  console.log(`抖音关注同步完成：成功 ${completed} 条，失败 ${failures.length} 条；条目已自动批准${options.refreshOnly ? "并已回填收藏顺序" : ""}。`);
 }
 
 async function main() {
   const options = parseArgs(process.argv.slice(2));
-  if (options.stage === "sync") await sync(options);
-  else if (options.stage === "approve") await approve(options.ids);
-  else await list();
+  await sync(options);
 }
 
 if (import.meta.url === new URL(`file://${process.argv[1]}`).href) {

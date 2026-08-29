@@ -1,6 +1,6 @@
 # 抖音收藏接入每日关注
 
-抖音只作为关注来源。原始视频、转写、OCR 与模型草稿保存在本机敏感层；草稿在 sync 完成后保留在待审队列，只有显式批准后才会写入 `data/curation.sqlite`，并同步成为“问一问”的公开检索资料。
+抖音只作为关注来源。原始视频、转写、OCR 与模型结果保存在本机敏感层；条目在 sync 完成后自动批准，运行 `pnpm curation:publish` 后写入 `data/curation.sqlite`，并同步成为“问一问”的公开检索资料。
 
 ## 准备输入
 
@@ -32,7 +32,7 @@ pnpm douyin:curation -- sync \
   --limit 5
 ```
 
-默认使用本机 Codex CLI 的 `gpt-5.6-terra`（`high`）生成草稿。也可显式切换到项目现有 Pi/Kimi：
+默认使用本机 Codex CLI 的 `gpt-5.6-terra`（`high`）生成自动批准条目。也可显式切换到项目现有 Pi/Kimi：
 
 ```bash
 pnpm douyin:curation -- sync \
@@ -41,17 +41,10 @@ pnpm douyin:curation -- sync \
   --engine pi
 ```
 
-草稿生成后即自动标记为已批准；本轮有新增条目时，sync 结束会自动重建公开投影（等价于 `pnpm curation:publish`），无需手工发布。
+条目生成后即自动标记为已批准；运行 `pnpm curation:publish` 重建公开投影。
 
-查看队列条目（主要作为回查）：
-
-```bash
-pnpm douyin:curation -- list
-```
-
-如需手工修正某条条目的批准状态，仍可运行 `pnpm douyin:curation -- approve douyin:<aweme_id>` 后执行 `pnpm curation:publish`。
-
-`sync` 可重复运行，已处理条目默认跳过；需要重新分析时加 `--force`。批准状态会在重新分析时保留。
+`sync` 可重复运行，已处理条目默认跳过；需要重新分析时加 `--force`。
+已有条目只需回填自动批准状态和收藏顺序时，使用 `--refresh-only`，不会读取视频或调用模型。
 
 ## 全量发现与增量检查点
 
@@ -61,7 +54,7 @@ pnpm douyin:curation -- list
 - `pending-video-urls.json`：尚未出现在下载 manifest 中的视频；
 - `config-incremental.yml`：只包含本次待下载视频的 sidecar 配置。
 
-下载 manifest、分析 raw 目录和 review queue 分别充当下载、视频理解和策展阶段的检查点；任一阶段中断后都从尚未完成的条目继续。
+下载 manifest、分析 raw 目录和自动批准队列分别充当下载、视频理解和策展阶段的检查点；任一阶段中断后都从尚未完成的条目继续。收藏页的显示顺序会写入公开投影，最新点赞始终排在最前。
 
 完整的全量/增量入口是：
 
@@ -69,14 +62,14 @@ pnpm douyin:curation -- list
 pnpm douyin:sync
 ```
 
-它每次都会重新发现收藏页，只下载 manifest 中不存在的视频，再只解析 review queue 中尚未完成的条目。默认使用 `gpt-5.6-terra`（`high`）通过 Codex CLI 20 并发整理内容、本地 Whisper/OCR 6 并发提取证据；每个本地转写进程限制约 2 个 CPU 线程。可用 `--analyze-limit 20` 控制单次批量，或用 `--discover-only` 只刷新收藏索引。
+它每次都会重新发现收藏页，只下载 manifest 中不存在的视频，再只解析自动批准队列中尚未完成的条目。默认使用 `gpt-5.6-terra`（`high`）通过 Codex CLI 20 并发整理内容、本地 Whisper/OCR 6 并发提取证据；每个本地转写进程限制约 2 个 CPU 线程。可用 `--analyze-limit 20` 控制单次批量，或用 `--discover-only` 只刷新收藏索引。
 
 ## 数据位置
 
 | 数据 | 路径 | 公开 |
 | --- | --- | --- |
 | 分析 JSON、关键帧与时间线 | `data/sensitive/douyin-curation/raw/` | 否 |
-| 草稿与项目候选 | `data/sensitive/douyin-curation/review-queue.json` | 否 |
+| 自动批准条目与项目候选 | `data/sensitive/douyin-curation/review-queue.json` | 否 |
 | 自动批准后的统一每日关注投影 | `data/curation.sqlite` | 是 |
 
-实体候选不会自动写入“开源关注”；无法唯一核验的项目名继续保留在私有资料中。注意：草稿未经人工核验即公开，其中提到的项目身份可能存在误差。
+实体候选不会自动写入“开源关注”；无法唯一核验的项目名继续保留在私有资料中。抖音条目解析完成后会自动批准并在下一次 `pnpm curation:publish` 进入公开投影，其中提到的项目身份仍可能存在误差。

@@ -89,6 +89,7 @@ const ATTACHMENT_LABELS = {
   video: "视频",
 } as const;
 const CURATION_ORDER = "collected_at DESC NULLS LAST, collected_order ASC NULLS LAST, published_at DESC NULLS LAST, id DESC";
+const DOUYIN_CURATION_ORDER = "collected_order ASC NULLS LAST, collected_at DESC NULLS LAST, published_at DESC NULLS LAST, id DESC";
 const CURATION_PLATFORM = "json_extract(content_json, '$.source.platform')";
 const DATABASE_PATH = path.join(process.cwd(), "data/curation.sqlite");
 
@@ -135,8 +136,9 @@ export type CurationPage = {
 type CurationPlatform = "douyin" | "x";
 
 async function getCurationPageByPlatform(platform: CurationPlatform, offset: number, limit: number): Promise<CurationPage> {
+  const order = platform === "douyin" ? DOUYIN_CURATION_ORDER : CURATION_ORDER;
   const rows = getCurationDatabase()
-    .prepare(`SELECT content_json FROM curation_items WHERE ${CURATION_PLATFORM} = ? ORDER BY ${CURATION_ORDER} LIMIT ? OFFSET ?`)
+    .prepare(`SELECT content_json FROM curation_items WHERE ${CURATION_PLATFORM} = ? ORDER BY ${order} LIMIT ? OFFSET ?`)
     .all(platform, limit + 1, offset)
     .map((row) => curationContentRowSchema.parse(row));
   const items = rows.map((row) => toCurationListItem(parseCurationItem(row.content_json)));
@@ -183,11 +185,12 @@ export async function getCurationNeighbors(id: string, designOnly = false): Prom
     .get(id);
   if (!platformRow) return { newer: null, older: null };
   const { platform } = curationPlatformRowSchema.parse(platformRow);
+  const order = platform === "douyin" ? DOUYIN_CURATION_ORDER : CURATION_ORDER;
   const rows = getCurationDatabase()
     .prepare(`SELECT id, title FROM curation_items
       WHERE ${CURATION_PLATFORM} = ?
         ${designOnly ? "AND json_extract(content_json, '$.design.status') = 'include'" : ""}
-      ORDER BY ${CURATION_ORDER}`)
+      ORDER BY ${order}`)
     .all(platform)
     .map((row) => curationNeighborRowSchema.parse(row));
   const index = rows.findIndex((row) => row.id === id);
