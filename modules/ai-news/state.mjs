@@ -53,7 +53,7 @@ export function createSupabaseAiNewsStateStore(client) {
         throw new Error(`记录每日动态同步成功状态失败：${error.message}`);
     },
 
-    async fail(error, { completedAt = new Date() } = {}) {
+    async fail(error) {
       const { error: stateError } = await client
         .from("ai_news_sync_state")
         .update({

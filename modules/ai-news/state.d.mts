@@ -12,7 +12,7 @@ export type AiNewsStateStore = {
     backfill?: boolean;
     now: Date;
   }): Promise<{ acquired: boolean; etags: Record<string, string | null> }>;
-  fail(error: unknown, options?: { completedAt?: Date }): Promise<void>;
+  fail(error: unknown): Promise<void>;
   health(options?: { now?: Date; staleAfterMinutes?: number }): Promise<{
     ageMinutes: number | null;
     healthy: boolean;
