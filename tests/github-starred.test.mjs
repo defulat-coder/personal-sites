@@ -262,7 +262,11 @@ test("公开投影只携带选中的单仓库资料及双版本 Markdown", () =>
     sourceKind: "readme",
     sourceMarkdown: "# Original README\n",
   };
-  const analysis = { contentMarkdown: "# 中文阅读版\n", oneLineSummary: "Kimi 生成的一句话简介。" };
+  const analysis = {
+    contentMarkdown: "# 中文阅读版\n",
+    model: { model: "gpt-5.6-luna", provider: "codex-cli" },
+    oneLineSummary: "模型生成的一句话简介。",
+  };
   const entry = {
     category: "skills",
     caveats: [],
@@ -285,8 +289,8 @@ test("公开投影只携带选中的单仓库资料及双版本 Markdown", () =>
   assert.equal(item.display_rank, 2);
   assert.equal(item.content.sourceMarkdown, "# Original README\n");
   assert.equal(item.content.parsedMarkdown, "# 中文阅读版\n");
-  assert.equal(item.content.sourceSummary, "Kimi 生成的一句话简介。");
-  assert.equal(item.content.readingSource, "kimi-translation");
+  assert.equal(item.content.sourceSummary, "模型生成的一句话简介。");
+  assert.equal(item.content.readingSource, "model-translation");
   assert.equal(item.content.repositoryDefaultBranch, "main");
 });
 

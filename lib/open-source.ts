@@ -46,7 +46,7 @@ const openSourceEntrySchema = z.object({
   nextStep: z.string(),
   parsedMarkdown: z.string().nullable().optional(),
   personalNote: z.string(),
-  readingSource: z.enum(["official-zh-readme", "kimi-translation"]).optional(),
+  readingSource: z.enum(["official-zh-readme", "model-translation"]).optional(),
   readingSourcePath: z.string().nullable().optional(),
   repository: z.string(),
   repositoryDefaultBranch: z.string().nullable().optional(),

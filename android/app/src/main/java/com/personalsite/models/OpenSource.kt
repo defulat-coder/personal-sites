@@ -48,7 +48,7 @@ enum class OpenSourceEvidenceKind {
 @Serializable
 enum class OpenSourceReadingSource {
     @SerialName("official-zh-readme") OFFICIAL_ZH_README,
-    @SerialName("kimi-translation") KIMI_TRANSLATION,
+    @SerialName("model-translation") MODEL_TRANSLATION,
 }
 
 @Serializable

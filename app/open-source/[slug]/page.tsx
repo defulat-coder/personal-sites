@@ -60,7 +60,7 @@ export default async function OpenSourceEntryPage({ params }: OpenSourceEntryPag
 
         <OpenSourceDocumentTabs
           parsedMarkdown={entry.parsedMarkdown ?? ""}
-          readingSource={entry.readingSource ?? "kimi-translation"}
+          readingSource={entry.readingSource ?? "model-translation"}
           readingSourcePath={entry.readingSourcePath ?? null}
           repository={entry.repository}
           repositoryUrl={entry.repositoryUrl}

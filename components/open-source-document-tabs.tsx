@@ -8,7 +8,7 @@ import { createMarkdownHeadingId } from "@/lib/markdown-anchor.mjs";
 
 type OpenSourceDocumentTabsProps = {
   parsedMarkdown: string;
-  readingSource: "official-zh-readme" | "kimi-translation";
+  readingSource: "official-zh-readme" | "model-translation";
   readingSourcePath: string | null;
   repository: string;
   repositoryUrl: string;

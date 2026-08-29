@@ -64,7 +64,7 @@ enum OpenSourceEvidenceKind: String, Codable, Sendable {
 
 enum OpenSourceReadingSource: String, Codable, Sendable {
     case officialZhReadme = "official-zh-readme"
-    case kimiTranslation = "kimi-translation"
+    case modelTranslation = "model-translation"
 }
 
 struct OpenSourceEvidence: Codable, Equatable, Sendable {

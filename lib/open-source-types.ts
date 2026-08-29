@@ -44,7 +44,7 @@ export type OpenSourceEntry = {
   repository: string;
   repositoryDefaultBranch?: string | null;
   repositoryUrl: string;
-  readingSource?: "official-zh-readme" | "kimi-translation";
+  readingSource?: "official-zh-readme" | "model-translation";
   readingSourcePath?: string | null;
   scenarios: string[];
   slug: string;

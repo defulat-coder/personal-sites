@@ -21,7 +21,7 @@ export function toPublicOpenSourceItem(record, analysis, entry, displayRank, now
       repository: entry.repository,
       repositoryDefaultBranch: record.repository.defaultBranch,
       repositoryUrl: entry.repositoryUrl,
-      readingSource: record.readingMarkdown ? "official-zh-readme" : "kimi-translation",
+      readingSource: record.readingMarkdown ? "official-zh-readme" : "model-translation",
       readingSourcePath: record.readingSourcePath,
       scenarios: entry.scenarios,
       slug: entry.slug,
