@@ -449,9 +449,9 @@ export function AskChat() {
             >
               {messages.length === 0 && !isClearing ? (
                 <MotionMessageScrollerItem
-                  animate={{ opacity: 1, y: "0rem" }}
+                  animate={{ y: "0rem" }}
                   className={styles.emptyItem}
-                  initial={prefersReducedMotion ? false : { opacity: 0, y: "0.4rem" }}
+                  initial={prefersReducedMotion ? false : { y: "0.4rem" }}
                   messageId="ask-empty-state"
                   transition={{ duration: EMPTY_ENTER_DURATION, ease: MESSAGE_ENTER_EASE }}
                 >
@@ -463,8 +463,8 @@ export function AskChat() {
                     <EmptyContent className={styles.suggestions}>
                       {suggestedQuestions.map((suggestion, suggestionIndex) => (
                         <motion.span
-                          animate={{ opacity: 1, y: 0 }}
-                          initial={prefersReducedMotion ? false : { opacity: 0, y: "0.3rem" }}
+                          animate={{ y: 0 }}
+                          initial={prefersReducedMotion ? false : { y: "0.3rem" }}
                           key={suggestion}
                           transition={{
                             delay: prefersReducedMotion ? 0 : 0.15 + suggestionIndex * 0.05,
