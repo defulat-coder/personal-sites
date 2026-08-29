@@ -13,14 +13,14 @@
 | 每日关注 | `/curation` | X（Twitter）点赞/书签的中文策展与判读 |
 | 开源关注 | `/open-source` | GitHub Star 仓库的中文阅读版与个人判读 |
 | 构建 | `/works` | 个人项目产出（首发为本站自身的数据管线） |
-| 问一问 | `/ask` | 基于站内语料的匿名问答入口 |
+| 问一问 | `/ask` | 基于个人简介、项目档案、每日关注与开源关注的匿名问答入口 |
 
 ## 技术栈
 
 - **站点**：Next.js 16（App Router）+ React 19 + Tailwind CSS 4 + shadcn/ui
-- **数据**：X 策展使用随 Git 发布的只读 SQLite；每日动态与开源关注仍使用 Supabase 公开投影
-- **部署**：Vercel；内容同步跑在 GitHub Actions
-- **内容管道**：本地 X 策展脚本 → AI 解析（Pi/Kimi 默认，支持 Codex CLI）→ Git 管理的公开 SQLite → Vercel 部署只读查询
+- **数据**：每日动态使用 Supabase 公开投影；每日关注、开源关注、项目档案与问答索引使用随 Git 发布的只读 SQLite
+- **部署**：Vercel；每日动态由 Supabase Cron 增量同步、GitHub Actions 每日回填，其余内容在本机审核发布
+- **内容管道**：本地抓取 → AI 解析（Codex CLI 默认，可显式选择 Pi/Kimi）→ Git 管理的公开 SQLite → Vercel 部署只读查询
 
 ```
 本地抓取/策展（敏感原始数据不入库、不入 Git）
@@ -41,6 +41,7 @@ pnpm typecheck        # TypeScript 7（scripts/tsc7.mjs）
 pnpm lint
 pnpm test             # Vitest + node:test
 pnpm build
+pnpm focus:status     # 汇总每日动态、策展、Ask 索引与项目档案健康度
 ```
 
 环境变量见 `.env.example`：站点运行只需要 `SUPABASE_URL` 与 `SUPABASE_PUBLISHABLE_KEY`（读公开表）；同步脚本额外需要 `SUPABASE_SERVICE_ROLE_KEY` 等，仅服务端使用，绝不使用 `NEXT_PUBLIC_` 前缀。
@@ -50,6 +51,8 @@ pnpm build
 - **每日动态**：`pnpm ai-news:sync`；Supabase Cron 每 5 分钟调用受保护的 Vercel 接口做 24h 增量同步，GitHub Actions 每天 04:17（北京时间）回填 7 天并保留手动恢复入口，详见 `docs/ai-news-sync.md`。
 - **开源关注**：`pnpm github:starred:sync`，详见 `docs/github-starred-sync.md`。
 - **每日关注**：`pnpm curation:*` 系列命令生成 `data/curation.sqlite`，详见 `docs/supabase-x-sync.md`。
+
+公开发现入口包括 `/sitemap.xml`、`/robots.txt`、`/feed.xml` 与全站 Open Graph 图片；RSS 聚合每日动态、每日关注、开源关注和项目档案的最近更新。
 
 ## 数据边界
 

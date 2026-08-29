@@ -21,6 +21,7 @@
 | `tools/smaug/smaug.config.json` | 本地抓取配置和凭据 | 仅本机保存，禁止 Git |
 | `tools/smaug/bookmarks.md` | 本地书签归档 | 仅本机保存，禁止 Git |
 | 私有 Supabase Storage `ask-sessions` | 匿名问答 JSONL 会话与模型生成记录 | 仅服务端 service role 可读写，禁止浏览器、Git 与公开链接 |
+| Supabase `ask_rate_limits` | IP 经 `ASK_SESSION_SECRET` 生成的 HMAC-SHA256 摘要、窗口与计数 | 启用 RLS；仅 service role 可执行原子限流函数，不保存原始 IP |
 
 X、抖音、开源关注与项目档案都不使用 Supabase 作为公开内容源。模型解析完成后，敏感原始队列继续只保留本机；只有经过批准且与当前站点展示字段完全一致的公开投影会写入 `data/curation.sqlite`，并在本机重建 `local-vectors.sqlite`。原始抓取文件、视频、转写、OCR、待审草稿及本地凭据永远不会进入 Git 或浏览器。每日动态仍单独使用 Supabase 的 `ai_news_items` 与 `ai_news_public_items`。
 
@@ -32,6 +33,7 @@ X、抖音、开源关注与项目档案都不使用 Supabase 作为公开内容
 - 根目录个人简历已移入 `data/sensitive/personal/resume.md` 并从 Git 索引移除；页面代码仍保留，不读取该源文件。
 - 网站运行时、浏览器验证、构建输出和截图不得读取或复制 `data/sensitive/`、`knowledge/sensitive/`、凭据配置或原始会话。
 - 在 Vercel 上，问答会话只在 `/tmp/ask-sessions` 中短暂恢复和运行；请求结束后回写私有 Supabase Storage，不能依赖 Function 本地磁盘作为持久化层。
+- 问答限流跨 Vercel 实例共享，只向 Supabase 写入不可逆的 IP HMAC 摘要；定时任务每天清理超过一天的窗口记录。
 
 ## 操作检查
 

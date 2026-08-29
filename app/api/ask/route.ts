@@ -29,7 +29,13 @@ function sseEvent(event: string, data: unknown) {
 
 export async function POST(request: Request) {
   // 限流只依赖 IP，提到请求体解析之前，被限的请求不必先读完整 body。
-  const limit = checkAskRateLimit(getClientIp(request));
+  let limit;
+  try {
+    limit = await checkAskRateLimit(getClientIp(request));
+  } catch (error) {
+    console.error("Public ask shared rate limit failed", error);
+    return Response.json({ error: "问答服务暂时不可用，请稍后再试。" }, { status: 503 });
+  }
   if (!limit.allowed) {
     return Response.json(
       { error: "提问过于频繁，请稍后再试。" },

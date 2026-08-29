@@ -116,3 +116,33 @@ export function buildCurationInsights(items, { generatedAt = new Date() } = {}) 
     version: 1,
   };
 }
+
+export function renderCurationInsightsMarkdown(insights) {
+  const lines = [
+    "# 每日关注洞察",
+    "",
+    `生成时间：${insights.generatedAt}`,
+    "",
+    "## 数据健康",
+    "",
+    `- 条目：${insights.totals.items}`,
+    `- 已解析：${insights.totals.analyzed}`,
+    `- 待复核设计分类：${insights.health.designReview}`,
+    `- 分析错误：${insights.health.analysisErrors}`,
+    `- 缺失检索信号：${insights.health.missingSearchSignals}`,
+    `- 缺失视觉事实：${insights.health.missingVisualFacts}`,
+    "",
+  ];
+  const section = (title, entries, format = (entry) => `${entry.name}（${entry.count}）`) => {
+    lines.push(`## ${title}`, "");
+    if (entries.length === 0) lines.push("- 暂无");
+    else for (const entry of entries) lines.push(`- ${format(entry)}`);
+    lines.push("");
+  };
+  section("上升主题", insights.emergingTopics, (entry) => `${entry.name}（近 30 天 ${entry.count}，此前 ${entry.previousCount}）`);
+  section("高频概念", insights.topConcepts);
+  section("高频工具", insights.topTools);
+  section("跨来源信号", insights.crossSourceSignals);
+  section("Taxonomy 建议", insights.taxonomySuggestions);
+  return lines.join("\n") + "\n";
+}

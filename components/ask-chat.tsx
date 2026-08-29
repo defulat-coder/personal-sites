@@ -58,12 +58,15 @@ type ChatMessage = {
 
 const scopeLabels: Record<AskScope, string> = {
   all: "全部",
+  profile: "关于我",
+  works: "构建",
   "ai-news": "每日动态",
   daily: "每日关注",
   "open-source": "开源关注",
 };
 
 const suggestedQuestions = [
+  "你做过哪些项目，形成了哪些工程实践？",
   "最近有哪些关于 Agent 长期运行的实践？",
   "哪些开源项目值得持续关注？",
   "最近的每日关注里提到了什么检索思路？",

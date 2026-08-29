@@ -1,7 +1,49 @@
 import assert from "node:assert/strict";
 import test from "node:test";
 
-import { splitReadmeByHeading, toDailySearchDocuments, toOpenSourceSearchDocuments } from "../modules/ask/search-index.mjs";
+import {
+  splitReadmeByHeading,
+  toDailySearchDocuments,
+  toOpenSourceSearchDocuments,
+  toProfileSearchDocument,
+  toProjectSearchDocuments,
+} from "../modules/ask/search-index.mjs";
+
+test("profile and project records become first-class Ask documents", () => {
+  const profile = toProfileSearchDocument();
+  const works = toProjectSearchDocuments([{
+    published_at: "2026-08-10T00:00:00.000Z",
+    snapshot: {
+      currentFocus: "可靠同步",
+      period: "2026",
+      projectId: "personal-site",
+      records: [{
+        bodyMarkdown: "使用租约避免重复执行。",
+        id: "cron",
+        kind: "practice",
+        status: "active",
+        summary: "Supabase Cron 每五分钟同步。",
+        title: "可靠定时同步",
+        topics: ["Supabase", "Cron"],
+        updatedAt: "2026-08-10T00:00:00.000Z",
+      }],
+      role: "个人项目",
+      slug: "personal-site",
+      stack: ["Next.js", "Supabase"],
+      status: "active",
+      summary: "运行中的工程档案。",
+      title: "个人网站",
+    },
+  }]);
+
+  assert.equal(profile.source_scope, "profile");
+  assert.match(profile.search_text, /十余年/u);
+  assert.deepEqual(works.map((document) => document.id), [
+    "works:personal-site:overview",
+    "works:personal-site:cron",
+  ]);
+  assert.match(works[1].search_text, /Supabase Cron/u);
+});
 
 test("daily public projections become one searchable document per item", () => {
   const [document] = toDailySearchDocuments([{

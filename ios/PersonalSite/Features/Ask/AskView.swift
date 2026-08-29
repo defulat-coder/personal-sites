@@ -30,6 +30,8 @@ final class AskChatModel {
 
     static let scopeLabels: [AskScope: String] = [
         .all: "全部资料",
+        .profile: "关于我",
+        .works: "构建",
         .aiNews: "每日动态",
         .daily: "每日关注",
         .openSource: "开源关注",

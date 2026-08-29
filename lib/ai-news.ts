@@ -50,6 +50,7 @@ function toAiNewsItem(row: z.infer<typeof aiNewsRowSchema>): AiNewsItem {
 const aiNewsListRowSchema = aiNewsItemContentSchema
   .omit({ reason: true, score: true, url: true })
   .extend({ selected: z.boolean() });
+const aiNewsSitemapRowSchema = z.object({ id: z.string(), publishedAt: z.string().nullable() });
 
 export type AiNewsPage = {
   hasMore: boolean;
@@ -71,6 +72,16 @@ export async function getAiNewsPage(offset = 0, limit = AI_NEWS_LIST_LIMIT): Pro
     hasMore: items.length > limit,
     items: items.slice(0, limit),
   };
+}
+
+export async function getAiNewsSitemapItems() {
+  const { data, error } = await getPublicAiNewsClient()
+    .from("ai_news_public_items")
+    .select("id,publishedAt:content->>publishedAt")
+    .order("published_at", { ascending: false, nullsFirst: false })
+    .limit(2500);
+  if (error) throw new Error(`读取 Supabase 每日动态 Sitemap 失败：${error.message}`);
+  return z.array(aiNewsSitemapRowSchema).parse(data);
 }
 
 // react cache 只去重同一次渲染里的重复读取（generateMetadata 与页面各读一次详情）。

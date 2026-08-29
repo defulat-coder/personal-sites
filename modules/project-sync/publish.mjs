@@ -2,7 +2,8 @@ import Database from "better-sqlite3";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 
-import { initializePublicDatabase, PUBLIC_DATABASE_PATH } from "../public-data/sqlite.mjs";
+import { toProjectSearchDocuments } from "../ask/search-index.mjs";
+import { initializePublicDatabase, replaceAskDocuments, PUBLIC_DATABASE_PATH } from "../public-data/sqlite.mjs";
 import { approvedProjectSchema, publicProjectSnapshotSchema } from "./schema.mjs";
 import { assertPublicContentSafe, canonicalJson, readJson, sha256, writePrivateJson } from "./source.mjs";
 
@@ -47,16 +48,24 @@ export async function publishApprovedProject({
   const publishedAt = now.toISOString();
   const database = initializePublicDatabase(new Database(databasePath));
   try {
-    database.prepare(`
-      INSERT INTO project_snapshots (project_id, slug, display_order, published_at, revision, snapshot_json)
-      VALUES (?, ?, ?, ?, ?, ?)
-      ON CONFLICT(project_id) DO UPDATE SET
-        slug = excluded.slug,
-        display_order = excluded.display_order,
-        published_at = excluded.published_at,
-        revision = excluded.revision,
-        snapshot_json = excluded.snapshot_json
-    `).run(project.id, project.slug, project.order, publishedAt, revision, JSON.stringify(snapshot));
+    database.transaction(() => {
+      database.prepare(`
+        INSERT INTO project_snapshots (project_id, slug, display_order, published_at, revision, snapshot_json)
+        VALUES (?, ?, ?, ?, ?, ?)
+        ON CONFLICT(project_id) DO UPDATE SET
+          slug = excluded.slug,
+          display_order = excluded.display_order,
+          published_at = excluded.published_at,
+          revision = excluded.revision,
+          snapshot_json = excluded.snapshot_json
+      `).run(project.id, project.slug, project.order, publishedAt, revision, JSON.stringify(snapshot));
+      replaceAskDocuments(
+        database,
+        "works",
+        project.id,
+        toProjectSearchDocuments([{ published_at: publishedAt, snapshot }]),
+      );
+    })();
     const row = database.prepare(
       "SELECT project_id, revision, snapshot_json FROM project_snapshots WHERE project_id = ?",
     ).get(project.id);

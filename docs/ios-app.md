@@ -34,7 +34,7 @@ xcodebuild -scheme PersonalSite -destination 'platform=iOS Simulator,name=iPhone
 | 作品档案 | 站点 `/api/works`（服务端读取 `data/curation.sqlite`） |
 | 开源关注 | 站点 `/api/open-source` + `/api/open-source/[slug]`；仓库树/文件走 `/api/open-source/[slug]/repository/*` |
 | 每日关注 | 站点 `/api/curation` + `/api/curation/[id]`（X 与抖音的公开投影在本地 sqlite，不在 Supabase）；X 视频经 `/api/x-media` 代理用 `AVPlayer` 播放 |
-| 问一问 | 站点 `POST /api/ask`（SSE：`sources`/`text`/`done`/`error`）；`visitorId` 用 `identifierForVendor` 去连字符，限流按 IP 无需客户端处理 |
+| 问一问 | 站点 `POST /api/ask`（SSE：`sources`/`text`/`done`/`error`）；支持个人简介、构建、每日动态、每日关注、开源关注范围；`visitorId` 用 `identifierForVendor` 去连字符，共享 IP 限流无需客户端处理 |
 
 数据契约以 `lib/*-types.ts` 为准；每日动态 Supabase 行与站点 SQLite API 都在 `ios/PersonalSiteTests/ModelDecodingTests.swift` 中验证解码。
 

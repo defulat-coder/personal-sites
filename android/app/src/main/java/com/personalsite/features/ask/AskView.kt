@@ -243,6 +243,8 @@ class AskChatModel(application: Application) : AndroidViewModel(application) {
         /** scope 中文标签，对齐 iOS。 */
         val scopeLabels: Map<AskScope, String> = mapOf(
             AskScope.ALL to "全部资料",
+            AskScope.PROFILE to "关于我",
+            AskScope.WORKS to "构建",
             AskScope.AI_NEWS to "每日动态",
             AskScope.DAILY to "每日关注",
             AskScope.OPEN_SOURCE to "开源关注",

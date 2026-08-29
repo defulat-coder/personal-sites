@@ -20,7 +20,10 @@ RootLayout
    ├─ /open-source              开源关注版块（ISR，revalidate = 300）
    ├─ /ask                      问一问
    │  ├─ Profile rail（与首页相同）
-   │  └─ 内容导航 + 公开资料问答（指纹与 Markdown 渲染按需加载）
+   │  └─ 内容导航 + 公开资料问答（个人简介、项目档案、每日关注、开源关注）
+   ├─ /feed.xml                 最近公开内容的 RSS 2.0 聚合
+   ├─ /sitemap.xml              栏目与公开详情页索引
+   ├─ /robots.txt               搜索引擎抓取规则
    ├─ /curation/[id]            详情页（ISR，revalidate = 300）
    │  ├─ Profile rail（与首页相同）
    │  └─ Curation article
@@ -45,6 +48,9 @@ RootLayout
 | 内容导航 | `components/site-section-navigation.tsx` | 统一内容入口（每日动态、每日关注、设计收藏、抖音收藏、开源关注、构建、问一问）的路由跳转与当前页面状态；导航即栏目页头，不重复显示标题与说明 | 外部链接或同页 Tab 语义 |
 | 技术信号场 | `components/interactive-dot-field.tsx` | AI 术语与技术栈词库、稀疏视觉表达 | 标签过滤或导航 |
 | 策展数据 | `lib/curation.ts` | Zod 校验、查询、日期格式化 | 页面布局 |
+| 公开发现 | `lib/discovery.server.ts` | 汇总公开 SQLite 与 Supabase，生成 Sitemap/RSS 数据 | 私有原始资料或运行时写入 |
+
+“问一问”的本地 FTS 语料由公开个人简介、项目档案、每日关注和开源关注派生；每日动态继续直接检索 Supabase 公开投影。项目快照发布与 Ask 文档替换在同一 SQLite 事务中完成，避免页面和问答看到不同修订。请求限流在 Supabase 中按 IP 的 HMAC 摘要原子计数，所有 Vercel 实例共享 10 分钟 50 次的窗口；浏览器和原生客户端都不持有 service-role key。
 
 ## 桌面布局契约
 

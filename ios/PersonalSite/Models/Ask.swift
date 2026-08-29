@@ -4,6 +4,8 @@ import Foundation
 
 enum AskScope: String, Codable, CaseIterable, Sendable {
     case all
+    case profile
+    case works
     case aiNews = "ai-news"
     case daily
     case openSource = "open-source"

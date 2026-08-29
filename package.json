@@ -41,6 +41,7 @@
     "github:starred:publish": "node scripts/github-starred.mjs publish",
     "ai-news:sync": "node scripts/ai-news-sync.mjs",
     "ai-news:backfill": "node scripts/ai-news-sync.mjs --backfill",
+    "focus:status": "node scripts/focus-status.mjs",
     "vectors:index": "node scripts/local-vectors.mjs index",
     "vectors:search": "node scripts/local-vectors.mjs search",
     "github:starred:run": "node scripts/github-starred.mjs run",

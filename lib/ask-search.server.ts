@@ -24,7 +24,9 @@ function rankDocuments(documents: SearchDocument[]) {
 }
 
 async function searchDocuments(query: string, scope: AskScope): Promise<SearchDocument[]> {
-  const localScopes = scope === "all" ? ["daily", "open-source"] as const : scope === "ai-news" ? [] : [scope];
+  const localScopes = scope === "all"
+    ? ["profile", "works", "daily", "open-source"] as const
+    : scope === "ai-news" ? [] : [scope];
   const localDocuments = localScopes.flatMap((localScope) => searchLocalAskDocuments(query, localScope));
   const aiDocuments = scope === "all" || scope === "ai-news"
     ? (await searchAiNewsDocuments(query)).map((document) => ({

@@ -10,6 +10,8 @@ import kotlinx.serialization.json.Json
 @Serializable
 enum class AskScope {
     @SerialName("all") ALL,
+    @SerialName("profile") PROFILE,
+    @SerialName("works") WORKS,
     @SerialName("ai-news") AI_NEWS,
     @SerialName("daily") DAILY,
     @SerialName("open-source") OPEN_SOURCE,

@@ -9,7 +9,7 @@ import {
   prepareCurationItem,
   recordCurationAnalysisFailure,
 } from "../modules/x-sync/analysis.mjs";
-import { buildCurationInsights } from "../modules/x-sync/insights.mjs";
+import { buildCurationInsights, renderCurationInsightsMarkdown } from "../modules/x-sync/insights.mjs";
 
 const rawItem = {
   ai: { analysis: "", enrichedAt: null, summary: "", tags: [], title: "" },
@@ -127,4 +127,5 @@ test("private insights summarize corpus health, source mix, tools, and emerging 
     { count: 2, name: "bookmark" },
     { count: 2, name: "like" },
   ]);
+  assert.match(renderCurationInsightsMarkdown(insights), /## 上升主题/u);
 });

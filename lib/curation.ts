@@ -123,7 +123,7 @@ const localSearchRowSchema = z.object({
   search_text: z.string().min(1),
   section: z.string().nullable(),
   source_id: z.string().min(1),
-  source_scope: z.enum(["daily", "open-source"]),
+  source_scope: z.enum(["daily", "open-source", "profile", "works"]),
   source_url: z.string().min(1),
   title: z.string().min(1),
 });
@@ -286,7 +286,7 @@ type DailySearchCorpusEntry = {
   publishedAt: string | null;
   section: string | null;
   sourceId: string;
-  sourceScope: "daily" | "open-source";
+  sourceScope: "daily" | "open-source" | "profile" | "works";
   sourceUrl: string;
   title: string;
 };
@@ -335,11 +335,11 @@ export function searchCurationDailyDocuments(query: string, limit = 6): Curation
 }
 
 export type LocalAskDocument = CurationDailySearchDocument & {
-  scope: "daily" | "open-source";
+  scope: "daily" | "open-source" | "profile" | "works";
   section: string | null;
 };
 
-function searchLocalAskFts(query: string, scope: "daily" | "open-source", limit: number) {
+function searchLocalAskFts(query: string, scope: "daily" | "open-source" | "profile" | "works", limit: number) {
   if (Array.from(query).length < 3) return [];
   try {
     return getCurationDatabase()
@@ -358,7 +358,7 @@ function searchLocalAskFts(query: string, scope: "daily" | "open-source", limit:
 
 export function searchLocalAskDocuments(
   query: string,
-  scope: "daily" | "open-source",
+  scope: "daily" | "open-source" | "profile" | "works",
   limit = 6,
 ): LocalAskDocument[] {
   const needle = query.trim().toLocaleLowerCase("en-US");

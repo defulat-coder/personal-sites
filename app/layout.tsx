@@ -1,17 +1,35 @@
 import type { Metadata } from "next";
 
 import { OpeningLoader } from "@/components/opening-loader";
+import { SITE_NAME, SITE_URL } from "@/lib/site";
 
 import "./globals.css";
 
 export const metadata: Metadata = {
   description:
     "陈远的个人网站：工作履历、工程实践与每日关注。",
-  robots: {
-    follow: false,
-    index: false,
+  metadataBase: new URL(SITE_URL),
+  alternates: {
+    types: { "application/rss+xml": "/feed.xml" },
   },
-  title: "陈远｜每日关注",
+  openGraph: {
+    description: "用持续更新的策展、开源判读与项目实践证明工程身份。",
+    locale: "zh_CN",
+    siteName: SITE_NAME,
+    title: SITE_NAME,
+    type: "website",
+    url: SITE_URL,
+  },
+  robots: {
+    follow: true,
+    index: true,
+  },
+  title: SITE_NAME,
+  twitter: {
+    card: "summary_large_image",
+    description: "用持续更新的策展、开源判读与项目实践证明工程身份。",
+    title: SITE_NAME,
+  },
 };
 
 export default function RootLayout({

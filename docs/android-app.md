@@ -36,7 +36,7 @@ export ANDROID_HOME=/opt/homebrew/share/android-commandlinetools   # brew 的 an
 | 作品档案 | 站点 `/api/works`（服务端读取 `data/curation.sqlite`） |
 | 开源关注 | 站点 `/api/open-source` + `/api/open-source/[slug]`；仓库树/文件走 `/api/open-source/[slug]/repository/*` |
 | 每日关注 | 站点 `/api/curation` + `/api/curation/[id]`；X 视频经 `/api/x-media` 代理用 ExoPlayer 播放 |
-| 问一问 | 站点 `POST /api/ask`（SSE：`sources`/`text`/`done`/`error`）；`visitorId` 优先 `ANDROID_ID`（16 位 hex，过服务端正则），否则 DataStore 持久化随机 UUID 去连字符；限流按 IP 无需客户端处理 |
+| 问一问 | 站点 `POST /api/ask`（SSE：`sources`/`text`/`done`/`error`）；支持个人简介、构建、每日动态、每日关注、开源关注范围；`visitorId` 优先 `ANDROID_ID`（16 位 hex，过服务端正则），否则 DataStore 持久化随机 UUID 去连字符；共享 IP 限流无需客户端处理 |
 
 数据契约以 `lib/*-types.ts` 为准；每日动态 Supabase 行与站点 SQLite API 都由原生模型测试验证。Markdown 仅行内级渲染（`renderInlineMarkdown`，对齐 iOS 的 `inlineOnlyPreservingWhitespace`）。
 

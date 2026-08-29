@@ -316,7 +316,7 @@ test("发布器把公开投影和问答分块写入本地 SQLite", async () => {
     assert.deepEqual(database.prepare("SELECT repo_node_id, slug FROM open_source_items").all(), [
       { repo_node_id: "node-1", slug: "example-repo" },
     ]);
-    assert.deepEqual(database.prepare("SELECT source_id, source_url FROM ask_documents").all(), [
+    assert.deepEqual(database.prepare("SELECT source_id, source_url FROM ask_documents WHERE source_scope = 'open-source'").all(), [
       { source_id: "node-1", source_url: "/open-source/example-repo#中文阅读版" },
     ]);
     database.close();
@@ -350,7 +350,7 @@ test("撤回公开仓库时删除本地投影和问答分块", async () => {
     await publishStarredRecords({ databasePath, records: [record] });
     const database = new Database(databasePath, { readonly: true });
     assert.equal(database.prepare("SELECT count(*) AS count FROM open_source_items").get().count, 0);
-    assert.equal(database.prepare("SELECT count(*) AS count FROM ask_documents").get().count, 0);
+    assert.equal(database.prepare("SELECT count(*) AS count FROM ask_documents WHERE source_scope = 'open-source'").get().count, 0);
     database.close();
   } finally {
     await rm(directory, { force: true, recursive: true });
