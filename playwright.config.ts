@@ -12,8 +12,8 @@ export default defineConfig({
     trace: "retain-on-failure",
   },
   webServer: {
-    command: "pnpm exec next dev --turbopack --hostname 127.0.0.1 --port 7100",
-    reuseExistingServer: !process.env.CI,
+    command: "pnpm build && pnpm exec next start --hostname 127.0.0.1 --port 7100",
+    reuseExistingServer: false,
     timeout: 120_000,
     url: "http://127.0.0.1:7100/ask",
   },
