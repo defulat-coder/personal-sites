@@ -51,11 +51,12 @@ test("Douyin manifest and analyzer output form an auditable review item", () => 
 
   assert.equal(video.videoPath, "/downloads/作者/collect/demo.mp4");
   assert.match(buildCurationPrompt(video, evidence, ["AI 应用"]), /屏幕文字 OCR/u);
-  assert.equal(item.review.approved, true);
+  assert.equal(item.review.approved, false);
+  assert.equal(item.review.reviewedAt, undefined);
   assert.equal(item.collectedOrder, 2);
   assert.equal(item.ai.excerpt, "Example Project");
   assert.equal(item.mentionedProjects[0].verification, "unresolved");
-  const publicItem = toPublicDouyinItem(item);
+  const publicItem = toPublicDouyinItem({ ...item, review: { approved: true, reviewedAt: "2026-08-29T00:00:00.000Z" } });
   assert.equal(publicItem.id, "douyin-123");
   assert.deepEqual(publicItem.source, {
     label: "抖音视频",

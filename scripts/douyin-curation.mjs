@@ -136,10 +136,8 @@ async function sync(options) {
     .slice(0, options.limit);
   const queue = await readQueue();
   const byId = new Map(queue.items.map((item) => [item.id, item]));
-  const reviewedAt = new Date().toISOString();
   for (const item of byId.values()) {
     item.collectedOrder = favoriteOrders.get(item.id) ?? item.collectedOrder ?? null;
-    item.review = { approved: true, reviewedAt: item.review?.reviewedAt ?? reviewedAt };
   }
   const previousFailures = await readFile(failuresPath, "utf8").then(JSON.parse, (error) => {
     if (error.code === "ENOENT") return { items: [] };
@@ -198,7 +196,7 @@ async function sync(options) {
     failuresById.delete(id);
     await persistQueue();
     completed += 1;
-    console.log(`[${completed}/${targets.length}] ${id} 已自动批准。`);
+    console.log(`[${completed}/${targets.length}] ${id} 已进入待审队列。`);
   }
 
   const failures = await settleConcurrently(targets, concurrency, processVideo);
@@ -211,7 +209,7 @@ async function sync(options) {
     });
   }
   await writePrivateJson(failuresPath, { items: [...failuresById.values()], updatedAt: new Date().toISOString(), version: 1 });
-  console.log(`抖音关注同步完成：成功 ${completed} 条，失败 ${failures.length} 条；条目已自动批准${options.refreshOnly ? "并已回填收藏顺序" : ""}。`);
+  console.log(`抖音关注同步完成：成功 ${completed} 条，失败 ${failures.length} 条；条目已进入待审队列${options.refreshOnly ? "并已回填收藏顺序" : ""}。`);
 }
 
 async function main() {
