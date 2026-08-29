@@ -20,6 +20,7 @@
     "typecheck": "node scripts/tsc7.mjs --noEmit",
     "test": "vitest run --passWithNoTests && node --test tests/*.test.mjs",
     "curation:prepare": "node scripts/x-curation-prepare.mjs",
+    "curation:recover": "node scripts/recover-x-curation-queue.mjs",
     "curation:import": "node scripts/x-curation-import-bird.mjs",
     "curation:fetch": "node scripts/x-curation-sync.mjs --fetch-only",
     "curation:history": "node scripts/x-curation-sync.mjs --history",

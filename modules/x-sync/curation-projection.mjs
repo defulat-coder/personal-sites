@@ -1,4 +1,5 @@
 import { designClassificationStatus } from "./design-classification.mjs";
+import { prepareCurationItem } from "./analysis.mjs";
 
 export function isReadyForPublication(item) {
   return Boolean(
@@ -20,39 +21,43 @@ function toOrder(value) {
 }
 
 export function toPublicCurationItem(item) {
+  const prepared = prepareCurationItem(item);
   return {
-    id: item.id,
-    title: item.ai.title,
-    summary: item.ai.summary,
-    tags: item.ai.tags,
-    text: item.text,
+    id: prepared.id,
+    title: prepared.ai.title,
+    summary: prepared.ai.summary,
+    tags: prepared.ai.tags,
+    text: prepared.text,
+    facts: prepared.facts,
+    searchSignals: prepared.ai.searchSignals ?? null,
+    visualFacts: prepared.ai.visualFacts ?? null,
     quoteContext:
-      item.isQuote && item.quoteContext
+      prepared.isQuote && prepared.quoteContext
         ? {
-            author: item.quoteContext.author ?? "",
-            authorName: item.quoteContext.authorName ?? "",
-            text: item.quoteContext.text ?? "",
+            author: prepared.quoteContext.author ?? "",
+            authorName: prepared.quoteContext.authorName ?? "",
+            text: prepared.quoteContext.text ?? "",
           }
         : null,
-    analysis: item.ai.analysis,
-    design: item.ai.design
+    analysis: prepared.ai.analysis,
+    design: prepared.ai.design
       ? {
-          ...item.ai.design,
-          status: designClassificationStatus(item.ai.design.relevant, item.ai.design.confidence),
+          ...prepared.ai.design,
+          status: designClassificationStatus(prepared.ai.design.relevant, prepared.ai.design.confidence),
         }
       : null,
     author: {
-      handle: item.author.handle,
-      name: item.author.name,
+      handle: prepared.author.handle,
+      name: prepared.author.name,
     },
     source: {
       label: "X 原文",
       platform: "x",
-      url: item.tweetUrl,
+      url: prepared.tweetUrl,
     },
     links: [
       ...new Map(
-        item.links
+        prepared.links
           .filter((link) => link.expanded && link.type !== "tweet")
           .map((link) => [
             link.expanded,
@@ -60,9 +65,9 @@ export function toPublicCurationItem(item) {
           ]),
       ).values(),
     ],
-    media: (item.media ?? []).filter((media) => media.url),
-    collectedAt: toIsoDate(item.firstSeenAt),
-    collectedOrder: toOrder(item.firstSeenOrder),
-    publishedAt: toIsoDate(item.createdAt),
+    media: (prepared.media ?? []).filter((media) => media.url),
+    collectedAt: toIsoDate(prepared.firstSeenAt),
+    collectedOrder: toOrder(prepared.firstSeenOrder),
+    publishedAt: toIsoDate(prepared.createdAt),
   };
 }

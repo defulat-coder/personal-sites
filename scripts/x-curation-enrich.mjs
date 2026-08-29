@@ -5,7 +5,7 @@
  * 策展队列的本地模型解析程序。对未解析条目执行完整解析：
  *   1. 展开 t.co 短链并分类（github / article / 其他）
  *   2. 抓取链接内容：GitHub 仓库元数据 + 完整 README（gh CLI）；文章正文
- *   3. Pi/Kimi 或显式选择的 Codex CLI 生成标题 / 摘要 / 标签 / 深度解析
+ *   3. 默认由 Codex CLI 生成标题 / 摘要 / 标签 / 深度解析；可显式改用 Pi/Kimi
  *   4. 写回策展队列（每条落盘，可断点续跑）
  *
  * 凭据从环境变量读取，不写入任何文件：
@@ -13,16 +13,17 @@
  *   PI_MODEL             Pi/Kimi 路径可选，默认 kimi-for-coding
  *
  * 用法：
- *   node scripts/x-curation-enrich.mjs                    # 以默认 15 并发解析全部待处理条目
+ *   node scripts/x-curation-enrich.mjs                    # 默认使用 Codex CLI，单并发解析
  *   node scripts/x-curation-enrich.mjs --concurrency 10   # 调整并发数
  *   node scripts/x-curation-enrich.mjs --limit 20         # 只处理前 20 条
  *   node scripts/x-curation-enrich.mjs --engine codex-cli --model gpt-5.6-luna --reasoning-effort max
  *   node scripts/x-curation-enrich.mjs --dry-run          # 只展开链接和抓内容，不调用模型
  *   node scripts/x-curation-enrich.mjs --only <id>        # 只处理指定条目
+ *   node scripts/x-curation-enrich.mjs --refresh --limit 20 # 分批刷新旧版分析与检索信号
  */
 
 import { execFile } from "node:child_process";
-import { readFile, writeFile } from "node:fs/promises";
+import { readFile } from "node:fs/promises";
 import path from "node:path";
 import { promisify } from "node:util";
 import { fileURLToPath } from "node:url";
@@ -36,8 +37,19 @@ import {
 } from "@earendil-works/pi-coding-agent";
 
 import { createCodexCliReader } from "../modules/github-starred/analysis.mjs";
+import {
+  applyCurationAnalysis,
+  applyDesignAnalysis,
+  hasReusableVisualFacts,
+  needsCurationAnalysis,
+  normalizeSearchSignals,
+  normalizeVisualFacts,
+  prepareCurationItem,
+  recordCurationAnalysisFailure,
+} from "../modules/x-sync/analysis.mjs";
 import { DESIGN_CATEGORIES, designClassificationStatus, normalizeDesignClassification } from "../modules/x-sync/design-classification.mjs";
 import { collectDesignEvidenceImages } from "../modules/x-sync/design-media.mjs";
+import { writeJsonAtomically, writeTextAtomically } from "../modules/x-sync/queue-file.mjs";
 import { getFinalAssistantFailure, getFinalAssistantText } from "../lib/pi-runtime.mjs";
 import { loadLocalEnv } from "./lib/load-local-env.mjs";
 import { resolvePiModelConfig } from "./lib/x-curation-ai.mjs";
@@ -55,8 +67,9 @@ const piModel = resolvePiModelConfig({ config, env: process.env });
 const args = process.argv.slice(2);
 const DRY_RUN = args.includes("--dry-run");
 const DESIGN_ONLY = args.includes("--design-only");
+const REFRESH = args.includes("--refresh");
 const engineIdx = args.indexOf("--engine");
-const ENGINE = engineIdx >= 0 ? args[engineIdx + 1] : "pi";
+const ENGINE = engineIdx >= 0 ? args[engineIdx + 1] : "codex-cli";
 const codexModelIdx = args.indexOf("--model");
 const CODEX_MODEL = codexModelIdx >= 0 ? args[codexModelIdx + 1] : "gpt-5.6-luna";
 const reasoningEffortIdx = args.indexOf("--reasoning-effort");
@@ -150,7 +163,7 @@ async function fetchArticleText(url) {
 
 // ---------- AI 调用 ----------
 
-function buildPrompt(item, linkContents, visualEvidenceCount) {
+function buildPrompt(item, linkContents, visualEvidenceCount, cachedVisualFacts) {
   const linkSection = linkContents
     .map((link) => {
       if (link.repo) {
@@ -161,6 +174,10 @@ function buildPrompt(item, linkContents, visualEvidenceCount) {
       return `【链接】${link.original}（无法获取内容）`;
     })
     .join("\n\n");
+  const factSection = JSON.stringify(item.facts ?? {}, null, 2);
+  const cachedVisualSection = cachedVisualFacts
+    ? `\n【已缓存视觉事实】\n${JSON.stringify(cachedVisualFacts, null, 2)}`
+    : "";
 
   return `你是一位资深工程师（11 年经验，专注 Agent 工程与全栈架构）的策展助手。请为他在 X（Twitter）上${item.fetchSource.includes("bookmark") ? "收藏" : "点赞"}的以下内容生成策展解析，并判断它是否属于设计相关内容。
 
@@ -170,7 +187,8 @@ function buildPrompt(item, linkContents, visualEvidenceCount) {
 ${item.text}
 ${item.quoteContext ? `\n【被引用的推文】@${item.quoteContext.author}（${item.quoteContext.authorName}）\n${item.quoteContext.text}` : ""}
 ${linkSection ? `\n${linkSection}` : ""}
-${visualEvidenceCount > 0 ? `\n【视觉证据】随请求附有 ${visualEvidenceCount} 张推文图片或视频代表帧，请把画面内容与文字一起判断。` : "\n【视觉证据】没有可用图片或视频代表帧，只能基于文字判断并相应降低置信度。"}
+\n【确定性事实】\n${factSection}${cachedVisualSection}
+${visualEvidenceCount > 0 ? `\n【视觉证据】随请求附有 ${visualEvidenceCount} 张推文图片或视频代表帧，请把画面内容与文字一起判断。` : cachedVisualFacts ? "\n【视觉证据】本次复用已缓存的视觉事实。" : "\n【视觉证据】没有可用图片或视频代表帧，只能基于文字判断并相应降低置信度。"}
 
 设计相关的核心标准：这条内容的主要价值来自视觉、交互、体验或设计方法本身。普通 AI 产品发布、编程教程、游戏录像或营销宣传片，即使画面精美，也不能仅因此视为设计相关。
 
@@ -179,6 +197,22 @@ ${visualEvidenceCount > 0 ? `\n【视觉证据】随请求附有 ${visualEvidenc
   "title": "中文标题，点明内容主体和核心价值，20 字左右",
   "summary": "中文一句话摘要，50 字以内",
   "tags": ["从以下分类中选 1-2 个：${config.taxonomy.join("、")}"],
+  "searchSignals": {
+    "concepts": ["8-15 个具体概念或技术主题"],
+    "entities": ["明确出现的人物、组织、产品或项目，最多 10 个"],
+    "tools": ["明确出现的工具、框架或平台，最多 10 个"],
+    "problems": ["内容在解决或讨论的问题，最多 10 个"],
+    "useCases": ["具体使用场景，最多 10 个"],
+    "sentiment": "positive、negative、neutral、humorous 或 controversial"
+  },
+  "visualFacts": {
+    "ocr": ["画面中可读的关键文字，最多 20 条"],
+    "scenes": ["界面或场景描述，最多 8 条"],
+    "objects": ["重要对象、品牌、图表或 UI 元素，最多 15 条"],
+    "tools": ["画面中明确识别出的工具或产品，最多 10 个"],
+    "styles": ["ui、code、chart、diagram、photo、meme 等视觉类型"],
+    "interactionSignals": ["画面体现的交互或体验模式，最多 12 条"]
+  },
   "analysis": "中文深度解析，Markdown 格式。分节加粗小标题（如 **是什么**/**核心设计**/**关键洞察**/**边界与风险**）。若涉及 GitHub 仓库：还原它是什么、架构与核心设计、值得借鉴的亮点、坑与边界，事实必须来自上方 README 与元数据，不确定的不要编。若是文章：提炼核心论点链条。若是纯观点推文：展开其背景与意义。300-500 字。",
   "design": {
     "relevant": "布尔值",
@@ -190,7 +224,7 @@ ${visualEvidenceCount > 0 ? `\n【视觉证据】随请求附有 ${visualEvidenc
 }`;
 }
 
-function buildDesignPrompt(item, visualEvidenceCount) {
+function buildDesignPrompt(item, visualEvidenceCount, cachedVisualFacts) {
   const links = item.links
     .map((link) => link.expanded ?? link.original)
     .filter(Boolean)
@@ -209,7 +243,8 @@ ${item.quoteContext ? `\n【被引用的推文】@${item.quoteContext.author}（
 标签：${item.ai.tags.join("、")}
 解析：${item.ai.analysis}
 ${links ? `\n【外链】\n${links}` : ""}
-${visualEvidenceCount > 0 ? `\n【视觉证据】随请求附有 ${visualEvidenceCount} 张图片或视频代表帧，必须结合画面判断。` : "\n【视觉证据】没有可用图片或视频代表帧，只能基于文字判断并相应降低置信度。"}
+${cachedVisualFacts ? `\n【已缓存视觉事实】\n${JSON.stringify(cachedVisualFacts, null, 2)}` : ""}
+${visualEvidenceCount > 0 ? `\n【视觉证据】随请求附有 ${visualEvidenceCount} 张图片或视频代表帧，必须结合画面判断。` : cachedVisualFacts ? "\n【视觉证据】本次复用已缓存的视觉事实。" : "\n【视觉证据】没有可用图片或视频代表帧，只能基于文字判断并相应降低置信度。"}
 
 请严格输出如下 JSON（不要输出任何其他内容）：
 {
@@ -226,10 +261,23 @@ ${visualEvidenceCount > 0 ? `\n【视觉证据】随请求附有 ${visualEvidenc
 function parseJsonResponse(responseText) {
   const body = responseText.trim().replace(/^```(?:json)?\s*/u, "").replace(/\s*```$/u, "");
   const parsed = JSON.parse(body);
-  if (!parsed.title || !parsed.summary || !parsed.analysis || !Array.isArray(parsed.tags) || parsed.tags.length === 0) {
+  if (
+    !parsed.title
+      || !parsed.summary
+      || !parsed.analysis
+      || !Array.isArray(parsed.tags)
+      || parsed.tags.length === 0
+      || !parsed.searchSignals
+      || !parsed.visualFacts
+  ) {
     throw new Error("模型返回缺少必需字段");
   }
-  return { ...parsed, design: normalizeDesignClassification(parsed.design, null) };
+  return {
+    ...parsed,
+    design: normalizeDesignClassification(parsed.design, null),
+    searchSignals: parsed.searchSignals ? normalizeSearchSignals(parsed.searchSignals) : undefined,
+    visualFacts: parsed.visualFacts ? normalizeVisualFacts(parsed.visualFacts) : undefined,
+  };
 }
 
 function parseDesignResponse(responseText) {
@@ -285,6 +333,8 @@ async function callPiModel(prompt, runtime, images, parser = parseJsonResponse) 
 // ---------- 主流程 ----------
 
 const queue = JSON.parse(await readFile(queuePath, "utf8"));
+queue.version = Math.max(Number(queue.version ?? 0), 3);
+queue.items = queue.items.map((item) => prepareCurationItem(item));
 let normalizedStatuses = 0;
 for (const item of queue.items) {
   if (!item.ai?.design) continue;
@@ -294,16 +344,19 @@ for (const item of queue.items) {
   normalizedStatuses += 1;
 }
 if (normalizedStatuses > 0) {
-  await writeFile(queuePath, JSON.stringify(queue, null, 2) + "\n");
   console.log(`已校正 ${normalizedStatuses} 条历史设计分类状态。`);
 }
+await writeJsonAtomically(queuePath, queue);
 let targets = queue.items.filter((item) => DESIGN_ONLY
-  ? item.ai.enrichedAt && !item.ai.design
-  : !item.ai.enrichedAt);
+  ? item.ai.enrichedAt && (
+      !item.ai.design
+        || (REFRESH && Number(item.pipeline?.stages?.design?.version ?? 0) < 2)
+    )
+  : needsCurationAnalysis(item, { refresh: REFRESH }));
 if (ONLY) targets = targets.filter((item) => ONLY.has(item.id));
 targets = targets.slice(0, LIMIT);
 
-console.log(`待${DESIGN_ONLY ? "补设计分类" : "解析"}: ${targets.length} 条，并发 ${CONCURRENCY}${DRY_RUN ? "（dry-run，不调用模型）" : ""}`);
+console.log(`待${DESIGN_ONLY ? "补设计分类" : "解析"}: ${targets.length} 条，并发 ${CONCURRENCY}${REFRESH ? "（强制刷新）" : ""}${DRY_RUN ? "（dry-run，不调用模型）" : ""}`);
 if (!DRY_RUN && ENGINE === "pi" && !process.env.KIMI_API_KEY) {
   console.error("缺少 KIMI_API_KEY 环境变量，Pi 无法使用 Kimi Coding 模型。");
   process.exit(1);
@@ -315,6 +368,7 @@ const codexReader = !DRY_RUN && ENGINE === "codex-cli"
     repoRoot,
   })
   : null;
+const MODEL_LABEL = ENGINE === "codex-cli" ? `codex-cli/${CODEX_MODEL}` : `pi/${piModel.provider}/${piModel.model}`;
 
 async function callModel(prompt, images, parser = parseJsonResponse) {
   if (codexReader) {
@@ -330,7 +384,7 @@ let saveQueue = Promise.resolve();
 
 function persistQueue() {
   const snapshot = JSON.stringify(queue, null, 2) + "\n";
-  saveQueue = saveQueue.then(() => writeFile(queuePath, snapshot));
+  saveQueue = saveQueue.then(() => writeTextAtomically(queuePath, snapshot));
   return saveQueue;
 }
 
@@ -372,10 +426,14 @@ async function processItem(item) {
     }
 
     // 3. AI 解析（带一次重试）
-    visualEvidence = await collectDesignEvidenceImages(item.media);
+    const cachedVisualFacts = hasReusableVisualFacts(item) ? item.ai.visualFacts : null;
+    // ponytail: item-level visual reuse is enough for this personal corpus; add a cross-item media hash cache only if duplicates become material.
+    visualEvidence = cachedVisualFacts
+      ? { cleanup: async () => {}, images: [] }
+      : await collectDesignEvidenceImages(item.media);
     const prompt = DESIGN_ONLY
-      ? buildDesignPrompt(item, visualEvidence.images.length)
-      : buildPrompt(item, linkContents, visualEvidence.images.length);
+      ? buildDesignPrompt(item, visualEvidence.images.length, cachedVisualFacts)
+      : buildPrompt(item, linkContents, visualEvidence.images.length, cachedVisualFacts);
     const parser = DESIGN_ONLY ? parseDesignResponse : parseJsonResponse;
     let parsed;
     try {
@@ -387,16 +445,12 @@ async function processItem(item) {
     }
 
     if (DESIGN_ONLY) {
-      item.ai.design = { ...parsed.design, classifiedAt: new Date().toISOString() };
+      Object.assign(item, applyDesignAnalysis(item, parsed.design, { model: MODEL_LABEL }));
     } else {
-      item.ai = {
-        title: String(parsed.title),
-        summary: String(parsed.summary),
-        tags: parsed.tags.map(String).slice(0, 2),
-        analysis: String(parsed.analysis),
-        design: { ...parsed.design, classifiedAt: new Date().toISOString() },
-        enrichedAt: new Date().toISOString(),
-      };
+      Object.assign(item, applyCurationAnalysis(item, parsed, {
+        model: MODEL_LABEL,
+        visualEvidenceCount: visualEvidence.images.length,
+      }));
     }
 
     done += 1;
@@ -405,6 +459,7 @@ async function processItem(item) {
     await sleep(1000); // 限速
   } catch (error) {
     failed += 1;
+    if (!DESIGN_ONLY) Object.assign(item, recordCurationAnalysisFailure(item, error, { model: MODEL_LABEL }));
     console.error(`[失败] ${item.id}: ${error.message.slice(0, 120)}`);
     await persistQueue();
     await sleep(2000);

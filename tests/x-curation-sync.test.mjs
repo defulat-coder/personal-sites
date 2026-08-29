@@ -29,12 +29,26 @@ test("sync pipeline fetches X data, prepares the sensitive queue, then enriches 
     },
     {
       command: process.execPath,
-      args: ["/repo/scripts/x-curation-enrich.mjs", "--limit", "3"],
+      args: [
+        "/repo/scripts/x-curation-enrich.mjs",
+        "--engine", "codex-cli",
+        "--model", "gpt-5.6-luna",
+        "--reasoning-effort", "max",
+        "--limit", "3",
+      ],
       options: { cwd: "/repo" },
     },
     {
       command: process.execPath,
-      args: ["/repo/scripts/x-curation-enrich.mjs", "--design-only", "--concurrency", "15", "--limit", "3"],
+      args: [
+        "/repo/scripts/x-curation-enrich.mjs",
+        "--design-only",
+        "--engine", "codex-cli",
+        "--model", "gpt-5.6-luna",
+        "--reasoning-effort", "high",
+        "--concurrency", "40",
+        "--limit", "3",
+      ],
       options: { cwd: "/repo" },
     },
     {
@@ -50,7 +64,7 @@ test("sync pipeline fetches X data, prepares the sensitive queue, then enriches 
   ]);
 });
 
-test("both sources retain their own origin before Pi Agent enrichment", async () => {
+test("both sources retain their own origin before enrichment", async () => {
   const calls = [];
 
   await runSyncPipeline({
@@ -94,18 +108,18 @@ test("sync arguments accept pnpm's -- separator", () => {
     media: true,
     fetchOnly: true,
     history: false,
-    engine: "pi",
+    engine: "codex-cli",
     codexModel: "gpt-5.6-luna",
-    designConcurrency: 15,
+    designConcurrency: 40,
     reasoningEffort: "max",
   });
 });
 
-test("Luna sync keeps full enrichment single-threaded and backfills design classification at concurrency 40", async () => {
+test("Codex is the default and backfills design classification at concurrency 40", async () => {
   const calls = [];
   await runSyncPipeline({
     repoRoot: "/repo",
-    options: parseSyncArgs(["--source", "bookmarks", "--engine", "codex-cli", "--model", "gpt-5.6-luna", "--reasoning-effort", "max"]),
+    options: parseSyncArgs(["--source", "bookmarks", "--model", "gpt-5.6-luna", "--reasoning-effort", "max"]),
     execute: async (command, args, options) => calls.push({ command, args, options }),
   });
 
@@ -126,7 +140,7 @@ test("Luna sync keeps full enrichment single-threaded and backfills design class
 });
 
 test("design backfill concurrency can be overridden without changing full enrichment", () => {
-  const options = parseSyncArgs(["--engine", "codex-cli", "--design-concurrency", "12"]);
+  const options = parseSyncArgs(["--design-concurrency", "12"]);
   assert.equal(options.designConcurrency, 12);
   assert.equal(options.reasoningEffort, "max");
 });

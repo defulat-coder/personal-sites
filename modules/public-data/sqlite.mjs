@@ -51,6 +51,29 @@ export function initializePublicDatabase(database) {
     ) STRICT;
     CREATE INDEX IF NOT EXISTS ask_documents_scope_order_idx
       ON ask_documents (source_scope, published_at DESC);
+
+    CREATE VIRTUAL TABLE IF NOT EXISTS ask_documents_fts USING fts5(
+      title,
+      search_text,
+      content = 'ask_documents',
+      content_rowid = 'rowid',
+      tokenize = 'unicode61 remove_diacritics 2'
+    );
+    CREATE TRIGGER IF NOT EXISTS ask_documents_fts_insert AFTER INSERT ON ask_documents BEGIN
+      INSERT INTO ask_documents_fts(rowid, title, search_text)
+      VALUES (new.rowid, new.title, new.search_text);
+    END;
+    CREATE TRIGGER IF NOT EXISTS ask_documents_fts_delete AFTER DELETE ON ask_documents BEGIN
+      INSERT INTO ask_documents_fts(ask_documents_fts, rowid, title, search_text)
+      VALUES ('delete', old.rowid, old.title, old.search_text);
+    END;
+    CREATE TRIGGER IF NOT EXISTS ask_documents_fts_update AFTER UPDATE ON ask_documents BEGIN
+      INSERT INTO ask_documents_fts(ask_documents_fts, rowid, title, search_text)
+      VALUES ('delete', old.rowid, old.title, old.search_text);
+      INSERT INTO ask_documents_fts(rowid, title, search_text)
+      VALUES (new.rowid, new.title, new.search_text);
+    END;
+    INSERT INTO ask_documents_fts(ask_documents_fts) VALUES ('rebuild');
   `);
   return database;
 }

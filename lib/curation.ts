@@ -28,6 +28,29 @@ const curationItemSchema = z.object({
     })
     .nullable()
     .default(null),
+  facts: z
+    .object({
+      version: z.number().int().positive(),
+      contentType: z.enum(["original", "quote", "reply"]),
+      domains: z.array(z.string()),
+      hashtags: z.array(z.string()),
+      linkTypes: z.array(z.string()),
+      mediaTypes: z.array(z.string()),
+      mentions: z.array(z.string()),
+      sourceKinds: z.array(z.string()),
+      tools: z.array(z.string()),
+    })
+    .default({
+      version: 1,
+      contentType: "original",
+      domains: [],
+      hashtags: [],
+      linkTypes: [],
+      mediaTypes: [],
+      mentions: [],
+      sourceKinds: [],
+      tools: [],
+    }),
   id: z.string().min(1),
   links: z.array(
     z.object({
@@ -60,10 +83,32 @@ const curationItemSchema = z.object({
     platform: z.enum(["douyin", "x"]),
     url: z.string().url(),
   }),
+  searchSignals: z
+    .object({
+      concepts: z.array(z.string()),
+      entities: z.array(z.string()),
+      problems: z.array(z.string()),
+      sentiment: z.enum(["positive", "negative", "neutral", "humorous", "controversial"]),
+      tools: z.array(z.string()),
+      useCases: z.array(z.string()),
+    })
+    .nullable()
+    .default(null),
   summary: z.string().min(1),
   tags: z.array(z.string().min(1)).min(1),
   text: z.string().min(1),
   title: z.string().min(1),
+  visualFacts: z
+    .object({
+      interactionSignals: z.array(z.string()),
+      objects: z.array(z.string()),
+      ocr: z.array(z.string()),
+      scenes: z.array(z.string()),
+      styles: z.array(z.string()),
+      tools: z.array(z.string()),
+    })
+    .nullable()
+    .default(null),
 });
 
 const curationContentRowSchema = z.object({ content_json: z.string().min(1) });
@@ -82,6 +127,7 @@ const localSearchRowSchema = z.object({
   source_url: z.string().min(1),
   title: z.string().min(1),
 });
+const localSearchFtsRowSchema = z.object({ id: z.string().min(1), rank: z.number() });
 
 const ATTACHMENT_LABELS = {
   animated_gif: "GIF",
@@ -293,6 +339,23 @@ export type LocalAskDocument = CurationDailySearchDocument & {
   section: string | null;
 };
 
+function searchLocalAskFts(query: string, scope: "daily" | "open-source", limit: number) {
+  if (Array.from(query).length < 3) return [];
+  try {
+    return getCurationDatabase()
+      .prepare(`SELECT documents.id, bm25(ask_documents_fts, 6.0, 1.0) AS rank
+        FROM ask_documents_fts
+        JOIN ask_documents AS documents ON documents.rowid = ask_documents_fts.rowid
+        WHERE ask_documents_fts MATCH ? AND documents.source_scope = ?
+        ORDER BY rank
+        LIMIT ?`)
+      .all(`"${query.replaceAll('"', '""')}"`, scope, limit)
+      .map((row) => localSearchFtsRowSchema.parse(row));
+  } catch {
+    return [];
+  }
+}
+
 export function searchLocalAskDocuments(
   query: string,
   scope: "daily" | "open-source",
@@ -301,8 +364,32 @@ export function searchLocalAskDocuments(
   const needle = query.trim().toLocaleLowerCase("en-US");
   if (!needle) return [];
 
-  return getDailySearchCorpus()
-    .filter((entry) => entry.sourceScope === scope)
+  const corpus = getDailySearchCorpus().filter((entry) => entry.sourceScope === scope);
+  const byId = new Map(corpus.map((entry) => [entry.id, entry]));
+  const ftsRows = searchLocalAskFts(needle, scope, limit * 4);
+  if (ftsRows.length > 0) {
+    return ftsRows
+      .flatMap((row, index) => {
+        const entry = byId.get(String(row.id));
+        if (!entry) return [];
+        return [{
+          content: entry.content,
+          id: entry.id,
+          publishedAt: entry.publishedAt,
+          score: 4 / (index + 1)
+            + occurrences(entry.lowercaseTitle, needle) * 8
+            + occurrences(entry.lowercaseSearchText, needle) * 2,
+          scope: entry.sourceScope,
+          section: entry.section,
+          sourceId: entry.sourceId,
+          sourceUrl: entry.sourceUrl,
+          title: entry.title,
+        }];
+      })
+      .slice(0, limit);
+  }
+
+  return corpus
     .map((entry) => ({
       content: entry.content,
       id: entry.id,

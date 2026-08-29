@@ -11,11 +11,14 @@
  *   node scripts/build-curation-content.mjs
  */
 
-import { mkdir, readFile, writeFile } from "node:fs/promises";
+import { mkdir, readFile } from "node:fs/promises";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 
 import { isReadyForPublication, toPublicCurationItem } from "../modules/x-sync/curation-projection.mjs";
+import { prepareCurationItem } from "../modules/x-sync/analysis.mjs";
+import { buildCurationInsights } from "../modules/x-sync/insights.mjs";
+import { writeJsonAtomically } from "../modules/x-sync/queue-file.mjs";
 
 const repoRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const config = JSON.parse(
@@ -24,9 +27,11 @@ const config = JSON.parse(
 
 const queuePath = path.join(repoRoot, config.queueFile);
 const outputPath = path.join(repoRoot, "data/sensitive/x-curation/generated/curation.json");
+const insightsPath = path.join(repoRoot, "data/sensitive/x-curation/generated/insights.json");
 
 const queue = JSON.parse(await readFile(queuePath, "utf8"));
-const ready = queue.items.filter(isReadyForPublication);
+const analyzedItems = queue.items.map((item) => prepareCurationItem(item));
+const ready = analyzedItems.filter(isReadyForPublication);
 
 const items = ready
   .map(toPublicCurationItem)
@@ -42,13 +47,14 @@ const output = {
   items,
 };
 
+await mkdir(path.dirname(outputPath), { recursive: true });
+await writeJsonAtomically(insightsPath, buildCurationInsights(analyzedItems));
+console.log(`私有全库洞察已写入：${path.relative(repoRoot, insightsPath)}`);
 if (ready.length === 0) {
   console.log("没有已完成解析的条目；保留现有本地生成备份。");
   process.exit(0);
 }
-
-await mkdir(path.dirname(outputPath), { recursive: true });
-await writeFile(outputPath, JSON.stringify(output, null, 2) + "\n");
+await writeJsonAtomically(outputPath, output);
 console.log(
   `本地生成备份已写入：${path.relative(repoRoot, outputPath)}（${items.length} 条已解析，${queue.items.length - ready.length} 条待解析）`,
 );

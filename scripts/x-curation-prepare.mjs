@@ -17,11 +17,13 @@
  */
 
 import { createHash } from "node:crypto";
-import { mkdir, readFile, writeFile } from "node:fs/promises";
+import { mkdir, readFile } from "node:fs/promises";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 
 import { mergeXMedia, normalizeXMedia } from "../modules/x-sync/media.mjs";
+import { prepareCurationItem } from "../modules/x-sync/analysis.mjs";
+import { writeJsonAtomically, writeTextAtomically } from "../modules/x-sync/queue-file.mjs";
 import { firstSeenMetadata, parseSourceOrderSnapshot } from "../modules/x-sync/source-order.mjs";
 
 const repoRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
@@ -55,7 +57,7 @@ function normalizeLink(link) {
 }
 
 function normalizeEntry(bookmark) {
-  return {
+  return prepareCurationItem({
     id: String(bookmark.id),
     fetchSource,
     author: {
@@ -78,7 +80,7 @@ function normalizeEntry(bookmark) {
       analysis: "", // 深度解析：GitHub 仓库完整解析 / 文章观点提炼
       enrichedAt: null,
     },
-  };
+  });
 }
 
 async function readJsonOr(filePath, fallback) {
@@ -109,10 +111,11 @@ await mkdir(rawDir, { recursive: true });
 const rawBody = JSON.stringify(pending);
 const rawHash = createHash("sha256").update(rawBody).digest("hex");
 const rawPath = path.join(rawDir, `${rawHash}.json`);
-await writeFile(rawPath, rawBody);
+await writeTextAtomically(rawPath, rawBody);
 
 // 2. 合并进策展队列（按 tweet id 去重）
 const queue = await readJsonOr(queuePath, { version: 2, items: [] });
+queue.version = Math.max(Number(queue.version ?? 0), 3);
 const existing = new Map(queue.items.map((item) => [item.id, item]));
 const sourceOrder = await readSourceOrder();
 
@@ -142,7 +145,7 @@ for (const bookmark of bookmarks) {
 
 queue.updatedAt = new Date().toISOString();
 await mkdir(path.dirname(queuePath), { recursive: true });
-await writeFile(queuePath, JSON.stringify(queue, null, 2) + "\n");
+await writeJsonAtomically(queuePath, queue);
 
 console.log(`Raw 快照: ${path.relative(repoRoot, rawPath)}`);
 console.log(`新增策展条目: ${added}（队列共 ${queue.items.length} 条）`);

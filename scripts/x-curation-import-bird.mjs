@@ -12,11 +12,13 @@
  *   node scripts/x-curation-import-bird.mjs
  */
 
-import { mkdir, readFile, readdir, stat, writeFile } from "node:fs/promises";
+import { mkdir, readFile, readdir, stat } from "node:fs/promises";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 
 import { mergeXMedia, normalizeXMedia } from "../modules/x-sync/media.mjs";
+import { prepareCurationItem } from "../modules/x-sync/analysis.mjs";
+import { writeJsonAtomically } from "../modules/x-sync/queue-file.mjs";
 
 const repoRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const config = JSON.parse(
@@ -48,7 +50,7 @@ function toInt(value) {
 
 function normalizeTweet(tweet, fetchSource) {
   const handle = tweet.author?.username ?? "";
-  return {
+  return prepareCurationItem({
     id: String(tweet.id),
     fetchSource,
     author: {
@@ -83,7 +85,7 @@ function normalizeTweet(tweet, fetchSource) {
       analysis: "",
       enrichedAt: null,
     },
-  };
+  });
 }
 
 async function readJsonOr(filePath, fallback) {
@@ -149,6 +151,7 @@ for (const file of rawFiles) {
 }
 
 const queue = await readJsonOr(queuePath, { version: 2, items: [] });
+queue.version = Math.max(Number(queue.version ?? 0), 3);
 const existing = new Set(queue.items.map((item) => item.id));
 const seen = new Set(existing);
 
@@ -194,7 +197,7 @@ for (const item of queue.items) {
 
 queue.updatedAt = new Date().toISOString();
 await mkdir(path.dirname(queuePath), { recursive: true });
-await writeFile(queuePath, JSON.stringify(queue, null, 2) + "\n");
+await writeJsonAtomically(queuePath, queue);
 
 console.log(`来源总量: ${tweets.length} 条（书签 + 点赞）`);
 console.log(`新增策展条目: ${added} 条`);

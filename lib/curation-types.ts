@@ -30,22 +30,55 @@ export type CurationMedia = {
   width: number | null;
 };
 
+export type CurationFacts = {
+  version: number;
+  contentType: "original" | "quote" | "reply";
+  domains: string[];
+  hashtags: string[];
+  linkTypes: string[];
+  mediaTypes: string[];
+  mentions: string[];
+  sourceKinds: string[];
+  tools: string[];
+};
+
+export type CurationSearchSignals = {
+  concepts: string[];
+  entities: string[];
+  problems: string[];
+  sentiment: "positive" | "negative" | "neutral" | "humorous" | "controversial";
+  tools: string[];
+  useCases: string[];
+};
+
+export type CurationVisualFacts = {
+  interactionSignals: string[];
+  objects: string[];
+  ocr: string[];
+  scenes: string[];
+  styles: string[];
+  tools: string[];
+};
+
 export type CurationItem = {
   analysis: string;
   author: { handle: string; name: string };
   collectedAt: string | null;
   collectedOrder: number | null;
   design: DesignClassification | null;
+  facts: CurationFacts;
   id: string;
   links: CurationLink[];
   media: CurationMedia[];
   publishedAt: string | null;
   quoteContext: { author: string; authorName: string; text: string } | null;
   source: CurationSource;
+  searchSignals: CurationSearchSignals | null;
   summary: string;
   tags: string[];
   text: string;
   title: string;
+  visualFacts: CurationVisualFacts | null;
 };
 
 /**

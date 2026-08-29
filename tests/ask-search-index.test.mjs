@@ -8,12 +8,15 @@ test("daily public projections become one searchable document per item", () => {
     content: {
       analysis: "分析内容",
       author: { handle: "cy", name: "陈远" },
+      facts: { domains: ["github.com"], hashtags: ["agents"], mentions: [], tools: ["GitHub"] },
       id: "tweet-1",
       publishedAt: "2026-08-10T00:00:00.000Z",
       summary: "摘要内容",
       tags: ["Agent", "检索"],
       text: "公开原文",
       title: "全文检索实践",
+      searchSignals: { concepts: ["浏览器自动化"], entities: [], problems: ["登录态复用"], tools: ["Playwright"], useCases: [] },
+      visualFacts: { interactionSignals: ["命令面板"], objects: [], ocr: ["Connect Chrome"], scenes: [], tools: [], styles: [] },
     },
   }]);
 
@@ -21,6 +24,8 @@ test("daily public projections become one searchable document per item", () => {
   assert.equal(document.source_url, "/curation/tweet-1");
   assert.match(document.search_text, /陈远/u);
   assert.match(document.search_text, /Agent/u);
+  assert.match(document.search_text, /Connect Chrome/u);
+  assert.match(document.search_text, /登录态复用/u);
   assert.match(document.content, /公开原文/u);
 });
 

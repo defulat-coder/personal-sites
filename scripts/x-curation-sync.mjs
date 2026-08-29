@@ -33,7 +33,7 @@ export function parseSyncArgs(args) {
     media: true,
     fetchOnly: false,
     history: false,
-    engine: "pi",
+    engine: "codex-cli",
     codexModel: "gpt-5.6-luna",
     designConcurrency: null,
     reasoningEffort: "max",
@@ -115,16 +115,16 @@ function printUsage() {
   console.log(`用法：pnpm curation:sync -- [选项]
 
 快捷入口：
-  pnpm curation:sync:kimi -- [选项]  Pi Coding Agent + Kimi
-  pnpm curation:sync:luna -- [选项]  Codex CLI + GPT-5.6 Luna（Max）
+  pnpm curation:sync              Codex CLI + GPT-5.6 Luna（Max，默认）
+  pnpm curation:sync:kimi -- [选项]  显式改用 Pi Coding Agent + Kimi
 
 选项：
   --source bookmarks|likes|both  抓取来源，默认 both
   --limit <n>                    最多交给解析器处理 n 条条目
-  --engine pi|codex-cli          解析器，默认 pi；codex-cli 正文解析单并发执行
+  --engine codex-cli|pi          解析器，默认 codex-cli；Pi 需要显式选择
   --model <name>                 Codex CLI 模型，默认 gpt-5.6-luna
   --reasoning-effort <level>     Codex CLI 推理等级，默认 max
-  --design-concurrency <n>       缺失设计分类的回填并发；Luna 默认 40，Kimi 默认 15
+  --design-concurrency <n>       缺失设计分类的回填并发；Codex 默认 40，Pi 默认 15
   --no-media                     不抓取媒体元数据（默认会抓取，供设计识别与站内播放）
   --fetch-only                   只抓取并写入策展队列，不调用模型
   --history                      全量抓取历史书签与点赞并导入策展队列

@@ -44,7 +44,7 @@ const item = {
   tweetUrl: "https://x.com/author/status/1",
 };
 
-test("only completed Pi results become a public curation record", () => {
+test("only completed analysis results become a public curation record", () => {
   assert.equal(isReadyForPublication(item), true);
   assert.equal(isReadyForPublication({ ...item, ai: { ...item.ai, tags: [] } }), false);
   assert.deepEqual(toPublicCurationItem(item), {
@@ -53,6 +53,17 @@ test("only completed Pi results become a public curation record", () => {
     collectedAt: null,
     collectedOrder: null,
     design: item.ai.design,
+    facts: {
+      contentType: "original",
+      domains: ["example.com"],
+      hashtags: [],
+      linkTypes: ["article"],
+      mediaTypes: ["video"],
+      mentions: [],
+      sourceKinds: [],
+      tools: [],
+      version: 1,
+    },
     id: "1",
     links: [{ shortUrl: "https://t.co/x", type: "article", url: "https://example.com" }],
     media: [{
@@ -66,10 +77,12 @@ test("only completed Pi results become a public curation record", () => {
     }],
     publishedAt: "2026-08-09T00:00:00.000Z",
     quoteContext: null,
+    searchSignals: null,
     summary: "摘要",
     tags: ["Agent 工程"],
     text: "公开原文",
     title: "标题",
+    visualFacts: null,
     source: { label: "X 原文", platform: "x", url: "https://x.com/author/status/1" },
   });
 });
@@ -137,6 +150,10 @@ test("public SQLite merges approved focus sources and builds the matching local 
       { id: "daily:1", source_url: "/curation/1" },
       { id: "daily:douyin-2", source_url: "/curation/douyin-2" },
     ]);
+    assert.deepEqual(
+      database.prepare("SELECT documents.id FROM ask_documents_fts JOIN ask_documents AS documents ON documents.rowid = ask_documents_fts.rowid WHERE ask_documents_fts MATCH '公开原文'").all(),
+      [{ id: "daily:douyin-2" }, { id: "daily:1" }],
+    );
     database.close();
   } finally {
     await rm(directory, { force: true, recursive: true });
