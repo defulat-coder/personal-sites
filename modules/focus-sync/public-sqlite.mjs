@@ -4,6 +4,7 @@ import path from "node:path";
 
 import { toDailySearchDocuments } from "../ask/search-index.mjs";
 import {
+  compactPublicDatabase,
   initializePublicDatabase,
   preserveSupplementalProjection,
   PUBLIC_DATABASE_PATH,
@@ -59,6 +60,7 @@ export async function buildPublicCurationDatabase({ outputPath, items: unsortedI
         document.source_url,
       );
     }
+    compactPublicDatabase(database);
     database.close();
 
     await rename(temporaryPath, outputPath);

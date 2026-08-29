@@ -48,6 +48,8 @@ pnpm curation:enrich -- --refresh --limit 20
 2. 只暂存 `data/curation.sqlite` 与本次明确的代码/文档变更，运行 `pnpm git:safety` 后提交并推送；Vercel 的 Git 集成会创建新部署。
 3. `pnpm curation:publish` 只重建 SQLite，不会访问远端数据库；结束时固定报告设计收录、排除、待复核、未分类及可播放视频数量。
 
+全量策展、项目档案和 GitHub Star 三个公开 SQLite 写入口共享压实规则：空闲页达到 32 页时才执行 `VACUUM`，减少 Git 二进制与部署体积，同时避免每次微小更新都重写数据库。
+
 每次生成策展内容时还会在私有目录写入 `data/sensitive/x-curation/generated/insights.json` 与便于人工阅读的 `insights.md`，包含数据健康度、来源分布、高频概念、工具、近期上升主题与 taxonomy 建议。按内容摘要去重的历史快照保存在 `generated/insight-snapshots/`；这些文件都不会进入 Git 或网站运行时。
 
 前端只在 Node.js 服务端从 SQLite 读取，绝不向浏览器暴露数据库文件。`next.config.ts` 的输出文件追踪会将它随每个函数部署；Edge Runtime 不支持这一读取路径。

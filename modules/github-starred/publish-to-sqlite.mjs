@@ -3,7 +3,7 @@ import path from "node:path";
 import { fileURLToPath } from "node:url";
 
 import { toOpenSourceSearchDocuments } from "../ask/search-index.mjs";
-import { initializePublicDatabase, PUBLIC_DATABASE_PATH } from "../public-data/sqlite.mjs";
+import { compactPublicDatabase, initializePublicDatabase, PUBLIC_DATABASE_PATH } from "../public-data/sqlite.mjs";
 
 const repoRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "../..");
 
@@ -97,6 +97,7 @@ export async function publishStarredRecords({
         );
       }
     })();
+    compactPublicDatabase(database);
   } finally {
     database.close();
   }

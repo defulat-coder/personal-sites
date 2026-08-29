@@ -5,6 +5,19 @@ import { toProfileSearchDocument, toProjectSearchDocuments } from "../ask/search
 
 export const PUBLIC_DATABASE_PATH = "data/curation.sqlite";
 
+export function compactPublicDatabase(database, minimumFreePages = 32) {
+  const freePagesBefore = Number(database.pragma("freelist_count", { simple: true }));
+  if (freePagesBefore < minimumFreePages) {
+    return { compacted: false, freePagesAfter: freePagesBefore, freePagesBefore };
+  }
+  database.exec("VACUUM");
+  return {
+    compacted: true,
+    freePagesAfter: Number(database.pragma("freelist_count", { simple: true })),
+    freePagesBefore,
+  };
+}
+
 export function initializePublicDatabase(database) {
   database.exec(`
     PRAGMA foreign_keys = ON;

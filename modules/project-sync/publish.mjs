@@ -3,7 +3,7 @@ import path from "node:path";
 import { fileURLToPath } from "node:url";
 
 import { toProjectSearchDocuments } from "../ask/search-index.mjs";
-import { initializePublicDatabase, replaceAskDocuments, PUBLIC_DATABASE_PATH } from "../public-data/sqlite.mjs";
+import { compactPublicDatabase, initializePublicDatabase, replaceAskDocuments, PUBLIC_DATABASE_PATH } from "../public-data/sqlite.mjs";
 import { approvedProjectSchema, publicProjectSnapshotSchema } from "./schema.mjs";
 import { assertPublicContentSafe, canonicalJson, readJson, sha256, writePrivateJson } from "./source.mjs";
 
@@ -73,6 +73,7 @@ export async function publishApprovedProject({
       throw new Error(`${project.id} 项目快照回读修订不一致。`);
     }
     publicProjectSnapshotSchema.parse(JSON.parse(row.snapshot_json));
+    compactPublicDatabase(database);
   } finally {
     database.close();
   }
