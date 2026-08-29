@@ -21,6 +21,15 @@ const nextConfig: NextConfig = {
     return [
       {
         headers: [
+          { key: "Permissions-Policy", value: "camera=(), microphone=(), geolocation=(), browsing-topics=()" },
+          { key: "Referrer-Policy", value: "strict-origin-when-cross-origin" },
+          { key: "X-Content-Type-Options", value: "nosniff" },
+          { key: "X-Frame-Options", value: "DENY" },
+        ],
+        source: "/:path*",
+      },
+      {
+        headers: [
           { key: "Cache-Control", value: "public, max-age=604800, stale-while-revalidate=86400" },
         ],
         source: "/images/:path*",
