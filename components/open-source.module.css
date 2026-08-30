@@ -202,6 +202,11 @@
     animation: none;
     transition: none;
   }
+
+  .loadingTitle,
+  .loadingLine {
+    animation: none;
+  }
 }
 
 .documentHeader {
@@ -299,6 +304,12 @@
 .repositoryFileEmpty { display: grid; min-height: 14rem; place-items: center; text-align: center; }
 
 @keyframes repository-browser-spin { to { transform: rotate(360deg); } }
+
+@media (prefers-reduced-motion: reduce) {
+  .repositoryBrowserLoading svg {
+    animation: none;
+  }
+}
 
 :global(html[data-curation-theme="dark"]) .filter {
   color: #999;
