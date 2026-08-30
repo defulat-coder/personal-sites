@@ -665,4 +665,29 @@ html[data-curation-theme="dark"] :focus-visible { outline-color:#f4f4f4; }
 /* 深色下 html/body 与开场动画仍按浅色变量取白底：过滚露白、硬刷新白闪。 */
 html[data-curation-theme="dark"], html[data-curation-theme="dark"] body { background:#181818; }
 html[data-curation-theme="dark"] .opening-loader { background:#181818; }
-@media (prefers-reduced-motion:reduce) { .skip-link { transition:none; } }
+@media (prefers-reduced-motion:reduce) {
+  html { scroll-behavior:auto; }
+  ::view-transition-old(root),::view-transition-new(root) { animation:none; }
+  .curation-home__external-links a,
+  .curation-home__about-trigger,
+  .curation-detail__back a,
+  .ai-news-detail__back { transition:color 180ms ease; }
+  .ai-news-detail__cta,
+  .curation-open-source-detail .curation-detail__cta { transition:opacity 180ms ease; }
+  .curation-home__external-links a:hover,
+  .curation-home__external-links a:focus-visible,
+  .curation-home__about-trigger:hover,
+  .curation-home__about-trigger:focus-visible,
+  .curation-detail__back a:hover,
+  .curation-detail__back a:focus-visible,
+  .ai-news-detail__back:hover,
+  .ai-news-detail__back:focus-visible,
+  .ai-news-detail__cta:hover,
+  .ai-news-detail__cta:focus-visible,
+  .curation-open-source-detail .curation-detail__cta:hover,
+  .curation-open-source-detail .curation-detail__cta:focus-visible,
+  .curation-detail__media a:hover img,
+  .curation-detail__media a:focus-visible img { transform:none; }
+  .curation-detail__media img,
+  .skip-link { transition:none; }
+}

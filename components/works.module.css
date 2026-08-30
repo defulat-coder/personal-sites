@@ -543,6 +543,12 @@
   .shotDialogNav {
     transition: none;
   }
+
+  .strip figure:hover img,
+  .links a:hover,
+  .links a:focus-visible {
+    transform: none;
+  }
 }
 
 :global(html[data-curation-theme="dark"]) .stream li {
