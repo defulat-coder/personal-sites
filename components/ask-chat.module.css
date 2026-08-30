@@ -304,6 +304,10 @@
   color: #fff !important;
 }
 
+.send svg {
+  transform-origin: center;
+}
+
 /* 清空对话：弱化的幽灵图标按钮，悬停才转深 */
 .clear {
   width: 1.75rem !important;
@@ -336,12 +340,6 @@
   background: var(--quiet) !important;
   color: #fff !important;
   opacity: 1 !important;
-}
-
-/* 发送反馈：飞机轨迹由 Motion 驱动（见 ask-chat.tsx launchPlane），
-   动画落定后由流式状态接管按钮槽位。 */
-.sendLaunching {
-  pointer-events: none;
 }
 
 .scopeMenu {

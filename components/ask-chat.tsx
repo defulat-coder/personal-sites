@@ -307,7 +307,6 @@ export function AskChat() {
       opacity: [1, 1, 1, 1, 0],
       rotate: [0, 10, -10, -18, -26],
       scale: [1, 0.9, 1.04, 0.94, 0.55],
-      transformOrigin: "center",
       x: ["0rem", "-0.14rem", "0.1rem", "0.9rem", "2.6rem"],
       y: ["0rem", "0.1rem", "-0.12rem", "-0.85rem", "-2.4rem"],
     }, {
@@ -324,11 +323,11 @@ export function AskChat() {
     const trimmedQuestion = question.trim();
     if (!trimmedQuestion || isStreaming || isLaunching || visitorId === "unavailable") return;
 
-    // 发送反馈：纸飞机先蓄势起飞，动画落定后再进入流式流程；减少动态时跳过。
+    // 发送反馈与会话准备并行：动效只确认操作，不能把请求固定推迟 520ms。
+    // isLaunching 保留纸飞机节点直到轨迹结束；流式开始后同一按钮立即具备停止语义。
     if (!prefersReducedMotion) {
       setIsLaunching(true);
-      await launchPlane();
-      setIsLaunching(false);
+      void launchPlane().then(() => setIsLaunching(false));
     }
 
     const session = await (visitorSessionPromise.current ?? ensureVisitorSession());
@@ -597,29 +596,19 @@ export function AskChat() {
                 <Trash2 aria-hidden="true" />
               </InputGroupButton>
             ) : null}
-            {isStreaming ? (
-              <InputGroupButton
-                aria-label="停止生成"
-                className={styles.send}
-                onClick={() => requestController.current?.abort()}
-                size="icon-sm"
-                type="button"
-                variant="ghost"
-              >
-                <Square aria-hidden="true" />
-              </InputGroupButton>
-            ) : (
-              <InputGroupButton
-                aria-label="发送问题"
-                className={`${styles.send} ${isLaunching ? styles.sendLaunching : ""}`}
-                disabled={!canSubmit && !isLaunching}
-                size="icon-sm"
-                type="submit"
-                variant="ghost"
-              >
-                <SendHorizontal aria-hidden="true" ref={planeRef} />
-              </InputGroupButton>
-            )}
+            <InputGroupButton
+              aria-label={isStreaming ? "停止生成" : "发送问题"}
+              className={styles.send}
+              disabled={!isStreaming && !canSubmit && !isLaunching}
+              onClick={isStreaming ? () => requestController.current?.abort() : undefined}
+              size="icon-sm"
+              type={isStreaming ? "button" : "submit"}
+              variant="ghost"
+            >
+              {isLaunching || !isStreaming
+                ? <SendHorizontal aria-hidden="true" ref={planeRef} />
+                : <Square aria-hidden="true" />}
+            </InputGroupButton>
           </InputGroupAddon>
         </InputGroup>
       </form>
