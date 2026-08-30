@@ -203,7 +203,24 @@ test("open-source filters cap Motion stagger and honor reduced motion", async ({
 test("works keeps purposeful lightbox Motion without list choreography", async ({ page }) => {
   await page.goto("/works");
   const firstEntry = page.locator('[aria-label="我的作品列表"] > li').first();
+  const strip = page.getByLabel("这个站点本身 页面样张");
   expect(await firstEntry.evaluate((element) => getComputedStyle(element).animationName)).toBe("none");
+  await expect.poll(() => strip.evaluate((element) => element.scrollLeft)).toBeGreaterThan(0);
+  await strip.hover();
+  const pausedAt = await strip.evaluate((element) => element.scrollLeft);
+  await page.waitForTimeout(500);
+  expect(Math.abs(await strip.evaluate((element) => element.scrollLeft) - pausedAt)).toBeLessThanOrEqual(1);
+  await page.locator('nav[aria-label="内容导航"]:visible').hover();
+  await expect.poll(() => strip.evaluate((element) => element.scrollLeft)).toBeGreaterThan(pausedAt + 2);
+
+  await page.locator(".curation-home__feed").evaluate((feed) => {
+    feed.scrollTop = feed.scrollHeight;
+  });
+  await expect.poll(() => strip.evaluate((element) => element.getBoundingClientRect().bottom)).toBeLessThan(0);
+  const offscreenAt = await strip.evaluate((element) => element.scrollLeft);
+  await page.waitForTimeout(500);
+  expect(Math.abs(await strip.evaluate((element) => element.scrollLeft) - offscreenAt)).toBeLessThanOrEqual(1);
+  await strip.scrollIntoViewIfNeeded();
 
   await page.getByRole("button", { name: /^放大查看：/u }).first().click();
   const dialog = page.getByRole("dialog");
@@ -216,6 +233,9 @@ test("works keeps purposeful lightbox Motion without list choreography", async (
 
   await page.emulateMedia({ reducedMotion: "reduce" });
   await page.reload();
+  const reducedStrip = page.getByLabel("这个站点本身 页面样张");
+  await page.waitForTimeout(1_500);
+  expect(await reducedStrip.evaluate((element) => element.scrollLeft)).toBe(0);
   const reducedDialog = page.getByRole("dialog");
   await expect.poll(async () => {
     if (await reducedDialog.count()) return true;

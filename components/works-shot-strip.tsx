@@ -3,6 +3,7 @@
 import Image from "next/image";
 import { ChevronLeft, ChevronRight, X } from "lucide-react";
 import {
+  animate,
   motion,
   useMotionValue,
   useReducedMotion,
@@ -117,89 +118,129 @@ export function WorksShotStrip({ shots, workTitle }: WorksShotStripProps) {
     return () => strip.removeEventListener("wheel", onWheel);
   }, []);
 
-  // 自动漂移：样张带缓慢自动横滚，到端点折返，配合中心强调依次呈现每张样张。
-  // 悬停/聚焦暂停，手动滚轮或触摸后稍候再恢复；reduced-motion 下不启动。
-  // rAF 循环只在其滚入视口时运行（IntersectionObserver 门控），避免每个条目常驻空转。
+  // 自动漂移由 Motion 数值动画驱动：每段从当前位置匀速抵达一侧端点，完成后反向。
+  // 悬停/聚焦暂停，手动滚轮或触摸后稍候再恢复；离屏、页面隐藏和 reduced-motion 下不启动。
   useEffect(() => {
     const strip = stripRef.current;
     if (!strip || reduceMotion) return;
 
-    let raf = 0;
+    let controls: ReturnType<typeof animate> | null = null;
     let direction = 1;
-    let hoverPaused = false;
-    let resumeAt = performance.now() + 1200;
-    let last = performance.now();
+    let disposed = false;
+    let focusPaused = false;
+    let hasEntered = false;
+    let inView = false;
+    let pointerPaused = false;
+    let resumeTimer = 0;
     const speed = 24; // px/s，刻意放慢
-    // 逻辑位置自维护：scrollLeft 读回会取整，直接 read-modify-write 每帧丢失亚像素增量，漂移会卡住。
-    let position = strip.scrollLeft;
-    let lastSet = Math.round(position);
-    // 与最后写入值偏差超过取整误差 = 用户手动滚动过，采纳其实际位置。
-    const syncFromUserScroll = () => {
-      if (Math.abs(strip.scrollLeft - lastSet) > 1) position = strip.scrollLeft;
-    };
+    const isPaused = () => focusPaused || pointerPaused;
 
-    const frame = (now: number) => {
-      const dt = Math.min(64, now - last);
-      last = now;
-      const max = strip.scrollWidth - strip.clientWidth;
-      if (max > 0 && !hoverPaused && now >= resumeAt) {
-        position += direction * speed * (dt / 1000);
-        if (position >= max) {
-          position = max;
-          direction = -1;
-        } else if (position <= 0) {
-          position = 0;
-          direction = 1;
-        }
-        lastSet = Math.round(position);
-        strip.scrollLeft = lastSet;
-      }
-      raf = requestAnimationFrame(frame);
-    };
-
-    const start = () => {
-      if (raf) return;
-      last = performance.now();
-      raf = requestAnimationFrame(frame);
-    };
     const stop = () => {
-      cancelAnimationFrame(raf);
-      raf = 0;
+      controls?.stop();
+      controls = null;
+    };
+    const clearResume = () => {
+      window.clearTimeout(resumeTimer);
+      resumeTimer = 0;
+    };
+    const start = () => {
+      clearResume();
+      stop();
+      if (disposed || document.hidden || isPaused() || !inView) return;
+      const max = strip.scrollWidth - strip.clientWidth;
+      if (max <= 0) return;
+      const from = Math.min(max, Math.max(0, strip.scrollLeft));
+      let target = direction > 0 ? max : 0;
+      if (Math.abs(target - from) < 1) {
+        direction *= -1;
+        target = direction > 0 ? max : 0;
+      }
+      controls = animate(from, target, {
+        duration: Math.abs(target - from) / speed,
+        ease: "linear",
+        onComplete: () => {
+          controls = null;
+          direction *= -1;
+          start();
+        },
+        onUpdate: (value) => {
+          strip.scrollLeft = value;
+        },
+      });
+    };
+    const schedule = (delay: number) => {
+      clearResume();
+      stop();
+      if (!inView || isPaused() || document.hidden) return;
+      resumeTimer = window.setTimeout(start, delay);
     };
     const visibilityObserver = new IntersectionObserver((entries) => {
-      if (entries.some((entry) => entry.isIntersecting)) start();
-      else stop();
+      inView = entries.some((entry) => entry.isIntersecting);
+      if (inView) {
+        schedule(hasEntered ? 0 : 1_200);
+        hasEntered = true;
+      } else {
+        clearResume();
+        stop();
+      }
     });
     visibilityObserver.observe(strip);
+    const resizeObserver = new ResizeObserver(() => schedule(0));
+    resizeObserver.observe(strip);
 
     const holdBriefly = () => {
-      resumeAt = performance.now() + 2600;
+      schedule(2_600);
     };
-    const onEnter = () => {
-      hoverPaused = true;
+    const pause = () => {
+      clearResume();
+      stop();
     };
-    const onLeave = () => {
-      hoverPaused = false;
-      holdBriefly();
+    const onPointerEnter = () => {
+      pointerPaused = true;
+      pause();
+    };
+    const onPointerLeave = () => {
+      pointerPaused = false;
+      if (!isPaused()) holdBriefly();
+    };
+    const onFocusIn = () => {
+      focusPaused = true;
+      pause();
+    };
+    const onFocusOut = (event: FocusEvent) => {
+      if (event.relatedTarget instanceof Node && strip.contains(event.relatedTarget)) return;
+      focusPaused = false;
+      if (!isPaused()) holdBriefly();
+    };
+    const onVisibilityChange = () => {
+      if (document.hidden) {
+        clearResume();
+        stop();
+      } else {
+        schedule(0);
+      }
     };
 
-    strip.addEventListener("pointerenter", onEnter);
-    strip.addEventListener("pointerleave", onLeave);
-    strip.addEventListener("focusin", onEnter);
-    strip.addEventListener("focusout", onLeave);
-    strip.addEventListener("scroll", syncFromUserScroll, { passive: true });
+    strip.addEventListener("pointerenter", onPointerEnter);
+    strip.addEventListener("pointerleave", onPointerLeave);
+    strip.addEventListener("focusin", onFocusIn);
+    strip.addEventListener("focusout", onFocusOut);
     strip.addEventListener("wheel", holdBriefly, { passive: true });
     strip.addEventListener("touchstart", holdBriefly, { passive: true });
+    document.addEventListener("visibilitychange", onVisibilityChange);
     return () => {
+      disposed = true;
+      clearResume();
       stop();
       visibilityObserver.disconnect();
-      strip.removeEventListener("pointerenter", onEnter);
-      strip.removeEventListener("pointerleave", onLeave);
-      strip.removeEventListener("focusin", onEnter);
-      strip.removeEventListener("focusout", onLeave);
-      strip.removeEventListener("scroll", syncFromUserScroll);
+      resizeObserver.disconnect();
+      strip.removeEventListener("pointerenter", onPointerEnter);
+      strip.removeEventListener("pointerleave", onPointerLeave);
+      strip.removeEventListener("focusin", onFocusIn);
+      strip.removeEventListener("focusout", onFocusOut);
       strip.removeEventListener("wheel", holdBriefly);
       strip.removeEventListener("touchstart", holdBriefly);
+      document.removeEventListener("visibilitychange", onVisibilityChange);
     };
   }, [reduceMotion]);
 
