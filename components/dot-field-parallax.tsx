@@ -1,21 +1,45 @@
 "use client";
 
 import { motion, useMotionValue, useReducedMotion, useSpring } from "motion/react";
-import type { ReactNode } from "react";
+import { useEffect, useRef, type ReactNode } from "react";
 
 // 指针视差：弹幕信号层整体跟随指针轻微漂移，松手后弹簧回中。
 // reduced-motion 下不挂监听、不施加位移，SSR 与客户端首帧输出一致（均为零位移）。
 export function DotFieldParallax({ children }: { children: ReactNode }) {
+  const signalsRef = useRef<HTMLDivElement>(null);
   const reduceMotion = useReducedMotion();
   const offsetX = useMotionValue(0);
   const offsetY = useMotionValue(0);
   const x = useSpring(offsetX, { damping: 24, stiffness: 160 });
   const y = useSpring(offsetY, { damping: 24, stiffness: 160 });
 
+  useEffect(() => {
+    const signals = signalsRef.current;
+    if (!signals || reduceMotion) return;
+
+    let isVisible = true;
+    const syncPlayback = () => {
+      signals.toggleAttribute("data-motion-paused", document.hidden || !isVisible);
+    };
+    const observer = new IntersectionObserver(([entry]) => {
+      isVisible = entry?.isIntersecting ?? false;
+      syncPlayback();
+    });
+    observer.observe(signals);
+    document.addEventListener("visibilitychange", syncPlayback);
+    syncPlayback();
+
+    return () => {
+      observer.disconnect();
+      document.removeEventListener("visibilitychange", syncPlayback);
+    };
+  }, [reduceMotion]);
+
   return (
     <motion.div
       aria-hidden="true"
       className="interactive-dot-field__signals"
+      ref={signalsRef}
       onPointerLeave={reduceMotion ? undefined : () => {
         offsetX.set(0);
         offsetY.set(0);

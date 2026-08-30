@@ -647,6 +647,7 @@ html[data-curation-theme="dark"] .curation-open-source-detail .curation-detail__
 .interactive-dot-field__track:nth-child(5) .interactive-dot-field__term { border-color:rgb(28 28 30 / 36%); font-size:.68rem; }
 .interactive-dot-field__track:nth-child(9) .interactive-dot-field__term { border-color:rgb(28 28 30 / 42%); font-size:.7rem; }
 .interactive-dot-field__track:nth-child(n) { top:var(--term-top); will-change:transform; animation:technical-term-marquee var(--term-duration) linear var(--term-delay) infinite; }
+.interactive-dot-field__signals[data-motion-paused] .interactive-dot-field__track { will-change:auto; animation-play-state:paused; }
 /* 词条数量已超出固定泳道规则可枚举的范围，--term-top/--term-duration/--term-delay/
    --term-drift/--term-opacity 由 interactive-dot-field.tsx 按索引确定性生成，内联在
    每个 __track 元素上（SSR 与客户端结果一致，不会触发 hydration mismatch）。 */

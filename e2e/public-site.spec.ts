@@ -53,6 +53,21 @@ test("Ask starts the request without waiting for send motion", async ({ page }) 
   })).toBeLessThan(300);
 });
 
+test("technical signal motion pauses while offscreen", async ({ page }) => {
+  await page.setViewportSize({ height: 250, width: 390 });
+  await page.goto("/");
+  const field = page.locator(".interactive-dot-field:visible");
+  const track = field.locator(".interactive-dot-field__track").first();
+  await field.scrollIntoViewIfNeeded();
+  await expect.poll(() => track.evaluate((element) => element.getAnimations()[0]?.playState)).toBe("running");
+
+  await page.evaluate(() => window.scrollTo({ behavior: "instant", top: document.documentElement.scrollHeight }));
+  await expect.poll(() => track.evaluate((element) => element.getAnimations()[0]?.playState)).toBe("paused");
+
+  await field.scrollIntoViewIfNeeded();
+  await expect.poll(() => track.evaluate((element) => element.getAnimations()[0]?.playState)).toBe("running");
+});
+
 test("public discovery endpoints remain machine readable", async ({ request }) => {
   for (const [path, type] of [
     ["/robots.txt", "text/plain"],
