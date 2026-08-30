@@ -17,6 +17,13 @@ const durationByKind = {
   collapse: 280,
   expand: 320,
 } as const;
+const revealSelectors = [
+  ".curation-home__profile-header",
+  ".curation-theme-toggle",
+  'nav[aria-label="内容导航"]',
+  ".interactive-dot-field",
+  ".curation-home__bio",
+] as const;
 
 export function ProfileTransitionBridge({ section }: ProfileTransitionBridgeProps) {
   useLayoutEffect(() => {
@@ -54,11 +61,35 @@ export function ProfileTransitionBridge({ section }: ProfileTransitionBridgeProp
     const summaryTranslateY = summaryTargetBox.top - transition.summary.top;
     const duration = durationByKind[transition.kind] / 1000;
     let cancelled = false;
+    let holdFrame = 0;
+    let releaseFrame = 0;
+    let revealCleanupFrame = 0;
+    let revealAnimations: Array<ReturnType<typeof animate>> = [];
+    let revealElements: HTMLElement[] = [];
 
     const finish = () => {
       if (cancelled) return;
+      revealElements = revealSelectors
+        .map((selector) => profile.querySelector<HTMLElement>(selector))
+        .filter((element): element is HTMLElement => Boolean(element?.getClientRects().length));
+      if (transition.kind === "collapse") {
+        const content = document.querySelector<HTMLElement>(".site-section-motion");
+        if (content) revealElements.push(content);
+      }
+      revealAnimations = revealElements.map((element) => animate(
+        element,
+        { opacity: [0, 1] },
+        { duration: 0.12, ease: [0.16, 1, 0.3, 1] },
+      ));
       delete profile.dataset.profileBridging;
       clearProfileTransition();
+      void Promise.allSettled(revealAnimations).then(() => {
+        if (cancelled) return;
+        revealAnimations.forEach((animation) => animation.cancel());
+        revealCleanupFrame = window.requestAnimationFrame(() => {
+          revealElements.forEach((element) => element.style.removeProperty("opacity"));
+        });
+      });
     };
 
     // 飞行由 Motion 关键帧驱动：显式 from/to 取自实时测量，不依赖漂移的残留状态。
@@ -86,16 +117,21 @@ export function ProfileTransitionBridge({ section }: ProfileTransitionBridgeProp
     // 飞行已交给合成器，两个帧后解除内容流的渲染暂停——长列表的布局成本
     // 与 ghost 飞行并行执行，不再阻塞飞行启动，也不会造成可见闪烁（内容区
     // 在 leaving-* 清除前仍保持透明）。
-    requestAnimationFrame(() => {
-      requestAnimationFrame(() => {
+    holdFrame = requestAnimationFrame(() => {
+      releaseFrame = requestAnimationFrame(() => {
         if (!cancelled) delete document.documentElement.dataset.profileFeedHold;
       });
     });
 
     return () => {
       cancelled = true;
+      cancelAnimationFrame(holdFrame);
+      cancelAnimationFrame(releaseFrame);
+      cancelAnimationFrame(revealCleanupFrame);
       avatarAnimation.cancel();
       summaryAnimation.cancel();
+      revealAnimations.forEach((animation) => animation.cancel());
+      revealElements.forEach((element) => element.style.removeProperty("opacity"));
     };
   }, [section]);
 

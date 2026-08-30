@@ -104,6 +104,62 @@ test("day video focuses with Motion and cleans up on Escape", async ({ page }) =
   await reducedDialog.getByRole("button", { name: "关闭我的一天" }).click();
 });
 
+test("mobile profile bridge uses Motion and clears transition state", async ({ page }) => {
+  const instrumentProfileMotion = () => page.evaluate(() => {
+    const testWindow = window as typeof window & { __profileRevealDurations: number[] };
+    const nativeAnimate = Element.prototype.animate;
+    testWindow.__profileRevealDurations = [];
+    Element.prototype.animate = function animate(keyframes, options) {
+      if (keyframes && typeof keyframes === "object" && "opacity" in keyframes) {
+        const duration = typeof options === "number" ? options : options?.duration;
+        if (typeof duration === "number") testWindow.__profileRevealDurations.push(duration);
+      }
+      return nativeAnimate.call(this, keyframes, options);
+    };
+  });
+  const readProfileState = () => page.evaluate(() => ({
+    bridging: document.querySelector<HTMLElement>(".curation-home__profile")?.dataset.profileBridging,
+    feedHold: document.documentElement.dataset.profileFeedHold,
+    ghosts: document.querySelectorAll(".profile-transition-ghost").length,
+    profileTransition: document.documentElement.dataset.profileTransition,
+    revealDurations: (
+      window as typeof window & { __profileRevealDurations?: number[] }
+    ).__profileRevealDurations ?? [],
+  }));
+
+  await page.setViewportSize({ height: 844, width: 390 });
+  await page.goto("/");
+  await instrumentProfileMotion();
+  await page.getByRole("link", { name: "问一问" }).click();
+  await expect(page).toHaveURL(/\/ask$/u);
+  await expect.poll(async () => (await readProfileState()).ghosts).toBe(0);
+  const collapsed = await readProfileState();
+  expect(collapsed.revealDurations.filter((duration) => duration === 120).length).toBeGreaterThan(0);
+  expect(collapsed).toMatchObject({ bridging: undefined, feedHold: undefined, profileTransition: undefined });
+
+  await page.evaluate(() => {
+    (window as typeof window & { __profileRevealDurations: number[] }).__profileRevealDurations = [];
+  });
+  await page.getByRole("link", { name: "首页" }).click();
+  await expect(page).toHaveURL(/\/$/u);
+  await expect.poll(async () => (await readProfileState()).ghosts).toBe(0);
+  const expanded = await readProfileState();
+  expect(expanded.revealDurations.filter((duration) => duration === 120).length).toBeGreaterThan(0);
+  expect(expanded).toMatchObject({ bridging: undefined, feedHold: undefined, profileTransition: undefined });
+
+  await page.emulateMedia({ reducedMotion: "reduce" });
+  await page.reload();
+  await instrumentProfileMotion();
+  await expect.poll(async () => {
+    if (/\/ask$/u.test(page.url())) return true;
+    await page.getByRole("link", { name: "问一问" }).click();
+    return /\/ask$/u.test(page.url());
+  }).toBe(true);
+  const reduced = await readProfileState();
+  expect(reduced.revealDurations).toEqual([]);
+  expect(reduced).toMatchObject({ bridging: undefined, feedHold: undefined, ghosts: 0, profileTransition: undefined });
+});
+
 test("open-source filters cap Motion stagger and honor reduced motion", async ({ page }) => {
   const instrumentListMotion = () => page.evaluate(() => {
     const testWindow = window as typeof window & { __filterMotionDurations: number[] };

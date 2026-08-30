@@ -53,22 +53,8 @@ html[data-profile-transition] {
     opacity: 0;
   }
 
-  html[data-profile-transition="leaving-collapse"] .curation-home--mobile-home .interactive-dot-field,
-  html[data-profile-transition="leaving-collapse"] .curation-home--mobile-home .curation-home__bio,
-  html[data-profile-transition="leaving-collapse"] .curation-home--mobile-home nav[aria-label="内容导航"] {
-    animation: profile-home-matter-leave 100ms cubic-bezier(.55, 0, 1, .45) both;
-  }
-
-  html[data-profile-transition="leaving-expand"] .site-section-motion {
-    animation: profile-content-fade-out 100ms cubic-bezier(.55, 0, 1, .45) both;
-  }
-
   html[data-profile-transition="leaving-collapse"] .curation-home:not(.curation-home--mobile-home) .site-section-motion {
     opacity: 0;
-  }
-
-  .site-section-motion {
-    transition: opacity 120ms cubic-bezier(.16, 1, .3, 1);
   }
 
   .curation-home__profile[data-profile-bridging="true"] .curation-home__profile-header,
@@ -78,14 +64,6 @@ html[data-profile-transition] {
   .curation-home__profile[data-profile-bridging="true"] .curation-home__bio {
     opacity: 0;
   }
-}
-
-@keyframes profile-home-matter-leave {
-  to { opacity: 0; }
-}
-
-@keyframes profile-content-fade-out {
-  to { opacity: 0; }
 }
 
 @media (prefers-reduced-motion: reduce) {
