@@ -137,12 +137,6 @@
   content-visibility: visible;
 }
 
-@keyframes status-pulse {
-  50% {
-    opacity: 0.3;
-  }
-}
-
 .bubble {
   overflow-wrap: anywhere;
 }
@@ -166,10 +160,6 @@
   color: var(--muted);
   font-size: 0.7rem;
   padding: 0;
-}
-
-.status :global(svg) {
-  animation: status-pulse 1.15s ease-in-out infinite;
 }
 
 .scrollToLatest {
@@ -504,10 +494,6 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .status :global(svg) {
-    animation: none;
-  }
-
   .root :global([data-slot="message-scroller-viewport"]) {
     scroll-behavior: auto !important;
   }

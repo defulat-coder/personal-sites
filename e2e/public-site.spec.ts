@@ -153,7 +153,7 @@ test("works keeps purposeful lightbox Motion without list choreography", async (
   const dialog = page.getByRole("dialog");
   const figure = dialog.locator("figure");
   await expect(dialog).toBeVisible();
-  await expect.poll(() => figure.evaluate((element) => getComputedStyle(element).transform)).not.toBe("none");
+  expect(await figure.evaluate((element) => getComputedStyle(element).animationName)).toBe("none");
   await expect.poll(() => figure.evaluate((element) => getComputedStyle(element).transform)).toBe("none");
   await dialog.getByRole("button", { name: "关闭大图" }).click();
   await expect(dialog).toBeHidden();
@@ -170,6 +170,49 @@ test("works keeps purposeful lightbox Motion without list choreography", async (
     getComputedStyle(element).transform
   ))).toBe("none");
   await reducedDialog.getByRole("button", { name: "关闭大图" }).click();
+});
+
+test("Ask retrieval status uses Motion with a static reduced state", async ({ page }) => {
+  let releaseResponse!: () => void;
+  let responseGate = new Promise<void>((resolve) => {
+    releaseResponse = resolve;
+  });
+  await page.route("**/api/ask", async (route) => {
+    await responseGate;
+    await route.fulfill({
+      body: "event: done\ndata: {}\n\n",
+      contentType: "text/event-stream",
+      status: 200,
+    });
+  });
+
+  await page.goto("/ask");
+  const input = page.getByRole("textbox", { name: "输入问题" });
+  await input.focus();
+  await page.waitForLoadState("networkidle");
+  await input.fill("测试检索状态");
+  await page.getByRole("button", { name: "发送问题" }).click();
+  const statusIcon = page.getByRole("status").locator("svg");
+  await expect(statusIcon).toBeVisible();
+  expect(await statusIcon.evaluate((icon) => getComputedStyle(icon).animationName)).toBe("none");
+  releaseResponse();
+  await expect(statusIcon).toBeHidden();
+
+  await page.emulateMedia({ reducedMotion: "reduce" });
+  await page.reload();
+  responseGate = new Promise<void>((resolve) => {
+    releaseResponse = resolve;
+  });
+  const reducedInput = page.getByRole("textbox", { name: "输入问题" });
+  await reducedInput.fill("测试减少动态");
+  const reducedSend = page.getByRole("button", { name: "发送问题" });
+  await expect(reducedSend).toBeEnabled();
+  await reducedSend.click();
+  const reducedStatusIcon = page.getByRole("status").locator("svg");
+  await expect(reducedStatusIcon).toHaveCSS("opacity", "1");
+  await page.waitForTimeout(300);
+  await expect(reducedStatusIcon).toHaveCSS("opacity", "1");
+  releaseResponse();
 });
 
 test("Ask starts the request without waiting for send motion", async ({ page }) => {

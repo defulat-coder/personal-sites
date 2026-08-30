@@ -44,6 +44,7 @@ import { memo, useCallback, useEffect, useRef, useState } from "react";
 import styles from "./ask-chat.module.css";
 
 const MotionMessageScrollerItem = motion.create(MessageScrollerItem);
+const MotionSearch = motion.create(Search);
 
 // react-markdown 生态只在收到第一条回答时才需要，按需加载。
 const AskAnswerMarkdown = dynamic(() => import("@/components/ask-answer-markdown").then((module) => module.AskAnswerMarkdown));
@@ -114,7 +115,15 @@ const AskMessageBubble = memo(function AskMessageBubble({ isStreamingPlaceholder
           </Bubble>
         ) : isStreamingPlaceholder ? (
           <Marker className={styles.status} role="status">
-            <MarkerIcon><Search /></MarkerIcon>
+            <MarkerIcon>
+              <MotionSearch
+                animate={prefersReducedMotion ? { opacity: 1 } : { opacity: [1, 0.3, 1] }}
+                initial={false}
+                transition={prefersReducedMotion
+                  ? { duration: 0 }
+                  : { duration: 1.15, ease: "easeInOut", repeat: Infinity }}
+              />
+            </MarkerIcon>
             <MarkerContent>
               {message.citations.length > 0
                 ? "已检索公开资料，正在生成回答…"
