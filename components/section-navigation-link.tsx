@@ -21,7 +21,6 @@ type SectionNavigationLinkProps = {
   transition: SectionTransition;
 };
 
-const exitDuration = 130;
 // 移动端 profile 过渡有 ghost 遮挡版块的退出过程，退出动画不必播完再导航，
 // 缩短等待让路由渲染与退出动画重叠，压缩 ghost 悬停的空白窗口。
 const mobileProfileExitDuration = 60;
@@ -50,10 +49,14 @@ export function SectionNavigationLink({
 }: SectionNavigationLinkProps) {
   const router = useRouter();
   const timeout = useRef<number | null>(null);
+  const exitAnimation = useRef<NonNullable<ReturnType<typeof beginSectionTransition>> | null>(null);
   const [isNavigating, setIsNavigating] = useState(false);
 
   useEffect(() => () => {
     if (timeout.current !== null) window.clearTimeout(timeout.current);
+    const animation = exitAnimation.current;
+    exitAnimation.current = null;
+    animation?.stop();
   }, []);
 
   return (
@@ -63,18 +66,41 @@ export function SectionNavigationLink({
       data-transitioning={isNavigating ? "true" : undefined}
       href={href}
       onNavigate={(event) => {
-        if (isNavigating || window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+        if (isNavigating) return;
+
+        const destination = new URL(href, window.location.origin);
+        if (destination.pathname === window.location.pathname) {
+          event.preventDefault();
+          commitNavigation(router, href);
+          return;
+        }
+        if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
 
         event.preventDefault();
         setIsNavigating(true);
         const isMobileProfileTransition = (from === "home" || to === "home")
           && window.matchMedia("(max-width: 900px)").matches;
 
-        if (!isMobileProfileTransition) beginSectionTransition(transition);
         beginProfileTransition(from, to);
-        timeout.current = window.setTimeout(() => {
+        if (isMobileProfileTransition) {
+          timeout.current = window.setTimeout(() => {
+            commitNavigation(router, href);
+          }, mobileProfileExitDuration);
+          return;
+        }
+
+        const animation = beginSectionTransition(transition);
+        if (!animation) {
           commitNavigation(router, href);
-        }, isMobileProfileTransition ? mobileProfileExitDuration : exitDuration);
+          return;
+        }
+        exitAnimation.current = animation;
+        const finish = () => {
+          if (exitAnimation.current !== animation) return;
+          exitAnimation.current = null;
+          commitNavigation(router, href);
+        };
+        void animation.then(finish, finish);
       }}
     >
       {children}

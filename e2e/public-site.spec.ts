@@ -12,6 +12,42 @@ test("Ask exposes every public search scope", async ({ page }) => {
   await expect(scope).toHaveAccessibleName("检索范围：构建");
 });
 
+test("section navigation uses Motion SDK and cleans its final state", async ({ page }) => {
+  await page.goto("/curation");
+  await page.evaluate(() => {
+    const testWindow = window as typeof window & { __sectionMotionDurations: number[] };
+    const nativeAnimate = Element.prototype.animate;
+    testWindow.__sectionMotionDurations = [];
+    Element.prototype.animate = function animate(keyframes, options) {
+      if (this instanceof HTMLElement && this.classList.contains("site-section-motion")) {
+        const duration = typeof options === "number" ? options : options?.duration;
+        if (typeof duration === "number") testWindow.__sectionMotionDurations.push(duration);
+      }
+      return nativeAnimate.call(this, keyframes, options);
+    };
+  });
+
+  await page.getByRole("link", { name: "设计收藏" }).click();
+  await expect(page).toHaveURL(/\/design$/u);
+  await expect.poll(() => page.evaluate(() => (
+    window as typeof window & { __sectionMotionDurations?: number[] }
+  ).__sectionMotionDurations ?? [])).toEqual([130, 320]);
+  await expect.poll(() => page.locator(".site-section-motion").evaluate((element) => ({
+    opacity: (element as HTMLElement).style.opacity,
+    transform: (element as HTMLElement).style.transform,
+  }))).toEqual({ opacity: "", transform: "" });
+
+  await page.emulateMedia({ reducedMotion: "reduce" });
+  await page.evaluate(() => {
+    (window as typeof window & { __sectionMotionDurations: number[] }).__sectionMotionDurations = [];
+  });
+  await page.getByRole("link", { name: "每日关注" }).click();
+  await expect(page).toHaveURL(/\/curation$/u);
+  expect(await page.evaluate(() => (
+    window as typeof window & { __sectionMotionDurations?: number[] }
+  ).__sectionMotionDurations ?? [])).toEqual([]);
+});
+
 test("Ask starts the request without waiting for send motion", async ({ page }) => {
   await page.route("**/api/ask", async (route) => {
     await route.fulfill({
