@@ -75,6 +75,46 @@ test("about receipt uses Motion and keeps a reduced-motion final state", async (
   await reducedModal.getByRole("button", { name: "关闭" }).click();
 });
 
+test("open-source filters cap Motion stagger and honor reduced motion", async ({ page }) => {
+  const instrumentListMotion = () => page.evaluate(() => {
+    const testWindow = window as typeof window & { __filterMotionDurations: number[] };
+    const nativeAnimate = Element.prototype.animate;
+    testWindow.__filterMotionDurations = [];
+    Element.prototype.animate = function animate(keyframes, options) {
+      if (this instanceof HTMLLIElement && this.closest('[aria-label="已判读的开源项目"]')) {
+        const duration = typeof options === "number" ? options : options?.duration;
+        if (typeof duration === "number") testWindow.__filterMotionDurations.push(duration);
+      }
+      return nativeAnimate.call(this, keyframes, options);
+    };
+  });
+  const readDurations = () => page.evaluate(() => (
+    window as typeof window & { __filterMotionDurations?: number[] }
+  ).__filterMotionDurations ?? []);
+
+  await page.goto("/open-source");
+  await instrumentListMotion();
+  const skillsFilter = page.getByRole("button", { name: /^Skills 与工作流/u });
+  await skillsFilter.click();
+  await expect(skillsFilter).toHaveAttribute("aria-pressed", "true");
+  const filteredRows = await page.locator('[aria-label="已判读的开源项目"] ol > li').count();
+  await expect.poll(readDurations).toEqual(Array(Math.min(filteredRows, 8)).fill(280));
+
+  await page.emulateMedia({ reducedMotion: "reduce" });
+  await page.reload();
+  await instrumentListMotion();
+  const reducedSkillsFilter = page.getByRole("button", { name: /^Skills 与工作流/u });
+  await expect.poll(async () => {
+    if (await reducedSkillsFilter.getAttribute("aria-pressed") === "true") return true;
+    await reducedSkillsFilter.click();
+    return await reducedSkillsFilter.getAttribute("aria-pressed") === "true";
+  }).toBe(true);
+  expect(await readDurations()).toEqual([]);
+  expect(await page.locator('[aria-label="已判读的开源项目"] ol > li').evaluateAll((rows) => (
+    rows.every((row) => getComputedStyle(row).opacity === "1")
+  ))).toBe(true);
+});
+
 test("Ask starts the request without waiting for send motion", async ({ page }) => {
   await page.route("**/api/ask", async (route) => {
     await route.fulfill({
