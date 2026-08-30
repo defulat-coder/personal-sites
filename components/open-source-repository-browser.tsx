@@ -2,7 +2,7 @@
 
 import { ChevronDown, ChevronRight, ExternalLink, FileCode2, Folder, FolderOpen, LoaderCircle } from "lucide-react";
 import { AnimatePresence, motion, useReducedMotion } from "motion/react";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, useSyncExternalStore } from "react";
 
 import styles from "@/components/open-source.module.css";
 import {
@@ -32,6 +32,23 @@ type OpenSourceRepositoryBrowserProps = {
   repositoryUrl: string;
   slug: string;
 };
+
+const MotionLoaderCircle = motion.create(LoaderCircle);
+const subscribeToNothing = () => () => {};
+
+function RepositoryLoadingIcon() {
+  const mounted = useSyncExternalStore(subscribeToNothing, () => true, () => false);
+  const reduceMotion = useReducedMotion();
+  const spinning = mounted && !reduceMotion;
+  return (
+    <MotionLoaderCircle
+      animate={{ rotate: spinning ? [0, 360] : 0 }}
+      aria-hidden="true"
+      initial={false}
+      transition={spinning ? { duration: 0.9, ease: "linear", repeat: Infinity } : { duration: 0 }}
+    />
+  );
+}
 
 function formatFileSize(size?: number) {
   if (size === undefined) return "";
@@ -181,7 +198,7 @@ export function OpenSourceRepositoryBrowser({ repository, repositoryUrl, slug }:
       </div>
       {tree?.truncated ? <p className={styles.repositoryBrowserNotice}>仓库文件较多，当前仅展示前 6,000 项；可在 GitHub 查看完整结构。</p> : null}
       {treeError ? <p className={styles.repositoryBrowserError}>{treeError}</p> : null}
-      {!tree && !treeError ? <p className={styles.repositoryBrowserLoading}><LoaderCircle aria-hidden="true" /> 正在读取原始仓库结构…</p> : null}
+      {!tree && !treeError ? <p className={styles.repositoryBrowserLoading}><RepositoryLoadingIcon /> 正在读取原始仓库结构…</p> : null}
       {tree ? (
         <div className={styles.repositoryBrowserContent}>
           <aside aria-label="原始仓库文件树" className={styles.repositoryTreePane}>
@@ -194,7 +211,7 @@ export function OpenSourceRepositoryBrowser({ repository, repositoryUrl, slug }:
             />
           </aside>
           <section aria-label="原始文件内容" className={styles.repositoryFilePane}>
-            {loadingFile ? <p className={styles.repositoryBrowserLoading}><LoaderCircle aria-hidden="true" /> 正在读取 {selectedPath}…</p> : null}
+            {loadingFile ? <p className={styles.repositoryBrowserLoading}><RepositoryLoadingIcon /> 正在读取 {selectedPath}…</p> : null}
             {!loadingFile && fileError ? <p className={styles.repositoryBrowserError}>{fileError}</p> : null}
             {!loadingFile && !fileError && !file ? <p className={styles.repositoryFileEmpty}>从左侧文件树选择一个文本文件查看原始内容。</p> : null}
             {!loadingFile && file ? (

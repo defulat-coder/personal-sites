@@ -272,7 +272,7 @@
 .repositoryBrowserNotice { padding: 0 0 .85rem; }
 .repositoryBrowserError { padding: 1rem; border: 1px solid #e2bcbc; background: #fff7f7; color: #994545; }
 .repositoryBrowserLoading { display: flex; align-items: center; min-height: 10rem; justify-content: center; gap: .5rem; }
-.repositoryBrowserLoading svg { width: .9rem; height: .9rem; animation: repository-browser-spin 900ms linear infinite; }
+.repositoryBrowserLoading svg { width: .9rem; height: .9rem; }
 
 .repositoryBrowserContent { display: grid; min-height: 28rem; grid-template-columns: minmax(13rem, .68fr) minmax(0, 1.45fr); border: 1px solid var(--line); }
 .repositoryTreePane { overflow: auto; max-height: 38rem; border-right: 1px solid var(--line); padding: .45rem 0; }
@@ -288,14 +288,6 @@
 .repositoryFileContent { overflow: auto; max-height: 35rem; margin: 0; padding: 1rem 0 0; background: transparent; color: #454548; font-size: .74rem; line-height: 1.65; }
 .repositoryFileContent code { background: transparent; color: inherit; font-size: inherit; padding: 0; }
 .repositoryFileEmpty { display: grid; min-height: 14rem; place-items: center; text-align: center; }
-
-@keyframes repository-browser-spin { to { transform: rotate(360deg); } }
-
-@media (prefers-reduced-motion: reduce) {
-  .repositoryBrowserLoading svg {
-    animation: none;
-  }
-}
 
 :global(html[data-curation-theme="dark"]) .filter {
   color: #999;
