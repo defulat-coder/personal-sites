@@ -48,6 +48,33 @@ test("section navigation uses Motion SDK and cleans its final state", async ({ p
   ).__sectionMotionDurations ?? [])).toEqual([]);
 });
 
+test("about receipt uses Motion and keeps a reduced-motion final state", async ({ page }) => {
+  await page.goto("/");
+  await page.getByRole("button", { name: "关于我" }).click();
+  const modal = page.getByRole("dialog", { name: "关于我：个人经历打印稿" });
+  const paper = modal.locator(".about-printer__paper");
+  await expect(modal.getByRole("status")).toHaveText("正在打印个人经历…");
+  await expect.poll(() => paper.evaluate((element) => getComputedStyle(element).transform)).not.toBe("none");
+  await modal.getByRole("button", { name: "关闭" }).click();
+  await expect(modal).toBeHidden();
+  expect(await page.evaluate(() => document.body.style.overflow)).toBe("");
+
+  await page.emulateMedia({ reducedMotion: "reduce" });
+  await page.reload();
+  const reducedModal = page.getByRole("dialog", { name: "关于我：个人经历打印稿" });
+  await expect.poll(async () => {
+    if (await reducedModal.count()) return true;
+    await page.getByRole("button", { name: "关于我" }).click();
+    return Boolean(await reducedModal.count());
+  }).toBe(true);
+  await expect(reducedModal.getByRole("status")).toHaveText("打印完成 · 请取走小票");
+  expect(await reducedModal.locator(".lucide-loader-circle").count()).toBe(0);
+  expect(await reducedModal.locator(".about-printer__paper").evaluate((element) => (
+    getComputedStyle(element).transform
+  ))).toBe("none");
+  await reducedModal.getByRole("button", { name: "关闭" }).click();
+});
+
 test("Ask starts the request without waiting for send motion", async ({ page }) => {
   await page.route("**/api/ask", async (route) => {
     await route.fulfill({

@@ -126,12 +126,10 @@ html[data-curation-theme="dark"] { color-scheme:dark; }
 .about-printer__machine::before { position:absolute; inset:0; border-radius:inherit; background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='120' height='120'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2'/><feColorMatrix values='0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0.06 0'/></filter><rect width='120' height='120' filter='url(%23n)'/></svg>"); content:""; mix-blend-mode:multiply; opacity:.5; pointer-events:none; }
 .about-printer__screen { position:relative; display:flex; align-items:center; gap:.5rem; border-radius:.7rem; background:#17171a; color:#e8e8ea; font-family:ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,monospace; font-size:.7rem; letter-spacing:.02em; line-height:1; padding:.65rem .75rem; box-shadow:inset 0 2px 6px rgb(0 0 0 / 60%),inset 0 0 0 1px rgb(0 0 0 / 40%),inset 0 0 1.4rem rgb(0 0 0 / 45%); }
 .about-printer__screen svg { width:.85rem; height:.85rem; flex:0 0 auto; }
-.about-printer__screen .is-spinning { animation:about-printer-spin 1s linear infinite; }
 .about-printer__slot { position:absolute; right:1.1rem; bottom:.65rem; left:1.1rem; height:.5rem; border-radius:.25rem; background:#17171a; box-shadow:inset 0 1px 3px rgb(0 0 0 / 70%),0 1px 0 rgb(255 255 255 / 55%); }
 .about-printer__output { position:relative; z-index:1; margin-top:-1rem; padding:1rem 1.35rem 0; overflow:hidden; }
 .about-printer__paper { position:relative; background:#fbfbf9; color:#3f3f42; font-family:ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,monospace; padding:1.4rem 1.3rem 1.5rem; box-shadow:0 12px 24px -12px rgb(28 28 30 / 30%); }
 .about-printer__paper::before { position:absolute; inset:0; background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='120' height='120'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2'/><feColorMatrix values='0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0.05 0'/></filter><rect width='120' height='120' filter='url(%23n)'/></svg>"); content:""; mix-blend-mode:multiply; opacity:.45; pointer-events:none; }
-.about-printer.is-printing .about-printer__paper { animation:about-printer-feed 2.4s linear both; }
 .about-receipt__header { text-align:center; }.about-receipt__header p { margin:0; }
 .about-receipt__title { color:#1c1c1e; font-size:.8rem; font-weight:700; letter-spacing:.05em; }
 .about-receipt__sub { margin-top:.22rem!important; color:#656568; font-size:.62rem; letter-spacing:.1em; }
@@ -144,30 +142,6 @@ html[data-curation-theme="dark"] { color-scheme:dark; }
 .about-receipt__total strong { color:#1c1c1e; font-size:1rem; font-weight:700; }
 .about-receipt__foot { margin:.95rem 0 0; color:#656568; font-size:.64rem; text-align:center; }
 .about-receipt__barcode { height:1.9rem; margin-top:.75rem; background:repeating-linear-gradient(90deg,#26262a 0 2px,transparent 2px 4px,#26262a 4px 7px,transparent 7px 9px,#26262a 9px 10px,transparent 10px 13px,#26262a 13px 16px,transparent 16px 18px); }
-@keyframes about-printer-spin { to { transform:rotate(1turn); } }
-@keyframes about-printer-feed {
-  0% { transform:translateY(calc(-100% + 2px)); }
-  7.5% { transform:translateY(-91%); }
-  10.5% { transform:translateY(-91%); }
-  18% { transform:translateY(-81%); }
-  21% { transform:translateY(-81%); }
-  28.5% { transform:translateY(-70%); }
-  31.5% { transform:translateY(-70%); }
-  39% { transform:translateY(-58%); }
-  42% { transform:translateY(-58%); }
-  49.5% { transform:translateY(-45%); }
-  52.5% { transform:translateY(-45%); }
-  60% { transform:translateY(-32%); }
-  63% { transform:translateY(-32%); }
-  70.5% { transform:translateY(-20%); }
-  73.5% { transform:translateY(-20%); }
-  81% { transform:translateY(-10%); }
-  84% { transform:translateY(-10%); }
-  91.5% { transform:translateY(-3%); }
-  94.5% { transform:translateY(-3%); }
-  100% { transform:translateY(0); }
-}
-@media (prefers-reduced-motion:reduce) { .about-printer.is-printing .about-printer__paper,.about-printer__screen .is-spinning { animation:none; } }
 html[data-curation-theme="dark"] .curation-home__external-links a+.curation-home__about-trigger { border-color:#404040; }
 html[data-curation-theme="dark"] .curation-home__about-trigger { color:#b8b8bb; }html[data-curation-theme="dark"] .curation-home__about-trigger:hover,html[data-curation-theme="dark"] .curation-home__about-trigger:focus-visible { color:#f4f4f4; }
 html[data-curation-theme="dark"] .about-modal__backdrop { background:rgb(0 0 0 / 55%); }

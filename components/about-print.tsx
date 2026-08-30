@@ -6,6 +6,16 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 
 const PRINT_DURATION = 2_400;
+const PAPER_FEED_Y = [
+  "calc(-100% + 2px)", "-91%", "-91%", "-81%", "-81%", "-70%", "-70%",
+  "-58%", "-58%", "-45%", "-45%", "-32%", "-32%", "-20%", "-20%",
+  "-10%", "-10%", "-3%", "-3%", "0%",
+];
+const PAPER_FEED_TIMES = [
+  0, 0.075, 0.105, 0.18, 0.21, 0.285, 0.315, 0.39, 0.42, 0.495,
+  0.525, 0.6, 0.63, 0.705, 0.735, 0.81, 0.84, 0.915, 0.945, 1,
+];
+const MotionLoaderCircle = motion.create(LoaderCircle);
 
 const TOOTH_COUNT = 36;
 const TOOTH_DEPTH = 5;
@@ -144,11 +154,16 @@ export function AboutPrint() {
                 tabIndex={-1}
                 transition={{ duration: reduceMotion ? 0 : 0.28, ease: [0.16, 1, 0.3, 1] }}
               >
-                <div className={`about-printer${printing ? " is-printing" : ""}`}>
+                <div className="about-printer">
                   <div className="about-printer__machine">
                     <div className="about-printer__screen">
                       {printing ? (
-                        <LoaderCircle aria-hidden="true" className="is-spinning" />
+                        <MotionLoaderCircle
+                          animate={{ rotate: 360 }}
+                          aria-hidden="true"
+                          initial={{ rotate: 0 }}
+                          transition={{ duration: 1, ease: "linear", repeat: Infinity }}
+                        />
                       ) : (
                         <CircleCheck aria-hidden="true" />
                       )}
@@ -163,7 +178,15 @@ export function AboutPrint() {
                   </div>
 
                   <div className="about-printer__output">
-                    <article className="about-printer__paper" style={{ clipPath: receiptClipPath }}>
+                    <motion.article
+                      animate={{ y: reduceMotion ? "0%" : printing ? PAPER_FEED_Y : "0%" }}
+                      className="about-printer__paper"
+                      initial={reduceMotion ? false : { y: PAPER_FEED_Y[0] }}
+                      style={{ clipPath: receiptClipPath }}
+                      transition={printing
+                        ? { duration: PRINT_DURATION / 1_000, ease: "linear", times: PAPER_FEED_TIMES }
+                        : { duration: 0 }}
+                    >
                       <header className="about-receipt__header">
                         <p className="about-receipt__title">陈远 / CHEN YUAN</p>
                         <p className="about-receipt__sub">个人经历 · CAREER RECEIPT</p>
@@ -187,7 +210,7 @@ export function AboutPrint() {
                       </p>
                       <p className="about-receipt__foot">十二年 · 四段路 · 仍在增长</p>
                       <div aria-hidden="true" className="about-receipt__barcode" />
-                    </article>
+                    </motion.article>
                   </div>
                 </div>
               </motion.div>
