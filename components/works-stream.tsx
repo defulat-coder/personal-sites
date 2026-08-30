@@ -1,5 +1,4 @@
 import Link from "next/link";
-import type { CSSProperties } from "react";
 
 import styles from "@/components/works.module.css";
 import { WorksShotStrip } from "@/components/works-shot-strip";
@@ -48,9 +47,9 @@ function RecentRecords({ entry }: { entry: WorkEntry }) {
   );
 }
 
-function DossierEntry({ entry, index }: { entry: WorkEntry; index: number }) {
+function DossierEntry({ entry }: { entry: WorkEntry }) {
   return (
-    <li className={styles.dossier} style={{ "--work-entry-index": index } as CSSProperties}>
+    <li className={styles.dossier}>
       <header className={styles.dossierHead}>
         <div className={styles.dossierIntro}>
           <h2>
@@ -95,9 +94,9 @@ function DossierEntry({ entry, index }: { entry: WorkEntry; index: number }) {
   );
 }
 
-function RegistryEntry({ entry, index }: { entry: WorkEntry; index: number }) {
+function RegistryEntry({ entry }: { entry: WorkEntry }) {
   return (
-    <li style={{ "--work-entry-index": index } as CSSProperties}>
+    <li>
       <Link className={styles.row} href={`/works/${entry.slug}`}>
         <WorkMeta entry={entry} />
         <div className={styles.copy}>
@@ -121,11 +120,11 @@ export function WorksStream({ entries }: WorksStreamProps) {
   }
   return (
     <ol aria-label="我的作品列表" className={styles.stream}>
-      {entries.map((entry, index) =>
+      {entries.map((entry) =>
         entry.shots.length > 0 ? (
-          <DossierEntry entry={entry} index={index} key={entry.slug} />
+          <DossierEntry entry={entry} key={entry.slug} />
         ) : (
-          <RegistryEntry entry={entry} index={index} key={entry.slug} />
+          <RegistryEntry entry={entry} key={entry.slug} />
         ),
       )}
     </ol>

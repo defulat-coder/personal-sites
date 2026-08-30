@@ -115,6 +115,34 @@ test("open-source filters cap Motion stagger and honor reduced motion", async ({
   ))).toBe(true);
 });
 
+test("works keeps purposeful lightbox Motion without list choreography", async ({ page }) => {
+  await page.goto("/works");
+  const firstEntry = page.locator('[aria-label="我的作品列表"] > li').first();
+  expect(await firstEntry.evaluate((element) => getComputedStyle(element).animationName)).toBe("none");
+
+  await page.getByRole("button", { name: /^放大查看：/u }).first().click();
+  const dialog = page.getByRole("dialog");
+  const figure = dialog.locator("figure");
+  await expect(dialog).toBeVisible();
+  await expect.poll(() => figure.evaluate((element) => getComputedStyle(element).transform)).not.toBe("none");
+  await expect.poll(() => figure.evaluate((element) => getComputedStyle(element).transform)).toBe("none");
+  await dialog.getByRole("button", { name: "关闭大图" }).click();
+  await expect(dialog).toBeHidden();
+
+  await page.emulateMedia({ reducedMotion: "reduce" });
+  await page.reload();
+  const reducedDialog = page.getByRole("dialog");
+  await expect.poll(async () => {
+    if (await reducedDialog.count()) return true;
+    await page.getByRole("button", { name: /^放大查看：/u }).first().click();
+    return Boolean(await reducedDialog.count());
+  }).toBe(true);
+  expect(await reducedDialog.locator("figure").evaluate((element) => (
+    getComputedStyle(element).transform
+  ))).toBe("none");
+  await reducedDialog.getByRole("button", { name: "关闭大图" }).click();
+});
+
 test("Ask starts the request without waiting for send motion", async ({ page }) => {
   await page.route("**/api/ask", async (route) => {
     await route.fulfill({

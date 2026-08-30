@@ -268,7 +268,11 @@ export function WorksShotStrip({ shots, workTitle }: WorksShotStripProps) {
         ref={dialogRef}
       >
         {active ? (
-          <figure>
+          <motion.figure
+            animate={{ scale: 1 }}
+            initial={reduceMotion ? false : { scale: 0.985 }}
+            transition={{ duration: reduceMotion ? 0 : 0.24, ease: [0.16, 1, 0.3, 1] }}
+          >
             <Image
               alt={`${workTitle} · ${active.label}`}
               height={1500}
@@ -285,7 +289,7 @@ export function WorksShotStrip({ shots, workTitle }: WorksShotStripProps) {
                 </span>
               ) : null}
             </figcaption>
-          </figure>
+          </motion.figure>
         ) : null}
         {shots.length > 1 ? (
           <>
