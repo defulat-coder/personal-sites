@@ -51,13 +51,6 @@
   border-radius: .75rem;
   background: #fff;
   padding: 1rem;
-  animation: profile-day-focus 240ms cubic-bezier(.16, 1, .3, 1) both;
-}
-
-@keyframes profile-day-focus {
-  from {
-    transform: scale(.985);
-  }
 }
 
 .header {
@@ -158,9 +151,7 @@
 
 @media (prefers-reduced-motion: reduce) {
   .dialog,
-  .dialog::backdrop,
-  .frame {
-    animation: none;
+  .dialog::backdrop {
     transition: none;
   }
 }

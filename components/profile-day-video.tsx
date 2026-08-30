@@ -1,6 +1,7 @@
 "use client";
 
 import { Clapperboard, X } from "lucide-react";
+import { animate, useReducedMotion } from "motion/react";
 import { useEffect, useRef, useState } from "react";
 
 import styles from "@/components/profile-day-video.module.css";
@@ -8,14 +9,47 @@ import styles from "@/components/profile-day-video.module.css";
 export function ProfileDayVideo() {
   const [open, setOpen] = useState(false);
   const dialogRef = useRef<HTMLDialogElement>(null);
+  const frameRef = useRef<HTMLDivElement>(null);
   const videoRef = useRef<HTMLVideoElement>(null);
+  const reduceMotion = useReducedMotion();
 
   useEffect(() => {
     const dialog = dialogRef.current;
     if (!dialog) return;
-    if (open && !dialog.open) dialog.showModal();
-    if (!open && dialog.open) dialog.close();
-  }, [open]);
+    const frame = frameRef.current;
+    if (!open) {
+      if (dialog.open) dialog.close();
+      frame?.style.removeProperty("transform");
+      return;
+    }
+
+    if (!dialog.open) dialog.showModal();
+    if (!frame || reduceMotion) {
+      frame?.style.removeProperty("transform");
+      return;
+    }
+    const controls = animate(
+      frame,
+      { scale: [0.985, 1] },
+      { duration: 0.24, ease: [0.16, 1, 0.3, 1] },
+    );
+    let active = true;
+    let cleanupFrame = 0;
+    const finish = () => {
+      if (!active) return;
+      controls.cancel();
+      cleanupFrame = window.requestAnimationFrame(() => {
+        frame.style.removeProperty("transform");
+      });
+    };
+    void controls.then(finish, finish);
+    return () => {
+      active = false;
+      window.cancelAnimationFrame(cleanupFrame);
+      controls.stop();
+      frame.style.removeProperty("transform");
+    };
+  }, [open, reduceMotion]);
 
   useEffect(() => {
     if (!open) return;
@@ -55,7 +89,7 @@ export function ProfileDayVideo() {
         onClose={() => setOpen(false)}
         ref={dialogRef}
       >
-        <div className={styles.frame}>
+        <div className={styles.frame} ref={frameRef}>
           <header className={styles.header}>
             <div>
               <h2 id="profile-day-title">我的一天</h2>

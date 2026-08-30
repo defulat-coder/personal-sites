@@ -75,6 +75,35 @@ test("about receipt uses Motion and keeps a reduced-motion final state", async (
   await reducedModal.getByRole("button", { name: "关闭" }).click();
 });
 
+test("day video focuses with Motion and cleans up on Escape", async ({ page }) => {
+  await page.goto("/");
+  await page.getByRole("button", { name: "我的一天" }).click();
+  const dialogElement = page.locator('dialog[aria-labelledby="profile-day-title"]');
+  const dialog = page.getByRole("dialog", { name: "我的一天" });
+  const frame = dialogElement.locator("div").first();
+  const video = dialogElement.locator("video");
+  await expect(dialog).toBeVisible();
+  expect(await frame.evaluate((element) => getComputedStyle(element).animationName)).toBe("none");
+  await expect.poll(() => frame.evaluate((element) => getComputedStyle(element).transform)).toBe("none");
+  expect(await video.evaluate((element) => (element as HTMLVideoElement).paused)).toBe(true);
+  await page.keyboard.press("Escape");
+  await expect(dialogElement).not.toHaveAttribute("open");
+  expect(await video.evaluate((element) => (element as HTMLVideoElement).paused)).toBe(true);
+
+  await page.emulateMedia({ reducedMotion: "reduce" });
+  await page.reload();
+  const reducedDialog = page.getByRole("dialog", { name: "我的一天" });
+  await expect.poll(async () => {
+    if (await reducedDialog.isVisible()) return true;
+    await page.getByRole("button", { name: "我的一天" }).click();
+    return reducedDialog.isVisible();
+  }).toBe(true);
+  expect(await reducedDialog.locator("div").first().evaluate((element) => (
+    getComputedStyle(element).transform
+  ))).toBe("none");
+  await reducedDialog.getByRole("button", { name: "关闭我的一天" }).click();
+});
+
 test("open-source filters cap Motion stagger and honor reduced motion", async ({ page }) => {
   const instrumentListMotion = () => page.evaluate(() => {
     const testWindow = window as typeof window & { __filterMotionDurations: number[] };
