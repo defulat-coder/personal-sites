@@ -156,6 +156,7 @@ const EMPTY_ENTER_DURATION = 0.32;
 const MESSAGE_ENTER_EASE: [number, number, number, number] = [0.16, 1, 0.3, 1];
 const CLEAR_ITEM_DURATION = 0.42;
 const CLEAR_STAGGER = 0.07;
+const CLEAR_MAX_STAGGER = 0.28;
 const CLEAR_EXIT_EASE: [number, number, number, number] = [0.5, 0, 0.75, 0.4];
 const PLANE_LAUNCH_DURATION = 0.52;
 const PLANE_LAUNCH_EASE: [number, number, number, number] = [0.45, 0, 0.75, 0.4];
@@ -180,7 +181,7 @@ function AskMessageItem({ exitOrder, isStreamingPlaceholder, message, prefersRed
         opacity: 0,
         transition: prefersReducedMotion
           ? { duration: 0 }
-          : { delay: exitOrder * CLEAR_STAGGER, duration: CLEAR_ITEM_DURATION, ease: CLEAR_EXIT_EASE },
+          : { delay: Math.min(exitOrder * CLEAR_STAGGER, CLEAR_MAX_STAGGER), duration: CLEAR_ITEM_DURATION, ease: CLEAR_EXIT_EASE },
         y: "-0.4rem",
       }}
       initial={prefersReducedMotion

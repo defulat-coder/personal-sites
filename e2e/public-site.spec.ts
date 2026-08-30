@@ -68,6 +68,32 @@ test("technical signal motion pauses while offscreen", async ({ page }) => {
   await expect.poll(() => track.evaluate((element) => element.getAnimations()[0]?.playState)).toBe("running");
 });
 
+test("Ask caps clear motion for long conversations", async ({ page }) => {
+  await page.route("**/api/ask", async (route) => {
+    await route.fulfill({
+      body: "event: done\ndata: {}\n\n",
+      contentType: "text/event-stream",
+      status: 200,
+    });
+  });
+  await page.goto("/ask");
+  const input = page.getByRole("textbox", { name: "输入问题" });
+  await input.focus();
+  await page.waitForLoadState("networkidle");
+
+  for (let index = 1; index <= 8; index += 1) {
+    await input.fill(`测试问题 ${index}`);
+    await page.getByRole("button", { name: "发送问题" }).click();
+    const send = page.getByRole("button", { name: "发送问题" });
+    await expect(send).toBeVisible();
+    await send.locator("svg").evaluate((icon) => icon.getAnimations().forEach((animation) => animation.finish()));
+    await expect(send).toBeEnabled();
+  }
+
+  await page.getByRole("button", { name: "清空对话" }).click();
+  await expect(page.getByText("从公开资料开始")).toBeVisible({ timeout: 1_000 });
+});
+
 test("public discovery endpoints remain machine readable", async ({ request }) => {
   for (const [path, type] of [
     ["/robots.txt", "text/plain"],
