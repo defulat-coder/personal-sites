@@ -29,3 +29,13 @@ test-results/
 # Python virtual environments (e.g. video-promo/analysis/.venv) must never enter git;
 # their native binaries exceed GitHub's 100 MiB hard limit and fail git:safety.
 .venv/
+# Local scratch logs/snapshots and the 1.5G video-promo workspace; never commit.
+/.tmp/
+/video-promo/
+# Third-party video-shotcraft skill install (50M of demo/gallery assets) and its
+# symlinked entry points; other skills under .agents/skills stay tracked.
+/.agents/skills/video-shotcraft/
+/.claude/skills/video-shotcraft
+/.pi/skills/video-shotcraft
+# Generated design review screenshots; other .impeccable review artifacts stay tracked.
+/.impeccable/review/design-*.png
