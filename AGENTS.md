@@ -34,7 +34,13 @@ This block is written and re-added by `next dev` — verify at `node_modules/nex
 - Treat `PRODUCT.md` (strategic context), `DESIGN.md` and `docs/frontend-architecture.md` as the current UI source of truth; `docs/redesign-plan.md` is historical.
 - Preserve the desktop-first identity rail plus continuous content-flow layout. Do not restore the legacy knowledge/workspace shell or introduce card grids, glass, heavy shadows, or broad accent colors.
 - Reuse the identity rail on detail pages. New motion needs cleanup, a stable final state, and a `prefers-reduced-motion` path.
-- Use the Next runtime plus browser verification after UI changes; inspect compiler issues, routes, browser errors, and the rendered interaction.
+- Verify UI changes in the running Next app with ego lite (the ego-browser skill): inspect compiler issues, routes, browser errors, and the rendered interaction in a real page.
+
+## Browser Verification and Debugging
+
+- Use ego lite for all agent-driven browser work — opening URLs, verifying UI, clicking through flows. Run everything through `ego-browser nodejs <<'EOF' ... EOF` heredocs; follow the ego-browser skill for task spaces, snapshots, and helpers.
+- Debug through ego lite CDP: `cdp(...)` for protocol-level needs (console messages, network, dialogs), `js(...)` for in-page state and DOM inspection. Collect browser errors this way instead of guessing from screenshots.
+- The Playwright suite in `e2e/` remains the automated regression path; do not rewrite specs as ego lite scripts.
 
 ## Data, Privacy, and Caching
 
