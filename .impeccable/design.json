@@ -294,8 +294,8 @@
       "name": "Section Masthead",
       "kind": "nav",
       "refersTo": "content-navigation",
-      "description": "桌面内容区刊头：Title 档刊名居左，quiet 兄弟版块链接居右，共享唯一一条细线；问一问是动作不进入刊头序列。各阅读版块有独立路径（/ai-news、/curation、/open-source、/works）。",
-      "html": "<nav class=\"ds-masthead\"><span class=\"ds-masthead__current\">每日动态</span><span class=\"ds-masthead__siblings\"><a href=\"#\">推特点赞</a><a href=\"#\">开源关注</a><a href=\"#\">构建</a></span></nav>",
+      "description": "桌面内容区刊头：Title 档刊名居左，quiet 兄弟版块链接居右，共享唯一一条细线；问一问与阅读版块等权并排在序列末位。各内容版块有独立路径（/ai-news、/curation、/open-source、/works、/ask）。",
+      "html": "<nav class=\"ds-masthead\"><span class=\"ds-masthead__current\">每日动态</span><span class=\"ds-masthead__siblings\"><a href=\"#\">每日关注</a><a href=\"#\">开源关注</a><a href=\"#\">构建</a><a href=\"#\">问一问</a></span></nav>",
       "css": ".ds-masthead { display:flex; align-items:baseline; justify-content:space-between; gap:16px; border-bottom:1px solid #eee; padding:12px 0; font-family:-apple-system,BlinkMacSystemFont,Arial,sans-serif; }.ds-masthead__current { color:#1c1c1e; font-size:15px; font-weight:620; letter-spacing:-.035em; }.ds-masthead__siblings { display:flex; gap:16px; }.ds-masthead__siblings a { color:#767676; font-size:12px; text-decoration:none; transition:color 180ms ease; }.ds-masthead__siblings a:hover,.ds-masthead__siblings a:focus-visible { color:#1c1c1e; outline:0; }"
     },
     {

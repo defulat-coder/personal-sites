@@ -151,17 +151,32 @@
 
   .mobileNavigation {
     display: block;
+    min-width: 0;
+    align-self: stretch;
+    overflow-x: auto;
+    overscroll-behavior-inline: contain;
+    scrollbar-width: none;
     background: #fff;
     margin: 1rem -2rem 0;
-    padding: 0 2rem;
+    scroll-padding-inline: 2rem;
+  }
+
+  .mobileNavigation::-webkit-scrollbar {
+    display: none;
   }
 
   .mobileNavigation .navigation {
+    box-sizing: border-box;
+    width: max-content;
     min-height: 3.25rem;
+    min-width: 100%;
+    padding-inline: 2rem;
   }
 
   .mobileNavigation .link {
+    flex: 0 0 auto;
     min-height: 3.25rem;
+    white-space: nowrap;
   }
 
   .mobileNavigation .link::after {
@@ -169,7 +184,7 @@
   }
 
   .navigation {
-    gap: 0.5rem;
+    gap: 1.25rem;
   }
 
   .link {
@@ -182,11 +197,15 @@
   .mobileNavigation {
     margin-right: -1rem;
     margin-left: -1rem;
-    padding: 0 1rem;
+    scroll-padding-inline: 1rem;
+  }
+
+  .mobileNavigation .navigation {
+    padding-inline: 1rem;
   }
 
   .navigation {
-    gap: 0.75rem;
+    gap: 1.15rem;
     padding-top: 0.1rem;
   }
 

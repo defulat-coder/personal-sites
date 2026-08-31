@@ -4,6 +4,12 @@ import Image from "next/image";
 import { motion, useReducedMotion } from "motion/react";
 import { useCallback, useEffect, useState, useSyncExternalStore } from "react";
 
+import {
+  dispatchOpeningReveal,
+  hasOpeningPlayedThisSession,
+  markOpeningPlayed,
+} from "@/components/opening-reveal";
+
 type LoaderPhase = "preparing" | "playing" | "leaving" | "complete";
 
 const subscribeToNothing = () => () => {};
@@ -13,9 +19,12 @@ const CELL_CHARGE_DELAYS = [0.45, 1.4, 2.35, 3.3, 4.25];
 const CELL_COLORS = ["#ef4444", "#ef4444", "#f2c94c", "#24cb71"];
 const CELL_COLOR_TIMES = [0, 0.18, 0.52, 1];
 
+const hasPlayedThisSession = hasOpeningPlayedThisSession;
+
 export function OpeningLoader() {
   const [phase, setPhase] = useState<LoaderPhase>("preparing");
   const reduceMotion = useReducedMotion();
+  const sessionPlayed = useSyncExternalStore(subscribeToNothing, hasPlayedThisSession, () => false);
 
   // 角色序列图约 440KB(gzip)，水合后再渲染 <img>，避免拖慢 SSR 首帧。
   const mounted = useSyncExternalStore(subscribeToNothing, () => true, () => false);
@@ -25,30 +34,36 @@ export function OpeningLoader() {
   }, []);
 
   useEffect(() => {
-    if (phase !== "preparing") return;
+    if (sessionPlayed || phase !== "preparing") return;
     const fallback = window.setTimeout(start, 1_200);
     return () => window.clearTimeout(fallback);
-  }, [phase, start]);
+  }, [phase, sessionPlayed, start]);
 
   useEffect(() => {
-    if (phase !== "playing") return;
+    if (sessionPlayed || phase !== "playing") return;
     const reveal = window.setTimeout(
       () => setPhase("leaving"),
       reduceMotion ? 160 : 5_000,
     );
     return () => window.clearTimeout(reveal);
-  }, [phase, reduceMotion]);
+  }, [phase, reduceMotion, sessionPlayed]);
+
+  // 揭幕（上滑）开始时广播事件，内容流的「档案摊开」入场与帘幕抬起同步启动。
+  useEffect(() => {
+    if (sessionPlayed || phase !== "leaving") return;
+    dispatchOpeningReveal();
+  }, [phase, sessionPlayed]);
 
   useEffect(() => {
-    if (phase === "complete") return;
+    if (sessionPlayed || phase === "complete") return;
     const originalOverflow = document.documentElement.style.overflow;
     document.documentElement.style.overflow = "hidden";
     return () => {
       document.documentElement.style.overflow = originalOverflow;
     };
-  }, [phase]);
+  }, [phase, sessionPlayed]);
 
-  if (phase === "complete") return null;
+  if (sessionPlayed || phase === "complete") return null;
 
   const leaving = phase === "leaving";
   const charging = phase !== "preparing" && !reduceMotion;
@@ -61,7 +76,9 @@ export function OpeningLoader() {
       className={`opening-loader opening-loader--${phase}`}
       initial={false}
       onAnimationComplete={() => {
-        if (leaving) setPhase("complete");
+        if (!leaving) return;
+        markOpeningPlayed();
+        setPhase("complete");
       }}
       role="status"
       transition={{ duration: reduceMotion ? 0 : 0.8, ease: [0.76, 0, 0.24, 1] }}

@@ -42,7 +42,7 @@ export const projectCatalog = [
     role: "独立设计与开发",
     shots: [
       { label: "每日动态", src: "/images/works/personal-site/feed.jpg" },
-      { label: "推特点赞", src: "/images/works/personal-site/curation.jpg" },
+      { label: "每日关注", src: "/images/works/personal-site/curation.jpg" },
       { label: "开源关注", src: "/images/works/personal-site/open-source.jpg" },
       { label: "问一问", src: "/images/works/personal-site/ask.jpg" },
     ],

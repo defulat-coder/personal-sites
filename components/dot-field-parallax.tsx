@@ -7,6 +7,7 @@ import { useEffect, useRef, type ReactNode } from "react";
 // reduced-motion 下不挂监听、不施加位移，SSR 与客户端首帧输出一致（均为零位移）。
 export function DotFieldParallax({ children }: { children: ReactNode }) {
   const signalsRef = useRef<HTMLDivElement>(null);
+  const boundsRef = useRef<DOMRect | null>(null);
   const reduceMotion = useReducedMotion();
   const offsetX = useMotionValue(0);
   const offsetY = useMotionValue(0);
@@ -25,12 +26,18 @@ export function DotFieldParallax({ children }: { children: ReactNode }) {
       isVisible = entry?.isIntersecting ?? false;
       syncPlayback();
     });
+    const resizeObserver = new ResizeObserver(() => {
+      boundsRef.current = signals.getBoundingClientRect();
+    });
     observer.observe(signals);
+    resizeObserver.observe(signals);
     document.addEventListener("visibilitychange", syncPlayback);
     syncPlayback();
 
     return () => {
+      boundsRef.current = null;
       observer.disconnect();
+      resizeObserver.disconnect();
       document.removeEventListener("visibilitychange", syncPlayback);
     };
   }, [reduceMotion]);
@@ -40,12 +47,16 @@ export function DotFieldParallax({ children }: { children: ReactNode }) {
       aria-hidden="true"
       className="interactive-dot-field__signals"
       ref={signalsRef}
+      onPointerEnter={reduceMotion ? undefined : (event) => {
+        boundsRef.current = event.currentTarget.getBoundingClientRect();
+      }}
       onPointerLeave={reduceMotion ? undefined : () => {
         offsetX.set(0);
         offsetY.set(0);
       }}
       onPointerMove={reduceMotion ? undefined : (event) => {
-        const box = event.currentTarget.getBoundingClientRect();
+        const box = boundsRef.current;
+        if (!box) return;
         offsetX.set(((event.clientX - box.left) / box.width - 0.5) * 12);
         offsetY.set(((event.clientY - box.top) / box.height - 0.5) * 8);
       }}

@@ -3,14 +3,11 @@
 import Image from "next/image";
 import { ChevronLeft, ChevronRight, X } from "lucide-react";
 import {
-  animate,
+  AnimatePresence,
   motion,
-  useMotionValue,
   useReducedMotion,
-  useTransform,
-  type MotionValue,
 } from "motion/react";
-import { useEffect, useRef, useState, type RefObject } from "react";
+import { useEffect, useRef, useState } from "react";
 
 import styles from "@/components/works.module.css";
 import type { WorkShot } from "@/lib/works-types";
@@ -20,42 +17,30 @@ type WorksShotStripProps = {
   workTitle: string;
 };
 
+// 灯箱样张切换的方向语言：从样张带点开是缩放就位（null），
+// 左右切换沿点击方向横移滑入（+1 下一张自右入，-1 上一张自左入）。
+const shotDialogVariants = {
+  enter: (direction: number | null) =>
+    direction === null
+      ? { opacity: 0, scale: 0.985, x: 0 }
+      : { opacity: 0, scale: 1, x: direction * 28 },
+  center: { opacity: 1, scale: 1, x: 0 },
+  exit: (direction: number | null) =>
+    direction === null
+      ? { opacity: 0, scale: 0.985, x: 0 }
+      : { opacity: 0, scale: 1, x: direction * -28 },
+};
+
 type StripShotProps = {
   index: number;
   onOpen: (index: number) => void;
-  scrollTick: MotionValue<number>;
   shot: WorkShot;
-  stripRef: RefObject<HTMLDivElement | null>;
   workTitle: string;
 };
 
-/**
- * 单张样张：随样张带横向滚动，按与可视中心的距离做轻微缩放/透明度强调——
- * 越靠近中间越清晰饱满，滚向两侧则收敛。reduced-motion 下不施加任何变换。
- */
-function StripShot({ index, onOpen, scrollTick, shot, stripRef, workTitle }: StripShotProps) {
-  const figureRef = useRef<HTMLElement | null>(null);
-  const reduceMotion = useReducedMotion();
-
-  // 与样张带可视中心的归一化距离：-1（左缘）→ 0（居中）→ 1（右缘），滚动/尺寸变化时随 scrollTick 重算。
-  const centerOffset = useTransform(scrollTick, () => {
-    const strip = stripRef.current;
-    const figure = figureRef.current;
-    if (!strip || !figure) return 0;
-    const stripBox = strip.getBoundingClientRect();
-    const figureBox = figure.getBoundingClientRect();
-    const distance =
-      figureBox.left + figureBox.width / 2 - (stripBox.left + stripBox.width / 2);
-    return Math.min(1, Math.max(-1, distance / (stripBox.width / 2 || 1)));
-  });
-  const scale = useTransform(centerOffset, [-1, 0, 1], [0.96, 1, 0.96]);
-  const opacity = useTransform(centerOffset, [-1, 0, 1], [0.6, 1, 0.6]);
-
+function StripShot({ index, onOpen, shot, workTitle }: StripShotProps) {
   return (
-    <motion.figure
-      ref={figureRef}
-      style={{ opacity: reduceMotion ? 1 : opacity, scale: reduceMotion ? 1 : scale }}
-    >
+    <figure>
       <button
         aria-label={`放大查看：${shot.label}`}
         className={styles.shotButton}
@@ -64,41 +49,28 @@ function StripShot({ index, onOpen, scrollTick, shot, stripRef, workTitle }: Str
       >
         <Image
           alt={`${workTitle} · ${shot.label}`}
+          fetchPriority={index < 2 ? "high" : undefined}
           height={1500}
-          loading={index === 0 ? "eager" : "lazy"}
+          loading={index < 2 ? "eager" : "lazy"}
           sizes="(max-width: 900px) 66vw, 38rem"
           src={shot.src}
           width={2400}
         />
       </button>
       <figcaption>{shot.label}</figcaption>
-    </motion.figure>
+    </figure>
   );
 }
 
 /** 作品页面样张带：横向滚动的截图列表，点击开灯箱看大图，灯箱内左右切换同一作品的样张。 */
 export function WorksShotStrip({ shots, workTitle }: WorksShotStripProps) {
   const [activeIndex, setActiveIndex] = useState<number | null>(null);
+  // 入场方向：null 表示从样张带点开（缩放入场），±1 表示灯箱内左右切换（横移滑入）。
+  const [entryDirection, setEntryDirection] = useState<number | null>(null);
   const dialogRef = useRef<HTMLDialogElement>(null);
   const stripRef = useRef<HTMLDivElement>(null);
   const reduceMotion = useReducedMotion();
-  // 滚动信号：样张带滚动或尺寸变化时递增，驱动各样张重算与可视中心的距离。
-  const scrollTick = useMotionValue(0);
   const active = activeIndex === null ? null : (shots[activeIndex] ?? null);
-
-  useEffect(() => {
-    const strip = stripRef.current;
-    if (!strip || reduceMotion) return;
-    const bump = () => scrollTick.set(scrollTick.get() + 1);
-    bump();
-    const observer = new ResizeObserver(bump);
-    observer.observe(strip);
-    window.addEventListener("resize", bump);
-    return () => {
-      observer.disconnect();
-      window.removeEventListener("resize", bump);
-    };
-  }, [reduceMotion, scrollTick]);
 
   // 桌面鼠标滚轮默认是纵向的，滚不动横向样张带：悬停样张带时把纵向滚轮转成横向滚动，
   // 滚到两端后放行，页面恢复纵向滚动。React 的 onWheel 是 passive 的，必须挂原生监听才能 preventDefault。
@@ -117,132 +89,6 @@ export function WorksShotStrip({ shots, workTitle }: WorksShotStripProps) {
     strip.addEventListener("wheel", onWheel, { passive: false });
     return () => strip.removeEventListener("wheel", onWheel);
   }, []);
-
-  // 自动漂移由 Motion 数值动画驱动：每段从当前位置匀速抵达一侧端点，完成后反向。
-  // 悬停/聚焦暂停，手动滚轮或触摸后稍候再恢复；离屏、页面隐藏和 reduced-motion 下不启动。
-  useEffect(() => {
-    const strip = stripRef.current;
-    if (!strip || reduceMotion) return;
-
-    let controls: ReturnType<typeof animate> | null = null;
-    let direction = 1;
-    let disposed = false;
-    let focusPaused = false;
-    let hasEntered = false;
-    let inView = false;
-    let pointerPaused = false;
-    let resumeTimer = 0;
-    const speed = 24; // px/s，刻意放慢
-    const isPaused = () => focusPaused || pointerPaused;
-
-    const stop = () => {
-      controls?.stop();
-      controls = null;
-    };
-    const clearResume = () => {
-      window.clearTimeout(resumeTimer);
-      resumeTimer = 0;
-    };
-    const start = () => {
-      clearResume();
-      stop();
-      if (disposed || document.hidden || isPaused() || !inView) return;
-      const max = strip.scrollWidth - strip.clientWidth;
-      if (max <= 0) return;
-      const from = Math.min(max, Math.max(0, strip.scrollLeft));
-      let target = direction > 0 ? max : 0;
-      if (Math.abs(target - from) < 1) {
-        direction *= -1;
-        target = direction > 0 ? max : 0;
-      }
-      controls = animate(from, target, {
-        duration: Math.abs(target - from) / speed,
-        ease: "linear",
-        onComplete: () => {
-          controls = null;
-          direction *= -1;
-          start();
-        },
-        onUpdate: (value) => {
-          strip.scrollLeft = value;
-        },
-      });
-    };
-    const schedule = (delay: number) => {
-      clearResume();
-      stop();
-      if (!inView || isPaused() || document.hidden) return;
-      resumeTimer = window.setTimeout(start, delay);
-    };
-    const visibilityObserver = new IntersectionObserver((entries) => {
-      inView = entries.some((entry) => entry.isIntersecting);
-      if (inView) {
-        schedule(hasEntered ? 0 : 1_200);
-        hasEntered = true;
-      } else {
-        clearResume();
-        stop();
-      }
-    });
-    visibilityObserver.observe(strip);
-    const resizeObserver = new ResizeObserver(() => schedule(0));
-    resizeObserver.observe(strip);
-
-    const holdBriefly = () => {
-      schedule(2_600);
-    };
-    const pause = () => {
-      clearResume();
-      stop();
-    };
-    const onPointerEnter = () => {
-      pointerPaused = true;
-      pause();
-    };
-    const onPointerLeave = () => {
-      pointerPaused = false;
-      if (!isPaused()) holdBriefly();
-    };
-    const onFocusIn = () => {
-      focusPaused = true;
-      pause();
-    };
-    const onFocusOut = (event: FocusEvent) => {
-      if (event.relatedTarget instanceof Node && strip.contains(event.relatedTarget)) return;
-      focusPaused = false;
-      if (!isPaused()) holdBriefly();
-    };
-    const onVisibilityChange = () => {
-      if (document.hidden) {
-        clearResume();
-        stop();
-      } else {
-        schedule(0);
-      }
-    };
-
-    strip.addEventListener("pointerenter", onPointerEnter);
-    strip.addEventListener("pointerleave", onPointerLeave);
-    strip.addEventListener("focusin", onFocusIn);
-    strip.addEventListener("focusout", onFocusOut);
-    strip.addEventListener("wheel", holdBriefly, { passive: true });
-    strip.addEventListener("touchstart", holdBriefly, { passive: true });
-    document.addEventListener("visibilitychange", onVisibilityChange);
-    return () => {
-      disposed = true;
-      clearResume();
-      stop();
-      visibilityObserver.disconnect();
-      resizeObserver.disconnect();
-      strip.removeEventListener("pointerenter", onPointerEnter);
-      strip.removeEventListener("pointerleave", onPointerLeave);
-      strip.removeEventListener("focusin", onFocusIn);
-      strip.removeEventListener("focusout", onFocusOut);
-      strip.removeEventListener("wheel", holdBriefly);
-      strip.removeEventListener("touchstart", holdBriefly);
-      document.removeEventListener("visibilitychange", onVisibilityChange);
-    };
-  }, [reduceMotion]);
 
   // 灯箱开关只跟随 active 有无，切换样张（active 在序号间变化）不关窗。
   useEffect(() => {
@@ -267,7 +113,13 @@ export function WorksShotStrip({ shots, workTitle }: WorksShotStripProps) {
     };
   }, [active]);
 
+  const openAt = (index: number) => {
+    setEntryDirection(null);
+    setActiveIndex(index);
+  };
+
   const step = (delta: number) => {
+    setEntryDirection(delta > 0 ? 1 : -1);
     setActiveIndex((current) =>
       current === null ? current : (current + delta + shots.length) % shots.length,
     );
@@ -278,17 +130,14 @@ export function WorksShotStrip({ shots, workTitle }: WorksShotStripProps) {
       <div
         aria-label={`${workTitle} 页面样张`}
         className={styles.strip}
-        onScroll={reduceMotion ? undefined : () => scrollTick.set(scrollTick.get() + 1)}
         ref={stripRef}
       >
         {shots.map((shot, index) => (
           <StripShot
             index={index}
             key={shot.src}
-            onOpen={setActiveIndex}
-            scrollTick={scrollTick}
+            onOpen={openAt}
             shot={shot}
-            stripRef={stripRef}
             workTitle={workTitle}
           />
         ))}
@@ -308,30 +157,40 @@ export function WorksShotStrip({ shots, workTitle }: WorksShotStripProps) {
         }}
         ref={dialogRef}
       >
-        {active ? (
-          <motion.figure
-            animate={{ scale: 1 }}
-            initial={reduceMotion ? false : { scale: 0.985 }}
-            transition={{ duration: reduceMotion ? 0 : 0.24, ease: [0.16, 1, 0.3, 1] }}
-          >
-            <Image
-              alt={`${workTitle} · ${active.label}`}
-              height={1500}
-              loading="eager"
-              sizes="92vw"
-              src={active.src}
-              width={2400}
-            />
-            <figcaption>
-              {active.label}
-              {shots.length > 1 ? (
-                <span className={styles.shotDialogCount}>
-                  {activeIndex! + 1} / {shots.length}
-                </span>
-              ) : null}
-            </figcaption>
-          </motion.figure>
-        ) : null}
+        {/* popLayout：切换时旧图脱出布局反向滑出、新图同帧滑入，图注计数随 key 同步。 */}
+        <AnimatePresence custom={entryDirection} initial={false} mode="popLayout">
+          {active ? (
+            <motion.figure
+              animate="center"
+              custom={entryDirection}
+              exit="exit"
+              initial={reduceMotion ? false : "enter"}
+              key={active.src}
+              transition={{ duration: reduceMotion ? 0 : 0.24, ease: [0.16, 1, 0.3, 1] }}
+              variants={shotDialogVariants}
+            >
+              <Image
+                alt={`${workTitle} · ${active.label}`}
+                height={1500}
+                loading="eager"
+                sizes="92vw"
+                src={active.src}
+                width={2400}
+              />
+              <figcaption>
+                {active.label}
+                {shots.length > 1 ? (
+                  <span className={styles.shotDialogCount}>
+                    {activeIndex! + 1} / {shots.length}
+                  </span>
+                ) : null}
+              </figcaption>
+              <span aria-live="polite" className="sr-only" role="status">
+                {active.label}，第 {activeIndex! + 1} 张，共 {shots.length} 张
+              </span>
+            </motion.figure>
+          ) : null}
+        </AnimatePresence>
         {shots.length > 1 ? (
           <>
             <button

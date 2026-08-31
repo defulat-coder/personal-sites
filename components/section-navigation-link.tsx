@@ -48,6 +48,8 @@ export function SectionNavigationLink({
   ...props
 }: SectionNavigationLinkProps) {
   const router = useRouter();
+  const ariaCurrent = props["aria-current"];
+  const link = useRef<HTMLAnchorElement>(null);
   const timeout = useRef<number | null>(null);
   const exitAnimation = useRef<NonNullable<ReturnType<typeof beginSectionTransition>> | null>(null);
   const [isNavigating, setIsNavigating] = useState(false);
@@ -59,12 +61,18 @@ export function SectionNavigationLink({
     animation?.stop();
   }, []);
 
+  useEffect(() => {
+    if (ariaCurrent !== "page" || !window.matchMedia("(max-width: 900px)").matches) return;
+    link.current?.scrollIntoView({ block: "nearest", inline: "center" });
+  }, [ariaCurrent]);
+
   return (
     <Link
       {...props}
       className={className}
       data-transitioning={isNavigating ? "true" : undefined}
       href={href}
+      ref={link}
       onNavigate={(event) => {
         if (isNavigating) return;
 

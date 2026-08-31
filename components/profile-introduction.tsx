@@ -1,7 +1,7 @@
 "use client";
 
-import { useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
-import { animate } from "motion/react";
+import { useEffect, useLayoutEffect, useMemo, useRef, useState, useSyncExternalStore } from "react";
+import { animate, useInView } from "motion/react";
 
 type ProfileIntroductionProps = {
   animateOnFirstHomeVisit?: boolean;
@@ -40,6 +40,16 @@ const GREETINGS = [
 const TITLE_PUNCTUATION = /[，、,.!?]/u;
 const PARAGRAPH_PUNCTUATION = /[，。；、.!?]/u;
 const STEP_EPSILON = 1e-6;
+const REDUCED_MOTION_QUERY = "(prefers-reduced-motion: reduce)";
+
+function subscribeToReducedMotion(onStoreChange: () => void) {
+  const media = window.matchMedia(REDUCED_MOTION_QUERY);
+  media.addEventListener("change", onStoreChange);
+  return () => media.removeEventListener("change", onStoreChange);
+}
+
+const getReducedMotionSnapshot = () => window.matchMedia(REDUCED_MOTION_QUERY).matches;
+const getServerReducedMotionSnapshot = () => false;
 
 type DisplayPhase = "english" | "erasing" | "chinese" | "complete";
 
@@ -161,6 +171,13 @@ export function ProfileIntroduction({
 }: ProfileIntroductionProps) {
   const englishMeasureRef = useRef<HTMLDivElement>(null);
   const chineseMeasureRef = useRef<HTMLDivElement>(null);
+  const introductionRef = useRef<HTMLElement>(null);
+  const isVisible = useInView(introductionRef);
+  const reduceMotion = useSyncExternalStore(
+    subscribeToReducedMotion,
+    getReducedMotionSnapshot,
+    getServerReducedMotionSnapshot,
+  );
   const [visibleCounts, setVisibleCounts] = useState(() => (
     animateOnFirstHomeVisit
       ? paragraphs.map(() => 0)
@@ -179,8 +196,17 @@ export function ProfileIntroduction({
 
   useEffect(() => {
     let cancelled = false;
+    const showChinese = () => {
+      setGreetingIndex(0);
+      setTitleVisibleCount(CHINESE_TITLE.length);
+      setTitleIsTyping(false);
+    };
 
-    if (phase !== "complete" || window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+    if (phase !== "complete") {
+      return undefined;
+    }
+    if (!isVisible || reduceMotion) {
+      showChinese();
       return undefined;
     }
 
@@ -215,7 +241,7 @@ export function ProfileIntroduction({
       cancelled = true;
       driver.dispose();
     };
-  }, [phase]);
+  }, [isVisible, phase, reduceMotion]);
 
   useEffect(() => {
     let cancelled = false;
@@ -225,13 +251,15 @@ export function ProfileIntroduction({
       setVisibleCounts(paragraphs.map((paragraph) => paragraph.length));
       setActiveIndex(null);
       setPhase("complete");
+      setGreetingIndex(0);
       setTitleVisibleCount(CHINESE_TITLE.length);
       setTitleIsTyping(false);
       setHasCompletedInitialSequence(true);
     };
 
     const shouldPlay = shouldAnimateInitialVisit
-      && !window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+      && !hasCompletedInitialSequence
+      && !reduceMotion;
 
     if (!shouldPlay) {
       showAll();
@@ -342,7 +370,7 @@ export function ProfileIntroduction({
       observer?.disconnect();
       driver.dispose();
     };
-  }, [englishParagraphs, paragraphs, shouldAnimateInitialVisit]);
+  }, [englishParagraphs, hasCompletedInitialSequence, paragraphs, reduceMotion, shouldAnimateInitialVisit]);
 
   useLayoutEffect(() => {
     const measurements = [englishMeasureRef.current, chineseMeasureRef.current];
@@ -397,6 +425,7 @@ export function ProfileIntroduction({
     <section
       aria-labelledby="profile-introduction"
       className="curation-home__bio"
+      ref={introductionRef}
       style={shouldReserveHeight && reservedHeight ? { minHeight: `${reservedHeight}px` } : undefined}
     >
       <h2 className={titleIsTyping ? "is-typing" : undefined} id="profile-introduction">

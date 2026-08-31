@@ -19,6 +19,11 @@ export function formatOriginalPublicationDate(item: Pick<CurationListItem, "publ
   return item.publishedAt ? formatDate(item.publishedAt) : "日期待定";
 }
 
+/** 无人工审核描述时，只陈述已知题名与媒体顺序，不猜测画面内容。 */
+export function formatCurationMediaAlt(title: string, index: number, total: number) {
+  return `${title}，来源媒体第 ${index + 1} 张，共 ${total} 张`;
+}
+
 const TCO_URL_PATTERN = /https?:\/\/t\.co\/\S+/gu;
 
 /** 列表剪报摘录：剥离 t.co 短链、折叠换行与多余空白，供两行裁切展示。 */

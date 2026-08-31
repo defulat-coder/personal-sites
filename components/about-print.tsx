@@ -40,18 +40,23 @@ export function AboutPrint() {
   const [portalActive, setPortalActive] = useState(false);
   const [printing, setPrinting] = useState(false);
   const reduceMotion = useReducedMotion();
-  const timersRef = useRef<number[]>([]);
+  const printTimerRef = useRef<number | null>(null);
   const triggerRef = useRef<HTMLButtonElement>(null);
   const dialogRef = useRef<HTMLDivElement>(null);
 
-  useEffect(() => () => {
-    timersRef.current.forEach((timer) => window.clearTimeout(timer));
+  const clearPrintTimer = useCallback(() => {
+    if (printTimerRef.current === null) return;
+    window.clearTimeout(printTimerRef.current);
+    printTimerRef.current = null;
   }, []);
 
+  useEffect(() => clearPrintTimer, [clearPrintTimer]);
+
   const close = useCallback(() => {
+    clearPrintTimer();
     setPrinting(false);
     setOpen(false);
-  }, []);
+  }, [clearPrintTimer]);
 
   useEffect(() => {
     if (!open) return undefined;
@@ -96,11 +101,15 @@ export function AboutPrint() {
   }, [open, close]);
 
   const openModal = () => {
+    clearPrintTimer();
     setPortalActive(true);
     setOpen(true);
     setPrinting(!reduceMotion);
     if (!reduceMotion) {
-      timersRef.current.push(window.setTimeout(() => setPrinting(false), PRINT_DURATION));
+      printTimerRef.current = window.setTimeout(() => {
+        printTimerRef.current = null;
+        setPrinting(false);
+      }, PRINT_DURATION);
     }
   };
 

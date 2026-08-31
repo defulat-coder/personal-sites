@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useSyncExternalStore, type ReactNode } from "react";
+import { useState, useSyncExternalStore, type KeyboardEvent, type ReactNode } from "react";
 
 import styles from "@/components/open-source.module.css";
 import { OpenSourceRepositoryBrowser } from "@/components/open-source-repository-browser";
@@ -39,6 +39,19 @@ export function OpenSourceDocumentView({ parsedHint, parsedPanel, repository, re
     );
   };
 
+  const moveTab = (event: KeyboardEvent<HTMLButtonElement>, currentView: "parsed" | "repository") => {
+    let nextView: "parsed" | "repository" | null = null;
+    if (event.key === "ArrowRight") nextView = currentView === "parsed" ? "repository" : "parsed";
+    if (event.key === "ArrowLeft") nextView = currentView === "parsed" ? "repository" : "parsed";
+    if (event.key === "Home") nextView = "parsed";
+    if (event.key === "End") nextView = "repository";
+    if (!nextView) return;
+
+    event.preventDefault();
+    selectView(nextView);
+    document.getElementById(`${nextView}-document-tab`)?.focus();
+  };
+
   return (
     <section aria-labelledby="open-source-document-title" className={`curation-detail__section ${styles.documentSection}`}>
       <div className={styles.documentHeader}>
@@ -49,8 +62,10 @@ export function OpenSourceDocumentView({ parsedHint, parsedPanel, repository, re
             aria-selected={!isRepository}
             className={styles.documentTab}
             id="parsed-document-tab"
+            onKeyDown={(event) => moveTab(event, "parsed")}
             onClick={() => selectView("parsed")}
             role="tab"
+            tabIndex={isRepository ? -1 : 0}
             type="button"
           >
             中文阅读版
@@ -60,8 +75,10 @@ export function OpenSourceDocumentView({ parsedHint, parsedPanel, repository, re
             aria-selected={isRepository}
             className={styles.documentTab}
             id="repository-document-tab"
+            onKeyDown={(event) => moveTab(event, "repository")}
             onClick={() => selectView("repository")}
             role="tab"
+            tabIndex={isRepository ? 0 : -1}
             type="button"
           >
             仓库结构

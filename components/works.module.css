@@ -487,6 +487,12 @@
 }
 
 @media (max-width: 900px) {
+  .shotDialogClose,
+  .shotDialogNav {
+    width: 2.75rem;
+    height: 2.75rem;
+  }
+
   .shotDialogPrev {
     left: .7rem;
   }
@@ -639,6 +645,18 @@
 }
 
 @media (max-width: 900px) {
+  .detailIndex {
+    gap: 0 .8rem;
+    padding: .35rem 0;
+  }
+
+  .detailIndex a {
+    display: inline-flex;
+    min-width: 2.75rem;
+    min-height: 2.75rem;
+    align-items: center;
+  }
+
   .row {
     grid-template-columns: minmax(0, 1fr);
   }

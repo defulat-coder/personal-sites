@@ -47,10 +47,8 @@ export function selectTechnicalTerms(randomValue: number) {
 // 只有代码内的固定种子才能保证服务端渲染与客户端首次渲染产出同一份词条。
 const SELECTED_TERMS = [...selectTechnicalTerms(0.61), ...TECH_STACK_TERMS];
 
-// 弹幕泳道：词条按索引取模分配到六条水平泳道；词条多了之后同屏全放太密，
-// 因此每条泳道内再分 TERM_SUBGROUPS 组轮换入场——关键帧只在周期前
-// 1/TERM_SUBGROUPS 划过屏幕，其余时间隐藏等待，同屏词条数始终约为总数的
-// 1/TERM_SUBGROUPS，保持与原来 12 词相当的稀疏度。
+// 弹幕泳道：词条按索引取模分配到六条水平泳道。每条泳道只动一个连续轨道，
+// 轨道内用足够大的固定间隔保持同屏稀疏；复制序列只用于无缝循环。
 const TERM_LANES = [
   { top: "2%", duration: 21 },
   { top: "19%", duration: 23 },
@@ -62,27 +60,41 @@ const TERM_LANES = [
 
 const TERM_SUBGROUPS = 3;
 
-// 每个词条的滚动参数都是索引的纯函数，服务端与客户端必然算出同一份结果。
-function trackStyle(index: number, total: number): CSSProperties {
-  const lane = index % TERM_LANES.length;
-  const order = Math.floor(index / TERM_LANES.length);
-  const laneSize = Math.floor(total / TERM_LANES.length) + (lane < total % TERM_LANES.length ? 1 : 0);
-  const subgroup = order % TERM_SUBGROUPS;
-  const slot = Math.floor(order / TERM_SUBGROUPS);
-  const subgroupSize = Math.floor(laneSize / TERM_SUBGROUPS) + (subgroup < laneSize % TERM_SUBGROUPS ? 1 : 0);
-  const { top, duration: baseDuration } = TERM_LANES[lane];
-  // 同组词条等相位差，组间错开一个完整划过窗口，任意时刻同泳道词条互不重叠。
-  const delay = -(subgroup * baseDuration + (slot / subgroupSize) * baseDuration + lane * 1.7);
-  const drift = (index % 2 === 0 ? 1 : -1) * (0.06 + (index % 3) * 0.03);
-  const opacity = 0.62 + ((index * 7) % 5) * 0.075;
+const TERMS_BY_LANE = TERM_LANES.map((_, lane) =>
+  SELECTED_TERMS.flatMap((term, index) => index % TERM_LANES.length === lane ? [{ index, term }] : []),
+);
+
+// 每条泳道的滚动参数都是索引的纯函数，服务端与客户端必然算出同一份结果。
+function trackStyle(lane: number): CSSProperties {
+  const { top, duration } = TERM_LANES[lane];
+  const drift = (lane % 2 === 0 ? 1 : -1) * (0.06 + (lane % 3) * 0.03);
 
   return {
     "--term-top": top,
-    "--term-duration": `${baseDuration * TERM_SUBGROUPS}s`,
-    "--term-delay": `${delay.toFixed(2)}s`,
+    "--term-duration": `${duration * TERM_SUBGROUPS}s`,
+    "--term-delay": `${(-lane * 1.7).toFixed(2)}s`,
     "--term-drift": `${drift.toFixed(2)}rem`,
-    "--term-opacity": opacity.toFixed(3),
   } as CSSProperties;
+}
+
+function renderTerms(
+  terms: (typeof TERMS_BY_LANE)[number],
+  repeated = false,
+) {
+  return terms.map(({ index, term }) => (
+    <span
+      className="interactive-dot-field__term"
+      data-emphasis={index === 0 || index === 8 ? "strong" : index === 4 ? "medium" : undefined}
+      data-static-align={!repeated && index < TECHNICAL_TERM_SETS[0].length
+        ? index % 3 === 0 ? "start" : index % 3 === 2 ? "end" : undefined
+        : undefined}
+      data-static-term={!repeated && index < TECHNICAL_TERM_SETS[0].length ? "" : undefined}
+      key={`${repeated ? "repeat" : "original"}-${term}-${index}`}
+      style={{ "--term-order": index } as CSSProperties}
+    >
+      {term}
+    </span>
+  ));
 }
 
 export function InteractiveDotField() {
@@ -93,13 +105,16 @@ export function InteractiveDotField() {
       role="img"
     >
       <DotFieldParallax>
-        {SELECTED_TERMS.map((term, index) => (
-          <span
-            className="interactive-dot-field__track"
-            key={`${term}-${index}`}
-            style={trackStyle(index, SELECTED_TERMS.length)}
-          >
-            <span className="interactive-dot-field__term">{term}</span>
+        {TERMS_BY_LANE.map((terms, lane) => (
+          <span className="interactive-dot-field__lane" key={lane}>
+            <span className="interactive-dot-field__track" style={trackStyle(lane)}>
+              <span className="interactive-dot-field__sequence">
+                {renderTerms(terms)}
+              </span>
+              <span aria-hidden="true" className="interactive-dot-field__sequence interactive-dot-field__sequence--repeat">
+                {renderTerms(terms, true)}
+              </span>
+            </span>
           </span>
         ))}
       </DotFieldParallax>

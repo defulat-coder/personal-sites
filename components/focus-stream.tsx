@@ -1,20 +1,13 @@
-import { AiNewsStream } from "@/components/ai-news-stream";
-import { CurationStream } from "@/components/curation-stream";
-import { OpenSourceStream } from "@/components/open-source-stream";
+import { Suspense, type ReactNode } from "react";
+
+import { FeedErrorBoundary, FeedRecoveryTarget } from "@/components/focus-stream-error-boundary";
 import { ContentSectionNavigation } from "@/components/site-section-navigation";
-import type { AiNewsListItem } from "@/lib/ai-news-types";
-import type { CurationListItem } from "@/lib/curation-types";
-import type { OpenSourceListEntry } from "@/lib/open-source-types";
 
 export type FocusView = "ai-news" | "daily" | "open-source";
 
 type FocusStreamProps = {
-  aiNewsHasMore: boolean;
-  aiNewsItems: AiNewsListItem[];
-  initialHasMore: boolean;
-  initialItems: CurationListItem[];
-  initialView: FocusView | null;
-  openSourceEntries: OpenSourceListEntry[];
+  children: ReactNode;
+  initialView: FocusView;
 };
 
 const viewLabels: Record<FocusView, string> = {
@@ -23,29 +16,32 @@ const viewLabels: Record<FocusView, string> = {
   "open-source": "开源关注",
 };
 
-// Suspense fallback 的中性骨架：此时还不知道 ?view= 的目标视图，不能预设任何一条流。
-function FeedSkeleton() {
+function FeedSkeleton({ label }: { label: string }) {
   return (
-    <div aria-hidden="true" className="curation-home__stream-skeleton">
-      <span />
-      <span className="is-medium" />
-      <span className="is-short" />
+    <div aria-atomic="true" aria-busy="true" className="curation-home__stream-skeleton" role="status">
+      <p className="curation-home__stream-loading">正在读取{label}…</p>
+      <span aria-hidden="true" />
+      <span aria-hidden="true" className="is-medium" />
+      <span aria-hidden="true" className="is-short" />
     </div>
   );
 }
 
-// 桌面右侧默认每日动态：/ 不再设独立的「首页」视图，移动端首页仍是展开的个人资料。
-export function FocusStream({ aiNewsHasMore, aiNewsItems, initialHasMore, initialItems, initialView, openSourceEntries }: FocusStreamProps) {
+// 身份轨与刊头都在数据边界之外，流式响应只用真实列表替换骨架。
+export function FocusStream({ children, initialView }: FocusStreamProps) {
   return (
-    <section aria-label={initialView ? viewLabels[initialView] : "内容"} className="curation-home__feed site-section-motion">
-      <ContentSectionNavigation current={initialView ?? "ai-news"} />
-
-      {initialView === null ? <FeedSkeleton /> : null}
-      {initialView === "ai-news" ? <AiNewsStream initialHasMore={aiNewsHasMore} initialItems={aiNewsItems} /> : null}
-      {initialView === "daily"
-        ? <CurationStream initialHasMore={initialHasMore} initialItems={initialItems} />
-        : null}
-      {initialView === "open-source" ? <OpenSourceStream entries={openSourceEntries} /> : null}
+    <section
+      aria-label={viewLabels[initialView]}
+      className="curation-home__feed site-section-motion"
+      data-feed-recovery-root
+      tabIndex={-1}
+    >
+      <ContentSectionNavigation current={initialView} />
+      <FeedErrorBoundary label={viewLabels[initialView]}>
+        <Suspense fallback={<FeedSkeleton label={viewLabels[initialView]} />}>
+          <FeedRecoveryTarget>{children}</FeedRecoveryTarget>
+        </Suspense>
+      </FeedErrorBoundary>
     </section>
   );
 }

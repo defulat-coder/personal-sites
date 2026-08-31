@@ -6,9 +6,8 @@
   flex-direction: column;
 }
 
-/* 问一问与其他页面共享同一内容框架（.root 同时带 curation-home__feed，
-   50rem 栏、左缘对齐全站内容轴）。框架元素（组合器、建议与引用的分隔线）
-   撑满整栏；仅回答正文收敛到与文章一致的 40rem 行宽。 */
+/* 框架元素（组合器、建议与引用的分隔线）撑满整栏；
+   仅回答正文收敛到与文章一致的 40rem 行宽。 */
 
 .scroller {
   flex: 1;
@@ -242,6 +241,11 @@
   border-color: var(--quiet) !important;
 }
 
+.composerError,
+.composerError:focus-within {
+  border-color: #994545 !important;
+}
+
 .composer textarea {
   min-height: 3rem;
   max-height: 7rem;
@@ -266,6 +270,39 @@
   border-top: 0;
   color: #6f6f72 !important;
   padding: 0.25rem 0 0.75rem !important;
+}
+
+.sessionRecovery {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  border-top: 1px solid var(--line);
+  color: #994545;
+  font-size: 0.72rem;
+  line-height: 1.45;
+  margin-top: 0.5rem;
+  padding-top: 0.5rem;
+}
+
+.sessionRecovery p {
+  margin: 0;
+}
+
+.sessionRetry {
+  min-height: 2rem;
+  flex: 0 0 auto;
+  border-radius: 0.375rem !important;
+  color: #994545 !important;
+  font-size: 0.72rem !important;
+  padding-inline: 0.5rem !important;
+}
+
+.sessionRetry:hover,
+.sessionRetry:focus-visible {
+  background: #fff7f7 !important;
+  color: #994545 !important;
+  transform: none !important;
 }
 
 .scopeTrigger {
@@ -459,6 +496,22 @@
   border-color: #777 !important;
 }
 
+:global(html[data-curation-theme="dark"]) .composerError,
+:global(html[data-curation-theme="dark"]) .composerError:focus-within {
+  border-color: #6d3535 !important;
+}
+
+:global(html[data-curation-theme="dark"]) .sessionRecovery,
+:global(html[data-curation-theme="dark"]) .sessionRetry {
+  color: #f0aaaa !important;
+}
+
+:global(html[data-curation-theme="dark"]) .sessionRetry:hover,
+:global(html[data-curation-theme="dark"]) .sessionRetry:focus-visible {
+  background: #321d1d !important;
+  color: #f0aaaa !important;
+}
+
 :global(html[data-curation-theme="dark"]) .composer textarea {
   color: #f4f4f4;
 }
@@ -503,6 +556,23 @@
   }
 }
 
+@media (min-width: 901px) {
+  /* Ask 是自身管理消息滚动的全高工作面：覆盖通用 feed 的 50rem 栏、
+     右内边距与 5rem 页尾留白，让刊头、viewport 与 composer 共享 42rem 轴。 */
+  .root:global(.curation-home__feed) {
+    width: 100%;
+    max-width: 42rem;
+    margin-inline: auto;
+    overflow: hidden;
+    padding: 0;
+  }
+
+  .viewport,
+  .form {
+    padding-right: 0;
+  }
+}
+
 @media (max-width: 900px) {
   .root {
     height: 100%;
@@ -516,6 +586,11 @@
     min-height: 0;
   }
 
+  .scrollToLatest {
+    width: 2.75rem !important;
+    height: 2.75rem !important;
+  }
+
   .viewport {
     padding: 1rem 0 0.5rem;
   }
@@ -527,7 +602,11 @@
 
   /* 输入框保持 sticky 停靠底部，移动端永不滚走；iOS 输入字号 ≥16px 防止聚焦缩放。 */
   .scopeTrigger {
-    height: 2.5rem !important;
+    height: 2.75rem !important;
+  }
+
+  .scopeMenu :global([data-slot="dropdown-menu-radio-item"]) {
+    min-height: 2.75rem;
   }
 
   .composer textarea {
@@ -537,6 +616,14 @@
   .send {
     width: 2.75rem !important;
     height: 2.75rem !important;
+  }
+
+  .sessionRecovery {
+    align-items: flex-start;
+  }
+
+  .sessionRetry {
+    min-height: 2.75rem;
   }
 
   .suggestions :global([data-slot="button"]) {

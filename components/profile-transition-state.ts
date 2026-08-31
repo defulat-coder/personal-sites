@@ -71,14 +71,17 @@ export function beginProfileTransition(from: string, to: string) {
 
   document.querySelectorAll(".profile-transition-ghost").forEach((element) => element.remove());
 
-  const createGhost = (element: HTMLElement, variant: "avatar" | "summary") => {
+  const createGhost = (
+    element: HTMLElement,
+    variant: "avatar" | "summary",
+    box: ProfileTransitionBox,
+  ) => {
     const ghost = element.cloneNode(true) as HTMLElement;
     ghost.classList.add("profile-transition-ghost", `profile-transition-ghost--${variant}`);
     ghost.setAttribute("aria-hidden", "true");
     ghost.querySelectorAll("[id]").forEach((child) => child.removeAttribute("id"));
     ghost.querySelectorAll("a, button").forEach((child) => child.setAttribute("tabindex", "-1"));
 
-    const box = getBox(element);
     Object.assign(ghost.style, {
       height: `${box.height}px`,
       left: `${box.left}px`,
@@ -86,19 +89,19 @@ export function beginProfileTransition(from: string, to: string) {
       width: `${box.width}px`,
     });
 
-    document.body.append(ghost);
-    return { box, ghost };
+    return ghost;
   };
 
-  const avatarResult = createGhost(avatar, "avatar");
-  const summaryResult = createGhost(summary, "summary");
-  driftGhost(avatarResult.ghost, kind, true);
-  driftGhost(summaryResult.ghost, kind, false);
+  const avatarBox = getBox(avatar);
+  const summaryBox = getBox(summary);
+  const avatarGhost = createGhost(avatar, "avatar", avatarBox);
+  const summaryGhost = createGhost(summary, "summary", summaryBox);
+  document.body.append(avatarGhost, summaryGhost);
+  driftGhost(avatarGhost, kind, true);
+  driftGhost(summaryGhost, kind, false);
   // 暂缓新视图内容流的渲染，把长列表的布局成本移出飞行启动的关键路径，
   // 由 ProfileTransitionBridge 在飞行开始后解除。
   document.documentElement.dataset.profileFeedHold = "true";
-  const avatarBox = avatarResult.box;
-  const summaryBox = summaryResult.box;
   document.documentElement.dataset.profileTransition = `leaving-${kind}`;
   window.sessionStorage.setItem(profileTransitionStorageKey, JSON.stringify({
     avatar: avatarBox,

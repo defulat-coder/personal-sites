@@ -191,7 +191,7 @@ export function CurationStream({ apiPath = "/api/curation", emptyLabel = "暂无
               </div>
               <div className="curation-home__stream-copy">
                 <h3>
-                  <Link data-content-id={item.id} href={`/curation/${item.id}?from=design` as Route}>{item.title}</Link>
+                  <Link data-content-id={item.id} href={`/design/${item.id}` as Route}>{item.title}</Link>
                 </h3>
                 <p>{item.summary}</p>
                 {playableMedia.length > 0 ? (
@@ -200,6 +200,7 @@ export function CurationStream({ apiPath = "/api/curation", emptyLabel = "暂无
                       <XVideoPlayer
                         compact
                         isAnimatedGif={media.type === "animated_gif"}
+                        itemTitle={item.title}
                         key={media.videoUrl}
                         poster={media.previewUrl ?? media.url}
                         tweetUrl={item.source.url}

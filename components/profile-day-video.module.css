@@ -82,8 +82,8 @@
 
 .close {
   display: grid;
-  width: 2.25rem;
-  height: 2.25rem;
+  width: 2.75rem;
+  height: 2.75rem;
   flex: 0 0 auto;
   place-items: center;
   border: 0;
@@ -115,6 +115,19 @@
   object-fit: contain;
 }
 
+.error {
+  margin: .75rem 0 0;
+  color: #994545;
+  font-size: .72rem;
+  line-height: 1.45;
+}
+
+.error a {
+  margin-left: .35rem;
+  color: inherit;
+  text-underline-offset: .2em;
+}
+
 :global(html[data-curation-theme="dark"]) .frame {
   border-color: #404040;
   background: #181818;
@@ -133,6 +146,10 @@
 
 :global(html[data-curation-theme="dark"]) .video {
   background: #111;
+}
+
+:global(html[data-curation-theme="dark"]) .error {
+  color: #f1b0a7;
 }
 
 @media (max-width: 560px) {

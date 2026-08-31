@@ -8,13 +8,14 @@ import { XAppLink } from "@/components/x-app-link";
 type XVideoPlayerProps = {
   compact?: boolean;
   isAnimatedGif: boolean;
+  itemTitle: string;
   poster: string;
   tweetUrl: string;
   videoUrl: string;
 };
 
 /** 原生控制条播放；加载失败时保留 X 原视频回退入口。 */
-export function XVideoPlayer({ compact = false, isAnimatedGif, poster, tweetUrl, videoUrl }: XVideoPlayerProps) {
+export function XVideoPlayer({ compact = false, isAnimatedGif, itemTitle, poster, tweetUrl, videoUrl }: XVideoPlayerProps) {
   const [playbackError, setPlaybackError] = useState<string | null>(null);
   const reduceMotion = useReducedMotion();
   const proxiedVideoUrl = `/api/x-media?url=${encodeURIComponent(videoUrl)}`;
@@ -23,6 +24,7 @@ export function XVideoPlayer({ compact = false, isAnimatedGif, poster, tweetUrl,
   return (
     <figure className={`curation-detail__media-player${compact ? " design-curation__media-player" : ""}`}>
       <video
+        aria-label={`${isAnimatedGif ? "动画 GIF" : "视频"}：${itemTitle}`}
         autoPlay={shouldAutoPlay}
         controls
         loop={shouldAutoPlay}

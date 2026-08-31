@@ -8,14 +8,15 @@
 
 ```text
 RootLayout
-├─ OpeningLoader（全屏遮罩，每次完整页面加载都会播放）
+├─ OpeningLoader（全屏遮罩，每个浏览器会话的首次完整页面加载播放）
 └─ 路由页面
    ├─ /                         首页（动态渲染，每请求直读 Supabase/sqlite）
-   │  ├─ Profile rail（sticky）
-   │  └─ 右侧默认每日动态；遗留 ?view= 仅作旧链接兼容，由客户端 HomeView 读取
+   │  ├─ Profile rail（sticky，位于数据 Suspense 外）
+   │  └─ 右侧默认每日动态；遗留 ?view= 由服务端解析，只有对应数据列表流式补入
    ├─ /ai-news                  每日动态版块（动态渲染，每请求直读 Supabase）
    ├─ /curation                 每日关注版块（仅 X 来源，ISR，revalidate = 300）
    ├─ /design                   设计收藏版块（X 高置信设计相关内容，ISR，视频站内播放）
+   ├─ /design/[id]              设计收藏详情（ISR，复用策展详情骨架与设计子集相邻导航）
    ├─ /douyin                   抖音收藏版块（仅抖音来源，ISR，revalidate = 300）
    ├─ /open-source              开源关注版块（ISR，revalidate = 300）
    ├─ /ask                      问一问
@@ -41,10 +42,10 @@ RootLayout
 | 区域 | 主文件 | 责任 | 不应承担的责任 |
 |---|---|---|---|
 | 全局壳 | `app/layout.tsx` | metadata、全局 CSS、Loading 注入 | 路由内容或业务数据 |
-| 首页 | `app/page.tsx` | ISR 静态壳 + `HomeView`/`HomeMain` 编排，右侧默认每日动态 | 详情内容渲染；遗留 `?view=` 不进服务端 |
+| 首页 | `app/page.tsx` | 动态首页编排；服务端解析遗留 `?view=`，稳定输出 `HomeMain` 身份轨与刊头，仅流式补入当前数据列表 | 详情内容渲染；在数据 Suspense fallback 中复制身份轨或刊头 |
 | 版块页 | `app/ai-news/page.tsx`、`app/curation/page.tsx`、`app/design/page.tsx`、`app/douyin/page.tsx`、`app/open-source/page.tsx` | 单版块的 ISR 列表页，复用身份轨与刊头 | 第二套侧栏语言 |
-| 详情页 | `app/curation/[id]/page.tsx` | 条目元信息、原文、媒体、解析、来源 | 第二套个人侧栏 |
-| Loading | `components/opening-loader.tsx` | 加载阶段、滚动锁定、向上揭幕；每次完整页面加载都播放，水合后移除 | 常规页面配色 |
+| 详情页 | `app/curation/[id]/page.tsx`、`app/design/[id]/page.tsx` | 条目元信息、原文、媒体、解析、来源；设计上下文使用独立静态路径，避免 ISR 页面读取请求期 query | 第二套个人侧栏 |
+| Loading | `components/opening-loader.tsx` | 加载阶段、滚动锁定、向上揭幕；每个浏览器会话仅首次播放，水合后移除 | 常规页面配色 |
 | 个人简介 | `components/profile-introduction.tsx` | 双语逐字输入/删除、最终中文正文与多语言标题轮换；每次进入首页都播放 | 静态履历数据源 |
 | 内容导航 | `components/site-section-navigation.tsx` | 统一内容入口（每日动态、每日关注、设计收藏、抖音收藏、开源关注、构建、问一问）的路由跳转与当前页面状态；导航即栏目页头，不重复显示标题与说明 | 外部链接或同页 Tab 语义 |
 | 技术信号场 | `components/interactive-dot-field.tsx` | AI 术语与技术栈词库、稀疏视觉表达 | 标签过滤或导航 |
@@ -73,7 +74,7 @@ RootLayout
 | `ContentSectionNavigation` | 每日动态、每日关注、设计收藏、抖音收藏、开源关注、构建、问一问共享等权内容入口；导航即栏目页头 | 使用站内链接与 `aria-current`，不得伪装为同页 Tab |
 | `.curation-detail__article` | 最大 `50rem`，承接右栏阅读 | 详情结构沿用首页的留白与分隔节奏 |
 | `.curation-home__bio` | `width: 100%` | 简介正文撑满身份轨，不再限制 `max-width` |
-| `.interactive-dot-field` | `11.5rem` 高点阵画布 | AI 术语 12 词 + 技术栈 25 词按 6 条泳道滚动，泳道内分 3 组轮换入场保持稀疏；参数由组件按索引确定性内联，同屏词条互不重叠 |
+| `.interactive-dot-field` | `11.5rem` 高点阵画布 | AI 术语 12 词 + 技术栈 25 词按 6 条单动画轨道滚动，每条轨道以双序列无缝循环和大间距维持约 12 个同屏词；参数按泳道确定性内联，reduced-motion 收为 3×4 静态网格 |
 
 `900px` 以下收为单列；`560px` 以下策展元信息转为同一行。此项目的评审重点仍是桌面版，两栏首屏优先。
 

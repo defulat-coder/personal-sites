@@ -214,12 +214,14 @@ export function AskChat() {
   const [isStreaming, setIsStreaming] = useState(false);
   const [isLaunching, setIsLaunching] = useState(false);
   const [isClearing, setIsClearing] = useState(false);
+  const [isRetryingSession, setIsRetryingSession] = useState(false);
   const [prefersReducedMotion, setPrefersReducedMotion] = useState(false);
   const requestController = useRef<AbortController | null>(null);
   const planeRef = useRef<SVGSVGElement | null>(null);
   const planeControls = useRef<ReturnType<typeof animate> | null>(null);
   const shouldFollowLatest = useRef(true);
   const isProgrammaticScroll = useRef(false);
+  const shouldFocusAfterSessionRetry = useRef(false);
   const textareaRef = useRef<HTMLTextAreaElement | null>(null);
   const viewportRef = useRef<HTMLDivElement | null>(null);
   const visitorSessionPromise = useRef<Promise<{ conversationId: string; visitorId: string }> | null>(null);
@@ -241,6 +243,22 @@ export function AskChat() {
     })();
     return visitorSessionPromise.current;
   }, []);
+
+  const retryVisitorSession = async () => {
+    if (isRetryingSession) return;
+    setIsRetryingSession(true);
+    shouldFocusAfterSessionRetry.current = true;
+    visitorSessionPromise.current = null;
+    const session = await ensureVisitorSession();
+    setIsRetryingSession(false);
+    if (session.visitorId === "unavailable") shouldFocusAfterSessionRetry.current = false;
+  };
+
+  useEffect(() => {
+    if (!visitorId || visitorId === "unavailable" || !shouldFocusAfterSessionRetry.current) return;
+    shouldFocusAfterSessionRetry.current = false;
+    textareaRef.current?.focus();
+  }, [visitorId]);
 
   useEffect(() => {
     const media = window.matchMedia("(prefers-reduced-motion: reduce)");
@@ -423,6 +441,10 @@ export function AskChat() {
     && lastMessage.isComplete
     && Boolean(lastMessage.content)
     && followUpQuestions.length > 0;
+  const fillSuggestion = (suggestion: string) => {
+    setQuestion(suggestion);
+    textareaRef.current?.focus();
+  };
 
   return (
     <section aria-label="问一问" className={`curation-home__feed ${styles.root} site-section-motion`}>
@@ -481,7 +503,7 @@ export function AskChat() {
                             ease: MESSAGE_ENTER_EASE,
                           }}
                         >
-                          <Button onClick={() => setQuestion(suggestion)} size="sm" type="button" variant="ghost">
+                          <Button onClick={() => fillSuggestion(suggestion)} size="sm" type="button" variant="ghost">
                             {suggestion}
                             <ArrowUpRight data-icon="inline-end" />
                           </Button>
@@ -514,10 +536,7 @@ export function AskChat() {
                     {followUpQuestions.slice(0, 2).map((suggestion) => (
                       <Button
                         key={suggestion}
-                        onClick={() => {
-                          setQuestion(suggestion);
-                          textareaRef.current?.focus();
-                        }}
+                        onClick={() => fillSuggestion(suggestion)}
                         size="sm"
                         type="button"
                         variant="ghost"
@@ -550,8 +569,10 @@ export function AskChat() {
           void submit();
         }}
       >
-        <InputGroup className={styles.composer}>
+        <InputGroup className={`${styles.composer} ${visitorId === "unavailable" ? styles.composerError : ""}`}>
           <InputGroupTextarea
+            aria-describedby={visitorId === "unavailable" ? "ask-session-status" : undefined}
+            aria-invalid={visitorId === "unavailable"}
             aria-label="输入问题"
             disabled={visitorId === "unavailable" || isStreaming}
             onChange={(event) => setQuestion(event.target.value)}
@@ -562,7 +583,7 @@ export function AskChat() {
                 void submit();
               }
             }}
-            placeholder={visitorId === "unavailable" ? "无法建立浏览器会话，请刷新后重试" : "问问这些公开资料…"}
+            placeholder="问问这些公开资料…"
             ref={textareaRef}
             rows={1}
             value={question}
@@ -621,6 +642,25 @@ export function AskChat() {
             </InputGroupButton>
           </InputGroupAddon>
         </InputGroup>
+        {visitorId === "unavailable" ? (
+          <div className={styles.sessionRecovery}>
+            <p id="ask-session-status" role={isRetryingSession ? "status" : "alert"}>
+              {isRetryingSession
+                ? "正在重新建立浏览器会话…"
+                : "浏览器会话未建立，暂时无法发送。请检查网络或隐私设置后重试。"}
+            </p>
+            <Button
+              className={styles.sessionRetry}
+              disabled={isRetryingSession}
+              onClick={() => void retryVisitorSession()}
+              size="sm"
+              type="button"
+              variant="ghost"
+            >
+              {isRetryingSession ? "正在重试…" : "重试建立会话"}
+            </Button>
+          </div>
+        ) : null}
       </form>
     </section>
   );

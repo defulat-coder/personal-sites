@@ -8,9 +8,11 @@ import styles from "@/components/profile-day-video.module.css";
 
 export function ProfileDayVideo() {
   const [open, setOpen] = useState(false);
+  const [playbackError, setPlaybackError] = useState(false);
   const dialogRef = useRef<HTMLDialogElement>(null);
   const frameRef = useRef<HTMLDivElement>(null);
   const videoRef = useRef<HTMLVideoElement>(null);
+  const closingRef = useRef(false);
   const reduceMotion = useReducedMotion();
 
   useEffect(() => {
@@ -20,14 +22,18 @@ export function ProfileDayVideo() {
     if (!open) {
       if (dialog.open) dialog.close();
       frame?.style.removeProperty("transform");
+      frame?.style.removeProperty("opacity");
       return;
     }
 
     if (!dialog.open) dialog.showModal();
     if (!frame || reduceMotion) {
       frame?.style.removeProperty("transform");
+      frame?.style.removeProperty("opacity");
       return;
     }
+    // 清掉可能被中断的退场残留，再播对称的入场。
+    frame.style.removeProperty("opacity");
     const controls = animate(
       frame,
       { scale: [0.985, 1] },
@@ -62,8 +68,27 @@ export function ProfileDayVideo() {
   }, [open]);
 
   const close = () => {
+    if (closingRef.current) return;
     videoRef.current?.pause();
-    setOpen(false);
+    setPlaybackError(false);
+    const dialog = dialogRef.current;
+    const frame = frameRef.current;
+    // 与入场对称的退场：scale 回收 + 淡出后再真正关窗；三条退出路径共用。
+    if (reduceMotion || !dialog?.open || !frame) {
+      setOpen(false);
+      return;
+    }
+    closingRef.current = true;
+    const controls = animate(
+      frame,
+      { opacity: [1, 0], scale: [1, 0.985] },
+      { duration: 0.18, ease: [0.55, 0, 1, 0.45] },
+    );
+    const finish = () => {
+      closingRef.current = false;
+      setOpen(false);
+    };
+    void controls.then(finish, finish);
   };
 
   return (
@@ -71,7 +96,11 @@ export function ProfileDayVideo() {
       <button
         aria-haspopup="dialog"
         className={`curation-home__about-trigger ${styles.trigger}`}
-        onClick={() => setOpen(true)}
+        onClick={() => {
+          closingRef.current = false;
+          setPlaybackError(false);
+          setOpen(true);
+        }}
         type="button"
       >
         <Clapperboard aria-hidden="true" />
@@ -82,7 +111,11 @@ export function ProfileDayVideo() {
         aria-describedby="profile-day-description"
         aria-labelledby="profile-day-title"
         className={styles.dialog}
-        onCancel={close}
+        onCancel={(event) => {
+          // 接管 Esc 的默认关窗，让三条退出路径都走过场动画再关闭。
+          event.preventDefault();
+          close();
+        }}
         onClick={(event) => {
           if (event.target === event.currentTarget) close();
         }}
@@ -101,15 +134,26 @@ export function ProfileDayVideo() {
               <X aria-hidden="true" />
             </button>
           </header>
-          <video
-            className={styles.video}
-            controls
-            playsInline
-            poster="/images/profile/my-day-poster.webp"
-            preload="metadata"
-            ref={videoRef}
-            src="/videos/my-day.mp4"
-          />
+          {open ? (
+            <>
+              <video
+                className={styles.video}
+                controls
+                onCanPlay={() => setPlaybackError(false)}
+                onError={() => setPlaybackError(true)}
+                playsInline
+                poster="/images/profile/my-day-poster.webp"
+                preload="metadata"
+                ref={videoRef}
+                src="/videos/my-day.mp4"
+              />
+              {playbackError ? (
+                <p className={styles.error} role="status">
+                  视频暂时无法加载。<a href="/videos/my-day.mp4">直接打开视频</a>
+                </p>
+              ) : null}
+            </>
+          ) : null}
         </div>
       </dialog>
     </>

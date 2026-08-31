@@ -1,8 +1,9 @@
-import { Suspense } from "react";
-
-import { HomeMain, type HomeStreamData } from "@/components/home-main";
-import { HomeView } from "@/components/home-view";
-import { SiteProfile } from "@/components/site-profile";
+import { AiNewsStream } from "@/components/ai-news-stream";
+import { CurationStream } from "@/components/curation-stream";
+import type { FocusView } from "@/components/focus-stream";
+import { HomeMain } from "@/components/home-main";
+import { OpenSourceStream } from "@/components/open-source-stream";
+import type { SiteSection } from "@/components/site-section-navigation";
 import { getAiNewsPage, AI_NEWS_LIST_LIMIT } from "@/lib/ai-news";
 import { getCurationPage } from "@/lib/curation";
 import { getOpenSourceListEntries } from "@/lib/open-source";
@@ -11,46 +12,41 @@ import { getOpenSourceListEntries } from "@/lib/open-source";
 // 时间缓存——否则缓存过期后的首次访问仍先拿到旧页面。
 export const dynamic = "force-dynamic";
 
-// 数据就绪前的中性壳：个人信息栏 + 加载骨架，让首字节不等数据查询。
-function HomeShell() {
-  return (
-    <main className="curation-home curation-home--mobile-home" id="site-main" tabIndex={-1}>
-      <SiteProfile mobileSection="home" />
-      <section aria-label="内容" className="curation-home__feed">
-        <div aria-busy="true" aria-live="polite" className="curation-home__stream-skeleton">
-          <span />
-          <span className="is-medium" />
-          <span className="is-short" />
-        </div>
-      </section>
-    </main>
-  );
+type HomeSearchParams = {
+  view?: string | string[];
+};
+
+function resolveHomeView(value: HomeSearchParams["view"]): {
+  initialView: FocusView;
+  mobileSection: SiteSection;
+} {
+  const view = Array.isArray(value) ? value[0] : value;
+  if (view === "ai-news" || view === "daily" || view === "open-source") {
+    return { initialView: view, mobileSection: view };
+  }
+  return { initialView: "ai-news", mobileSection: "home" };
 }
 
-async function HomeData() {
-  const [aiNewsPage, curationPage, openSourceEntries] = await Promise.all([
-    getAiNewsPage(0, AI_NEWS_LIST_LIMIT),
-    getCurationPage(),
-    getOpenSourceListEntries(),
-  ]);
-  const streamData: HomeStreamData = {
-    aiNewsHasMore: aiNewsPage.hasMore,
-    aiNewsItems: aiNewsPage.items,
-    initialHasMore: curationPage.hasMore,
-    initialItems: curationPage.items,
-    openSourceEntries,
-  };
-  return (
-    <Suspense fallback={<HomeMain {...streamData} initialView={null} mobileSection="home" />}>
-      <HomeView {...streamData} />
-    </Suspense>
-  );
+async function HomeData({ initialView }: { initialView: FocusView }) {
+  if (initialView === "daily") {
+    const curationPage = await getCurationPage();
+    return <CurationStream initialHasMore={curationPage.hasMore} initialItems={curationPage.items} />;
+  }
+  if (initialView === "open-source") {
+    return <OpenSourceStream entries={await getOpenSourceListEntries()} />;
+  }
+
+  const aiNewsPage = await getAiNewsPage(0, AI_NEWS_LIST_LIMIT);
+  return <AiNewsStream initialHasMore={aiNewsPage.hasMore} initialItems={aiNewsPage.items} />;
 }
 
-export default function HomePage() {
+// searchParams 只决定首页壳的移动形态与遗留内容视图；数据读取继续留在壳内的
+// Suspense 中，因此身份轨、刊头和它们的客户端动效在整次流式响应里只挂载一次。
+export default async function HomePage({ searchParams }: { searchParams: Promise<HomeSearchParams> }) {
+  const { initialView, mobileSection } = resolveHomeView((await searchParams).view);
   return (
-    <Suspense fallback={<HomeShell />}>
-      <HomeData />
-    </Suspense>
+    <HomeMain initialView={initialView} mobileSection={mobileSection}>
+      <HomeData initialView={initialView} />
+    </HomeMain>
   );
 }

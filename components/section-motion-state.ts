@@ -58,4 +58,34 @@ export function clearSectionTransition(element?: HTMLElement) {
   window.sessionStorage.removeItem(transitionStorageKey);
 }
 
+// 「档案摊开」入场：首访仪式揭幕时，刊头与首批内容单元按 32ms 阶梯就位，
+// 与内容流追加/筛选揭示共用 0.45rem 上浮 + [0.16,1,0.3,1] 的既有语言。
+const revealUnitSelector =
+  ":scope .ai-news__day-heading, :scope ol > li:not(.curation-home__stream-status)";
+const REVEAL_MAX_UNITS = 6;
+const REVEAL_STAGGER = 0.032;
+
+export function getSectionRevealTargets() {
+  const container = document.querySelector<HTMLElement>(".site-section-motion");
+  if (!container) return [];
+  const targets: HTMLElement[] = [];
+  const header = container.querySelector<HTMLElement>(":scope > nav");
+  if (header) targets.push(header);
+  const units = container.querySelectorAll<HTMLElement>(revealUnitSelector);
+  for (const unit of Array.from(units).slice(0, REVEAL_MAX_UNITS)) {
+    targets.push(unit);
+  }
+  return targets;
+}
+
+export function playSectionReveal(targets: HTMLElement[]) {
+  return targets.map((element, index) =>
+    animate(
+      element,
+      { opacity: [0, 1], y: ["0.45rem", "0rem"] },
+      { delay: index * REVEAL_STAGGER, duration: 0.3, ease: [0.16, 1, 0.3, 1] },
+    ),
+  );
+}
+
 export { resetSectionMotion };

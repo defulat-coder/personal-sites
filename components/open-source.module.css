@@ -196,10 +196,16 @@
 }
 
 .documentHeader {
+  position: sticky;
+  z-index: 2;
+  top: 0;
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: 1rem;
+  border-bottom: 1px solid var(--line);
+  background: var(--surface);
+  padding: .75rem 0;
 }
 
 .documentHeader :global(.curation-detail__eyebrow) {
@@ -331,6 +337,11 @@
   color: #999;
 }
 
+:global(html[data-curation-theme="dark"]) .documentHeader {
+  border-color: #333;
+  background: #181818;
+}
+
 :global(html[data-curation-theme="dark"]) .documentTab[aria-selected="true"],
 :global(html[data-curation-theme="dark"]) .documentTab:hover,
 :global(html[data-curation-theme="dark"]) .documentTab:focus-visible {
@@ -370,6 +381,18 @@
     grid-template-columns: minmax(0, 1fr);
   }
 
+  .documentHeader {
+    padding: .25rem 0;
+  }
+
+  .documentTab {
+    display: inline-flex;
+    min-width: 2.75rem;
+    min-height: 2.75rem;
+    align-items: center;
+    justify-content: center;
+  }
+
   .meta {
     flex-direction: row;
     flex-wrap: wrap;
@@ -387,12 +410,6 @@
 @media (max-width: 560px) {
   .filter {
     min-height: 2.2rem;
-  }
-
-  .documentHeader {
-    align-items: flex-start;
-    flex-direction: column;
-    gap: .75rem;
   }
 
   .repositoryBrowserContent { grid-template-columns: 1fr; }
