@@ -218,8 +218,6 @@
 }
 
 .form {
-  position: sticky;
-  bottom: 0;
   background: var(--surface);
   padding-top: 0.75rem;
   padding-right: 0.75rem;
@@ -557,11 +555,15 @@
 }
 
 @media (min-width: 901px) {
-  /* Ask 是自身管理消息滚动的全高工作面：覆盖通用 feed 的 50rem 栏、
-     右内边距与 5rem 页尾留白，让刊头、viewport 与 composer 共享 42rem 轴。 */
+  /* Ask 是自身管理消息滚动的工作面：覆盖通用 feed 的 50rem 栏、右内边距
+     与 5rem 页尾留白，让刊头、viewport 与 composer 共享 42rem 轴；栏高随
+     内容收缩、封顶一屏，内容超出一屏时消息区内部滚动、组合器停靠底部。 */
   .root:global(.curation-home__feed) {
     width: 100%;
     max-width: 42rem;
+    height: auto;
+    max-height: 100dvh;
+    align-self: start;
     margin-inline: auto;
     overflow: hidden;
     padding: 0;
@@ -575,8 +577,8 @@
 
 @media (max-width: 900px) {
   .root {
-    height: 100%;
     min-height: 0;
+    max-height: 100%;
     max-width: none;
     overflow: hidden;
     padding: 1.5rem 1rem 0.75rem;
@@ -600,7 +602,7 @@
     padding-right: 0;
   }
 
-  /* 输入框保持 sticky 停靠底部，移动端永不滚走；iOS 输入字号 ≥16px 防止聚焦缩放。 */
+  /* 组合器跟随对话流：内容不足一屏时紧跟内容，超出一屏时停靠底部；iOS 输入字号 ≥16px 防止聚焦缩放。 */
   .scopeTrigger {
     height: 2.75rem !important;
   }

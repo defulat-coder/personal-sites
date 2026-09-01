@@ -6,7 +6,7 @@ test.beforeEach(async ({ page }) => {
   await page.addInitScript((key) => window.sessionStorage.setItem(key, "true"), LOADER_PLAYED_KEY);
 });
 
-test("Ask desktop surfaces share a centered 42rem axis and reach the available bottom", async ({ page }) => {
+test("Ask desktop surfaces share a centered 42rem axis and the composer follows the content", async ({ page }) => {
   await page.setViewportSize({ height: 1_000, width: 1_440 });
   await page.goto("/ask");
 
@@ -49,10 +49,14 @@ test("Ask desktop surfaces share a centered 42rem axis and reach the available b
     };
   });
   expect(columnGutters.left).toBeCloseTo(columnGutters.right, 1);
-  expect(1_000 - composerBox.y - composerBox.height).toBeCloseTo(0, 1);
+
+  // 空态内容不足一屏：组合器紧跟滚动区内容下方（form padding-top 0.75rem），
+  // 不再贴视口底部。
+  expect(composerBox.y - (viewportBox.y + viewportBox.height)).toBeCloseTo(12, 1);
+  expect(1_000 - composerBox.y - composerBox.height).toBeGreaterThan(100);
 });
 
-test("Ask mobile keeps its compact gutter and bottom composer", async ({ page }) => {
+test("Ask mobile keeps its compact gutter and the composer follows the content", async ({ page }) => {
   await page.setViewportSize({ height: 844, width: 390 });
   await page.goto("/ask");
 
@@ -74,6 +78,8 @@ test("Ask mobile keeps its compact gutter and bottom composer", async ({ page })
   expect(viewportBox.x).toBeCloseTo(16, 1);
   expect(composerBox.x).toBeCloseTo(viewportBox.x, 1);
   expect(composerBox.width).toBeCloseTo(viewportBox.width, 1);
-  expect(844 - composerBox.y - composerBox.height).toBeLessThanOrEqual(12);
+  // 空态内容不足一屏：组合器紧跟滚动区内容下方（form padding-top 0.75rem）。
+  expect(composerBox.y - (viewportBox.y + viewportBox.height)).toBeCloseTo(12, 1);
+  expect(composerBox.y + composerBox.height).toBeLessThan(844);
   await expect(page.getByRole("textbox", { name: "输入问题" })).toBeVisible();
 });
