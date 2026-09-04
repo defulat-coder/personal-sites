@@ -10,7 +10,8 @@ This block is written and re-added by `next dev` — verify at `node_modules/nex
 
 # Project Instructions
 
-- Unless explicitly requested, do not preserve backward compatibility: replace old APIs and data structures directly, without compatibility layers, migration bridges, or fallback branches.
+- This is a personal project. Unless explicitly requested, backward compatibility is not a requirement, including for published APIs, older clients, and installed app versions. Replace old APIs and data structures directly; do not add compatibility layers, dual-version support, migration bridges, or fallback branches for older consumers.
+- Prefer the simplest implementation that meets the current need. Do not add abstractions or infrastructure for hypothetical future requirements. Keep the current Web, iOS, and Android code aligned when shared contracts change; this does not require supporting older versions.
 
 ## Runtime and Checks
 
