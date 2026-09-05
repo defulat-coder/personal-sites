@@ -1,7 +1,7 @@
 {
   "schemaVersion": 2,
-  "generatedAt": "2026-08-25T16:04:51Z",
-  "title": "Design System: 陈远｜每日关注",
+  "generatedAt": "2026-09-05T00:55:35.318809+00:00",
+  "title": "Design System: 陈远｜运行中的工程档案",
   "extensions": {
     "colorMeta": {
       "ink": {
@@ -261,7 +261,7 @@
       {
         "name": "content-typing",
         "value": "11ms/13ms input; 4ms deletion",
-        "purpose": "One-time bilingual profile sequence."
+        "purpose": "桌面首访双语简介；手机直接呈现完整中文，不播放逐字序列。"
       },
       {
         "name": "receipt-feed",
@@ -272,6 +272,11 @@
         "name": "animated-gif-playback",
         "value": "autoplay + loop when motion is allowed",
         "purpose": "X animated GIF 在常规偏好下静音自动播放并循环；prefers-reduced-motion 下两者均关闭，保留封面与原生手动播放控件。"
+      },
+      {
+        "name": "mobile-profile-collapse",
+        "value": "240ms; collapse >80px; expand <16px",
+        "purpose": "手机阅读列表只保留导航；首页与 Ask 除外，减少动态效果时直接切换。"
       }
     ],
     "breakpoints": [
@@ -293,24 +298,22 @@
     {
       "name": "Section Masthead",
       "kind": "nav",
-      "refersTo": "content-navigation",
       "description": "桌面内容区刊头：Title 档刊名居左，quiet 兄弟版块链接居右，共享唯一一条细线；问一问与阅读版块等权并排在序列末位。各内容版块有独立路径（/ai-news、/curation、/open-source、/works、/ask）。",
       "html": "<nav class=\"ds-masthead\"><span class=\"ds-masthead__current\">每日动态</span><span class=\"ds-masthead__siblings\"><a href=\"#\">每日关注</a><a href=\"#\">开源关注</a><a href=\"#\">构建</a><a href=\"#\">问一问</a></span></nav>",
       "css": ".ds-masthead { display:flex; align-items:baseline; justify-content:space-between; gap:16px; border-bottom:1px solid #eee; padding:12px 0; font-family:-apple-system,BlinkMacSystemFont,Arial,sans-serif; }.ds-masthead__current { color:#1c1c1e; font-size:15px; font-weight:620; letter-spacing:-.035em; }.ds-masthead__siblings { display:flex; gap:16px; }.ds-masthead__siblings a { color:#767676; font-size:12px; text-decoration:none; transition:color 180ms ease; }.ds-masthead__siblings a:hover,.ds-masthead__siblings a:focus-visible { color:#1c1c1e; outline:0; }"
     },
     {
-      "name": "Filter Index Line",
+      "name": "Reading Date and Filter",
       "kind": "custom",
-      "refersTo": "filter-index",
-      "description": "版块内筛选索引行：quiet 文本以 · 分隔，激活态仅靠墨色与字重，无下划线无边框。",
-      "html": "<div class=\"ds-filter-index\"><button class=\"is-active\" type=\"button\">全部</button><button type=\"button\">模型</button><button type=\"button\">产品</button><button type=\"button\">行业</button></div>",
-      "css": ".ds-filter-index { display:flex; flex-wrap:wrap; align-items:baseline; font-family:-apple-system,BlinkMacSystemFont,Arial,sans-serif; }.ds-filter-index button { display:inline-flex; align-items:center; border:0; background:transparent; color:#767676; cursor:pointer; font-size:12px; line-height:1; padding:4px 0; transition:color 180ms ease; }.ds-filter-index button + button::before { margin:0 9px; color:#a9a9a9; content:\"·\"; }.ds-filter-index button.is-active { color:#1c1c1e; font-weight:620; }.ds-filter-index button:hover,.ds-filter-index button:focus-visible { color:#1c1c1e; outline:0; }"
+      "description": "手机日期左、分类选择右，共同固定在栏目导航下方。",
+      "html": "<div class=\"ds-reading-tools\"><span>9月5日 <small>星期六</small></span><button type=\"button\" aria-label=\"筛选每日动态\">全部动态 <svg width=\"14\" height=\"14\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.5\" aria-hidden=\"true\"><path d=\"m6 9 6 6 6-6\"/></svg></button></div>",
+      "css": ".ds-reading-tools{display:flex;align-items:center;justify-content:space-between;gap:12px;min-height:44px;border-bottom:1px solid #eee;color:#656568;font:500 11.84px/1.5 -apple-system,sans-serif}.ds-reading-tools small{font:inherit;color:#767676}.ds-reading-tools button{display:flex;align-items:center;gap:8px;min-height:44px;border:0;background:transparent;color:inherit;font:inherit;padding:0;cursor:pointer}.ds-reading-tools button:hover{color:#1c1c1e}.ds-reading-tools button:focus-visible{outline:2px solid #1c1c1e;outline-offset:2px}"
     },
     {
       "name": "External Link Pill",
       "kind": "button",
       "refersTo": "external-link",
-      "description": "每日动态详情页的原文出口 CTA，实心黑 pill；身份轨链接行为 quiet 文本链接，不使用 pill。",
+      "description": "详情中的原始来源出口；身份区 GitHub 与语雀使用纯文字链接，不使用此胶囊。",
       "html": "<a class=\"ds-external-link\" href=\"#\">阅读原文</a>",
       "css": ".ds-external-link { display:inline-flex; align-items:center; border:1px solid #1c1c1e; border-radius:999px; background:#1c1c1e; color:#fff; font:620 12px/1 -apple-system,BlinkMacSystemFont,Arial,sans-serif; padding:9px 13px; text-decoration:none; transition:background-color 180ms ease,border-color 180ms ease; }.ds-external-link:hover,.ds-external-link:focus-visible { border-color:#555; background:#555; outline:0; }"
     },
@@ -325,7 +328,6 @@
     {
       "name": "Native X Video Player",
       "kind": "custom",
-      "refersTo": "x-video-player",
       "description": "设计收藏流右侧正文列内的原生 X 视频播放器：与详情标题链接分离，带原生控制条和 X 回退出口；animated GIF 遇 prefers-reduced-motion 不自动播放或循环。",
       "html": "<figure class=\"ds-x-video\"><video aria-label=\"X 视频\" controls muted playsinline></video><figcaption><a href=\"#\">在 X 上查看原视频</a></figcaption></figure>",
       "css": ".ds-x-video { max-width:608px; overflow:hidden; margin:0; border-radius:12px; background:#111; font-family:-apple-system,BlinkMacSystemFont,Arial,sans-serif; }.ds-x-video video { display:block; width:100%; min-height:220px; max-height:512px; background:#111; }.ds-x-video figcaption { padding:10px 13px; background:#1c1c1e; color:#fff; font-size:12px; }.ds-x-video a { color:inherit; text-decoration-color:rgb(255 255 255 / 55%); text-underline-offset:3px; }.ds-x-video a:focus-visible { outline:2px solid #fff; outline-offset:2px; }"
@@ -341,7 +343,6 @@
     {
       "name": "Technical Signal",
       "kind": "custom",
-      "refersTo": "signal",
       "description": "点阵画布上从右向左滚动的技术词弹幕（固定种子 12 词）；两侧渐隐裁切是有意语义，reduced-motion 下为静态 3×4 网格。不是标签云。",
       "html": "<div class=\"ds-signal\"><span>agent.runtime</span><span>mcp.protocol</span><span>workflow.graph</span></div>",
       "css": ".ds-signal { display:flex; flex-wrap:wrap; gap:18px 32px; min-height:96px; background-image:radial-gradient(circle,rgba(28,28,30,.27) 1px,transparent 1.15px); background-size:9px 9px; padding:18px; }.ds-signal span { border:1px solid rgba(28,28,30,.22); background:rgba(255,255,255,.94); color:rgba(28,28,30,.88); font:650 10px/1 ui-monospace,SFMono-Regular,Menlo,monospace; padding:7px 9px; }"
@@ -349,15 +350,21 @@
     {
       "name": "About Receipt",
       "kind": "custom",
-      "refersTo": "about-receipt",
       "description": "关于我打印稿：全屏弹层里的拟物打印机（全站唯一受控拟物例外）把小票从出纸口逐段送出；纸色不随主题切换，等宽字体，顶部虚线撕边、底部锯齿边。",
       "html": "<div class=\"ds-receipt\"><div class=\"ds-receipt__row\"><span>喜马拉雅</span><span>3 年</span></div><div class=\"ds-receipt__row\"><span>PayerMax</span><span>至今</span></div></div>",
       "css": ".ds-receipt { background:#f8f8f8; border-top:1px dashed #b8b8ba; color:#1c1c1e; font:12px/1.7 ui-monospace,SFMono-Regular,Menlo,monospace; padding:14px 12px; }.ds-receipt__row { display:grid; grid-template-columns:auto 1fr; gap:12px; }.ds-receipt__row span:last-child { text-align:right; }"
+    },
+    {
+      "name": "Ask Composer",
+      "kind": "input",
+      "description": "公开资料问答输入；手机输入 16px，操作至少 44px。",
+      "html": "<label class=\"ds-ask\"><span>问一问</span><textarea aria-label=\"问题\" placeholder=\"问问这些公开资料…\"></textarea><button type=\"button\">发送</button></label>",
+      "css": ".ds-ask{display:grid;gap:8px;border:1px solid #dedee1;border-radius:12px;padding:12px;color:#1c1c1e;font:12px/1.5 -apple-system,sans-serif}.ds-ask textarea{min-height:48px;resize:vertical;border:0;background:transparent;color:inherit;font:16px/1.5 -apple-system,sans-serif}.ds-ask button{justify-self:end;min-width:44px;min-height:44px;border:0;border-radius:6px;background:#1c1c1e;color:#fff;padding:0 12px;cursor:pointer}.ds-ask button:hover{background:#303033}.ds-ask :focus-visible{outline:2px solid #1c1c1e;outline-offset:2px}"
     }
   ],
   "narrative": {
     "northStar": "运行中的工程档案",
-    "overview": "这是一个以个人工程身份为锚点、以每日判断为主内容的桌面优先站点。页面不把内容包进卡片，也不使用营销式 hero；身份信息作为始终可见的左侧轨道，策展和文章作为右侧连续阅读流。\n\n视觉参考来自 Ample Studio 的克制、轻量和留白节奏，但内容与交互服务于 Agent 工程实践：信号场传达技术广度，逐字叙事传达个人履历，策展流传达持续输入与判断。",
+    "overview": "**Creative North Star: “运行中的工程档案”。** 这是一个以个人工程身份为锚点、以每日判断为主内容的桌面优先站点。页面不把内容包进卡片，也不使用营销式 hero；身份信息作为始终可见的左侧轨道，策展和文章作为右侧连续阅读流。\n\n视觉参考来自 Ample Studio 的克制、轻量和留白节奏，但内容与交互服务于 Agent 工程实践：信号场传达技术广度，逐字叙事传达个人履历，策展流传达持续输入与判断。",
     "keyCharacteristics": [
       "高对比黑白灰为主体；绿色只属于 Loading 动画，不进入常规页面。",
       "平面、细分割线、连续流；不要用卡片堆叠制造层级。",
@@ -365,54 +372,29 @@
     ],
     "rules": [
       {
-        "name": "单色优先规则",
-        "body": "除 Loading 绿外，不以黄色、渐变或高饱和点缀争夺内容注意力。",
-        "section": "colors"
+        "name": "双端阅读规则",
+        "body": "桌面保留身份轨与连续内容流；手机按阅读顺序重排，而非缩小桌面两栏。",
+        "section": "layout"
       },
       {
-        "name": "语义字号规则",
-        "body": "内容页面的标题不使用 display 级别——长标题在超大字号下会失控；display 档仅保留给开屏等非内容场景。首页内容通过粗细、留白和分隔线建立层级，不依赖超大标题。",
-        "section": "typography"
-      },
-      {
-        "name": "字号阶梯",
-        "body": "frontmatter 的 typography.scale 是全站允许的字号清单（caption 0.67–0.76 / 正文 0.78–0.96 / Markdown 1–1.4 / 详情与信息流标题档）；新增字号先进清单再进代码，探测器以此为准。",
-        "section": "typography"
-      },
-      {
-        "name": "平面优先规则",
-        "body": "除媒体缩放、主题按钮 hover 与必要的状态反馈外，不为“看起来高级”添加阴影、描边加阴影组合或装饰性背景。唯一例外是关于我打印稿的打印机机身（受控拟物例外）。",
-        "section": "elevation"
-      },
-      {
-        "name": "受控拟物例外",
-        "body": "打印机的渐变机身、噪声纹理与多重阴影是全站唯一登记的拟物/阴影语言——它模拟真实打印的触觉仪式，纯平面规则只在这一台机器上让位；机器之外的任何界面元素不得援引此例外。",
-        "section": "elevation"
-      },
-      {
-        "name": "首访仪式规则",
-        "body": "Loading 是固定 5 秒的刻意仪式，不与真实加载进度挂钩、不提供跳过；reduced-motion 下约 160ms 直接揭幕；每个会话仅一次（sessionStorage），回访零成本。双语简介打字机同属仪式，不可跳过或快进。",
-        "section": "motion"
-      },
-      {
-        "name": "信号场弹幕规则",
-        "body": "技术信号场是从右向左的弹幕：词条经过容器两侧被渐隐遮罩裁切属弹幕语义，是有意设计；prefers-reduced-motion 的静态终态为 3×4 规则网格（登记例外），两形态不要求布局同构。",
-        "section": "motion"
+        "name": "日期左、筛选右",
+        "body": "日期是阅读位置，筛选是操作；共同紧贴栏目导航，正文保持阅读主角。",
+        "section": "components"
       }
     ],
     "dos": [
-      "以 .curation-home 的“身份轨 + 内容流”作为新页面的默认骨架。",
-      "在内容区使用连续分隔线、语义标题与真实元信息表达层级。",
-      "将新的技术词、简介内容与策展条目放进既有组件和数据模型，而不是另建展示壳。",
-      "为新的动效补齐 prefers-reduced-motion 的静态或即时状态。",
-      "先在桌面宽度验证两栏节奏、词节点不重叠、正文不留无意义右侧空白。"
+      "**Do** 以 `.curation-home` 的“身份轨 + 内容流”作为新页面的默认骨架。",
+      "**Do** 在内容区使用连续分隔线、语义标题与真实元信息表达层级。",
+      "**Do** 将新的技术词、简介内容与策展条目放进既有组件和数据模型，而不是另建展示壳。",
+      "**Do** 为新的动效补齐 `prefers-reduced-motion` 的静态或即时状态。",
+      "**Do** 先在桌面宽度验证两栏节奏、词节点不重叠、正文不留无意义右侧空白。"
     ],
     "donts": [
-      "恢复知识库、语雀同步、工作台表格或旧 WorkspaceFrame 视觉结构。",
-      "用卡片网格、玻璃拟态、大阴影或高饱和装饰色承载策展内容。",
-      "将 Loading 的绿色或此前试验的黄色扩散到加载完成后的页面。",
-      "为技术感滥用等宽字体；等宽字体只属于技术信号场与代码语义。",
-      "让技术节点、正文文本或详情标题溢出、堆叠或破坏两栏阅读线。"
+      "**Don't** 恢复知识库、语雀同步、工作台表格或旧 `WorkspaceFrame` 视觉结构。",
+      "**Don't** 用卡片网格、玻璃拟态、大阴影或高饱和装饰色承载策展内容。",
+      "**Don't** 将 Loading 的绿色或此前试验的黄色扩散到加载完成后的页面。",
+      "**Don't** 为技术感滥用等宽字体；等宽字体只属于技术信号场与代码语义。",
+      "**Don't** 让技术节点、正文文本或详情标题溢出、堆叠或破坏两栏阅读线。"
     ]
   }
 }

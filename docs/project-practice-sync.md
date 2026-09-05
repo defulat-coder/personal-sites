@@ -199,13 +199,13 @@ discover → ingest → derive → review → project → publish → verify
 | `revision text not null` | 规范化快照摘要，用于幂等和回读校验 |
 | `snapshot_json text not null` | 项目详情所需的已批准记录与公开证据 |
 
-项目详情始终按项目整体读取，因此单行 JSON 快照能提供原子发布。Web 直读 SQLite；iOS/Android 经站点 `/api/works` 读取。公开快照同时派生为 `works` 范围的 Ask 文档，并与项目快照在同一 SQLite 事务中替换；FTS 索引不是内容真相来源。
+项目详情始终按项目整体读取，因此单行 JSON 快照能提供原子发布。Web 服务端直读 SQLite，再渲染给桌面和手机浏览器。公开快照同时派生为 `works` 范围的 Ask 文档，并与项目快照在同一 SQLite 事务中替换；FTS 索引不是内容真相来源。
 
 安全边界：
 
 - SQLite 随部署只读，运行时与浏览器没有写入口。
 - 发布脚本只在本机读取敏感来源并原子 upsert 单行快照。
-- iOS/Android 只读取站点公开 API，不接触本地文件路径。
+- 浏览器只接收站点公开页面和必要的交互 API，不接触本地文件路径。
 
 ## 9. 命令与模块边界
 

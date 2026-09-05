@@ -115,7 +115,6 @@
   letter-spacing: -.018em;
   line-height: 1.32;
   text-wrap: pretty;
-  transition: color 180ms ease;
 }
 
 .stream a:hover h2,
@@ -377,6 +376,11 @@
 }
 
 @media (max-width: 900px) {
+  .filter {
+    min-height: 2.75rem;
+    min-width: 2.75rem;
+  }
+
   .stream a {
     grid-template-columns: minmax(0, 1fr);
   }
@@ -408,10 +412,6 @@
 }
 
 @media (max-width: 560px) {
-  .filter {
-    min-height: 2.2rem;
-  }
-
   .repositoryBrowserContent { grid-template-columns: 1fr; }
   .repositoryTreePane { max-height: 16rem; border-right: 0; border-bottom: 1px solid var(--line); }
 }

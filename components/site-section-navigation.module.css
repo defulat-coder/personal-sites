@@ -176,6 +176,8 @@
   .mobileNavigation .link {
     flex: 0 0 auto;
     min-height: 3.25rem;
+    min-width: 2.75rem;
+    justify-content: center;
     white-space: nowrap;
   }
 
@@ -210,7 +212,7 @@
   }
 
   .link {
-    font-size: 0.74rem;
+    font-size: 0.78rem;
   }
 }
 

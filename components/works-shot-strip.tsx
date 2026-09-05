@@ -78,13 +78,18 @@ export function WorksShotStrip({ shots, workTitle }: WorksShotStripProps) {
     const strip = stripRef.current;
     if (!strip) return;
     const onWheel = (event: WheelEvent) => {
+      // 触控板捏合会作为 Ctrl+wheel 到达；浏览器缩放与 Shift 横滚交给原生处理。
+      if (event.ctrlKey || event.metaKey || event.shiftKey) return;
       if (Math.abs(event.deltaY) <= Math.abs(event.deltaX)) return;
       const max = strip.scrollWidth - strip.clientWidth;
       if (max <= 0) return;
       if (event.deltaY < 0 && strip.scrollLeft <= 0) return;
       if (event.deltaY > 0 && strip.scrollLeft >= max - 1) return;
       event.preventDefault();
-      strip.scrollLeft += event.deltaY;
+      const delta = event.deltaMode === 1 ? event.deltaY * 16
+        : event.deltaMode === 2 ? event.deltaY * strip.clientWidth
+        : event.deltaY;
+      strip.scrollLeft += delta;
     };
     strip.addEventListener("wheel", onWheel, { passive: false });
     return () => strip.removeEventListener("wheel", onWheel);

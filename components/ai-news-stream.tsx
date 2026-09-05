@@ -1,5 +1,8 @@
 "use client";
 
+import { useStreamDate } from "@/components/use-stream-date";
+import { ChevronDown } from "lucide-react";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuRadioGroup, DropdownMenuRadioItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { motion, useReducedMotion } from "motion/react";
 import type { Route } from "next";
 import Link from "next/link";
@@ -208,6 +211,10 @@ export function AiNewsStream({ initialHasMore, initialItems }: AiNewsStreamProps
     return index;
   }, [groups]);
 
+  const visibleDay = useStreamDate(streamRef, groups);
+
+  const visibleGroup = groups.find((group) => (group.dayKey || "unknown") === visibleDay) ?? groups[0];
+
   if (initialItems.length === 0) {
     return (
       <ol className="curation-home__stream">
@@ -219,70 +226,35 @@ export function AiNewsStream({ initialHasMore, initialItems }: AiNewsStreamProps
   }
 
   return (
-    <div ref={streamRef}>
-      {categories.length > 1 ? (
-        <div className="ai-news__filters" role="group" aria-label="按分类筛选">
-          {/* 激活指示器是一条 1px 细线，用 layoutId 在筛选项之间滑动——
-              与全站「细线即层级」的语言一致，reduced-motion 下时长归零。 */}
-          <button
-            aria-pressed={activeCategory === null}
-            className="ai-news__filter"
-            onClick={() => selectCategory(null)}
-            type="button"
-          >
-            全部
-            {activeCategory === null ? (
-              <motion.span
-                className="ai-news__filter-indicator"
-                layoutId="ai-news-filter-indicator"
-                transition={{ duration: reduceMotion ? 0 : 0.24, ease: STREAM_EASE }}
-              />
-            ) : null}
-          </button>
-          {hasSelected ? (
-            <button
-              aria-pressed={activeCategory === "selected"}
-              className="ai-news__filter"
-              onClick={() => selectCategory(activeCategory === "selected" ? null : "selected")}
-              type="button"
-            >
-              精选
-              {activeCategory === "selected" ? (
-                <motion.span
-                  className="ai-news__filter-indicator"
-                  layoutId="ai-news-filter-indicator"
-                  transition={{ duration: reduceMotion ? 0 : 0.24, ease: STREAM_EASE }}
-                />
-              ) : null}
-            </button>
-          ) : null}
-          {categories.map((category) => (
-            <button
-              aria-pressed={activeCategory === category.id}
-              className="ai-news__filter"
-              key={category.id}
-              onClick={() => selectCategory(category.id === activeCategory ? null : category.id)}
-              type="button"
-            >
-              {category.label}
-              {activeCategory === category.id ? (
-                <motion.span
-                  className="ai-news__filter-indicator"
-                  layoutId="ai-news-filter-indicator"
-                  transition={{ duration: reduceMotion ? 0 : 0.24, ease: STREAM_EASE }}
-                />
-              ) : null}
-            </button>
-          ))}
+    <div className="ai-news__stream" ref={streamRef}>
+      <div className="stream-date-toolbar">
+        <div className="ai-news__day-heading">
+          <span className="ai-news__day-label">{visibleGroup?.label ?? "每日动态"}</span>
+          {visibleGroup ? <span className="ai-news__day-meta">{visibleGroup.weekday} · {visibleGroup.items.length} 条</span> : null}
         </div>
-      ) : null}
+      <DropdownMenu modal={false}>
+        <DropdownMenuTrigger asChild>
+          <button aria-label={`筛选每日动态：${activeFilterLabel ?? "全部动态"}`} className="ai-news__category-select" type="button">
+            <span>{activeFilterLabel ?? "全部动态"}</span>
+            <ChevronDown aria-hidden="true" />
+          </button>
+        </DropdownMenuTrigger>
+        <DropdownMenuContent align="end" sideOffset={4} collisionPadding={16} className="ai-news__category-menu">
+          <DropdownMenuRadioGroup value={activeCategory ?? "all"} onValueChange={(value) => selectCategory(value === "all" ? null : value)}>
+            <DropdownMenuRadioItem value="all">全部动态</DropdownMenuRadioItem>
+            {hasSelected ? <DropdownMenuRadioItem value="selected">精选动态</DropdownMenuRadioItem> : null}
+            {categories.map((category) => <DropdownMenuRadioItem key={category.id} value={category.id}>{category.label}</DropdownMenuRadioItem>)}
+          </DropdownMenuRadioGroup>
+        </DropdownMenuContent>
+      </DropdownMenu>
+      </div>
 
       {/* key 随筛选变化强制整列重挂载，首行阶梯揭示才有机会播放；
           不做整列 FLIP——数百行的位移动画会拉伸刊头、闪出大片空白。 */}
-      <div key={activeCategory ?? "all"}>
-        {groups.map((group) => (
-        <section aria-label={group.label} className="ai-news__day" key={group.dayKey || "unknown"}>
-          <h2 className="ai-news__day-heading">
+      <div className="ai-news__groups" key={activeCategory ?? "all"}>
+        {groups.map((group, groupIndex) => (
+        <section aria-label={group.label} className="ai-news__day" data-stream-date={group.dayKey || "unknown"} key={group.dayKey || "unknown"}>
+          <h2 className={groupIndex === 0 ? "sr-only" : "ai-news__day-heading"}>
             <span className="ai-news__day-label">{group.label}</span>
             <span className="ai-news__day-meta">
               {group.weekday ? `${group.weekday} · ` : ""}{group.items.length} 条

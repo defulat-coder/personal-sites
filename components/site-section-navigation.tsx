@@ -53,7 +53,7 @@ export function SiteSectionNavigation({ current, includeHome = false }: SiteSect
 
 export function MobileSectionNavigation({ current }: Pick<SiteSectionNavigationProps, "current">) {
   return (
-    <div className={styles.mobileNavigation}>
+    <div className={styles.mobileNavigation} data-mobile-navigation>
       <SiteSectionNavigation current={current} includeHome />
     </div>
   );

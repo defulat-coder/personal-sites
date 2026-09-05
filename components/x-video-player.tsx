@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useRef, useState, useSyncExternalStore } from "react";
 import { useReducedMotion } from "motion/react";
 
 import { XAppLink } from "@/components/x-app-link";
@@ -14,12 +14,20 @@ type XVideoPlayerProps = {
   videoUrl: string;
 };
 
+const subscribeToNothing = () => () => {};
+
 /** 原生控制条播放；加载失败时保留 X 原视频回退入口。 */
 export function XVideoPlayer({ compact = false, isAnimatedGif, itemTitle, poster, tweetUrl, videoUrl }: XVideoPlayerProps) {
   const [playbackError, setPlaybackError] = useState<string | null>(null);
   const reduceMotion = useReducedMotion();
+  const mounted = useSyncExternalStore(subscribeToNothing, () => true, () => false);
+  const videoRef = useRef<HTMLVideoElement>(null);
+
+  useEffect(() => {
+    if (isAnimatedGif && reduceMotion) videoRef.current?.pause();
+  }, [isAnimatedGif, reduceMotion]);
   const proxiedVideoUrl = `/api/x-media?url=${encodeURIComponent(videoUrl)}`;
-  const shouldAutoPlay = isAnimatedGif && !reduceMotion;
+  const shouldAutoPlay = mounted && isAnimatedGif && reduceMotion === false;
 
   return (
     <figure className={`curation-detail__media-player${compact ? " design-curation__media-player" : ""}`}>
@@ -30,6 +38,7 @@ export function XVideoPlayer({ compact = false, isAnimatedGif, itemTitle, poster
         loop={shouldAutoPlay}
         muted={isAnimatedGif}
         onError={() => setPlaybackError("当前浏览器无法加载视频，请在 X 上查看原视频。")}
+        ref={videoRef}
         playsInline
         poster={poster}
         preload={shouldAutoPlay ? "auto" : "none"}

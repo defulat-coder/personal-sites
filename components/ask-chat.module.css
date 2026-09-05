@@ -96,6 +96,7 @@
   width: 100%;
   height: auto;
   justify-content: space-between;
+  border: 0;
   border-bottom: 1px solid var(--line);
   border-radius: 0;
   color: #6f6f72;
@@ -427,10 +428,12 @@
 }
 
 :global(html[data-curation-theme="dark"]) .empty,
+:global(html[data-curation-theme="dark"]) .empty :global([data-slot="empty-description"]),
 :global(html[data-curation-theme="dark"]) .suggestions :global([data-slot="button"]),
 :global(html[data-curation-theme="dark"]) .sources::before,
 :global(html[data-curation-theme="dark"]) .citation,
 :global(html[data-curation-theme="dark"]) .status,
+:global(html[data-curation-theme="dark"]) .interruption,
 :global(html[data-curation-theme="dark"]) .composerFooter,
 :global(html[data-curation-theme="dark"]) .scopeTrigger {
   color: #999;
@@ -628,6 +631,10 @@
     min-height: 2.75rem;
   }
 
+  .interruption :global([data-slot="button"]) {
+    min-height: 2.75rem;
+  }
+
   .suggestions :global([data-slot="button"]) {
     min-height: 2.75rem;
     align-items: center;
@@ -645,4 +652,21 @@
   .userBubble {
     max-width: 94%;
   }
+}
+
+.interruption {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem;
+  color: var(--quiet);
+  font-size: 0.78rem;
+}
+
+.interruption p {
+  margin: 0;
+}
+
+.interruption :global([data-slot="button"]) {
+  color: inherit;
 }

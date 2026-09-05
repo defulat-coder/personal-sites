@@ -10,6 +10,7 @@
  * FINISH: unreviewed and undocumented is unfinished; this build ends with the finish review, the verdict, and DESIGN.md.
  */
 
+import { useStreamDate } from "@/components/use-stream-date";
 import { motion, useReducedMotion } from "motion/react";
 import type { Route } from "next";
 import Link from "next/link";
@@ -49,8 +50,11 @@ const PAGE_SIZE = 20;
 
 export function CurationStream({ apiPath = "/api/curation", emptyLabel = "暂无已发布的策展条目。", initialHasMore, initialItems, snapshotKey, variant = "default" }: CurationStreamProps) {
   const streamRef = useRef<HTMLOListElement>(null);
+  const wrapperRef = useRef<HTMLDivElement>(null);
   const reduceMotion = useReducedMotion();
   const [items, setItems] = useState(initialItems);
+  const visibleDay = useStreamDate(wrapperRef, items);
+  const currentDate = visibleDay ?? (items[0] ? formatCurationDate(items[0]) : null);
   const [appendStart, setAppendStart] = useState(initialItems.length);
   const [hasMore, setHasMore] = useState(initialHasMore);
   const [isLoading, setIsLoading] = useState(false);
@@ -166,6 +170,10 @@ export function CurationStream({ apiPath = "/api/curation", emptyLabel = "暂无
   }, [hasMore, loadMore]);
 
   return (
+    <div ref={wrapperRef}>
+      {currentDate ? <div className="stream-date-toolbar">
+        <span className="curation-stream__date">{currentDate}</span>
+      </div> : null}
     <ol className="curation-home__stream" ref={streamRef}>
       {items.map((item, index) => {
         const isAppended = index >= appendStart;
@@ -173,8 +181,9 @@ export function CurationStream({ apiPath = "/api/curation", emptyLabel = "暂无
         // 首屏条目随 SSR 静态输出；只有无限滚动追加的条目播放入场阶梯动画。
         return (
         <motion.li
-          animate={{ opacity: 1, y: 0 }}
+          animate={isAppended ? { opacity: 1, y: 0 } : undefined}
           initial={isAppended && !reduceMotion ? { opacity: 0, y: "0.45rem" } : false}
+          data-stream-date={formatCurationDate(item)}
           key={item.id}
           transition={{
             delay: isAppended ? Math.min(index - appendStart, 9) * 0.032 : 0,
@@ -256,5 +265,6 @@ export function CurationStream({ apiPath = "/api/curation", emptyLabel = "暂无
         {!hasMore && !loadError ? <span>{items.length === 0 ? emptyLabel : "已加载全部策展内容"}</span> : null}
       </li>
     </ol>
+    </div>
   );
 }

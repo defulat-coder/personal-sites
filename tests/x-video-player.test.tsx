@@ -1,6 +1,8 @@
 import { cleanup, fireEvent, render, screen } from "@testing-library/react";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
+import { renderToString } from "react-dom/server";
+
 import { XVideoPlayer } from "@/components/x-video-player";
 
 const motionState = vi.hoisted(() => ({ reduceMotion: false }));
@@ -12,9 +14,17 @@ vi.mock("motion/react", () => ({
 describe("XVideoPlayer", () => {
   beforeEach(() => {
     motionState.reduceMotion = false;
+    vi.spyOn(HTMLMediaElement.prototype, "pause").mockImplementation(() => {});
   });
 
-  afterEach(cleanup);
+  afterEach(() => { cleanup(); vi.restoreAllMocks(); });
+
+  it("keeps server-rendered GIFs still until the browser motion preference is known", () => {
+    const html = renderToString(<XVideoPlayer isAnimatedGif itemTitle="GIF" poster="/poster.jpg" tweetUrl="https://x.com/example/status/1" videoUrl="https://video.twimg.com/video.mp4" />);
+    expect(html).not.toContain('autoPlay');
+    expect(html).not.toContain('autoplay');
+    expect(html).toContain('preload="none"');
+  });
 
   it("does not preload ordinary videos before the visitor presses play", () => {
     render(

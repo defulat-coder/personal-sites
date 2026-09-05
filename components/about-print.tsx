@@ -62,8 +62,9 @@ export function AboutPrint() {
     if (!open) return undefined;
 
     dialogRef.current?.focus();
-    const previousOverflow = document.body.style.overflow;
-    document.body.style.overflow = "hidden";
+    const root = document.documentElement;
+    const previousOverflow = root.style.overflow;
+    root.style.overflow = "hidden";
 
     const handleKeydown = (event: KeyboardEvent) => {
       if (event.key === "Escape") {
@@ -75,7 +76,7 @@ export function AboutPrint() {
       const dialog = dialogRef.current;
       if (!dialog) return;
       const focusable = dialog.querySelectorAll<HTMLElement>(
-        "button:not([tabindex='-1']), a[href], [tabindex]:not([tabindex='-1'])",
+        "button:not(:disabled):not([tabindex='-1']), a[href], [tabindex]:not([tabindex='-1'])",
       );
       if (focusable.length === 0) {
         event.preventDefault();
@@ -84,7 +85,7 @@ export function AboutPrint() {
       const first = focusable[0];
       const last = focusable[focusable.length - 1];
       const active = document.activeElement;
-      if (event.shiftKey && (active === first || !dialog.contains(active))) {
+      if (event.shiftKey && (active === first || active === dialog || !dialog.contains(active))) {
         event.preventDefault();
         last.focus();
       } else if (!event.shiftKey && (active === last || !dialog.contains(active))) {
@@ -95,7 +96,7 @@ export function AboutPrint() {
 
     window.addEventListener("keydown", handleKeydown);
     return () => {
-      document.body.style.overflow = previousOverflow;
+      root.style.overflow = previousOverflow;
       window.removeEventListener("keydown", handleKeydown);
     };
   }, [open, close]);

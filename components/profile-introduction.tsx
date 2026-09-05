@@ -43,12 +43,14 @@ const STEP_EPSILON = 1e-6;
 const REDUCED_MOTION_QUERY = "(prefers-reduced-motion: reduce)";
 
 function subscribeToReducedMotion(onStoreChange: () => void) {
-  const media = window.matchMedia(REDUCED_MOTION_QUERY);
-  media.addEventListener("change", onStoreChange);
-  return () => media.removeEventListener("change", onStoreChange);
+  const queries = [REDUCED_MOTION_QUERY, "(max-width: 900px)"].map((query) => window.matchMedia(query));
+  queries.forEach((media) => media.addEventListener("change", onStoreChange));
+  return () => queries.forEach((media) => media.removeEventListener("change", onStoreChange));
 }
 
-const getReducedMotionSnapshot = () => window.matchMedia(REDUCED_MOTION_QUERY).matches;
+// 手机优先完整阅读，桌面保留逐字语言切换。
+const getReducedMotionSnapshot = () => window.matchMedia(REDUCED_MOTION_QUERY).matches
+  || window.matchMedia("(max-width: 900px)").matches;
 const getServerReducedMotionSnapshot = () => false;
 
 type DisplayPhase = "english" | "erasing" | "chinese" | "complete";
@@ -405,7 +407,7 @@ export function ProfileIntroduction({
     : phase === "complete"
       ? GREETINGS[greetingIndex]
       : CHINESE_TITLE;
-  const shouldReserveHeight = shouldAnimateInitialVisit && !hasCompletedInitialSequence;
+  const shouldReserveHeight = !reduceMotion && shouldAnimateInitialVisit && !hasCompletedInitialSequence;
 
   // 测量副本不随打字机逐字重渲，仅在文案变化时重建。
   const englishMeasureTree = useMemo(() => (

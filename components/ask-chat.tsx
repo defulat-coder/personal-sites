@@ -35,11 +35,12 @@ import {
   MessageScrollerViewport,
 } from "@/components/ui/message-scroller";
 import { ContentSectionNavigation } from "@/components/site-section-navigation";
+import { readAskChatSnapshot, writeAskChatSnapshot, type ChatMessage } from "@/components/ask-chat-snapshot";
 import { isAskScope, type AskScope, type AskSource } from "@/lib/ask-types";
 import { ArrowUpRight, ChevronDown, Search, SendHorizontal, Square, Trash2 } from "lucide-react";
 import { AnimatePresence, animate, motion } from "motion/react";
 import dynamic from "next/dynamic";
-import { memo, useCallback, useEffect, useRef, useState } from "react";
+import { memo, useCallback, useEffect, useLayoutEffect, useRef, useState } from "react";
 
 import styles from "./ask-chat.module.css";
 
@@ -48,14 +49,6 @@ const MotionSearch = motion.create(Search);
 
 // react-markdown 生态只在收到第一条回答时才需要，按需加载。
 const AskAnswerMarkdown = dynamic(() => import("@/components/ask-answer-markdown").then((module) => module.AskAnswerMarkdown));
-
-type ChatMessage = {
-  citations: AskSource[];
-  content: string;
-  id: string;
-  isComplete: boolean;
-  role: "assistant" | "user";
-};
 
 const scopeLabels: Record<AskScope, string> = {
   all: "全部",
@@ -91,9 +84,10 @@ function parseEvents(buffer: string) {
 
 // 单条消息气泡独立 memo：流式 delta 只更新目标 message 对象引用，
 // 历史消息引用保持不变即可整体跳过重渲染（含其中的 Markdown 解析）。
-const AskMessageBubble = memo(function AskMessageBubble({ isStreamingPlaceholder, message, prefersReducedMotion }: {
+const AskMessageBubble = memo(function AskMessageBubble({ isStreamingPlaceholder, message, onRetry, prefersReducedMotion }: {
   isStreamingPlaceholder: boolean;
   message: ChatMessage;
+  onRetry?: () => void;
   prefersReducedMotion: boolean;
 }) {
   return (
@@ -131,7 +125,15 @@ const AskMessageBubble = memo(function AskMessageBubble({ isStreamingPlaceholder
             </MarkerContent>
           </Marker>
         ) : null}
-        {message.role === "assistant" && message.isComplete && message.content && message.citations.length > 0 ? (
+        {message.interruption ? (
+          <div className={styles.interruption}>
+            <p role={message.interruption.kind === "error" ? "alert" : "status"}>{message.interruption.message}</p>
+            {message.interruption.kind === "error" && onRetry ? (
+              <Button onClick={onRetry} size="sm" type="button" variant="ghost">重新提问</Button>
+            ) : null}
+          </div>
+        ) : null}
+        {message.role === "assistant" && message.isComplete && message.citations.length > 0 ? (
           <MessageFooter className={styles.sources}>
             {/* 回答落定后来源逐条阶梯入场；减少动态时直接静态呈现。 */}
             <ol aria-label="回答来源" className={styles.citations}>
@@ -174,10 +176,11 @@ const PLANE_LAUNCH_TIMES = [0, 0.16, 0.34, 0.62, 1];
 // 进出场由 Motion 驱动：enter 复刻旧 message-enter（240ms 上浮淡入），
 // exit 复刻旧 message-clear-wipe（420ms 自下而上收没 + 模糊），
 // exitOrder 按"最新先走"注入阶梯延迟；减少动态时进出场都立即落定。
-function AskMessageItem({ exitOrder, isStreamingPlaceholder, message, prefersReducedMotion }: {
+function AskMessageItem({ exitOrder, isStreamingPlaceholder, message, onRetry, prefersReducedMotion }: {
   exitOrder: number;
   isStreamingPlaceholder: boolean;
   message: ChatMessage;
+  onRetry?: () => void;
   prefersReducedMotion: boolean;
 }) {
   return (
@@ -200,7 +203,7 @@ function AskMessageItem({ exitOrder, isStreamingPlaceholder, message, prefersRed
       scrollAnchor={message.role === "user"}
       transition={{ duration: MESSAGE_ENTER_DURATION, ease: MESSAGE_ENTER_EASE }}
     >
-      <AskMessageBubble isStreamingPlaceholder={isStreamingPlaceholder} message={message} prefersReducedMotion={prefersReducedMotion} />
+      <AskMessageBubble isStreamingPlaceholder={isStreamingPlaceholder} message={message} onRetry={onRetry} prefersReducedMotion={prefersReducedMotion} />
     </MotionMessageScrollerItem>
   );
 }
@@ -210,6 +213,7 @@ export function AskChat() {
   const [question, setQuestion] = useState("");
   const [usedSuggestions, setUsedSuggestions] = useState<string[]>([]);
   const [scope, setScope] = useState<AskScope>("all");
+  const [restored, setRestored] = useState(false);
   const [visitorId, setVisitorId] = useState<string | null>(null);
   const [isStreaming, setIsStreaming] = useState(false);
   const [isLaunching, setIsLaunching] = useState(false);
@@ -225,6 +229,22 @@ export function AskChat() {
   const textareaRef = useRef<HTMLTextAreaElement | null>(null);
   const viewportRef = useRef<HTMLDivElement | null>(null);
   const visitorSessionPromise = useRef<Promise<{ conversationId: string; visitorId: string }> | null>(null);
+
+  useLayoutEffect(() => {
+    const snapshot = readAskChatSnapshot();
+    if (snapshot) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect -- 水合后、绘制前恢复浏览器会话，避免 SSR 不一致和草稿闪烁。
+      setMessages(snapshot.messages);
+      setQuestion(snapshot.question);
+      setScope(snapshot.scope);
+      setUsedSuggestions(snapshot.messages.filter((message) => message.role === "user").map((message) => message.content));
+    }
+    setRestored(true);
+  }, []);
+
+  useEffect(() => {
+    if (restored) writeAskChatSnapshot({ messages, question, scope });
+  }, [messages, question, restored, scope]);
 
   // 指纹只用于限流，等用户表现出提问意图（聚焦输入框或提交）后再加载计算。
   const ensureVisitorSession = useCallback(() => {
@@ -280,6 +300,8 @@ export function AskChat() {
     if (isClearing || messages.length === 0) return;
     requestController.current?.abort();
     setMessages([]);
+    setQuestion("");
+    setScope("all");
     if (prefersReducedMotion) {
       setUsedSuggestions([]);
       return;
@@ -373,7 +395,7 @@ export function AskChat() {
     requestController.current = controller;
     setMessages((current) => [...current,
       { citations: [], content: trimmedQuestion, id: userId, isComplete: true, role: "user" },
-      { citations: [], content: "", id: assistantId, isComplete: false, role: "assistant" },
+      { citations: [], content: "", id: assistantId, isComplete: false, role: "assistant", scope },
     ]);
 
     try {
@@ -409,8 +431,10 @@ export function AskChat() {
           if (item.event === "error") {
             updateAssistant(assistantId, (message) => ({
               ...message,
-              citations: [],
-              content: typeof item.data.message === "string" ? item.data.message : "回答暂时不可用，请稍后重试。",
+              interruption: {
+                kind: "error",
+                message: typeof item.data.message === "string" ? item.data.message : "回答暂时不可用，请稍后重试。",
+              },
               isComplete: true,
             }));
           }
@@ -419,10 +443,15 @@ export function AskChat() {
       }
       updateAssistant(assistantId, (message) => ({ ...message, isComplete: true }));
     } catch (error) {
-      const message = error instanceof DOMException && error.name === "AbortError"
+      const stopped = controller.signal.aborted;
+      const message = stopped
         ? "已停止生成。"
         : error instanceof Error ? error.message : "回答暂时不可用，请稍后重试。";
-      updateAssistant(assistantId, (current) => ({ ...current, citations: [], content: message, isComplete: true }));
+      updateAssistant(assistantId, (current) => ({
+        ...current,
+        interruption: { kind: stopped ? "stopped" : "error", message },
+        isComplete: true,
+      }));
     } finally {
       requestController.current = null;
       setIsStreaming(false);
@@ -439,6 +468,7 @@ export function AskChat() {
     && !isClearing
     && lastMessage?.role === "assistant"
     && lastMessage.isComplete
+    && !lastMessage.interruption
     && Boolean(lastMessage.content)
     && followUpQuestions.length > 0;
   const fillSuggestion = (suggestion: string) => {
@@ -520,6 +550,12 @@ export function AskChat() {
                     isStreamingPlaceholder={isStreaming && index === messages.length - 1}
                     key={message.id}
                     message={message}
+                    onRetry={message.interruption?.kind === "error" && !isStreaming ? () => {
+                      const previousQuestion = messages[index - 1];
+                      if (previousQuestion?.role !== "user") return;
+                      setScope(message.scope ?? "all");
+                      fillSuggestion(previousQuestion.content);
+                    } : undefined}
                     prefersReducedMotion={prefersReducedMotion}
                   />
                 ))}
@@ -578,7 +614,7 @@ export function AskChat() {
             onChange={(event) => setQuestion(event.target.value)}
             onFocus={() => void ensureVisitorSession()}
             onKeyDown={(event) => {
-              if (event.key === "Enter" && !event.shiftKey) {
+              if (event.key === "Enter" && !event.shiftKey && !event.nativeEvent.isComposing && event.nativeEvent.keyCode !== 229) {
                 event.preventDefault();
                 void submit();
               }

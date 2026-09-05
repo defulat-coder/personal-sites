@@ -100,9 +100,9 @@ function renderTerms(
 export function InteractiveDotField() {
   return (
     <div
-      aria-label="以从右向左滚动的弹幕展示智能体开发术语与个人技术栈"
+      aria-label="技术词条动效"
       className="interactive-dot-field"
-      role="img"
+      role="group"
     >
       <DotFieldParallax>
         {TERMS_BY_LANE.map((terms, lane) => (

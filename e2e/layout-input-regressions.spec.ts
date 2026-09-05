@@ -46,7 +46,6 @@ for (const path of ["/", "/ask"] as const) {
       page.getByRole("link", { name: "GitHub", exact: true }),
       page.getByRole("link", { name: "语雀", exact: true }),
       page.getByRole("button", { name: "关于我", exact: true }),
-      page.getByRole("button", { name: "我的一天", exact: true }),
     ];
 
     for (const control of controls) {

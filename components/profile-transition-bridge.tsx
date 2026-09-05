@@ -30,11 +30,13 @@ export function ProfileTransitionBridge({ section }: ProfileTransitionBridgeProp
     const transition = readProfileTransition();
     const profile = document.querySelector<HTMLElement>(".curation-home__profile");
     const avatarTarget = profile?.querySelector<HTMLElement>(".curation-home__avatar");
-    const summaryTarget = profile?.querySelector<HTMLElement>(".curation-home__profile-summary");
+    const summaryTarget = profile?.querySelector<HTMLElement>(".curation-home__identity");
+    const linksTarget = profile?.querySelector<HTMLElement>(".curation-home__external-links");
+    const linksGhost = document.querySelector<HTMLElement>(".profile-transition-ghost--links");
     const avatarGhost = document.querySelector<HTMLElement>(".profile-transition-ghost--avatar");
     const summaryGhost = document.querySelector<HTMLElement>(".profile-transition-ghost--summary");
 
-    if (!transition || !profile || !avatarTarget || !summaryTarget || !avatarGhost || !summaryGhost) {
+    if (!transition || !profile || !avatarTarget || !summaryTarget || !avatarGhost || !summaryGhost || !linksTarget || !linksGhost) {
       clearProfileTransition();
       return;
     }
@@ -44,6 +46,9 @@ export function ProfileTransitionBridge({ section }: ProfileTransitionBridgeProp
     // 让飞行动画从当前视觉位置起步，两段运动之间没有跳变。
     stopProfileGhostDrift(avatarGhost);
     stopProfileGhostDrift(summaryGhost);
+    stopProfileGhostDrift(linksGhost);
+    const linksGhostBox = linksGhost.getBoundingClientRect();
+    const linksTargetBox = linksTarget.getBoundingClientRect();
     const avatarGhostBox = avatarGhost.getBoundingClientRect();
     const summaryGhostBox = summaryGhost.getBoundingClientRect();
 
@@ -112,7 +117,16 @@ export function ProfileTransitionBridge({ section }: ProfileTransitionBridgeProp
       { duration, ease: [0.16, 1, 0.3, 1] },
     );
 
-    void Promise.allSettled([avatarAnimation, summaryAnimation]).then(finish, finish);
+    const linksAnimation = animate(
+      linksGhost,
+      {
+        x: [linksGhostBox.left - transition.links.left, linksTargetBox.left - transition.links.left],
+        y: [linksGhostBox.top - transition.links.top, linksTargetBox.top - transition.links.top],
+        gap: [getComputedStyle(linksGhost).gap, getComputedStyle(linksTarget).gap],
+      },
+      { duration, ease: [0.16, 1, 0.3, 1] },
+    );
+    void Promise.allSettled([avatarAnimation, summaryAnimation, linksAnimation]).then(finish, finish);
 
     // 飞行已交给合成器，两个帧后解除内容流的渲染暂停——长列表的布局成本
     // 与 ghost 飞行并行执行，不再阻塞飞行启动，也不会造成可见闪烁（内容区
@@ -130,6 +144,7 @@ export function ProfileTransitionBridge({ section }: ProfileTransitionBridgeProp
       cancelAnimationFrame(revealCleanupFrame);
       avatarAnimation.cancel();
       summaryAnimation.cancel();
+      linksAnimation.cancel();
       revealAnimations.forEach((animation) => animation.cancel());
       revealElements.forEach((element) => element.style.removeProperty("opacity"));
     };

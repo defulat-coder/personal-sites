@@ -2,6 +2,8 @@
 
 一个以个人工程身份为锚点的桌面优先站点——不是静态简历，而是一份运行中的工程档案：用持续更新的策展与判断证明工程身份。
 
+仅交付 Web 端，兼容桌面与手机浏览器；移动端沿用相同栏目、内容与问答能力。
+
 **线上地址：** https://default-coder.lovemyrmb.cn/
 
 ## 站点版块
@@ -36,7 +38,7 @@ X SQLite 公开投影 + Supabase 公开表（ai_news_public_items 等）
 
 ```bash
 pnpm install          # Node.js >= 22.19，包管理器 pnpm@11
-pnpm dev              # 开发服务器（Turbopack）
+pnpm dev:domain       # https://personal-site.localhost（Turbopack）
 pnpm typecheck        # TypeScript 7（scripts/tsc7.mjs）
 pnpm lint
 pnpm test             # Vitest + node:test

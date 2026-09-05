@@ -62,8 +62,22 @@ export function SectionNavigationLink({
   }, []);
 
   useEffect(() => {
-    if (ariaCurrent !== "page" || !window.matchMedia("(max-width: 900px)").matches) return;
-    link.current?.scrollIntoView({ block: "nearest", inline: "center" });
+    if (ariaCurrent !== "page") return;
+    const element = link.current;
+    const container = element?.parentElement?.parentElement;
+    if (!element || !container) return;
+    const revealCurrent = () => {
+      if (!window.matchMedia("(max-width: 900px)").matches) return;
+      const item = element.getBoundingClientRect();
+      const viewport = container.getBoundingClientRect();
+      if (item.left >= viewport.left && item.right <= viewport.right) return;
+      // 仅滚动导航自身，避免 scrollIntoView 同时移动页面或问答滚动区。
+      container.scrollLeft += item.left - viewport.left - (viewport.width - item.width) / 2;
+    };
+    revealCurrent();
+    const observer = new ResizeObserver(revealCurrent);
+    observer.observe(container);
+    return () => observer.disconnect();
   }, [ariaCurrent]);
 
   return (
@@ -89,7 +103,11 @@ export function SectionNavigationLink({
         const isMobileProfileTransition = (from === "home" || to === "home")
           && window.matchMedia("(max-width: 900px)").matches;
 
-        beginProfileTransition(from, to);
+        const profileTransitionStarted = beginProfileTransition(from, to);
+        if (isMobileProfileTransition && !profileTransitionStarted) {
+          commitNavigation(router, href);
+          return;
+        }
         if (isMobileProfileTransition) {
           timeout.current = window.setTimeout(() => {
             commitNavigation(router, href);

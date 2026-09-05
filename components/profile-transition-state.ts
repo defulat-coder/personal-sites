@@ -13,6 +13,7 @@ export type ProfileTransitionPayload = {
   avatar: ProfileTransitionBox;
   kind: ProfileTransitionKind;
   summary: ProfileTransitionBox;
+  links: ProfileTransitionBox;
 };
 
 const profileTransitionStorageKey = "site-profile-transition";
@@ -66,14 +67,15 @@ export function beginProfileTransition(from: string, to: string) {
   }
 
   const avatar = document.querySelector<HTMLElement>(".curation-home__avatar");
-  const summary = document.querySelector<HTMLElement>(".curation-home__profile-summary");
-  if (!avatar || !summary) return;
+  const summary = document.querySelector<HTMLElement>(".curation-home__identity");
+  const links = document.querySelector<HTMLElement>(".curation-home__external-links");
+  if (!avatar || !summary || !links) return;
 
-  document.querySelectorAll(".profile-transition-ghost").forEach((element) => element.remove());
+  clearProfileTransition();
 
   const createGhost = (
     element: HTMLElement,
-    variant: "avatar" | "summary",
+    variant: "avatar" | "summary" | "links",
     box: ProfileTransitionBox,
   ) => {
     const ghost = element.cloneNode(true) as HTMLElement;
@@ -83,22 +85,40 @@ export function beginProfileTransition(from: string, to: string) {
     ghost.querySelectorAll("a, button").forEach((child) => child.setAttribute("tabindex", "-1"));
 
     Object.assign(ghost.style, {
+      margin: "0",
       height: `${box.height}px`,
       left: `${box.left}px`,
       top: `${box.top}px`,
       width: `${box.width}px`,
     });
 
+    if (variant === "links") {
+      ghost.style.flexWrap = "nowrap";
+      // 克隆脱离首页网格后仍保持来源行的间距、字体与触控尺寸。
+      const sources = [element, ...element.querySelectorAll<HTMLElement>("*")];
+      const copies = [ghost, ...ghost.querySelectorAll<HTMLElement>("*")];
+      const properties = ["display", "gap", "align-items", "justify-content", "font-size", "font-weight", "line-height", "color", "padding", "border-left", "min-width", "min-height"];
+      sources.forEach((source, index) => {
+        const style = getComputedStyle(source);
+        properties.forEach((property) => copies[index].style.setProperty(property, style.getPropertyValue(property)));
+      });
+    }
     return ghost;
   };
 
   const avatarBox = getBox(avatar);
   const summaryBox = getBox(summary);
+  const linksBox = getBox(links);
+  // 收起后的头部位于屏外，不把不可见身份复制到屏幕上参与飞行。
+  if (avatarBox.width <= 0 || summaryBox.width <= 0
+    || avatarBox.top + avatarBox.height <= 0 || avatarBox.top >= window.innerHeight) return false;
   const avatarGhost = createGhost(avatar, "avatar", avatarBox);
   const summaryGhost = createGhost(summary, "summary", summaryBox);
-  document.body.append(avatarGhost, summaryGhost);
+  const linksGhost = createGhost(links, "links", linksBox);
+  document.body.append(avatarGhost, summaryGhost, linksGhost);
   driftGhost(avatarGhost, kind, true);
   driftGhost(summaryGhost, kind, false);
+  driftGhost(linksGhost, kind, false);
   // 暂缓新视图内容流的渲染，把长列表的布局成本移出飞行启动的关键路径，
   // 由 ProfileTransitionBridge 在飞行开始后解除。
   document.documentElement.dataset.profileFeedHold = "true";
@@ -107,7 +127,9 @@ export function beginProfileTransition(from: string, to: string) {
     avatar: avatarBox,
     kind,
     summary: summaryBox,
+    links: linksBox,
   } satisfies ProfileTransitionPayload));
+  return true;
 }
 
 export function readProfileTransition(): ProfileTransitionPayload | null {
@@ -119,7 +141,12 @@ export function readProfileTransition(): ProfileTransitionPayload | null {
     if (
       (value.kind !== "collapse" && value.kind !== "expand")
       || !value.avatar
+      || !value.links
       || !value.summary
+      || !Number.isFinite(value.links.height)
+      || !Number.isFinite(value.links.left)
+      || !Number.isFinite(value.links.top)
+      || !Number.isFinite(value.links.width)
       || !Number.isFinite(value.avatar.height)
       || !Number.isFinite(value.avatar.left)
       || !Number.isFinite(value.avatar.top)
@@ -139,7 +166,10 @@ export function readProfileTransition(): ProfileTransitionPayload | null {
 }
 
 export function clearProfileTransition() {
-  document.querySelectorAll(".profile-transition-ghost").forEach((element) => element.remove());
+  document.querySelectorAll<HTMLElement>(".profile-transition-ghost").forEach((element) => {
+    stopProfileGhostDrift(element);
+    element.remove();
+  });
   delete document.documentElement.dataset.profileTransition;
   delete document.documentElement.dataset.profileFeedHold;
   window.sessionStorage.removeItem(profileTransitionStorageKey);

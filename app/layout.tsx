@@ -1,9 +1,14 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 
 import { OpeningLoader } from "@/components/opening-loader";
 import { SITE_NAME, SITE_URL } from "@/lib/site";
 
 import "./globals.css";
+
+export const viewport: Viewport = {
+  // 支持此提示的手机浏览器在键盘弹出时压缩内容视口，组合器随可用高度排布。
+  interactiveWidget: "resizes-content",
+};
 
 export const metadata: Metadata = {
   description:

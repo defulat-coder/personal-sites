@@ -645,6 +645,12 @@
 }
 
 @media (max-width: 900px) {
+  .dossierIntro h2 a {
+    display: inline-flex;
+    align-items: center;
+    min-height: 2.75rem;
+  }
+
   .detailIndex {
     gap: 0 .8rem;
     padding: .35rem 0;
