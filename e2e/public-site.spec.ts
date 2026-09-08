@@ -26,7 +26,7 @@ test("Ask suggestions fill and focus the composer", async ({ page }) => {
   await expect(input).toBeFocused();
 });
 
-test("section navigation uses Motion SDK and cleans its final state", async ({ page }) => {
+test("frequent section navigation is immediate and leaves content visible", async ({ page }) => {
   await page.goto("/curation");
   await page.evaluate(() => {
     const testWindow = window as typeof window & { __sectionMotionDurations: number[] };
@@ -45,7 +45,7 @@ test("section navigation uses Motion SDK and cleans its final state", async ({ p
   await expect(page).toHaveURL(/\/design$/u);
   await expect.poll(() => page.evaluate(() => (
     window as typeof window & { __sectionMotionDurations?: number[] }
-  ).__sectionMotionDurations ?? [])).toEqual([130, 320]);
+  ).__sectionMotionDurations ?? [])).toEqual([]);
   await expect.poll(() => page.locator(".site-section-motion").evaluate((element) => ({
     opacity: (element as HTMLElement).style.opacity,
     transform: (element as HTMLElement).style.transform,
@@ -187,6 +187,8 @@ test("open-source filters cap Motion stagger and honor reduced motion", async ({
   ).__filterMotionDurations ?? []);
 
   await page.goto("/open-source");
+  await expect(page.locator(".opening-loader")).toHaveCount(0);
+  await expect.poll(() => page.locator('[aria-label="已判读的开源项目"] ol > li').evaluateAll(rows => rows.every(row => row.getAnimations().length === 0))).toBe(true);
   await instrumentListMotion();
   const skillsFilter = page.getByRole("button", { name: /^Skills 与工作流/u });
   await skillsFilter.click();
@@ -265,6 +267,7 @@ test("works keeps purposeful lightbox Motion without autonomous list choreograph
   await expect(shotStatus).toContainText("第 1 张，共");
   await dialog.getByRole("button", { name: "下一张" }).click();
   await expect(shotStatus).toContainText("第 2 张，共");
+  await expect(figure).toHaveCount(1);
   expect(await figure.evaluate((element) => getComputedStyle(element).animationName)).toBe("none");
   await expect.poll(() => figure.evaluate((element) => getComputedStyle(element).transform)).toBe("none");
   await dialog.getByRole("button", { name: "关闭大图" }).click();
@@ -386,7 +389,7 @@ test("technical signal motion pauses while offscreen", async ({ page }) => {
   await field.scrollIntoViewIfNeeded();
   await expect.poll(() => track.evaluate((element) => element.getAnimations()[0]?.playState)).toBe("running");
 
-  await page.evaluate(() => window.scrollTo({ behavior: "instant", top: document.documentElement.scrollHeight }));
+  await page.evaluate(() => window.scrollTo({ behavior: "instant", top: 0 }));
   await expect.poll(() => track.evaluate((element) => element.getAnimations()[0]?.playState)).toBe("paused");
 
   await field.scrollIntoViewIfNeeded();

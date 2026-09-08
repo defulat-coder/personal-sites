@@ -23,7 +23,7 @@ export function SiteProfile({ animateOnFirstHomeVisit = false, mobileSection }: 
       <ThemeToggle />
       <div className="curation-home__profile-header">
         <Image
-          alt="参考站提供的头像插画"
+          alt={`${siteProfile.name}的头像插画`}
           className="curation-home__avatar"
           height={105}
           priority

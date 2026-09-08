@@ -415,3 +415,12 @@
   .repositoryBrowserContent { grid-template-columns: 1fr; }
   .repositoryTreePane { max-height: 16rem; border-right: 0; border-bottom: 1px solid var(--line); }
 }
+
+.repositoryTreeItem:focus-visible,
+.repositoryBrowserToolbar a:focus-visible,
+.repositoryFileHeader a:focus-visible,
+.documentTab:focus-visible {
+  outline: 2px solid currentColor;
+  outline-offset: -3px;
+}
+.filter { min-height: 2.75rem; font-variant-numeric: tabular-nums; }

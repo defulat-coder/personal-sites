@@ -17,19 +17,19 @@ colors:
   paper-dark: "#f6f2e9"
 typography:
   display:
-    fontFamily: '"SF Pro Display", -apple-system, BlinkMacSystemFont, "PingFang SC", "Microsoft YaHei", Arial, sans-serif'
+    fontFamily: '"SF Pro Display", -apple-system, BlinkMacSystemFont, "Helvetica Neue", "PingFang SC", "Microsoft YaHei", Arial, sans-serif'
     fontSize: "clamp(2.05rem, 4.2vw, 3.85rem)"
     fontWeight: 610
     lineHeight: 1.04
     letterSpacing: "-0.04em"
   title:
-    fontFamily: '"SF Pro Text", "SF Pro Display", -apple-system, BlinkMacSystemFont, "PingFang SC", "Microsoft YaHei", Arial, sans-serif'
+    fontFamily: '"SF Pro Text", "SF Pro Display", -apple-system, BlinkMacSystemFont, "Helvetica Neue", "PingFang SC", "Microsoft YaHei", Arial, sans-serif'
     fontSize: "0.95rem"
     fontWeight: 620
     lineHeight: 1.15
     letterSpacing: "-0.035em"
   body:
-    fontFamily: '"SF Pro Text", "SF Pro Display", -apple-system, BlinkMacSystemFont, "PingFang SC", "Microsoft YaHei", Arial, sans-serif'
+    fontFamily: '"SF Pro Text", "SF Pro Display", -apple-system, BlinkMacSystemFont, "Helvetica Neue", "PingFang SC", "Microsoft YaHei", Arial, sans-serif'
     fontSize: "0.82rem"
     lineHeight: 1.38
   signal:
@@ -97,6 +97,27 @@ components:
 
 ## Overview
 
+### 适用范围与使用方式
+
+本文件用于生成和修改陈远个人站的页面、阅读详情及问答界面。它同时约束信息层级与视觉实现；不是 `/design`「设计收藏」栏目的内容文件。保留当前品牌方向，新增页面先复用既有骨架，再根据读者任务组织内容。
+
+方法参考 Vercel 的 [How our agents build on-brand pages with design.md](https://vercel.com/blog/how-our-agents-build-on-brand-pages-with-design-md)：把设计判断写成可观察规则，把重复样式交给已有 CSS 与组件，把常见失败纳入固定场景验证。本项目采用其方法，不采用 Vercel 的品牌、字体或页面模板。此版是基于项目代码与既有规范的文档整理，尚未进行有／无设计上下文的生成对照实验。
+
+使用顺序：先读 [PRODUCT.md](PRODUCT.md) 确认产品与公开内容边界，再读本文件选择布局与组件，最后用 [前端架构](docs/frontend-architecture.md) 定位实现。历史方案不能覆盖当前设计约束。frontmatter 是设计 token 清单，实际运行样式由 `app/globals.css` 与组件 CSS Modules 实现；发现二者不一致时记录具体差异，不把偶然实现提升为新设计规则。
+
+### 读者任务
+
+每次生成前写清一句话：“谁打开这页，要理解什么，下一步去哪里？”以现有公开材料回答，不为填满版式补造事实。
+
+| 读者 | 要完成的任务 | 页面必须优先提供 |
+|---|---|---|
+| 初次到访的同行或合作方 | 了解陈远是谁，工程实践是否可信 | 姓名、中文介绍、真实项目与公开履历入口 |
+| 每日阅读者 | 跟踪事件，理解作者为何关注 | 日期、题名、判断或摘要、原始来源、阅读位置 |
+| 项目与开源读者 | 判断项目做了什么、为何这样做 | 定位、个人判读、真实样张或记录、仓库出口 |
+| 问一问使用者 | 提问并核对回答依据 | 可用输入、明确状态、可读回答、引用来源 |
+
+### 品牌方向
+
 **Creative North Star: “运行中的工程档案”。** 这是一个以个人工程身份为锚点、以每日判断为主内容的桌面优先站点。页面不把内容包进卡片，也不使用营销式 hero；身份信息作为始终可见的左侧轨道，策展和文章作为右侧连续阅读流。
 
 视觉参考来自 Ample Studio 的克制、轻量和留白节奏，但内容与交互服务于 Agent 工程实践：信号场传达技术广度，逐字叙事传达个人履历，策展流传达持续输入与判断。
@@ -106,6 +127,14 @@ components:
 - 高对比黑白灰为主体；绿色只属于 Loading 动画，不进入常规页面。
 - 平面、细分割线、连续流；不要用卡片堆叠制造层级。
 - 桌面两栏是主布局；窄屏才收敛为单栏。
+
+### 文案与证据
+
+- 判断流先呈现作者的判断，跟踪流先呈现事件；标题应能独立说明内容，避免“探索无限可能”等空泛口号。
+- 区分作者解析、来源摘录和模型回答。来源声音使用引线、署名与出处，不把引用改写成作者经历。
+- 保留发布时间、收录日期、资料截至等字段各自含义。没有数据就省略对应部分，不捏造日期、指标、项目状态、推荐理由或客户背书。
+- 操作用具体动词：查看原文、返回每日关注、在 GitHub 查看仓库。无来源时不显示失效按钮；异步失败给出可执行的重试或已有来源出口。
+- 使用现有头像与公开项目样张；真实截图不以生成图替代。引用外部媒体保留署名和来源，私有资料不进入页面、截图或评测样本。
 
 ## Colors
 
@@ -128,13 +157,15 @@ components:
 
 **单色优先规则。** 除 Loading 绿外，不以黄色、渐变或高饱和点缀争夺内容注意力。
 
+**令牌落地规则。** 当前 `:root` 暴露 `--ink`、`--muted`、`--quiet`、`--line`、`--surface`、`--font-sans`；frontmatter 的 `summary`、`dark-ink` 等名称不是同名 CSS 变量。不要直接引用不存在的变量。深色通过 `html[data-curation-theme="dark"]` 的选择器覆盖，不能假设切换主题会自动重赋全部根变量。新控件必须核对文字、底面、边框和焦点环的深浅成对样式。
+
 ## Typography
 
 系统字体以 SF Pro 与中文系统字体为主，保证身份、策展标题与长文在 macOS 中文环境中的一致字形。技术信号场独立使用等宽字体，且只服务于技术语义。
 
 - **Display**（610，`clamp(2.05rem, 4.2vw, 3.85rem)`，1.04）：仅开屏等非内容场景使用，内容页标题一律用 Detail headline 档；最大负字距为 `-0.04em`。
 - **Title**（620，`0.95rem`，1.15）：左侧姓名、列表区标题与轻量区域标题。
-- **Stream headline**（500，`clamp(0.88rem, 0.95vw, 1rem)`，1.32，`-0.018em`）：信息流条目标题；使用 `text-wrap: pretty`。信息流标题保持克制，层级靠与摘要的粗细/颜色对比，不靠大字号。
+- **Stream headline**（500，`clamp(0.88rem, 0.95vw, 1rem)`，1.45，`-0.018em`）：信息流条目标题；使用 `text-wrap: pretty`。信息流标题保持克制，层级靠与摘要的粗细/颜色对比，不靠大字号。
 - **Body**（`0.78rem`–`0.96rem`，1.32–1.8）：简介、摘要与 Markdown 正文按阅读密度递进；简介正文可撑满身份轨，不再使用固定窄列。
 - **Signal**（650，`0.62rem`）：仅技术词节点，不作为普通 UI 正文字体。
 - **Detail headline**（610，`clamp(1.55rem, 2.15vw, 2.15rem)`，1.16，`-0.038em`，`text-wrap: balance`）：内容详情页 h1。
@@ -152,6 +183,20 @@ components:
 - 560px 以下带日期栏的内容流采用 16px 左右边距，与身份区、导航对齐。日期栏直接衔接导航，不再增加独立顶部空白。
 - 不以改变文字字号扩大触达区域：手机关键独立按钮、标题链接、筛选与返回入口至少 44px 高。长文本自然换行，代码与媒体只在自己的区域滚动。
 
+### 页面构成选择
+
+| 内容任务 | 采用的构成 | 必须保持的层级 |
+|---|---|---|
+| 首页身份展示 | 桌面身份轨 + 每日动态；手机完整身份首页 | 手机先读介绍，再看技术词条，不强塞桌面右栏 |
+| 每日动态 | 日期工具栏 + 连续跟踪流 | 事件题名 > 摘要 > 元信息 |
+| 每日关注／设计收藏／抖音收藏 | 日期工具栏 + 双列登记簿，手机单列 | 判断题名与解析 > 来源摘录 > 标签 |
+| 开源关注 | 主题文字索引 + 仓库登记行 | 仓库名与中文判读 > 类型与状态 |
+| 构建 | 有样张用卷宗块，无样张用登记行 | 项目定位 > 真实样张与记录 > 技术栈 |
+| 策展详情 | 通栏标题 + 原文／解析对页，手机按顺序堆叠 | 原始证据与个人解析可区分，末尾能继续阅读 |
+| 问一问 | 同轴的刊头、消息列与组合器 | 输入与回答为主，范围和引用为辅助 |
+
+**宽度跟随内容规则。** 普通正文服从阅读宽度；代码、表格和真实样张使用所属内容区域的可用宽度，不因段落限宽而挤成窄条。窄屏只允许这类局部内容横滚，页面本身不横向溢出。此规则不取消策展对页的两列边界。
+
 ## Elevation & Depth
 
 本系统是**纯平面**的。层级来自网格、留白、细线与文本对比，不使用卡片阴影、毛玻璃或浮动面板。头像与媒体可使用 `12px` 小圆角承载真实图像，但不能叠加大阴影。
@@ -163,6 +208,21 @@ components:
 媒体与头像使用轻圆角，普通内容行不包容器。手机首页头像沿用 mobile-avatar 圆角；菜单用细边框与小圆角，实心胶囊仅用于适合强调的详情来源出口，不用于身份区外链。
 
 ## Components
+
+### 可直接复用的实现
+
+下表是本仓库的实现入口，不是要求另造一套同名组件。沿用现有组件的 props 和样式；CSS Modules 的类名不是可在外部 HTML 直接调用的公共 API。本项目没有独立发布的品牌样式 CDN，仓库外生成稿需自行携带按本规范实现的样式。
+
+| 原语 | 实现入口 | 复用边界 |
+|---|---|---|
+| 页面壳与身份轨 | `components/home-main.tsx`、`components/site-profile.tsx` | 列表复用壳；详情复用身份组件，遵循既有手机详情收敛规则 |
+| 栏目刊头与手机导航 | `components/site-section-navigation.tsx`、同名 `.module.css` | 路由链接与当前栏目状态，不作筛选 Tab |
+| 日期与内容流 | `components/use-stream-date.ts`、`components/ai-news-stream.tsx`、`components/curation-stream.tsx` | 复用日期跟随与行密度；设计视频控件不嵌套进链接 |
+| 开源与构建 | `components/open-source-stream.tsx`、`components/works-stream.tsx`、`components/works-shot-strip.tsx` | 判读、卷宗与真实样张使用各自既有样式 |
+| 详情阅读 | `components/article-markdown.tsx`、`app/globals.css` | `.curation-detail__article`、`.curation-detail__section`、`.article-markdown`；对页使用 `--spread` 修饰边界 |
+| 问答与输入 | `components/ask-chat.tsx`、`components/ask-chat.module.css`、`components/ui/input-group.tsx` | 复用消息滚动与组合器，不把长回答放进气泡 |
+| 单选菜单 | `components/ui/dropdown-menu.tsx` | 日期分类、问答范围沿用各自样式，不照搬组件库默认外观 |
+| 主题与首访 | `components/theme-toggle.tsx`、`components/opening-loader.tsx` | 复用主题状态和会话揭幕，不新增页面级 Loading 仪式 |
 
 ### 身份轨
 
@@ -310,5 +370,54 @@ components:
 - **Don't** 恢复知识库、语雀同步、工作台表格或旧 `WorkspaceFrame` 视觉结构。
 - **Don't** 用卡片网格、玻璃拟态、大阴影或高饱和装饰色承载策展内容。
 - **Don't** 将 Loading 的绿色或此前试验的黄色扩散到加载完成后的页面。
-- **Don't** 为技术感滥用等宽字体；等宽字体只属于技术信号场与代码语义。
+- **Don't** 为技术感滥用等宽字体；等宽字体仅用于技术信号场、代码和已登记的打印稿语义。
 - **Don't** 让技术节点、正文文本或详情标题溢出、堆叠或破坏两栏阅读线。
+
+### 固定验收场景
+
+以下是后续 UI 变更的评审协议，不代表本次文档更新已执行浏览器验收。使用固定的公开或虚构测试输入、同一视口和主题比较改动前后结果；不要使用私有原始内容。
+
+| 场景 | 固定条件 | 通过标准 |
+|---|---|---|
+| 首页身份 | 1440×900 与 390×844；首访及同会话回访 | 桌面两栏，手机完整中文；回访不重复揭幕，终态无透明正文 |
+| 日期阅读与筛选 | 390×844，至少两个日期组，分类有结果与无结果 | 日期跟随位置、左日期右筛选；收起头部不跳页，空结果可切回全部 |
+| 长标题详情 | 320×812、900×900、901×900、1440×900；长中文标题、代码和宽表格 | 断点两侧均可读，无页面横溢；来源和解析可区分，返回路径正确 |
+| 项目证据 | 同一有多张样张项目与无样张项目 | 卷宗／登记行选择正确；灯箱可用 Esc 退出、切图并返回触发焦点 |
+| 问答 | 390×844 与 844×390；空会话、长回答、失败状态 | 输入 16px；键盘弹出后能发送，消息可滚动，组合器不遮住末条内容 |
+| 主题与减少动态效果 | 深浅主题；系统减少动态效果开启；键盘操作 | 文字与焦点可见，媒体可手动操作；动画直接到达可用终态 |
+
+人工按四项分别评为通过／失败：**事实保真、任务可完成、阅读层级、品牌一致性**。不能用“像参考图”替代任务完成；任一项失败先修正，再复核受影响场景。
+
+浏览器验证统一用 ego lite，检查实际页面、编译问题、控制台与网络错误；不要只检查截图。自动回归复用 `e2e/`，例如 `curation-detail-responsive.spec.ts`、`detail-touch-targets.spec.ts`、`ask-layout.spec.ts` 和 `layout-input-regressions.spec.ts`。涉及应用代码或配置时执行项目要求的 typecheck、lint、test、build；机械问题加入相应回归测试，文案与构成判断留给人工评审。
+
+### 如何更新这份规范
+
+记录“具体场景 → 可观察问题 → 接受的修正”，再选择最窄的落点：层级与判断写进本文件，重复样式改进已有 CSS／组件，可稳定检测的失败进入测试。单次生成偏差不自动成为全站禁令。
+
+需要评估新规则时，固定提示、输入、模型与视口，保存第一次输出作为基线；加载更新后的规范再生成一次并盲评。记录规范版本和未解决问题，不以一次成功宣称可靠性提升。先完成一次人工对照，再考虑自动评测设施。
+
+## Emil Design Engineering · 全站交互规范（2026-09-08）
+
+本轮逐页设计及验收清单见 [全站交付](docs/design/emil-delivery.md)。使用项目内 `emil-design-eng` 技能审查细节，现有品牌、真实内容、首访仪式与打印稿的裁决继续有效。
+
+### 阅读与操作的统一尺度
+
+- 页面仍采用身份轨与连续内容流；登记栏是索引，题名是入口，摘要是阅读内容。题名行高统一为 1.45，摘要为 1.65；长题名自然换行，详情标题 balance，正文 pretty。日期和计数使用 tabular-nums，更新时不横跳。
+- 栏目刊头在中等桌面宽度允许兄弟导航换行，禁止压缩中文为逐字竖排或撑破右栏；每个入口保持整词。手机保留原有可横滑导航。
+- 独立按钮、来源出口和返回链接至少 44px 触达；图标不随触达区域放大。键盘焦点用 2px currentColor 轮廓与 3px 间距，不能仅依赖 hover 背景。
+- 输入字号桌面与手机统一 16px。问答建议保持细线列表；输入区边框表示聚焦，发送、清空和范围触发器使用同一触达尺度。
+
+### 动效决策
+
+| 场景 | 行为 | 时长 / 曲线 |
+| --- | --- | --- |
+| 同级栏目切换、键盘导航 | 立即提交路由，不等待离场 | 无内容位移 |
+| 指针按钮按压 | scale(.97)，松开恢复；不作用于长文行 | 120ms，cubic-bezier(.23,1,.32,1) |
+| hover 颜色 | 只更新当前控件颜色 | 160ms ease |
+| 媒体 hover | 仅精细指针支持轻缩放 | 200ms，ease-out |
+| 主题 | 内容即时替换；图标轻量过渡，不串行排队 | 160ms；键盘即时 |
+| 手机身份展开/收拢 | 保留空间关系，键盘与 reduced-motion 跳过 | 沿用既有可清理桥接 |
+| 灯箱 | 指针短促切换；方向键立即切图 | ≤240ms；键盘 0ms |
+| 首访与打印稿 | 保留既有受控身份表达 | 按原有专节，不扩散至高频操作 |
+
+不使用 transition:all。移动/缩放 hover 必须放在 `(hover:hover) and (pointer:fine)` 内。减少动态效果不播放按压缩放、路由位移或图像滑动；状态与操作结果仍即时呈现。弹出菜单从触发位置展开，保留 Radix transform-origin。所有动画完成或卸载后恢复可用终态。

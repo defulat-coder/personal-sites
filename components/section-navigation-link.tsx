@@ -50,6 +50,7 @@ export function SectionNavigationLink({
   const router = useRouter();
   const ariaCurrent = props["aria-current"];
   const link = useRef<HTMLAnchorElement>(null);
+  const keyboardNavigation = useRef(false);
   const timeout = useRef<number | null>(null);
   const exitAnimation = useRef<NonNullable<ReturnType<typeof beginSectionTransition>> | null>(null);
   const [isNavigating, setIsNavigating] = useState(false);
@@ -87,6 +88,7 @@ export function SectionNavigationLink({
       data-transitioning={isNavigating ? "true" : undefined}
       href={href}
       ref={link}
+      onClick={(event) => { keyboardNavigation.current = event.detail === 0; }}
       onNavigate={(event) => {
         if (isNavigating) return;
 
@@ -96,7 +98,8 @@ export function SectionNavigationLink({
           commitNavigation(router, href);
           return;
         }
-        if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+        if (keyboardNavigation.current || transition === "swap"
+          || window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
 
         event.preventDefault();
         setIsNavigating(true);

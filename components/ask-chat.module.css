@@ -670,3 +670,10 @@
 .interruption :global([data-slot="button"]) {
   color: inherit;
 }
+
+/* One control scale for pointer, touch and keyboard. */
+.composer textarea { font-size: 1rem; }
+.send, .clear { width: 2.75rem !important; height: 2.75rem !important; }
+.scopeTrigger, .sessionRetry { min-height: 2.75rem; }
+.suggestions :global([data-slot="button"]) { min-height: 2.75rem; white-space: normal; line-height: 1.6; }
+.scopeMenu { transform-origin: var(--radix-dropdown-menu-content-transform-origin); box-shadow: none !important; }

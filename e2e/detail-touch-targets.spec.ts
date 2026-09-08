@@ -57,7 +57,7 @@ test("curation detail gives its return link a mobile touch target", async ({ pag
   await expectNoHorizontalOverflow(page);
 
   await page.setViewportSize(DESKTOP_VIEWPORT);
-  await expectDesktopDensity(back);
+  await expectTouchTargets(back);
 });
 
 test("open-source document tabs and GitHub CTA keep sticky, dark mobile controls", async ({ page }) => {

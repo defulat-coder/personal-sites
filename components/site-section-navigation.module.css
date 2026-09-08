@@ -223,3 +223,10 @@
     transition: none;
   }
 }
+
+/* Keep the masthead legible in the narrow desktop content column. */
+.contentNavigation { gap: 0.75rem 1.25rem; flex-wrap: wrap; }
+.current { flex: 0 0 auto; }
+.siblings { flex-wrap: wrap; gap: 0.25rem 1rem; }
+.siblingLink { min-height: 2.75rem; white-space: nowrap; }
+.siblingLink:focus-visible { outline: 2px solid currentColor; outline-offset: 3px; }

@@ -64,6 +64,7 @@ function StripShot({ index, onOpen, shot, workTitle }: StripShotProps) {
 
 /** 作品页面样张带：横向滚动的截图列表，点击开灯箱看大图，灯箱内左右切换同一作品的样张。 */
 export function WorksShotStrip({ shots, workTitle }: WorksShotStripProps) {
+  const [keyboardAction, setKeyboardAction] = useState(false);
   const [activeIndex, setActiveIndex] = useState<number | null>(null);
   // 入场方向：null 表示从样张带点开（缩放入场），±1 表示灯箱内左右切换（横移滑入）。
   const [entryDirection, setEntryDirection] = useState<number | null>(null);
@@ -119,11 +120,13 @@ export function WorksShotStrip({ shots, workTitle }: WorksShotStripProps) {
   }, [active]);
 
   const openAt = (index: number) => {
+    setKeyboardAction(false);
     setEntryDirection(null);
     setActiveIndex(index);
   };
 
-  const step = (delta: number) => {
+  const step = (delta: number, keyboard = false) => {
+    setKeyboardAction(keyboard);
     setEntryDirection(delta > 0 ? 1 : -1);
     setActiveIndex((current) =>
       current === null ? current : (current + delta + shots.length) % shots.length,
@@ -157,8 +160,8 @@ export function WorksShotStrip({ shots, workTitle }: WorksShotStripProps) {
         }}
         onClose={() => setActiveIndex(null)}
         onKeyDown={(event) => {
-          if (event.key === "ArrowLeft") step(-1);
-          if (event.key === "ArrowRight") step(1);
+          if (event.key === "ArrowLeft") { event.preventDefault(); step(-1, true); }
+          if (event.key === "ArrowRight") { event.preventDefault(); step(1, true); }
         }}
         ref={dialogRef}
       >
@@ -169,9 +172,9 @@ export function WorksShotStrip({ shots, workTitle }: WorksShotStripProps) {
               animate="center"
               custom={entryDirection}
               exit="exit"
-              initial={reduceMotion ? false : "enter"}
+              initial={reduceMotion || keyboardAction ? false : "enter"}
               key={active.src}
-              transition={{ duration: reduceMotion ? 0 : 0.24, ease: [0.16, 1, 0.3, 1] }}
+              transition={{ duration: reduceMotion || keyboardAction ? 0 : 0.24, ease: [0.16, 1, 0.3, 1] }}
               variants={shotDialogVariants}
             >
               <Image
@@ -190,12 +193,13 @@ export function WorksShotStrip({ shots, workTitle }: WorksShotStripProps) {
                   </span>
                 ) : null}
               </figcaption>
-              <span aria-live="polite" className="sr-only" role="status">
-                {active.label}，第 {activeIndex! + 1} 张，共 {shots.length} 张
-              </span>
+
             </motion.figure>
           ) : null}
         </AnimatePresence>
+        <span aria-live="polite" className="sr-only" role="status">
+          {active ? `${active.label}，第 ${activeIndex! + 1} 张，共 ${shots.length} 张` : ""}
+        </span>
         {shots.length > 1 ? (
           <>
             <button
