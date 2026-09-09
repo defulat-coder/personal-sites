@@ -1,4 +1,4 @@
-import { BookOpen, GitBranch } from "lucide-react";
+import { BookOpen, BriefcaseBusiness, GitBranch } from "lucide-react";
 import Image from "next/image";
 
 import { MobileProfileCollapse } from "@/components/mobile-profile-collapse";
@@ -45,6 +45,10 @@ export function SiteProfile({ animateOnFirstHomeVisit = false, mobileSection }: 
             <a href="https://www.yuque.com/defulat-coder" rel="noreferrer" target="_blank">
               <BookOpen aria-hidden="true" />
               语雀
+            </a>
+            <a href="https://portfolio.default-coder.lovemyrmb.cn/" rel="noreferrer" target="_blank">
+              <BriefcaseBusiness aria-hidden="true" />
+              作品集
             </a>
             <AboutPrint />
           </nav>
